@@ -1,0 +1,49 @@
+html, body, #map {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.btn-secondary {
+    color: #ffffff;
+    background-color: #333;
+    border-color: #000;
+}
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:active,
+.btn-secondary.active,
+.open .dropdown-toggle.btn-secondary {
+    color: #ffffff;
+    background-color: #000;
+}
+
+.dropdown-header {
+    font-weight: bold;
+}
+
+#toolbar, #statusbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 8px;
+    min-height: 40px;
+    background: rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 10px #333
+}
+
+#statusbar {
+    top: auto;
+    bottom: 0;
+    min-height: 30px;
+}
+
+#toolbar .search {
+    width: 200px
+}
+
+#statusbar .mouse-position {
+    text-align: center;
+    color: #eee
+}
