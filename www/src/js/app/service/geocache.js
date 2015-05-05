@@ -100,10 +100,8 @@ define([
         },
         
         init : function () {
-            
             this.createUi();
             this.createLayer();
-            
         },
         
         createUi : function () {
@@ -116,6 +114,10 @@ define([
             }));
             
             $('#toolbar').append(this._el);
+            
+            this._el.find('.modal').on('shown.bs.modal', function (e) {
+                $(this).find('textarea').focus();
+            });
             
             this._el.find('#modal_geocache').on('click', 'button.confirm', function (e) {
                 var content = $.trim($(this).closest('.modal-content').find('textarea').val()),

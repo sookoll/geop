@@ -9,6 +9,8 @@ define([
     function Nominatim(mapmodule) {
         this._mapmodule = mapmodule;
         this._results = null;
+        this._id = 'nominatim';
+        this._title = '<i class="glyphicon glyphicon-map-marker"></i> Leitud aadressid';
     }
     
     Nominatim.prototype = {
@@ -21,7 +23,23 @@ define([
             
         },
         
-        geocode : function (q, context, cb) {
+        clear : function () {
+            this._results = null;
+        },
+        
+        find : function (query, cb, context) {
+            this.geocode(query, function (data) {
+                if (data.length > 0) {
+                    data = this.format(data);
+                    this._results = data;
+                }
+                if (typeof cb === 'function') {
+                    cb(this._title, this._results, context);
+                }
+            });
+        },
+        
+        geocode : function (q, cb) {
             $.ajax({
                 type : 'GET',
                 url : 'http://nominatim.openstreetmap.org/search/',
@@ -31,7 +49,7 @@ define([
                     format: 'json'
                 },
                 dataType: 'json',
-                context: context
+                context: this
             }).done(cb);
         },
         
@@ -51,7 +69,7 @@ define([
             }).done(cb);
         },
         
-        format : function (type, data) {
+        format : function (data) {
             var i, len, bbox, formatted = [];
             for (i = 0, len = data.length; i < len; i++) {
                 if (data[i] && data[i].boundingbox && data[i].boundingbox.length === 4) {
@@ -65,7 +83,7 @@ define([
                         id : data[i].place_id,
                         name : data[i].display_name,
                         bbox : this._mapmodule.transform('extent', bbox, 'EPSG:4326', 'EPSG:3857'),
-                        type : type
+                        type : this._id
                     });
                 }
             }
@@ -75,7 +93,7 @@ define([
         getResultItem : function (id) {
             var i, len;
             for (i = 0, len = this._results.length; i < len; i++) {
-                if (id === this._results[i].place_id) {
+                if (id === this._results[i].id) {
                     return this._results[i];
                 }
             }

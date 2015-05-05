@@ -17,9 +17,18 @@ html, body, #map {
     color: #ffffff;
     background-color: #000;
 }
-
 .dropdown-header {
     font-weight: bold;
+    color: #333;
+    background: #ddd
+}
+.dropdown-header i {
+    margin-left: -15px
+}
+.scrollable-menu {
+    height: auto;
+    max-height: 400px;
+    overflow-x: hidden;
 }
 
 #toolbar, #statusbar {
@@ -36,14 +45,15 @@ html, body, #map {
 #statusbar {
     top: auto;
     bottom: 0;
-    min-height: 30px;
+    min-height: 20px;
 }
 
 #toolbar .search {
     width: 200px
 }
-
+#toolbar > .pull-right {
+    margin-left: 8px
+}
 #statusbar .mouse-position {
-    text-align: center;
     color: #eee
 }

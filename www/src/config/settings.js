@@ -14,8 +14,17 @@ define(function () {
             "extent" : [21, 57, 29, 60],
             "baseLayers" : {
                 osm_et : {
-                    title : "OSM",
+                    title : "OSM Eesti",
                     url : "proxy.php?url=http://kaart.maakaart.ee/osm/tiles/1.0.0/osm_EPSG900913/{z}/{x}/{y}.png?origin=nw"
+                },
+                osm : {
+                    title : "OSM",
+                    url : "http://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                },
+                orto : {
+                    title : "Fotokaart",
+                    url : "proxy.php?url=http://kaart.maakaart.ee/orto/{z}/{x}/{y}.jpeg",
+                    minZoom: 14
                 }
             },
             "activeBaseLayer" : "osm_et",

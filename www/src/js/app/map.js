@@ -3,8 +3,10 @@
 
 define([
     'jquery',
-    'ol'
-], function ($, ol) {
+    'ol',
+    'templator',
+    'text!tmpl/map/layerswitcher.html'
+], function ($, ol, Templator, tmpl_layerswitcher) {
     
     'use strict';
     
@@ -17,6 +19,7 @@ define([
         this._vectorLayers = new ol.layer.Group({
             layers: []
         });
+        this._el = null;
     }
     
     Map.prototype = {
@@ -28,6 +31,7 @@ define([
         init : function () {
             this.createBaseLayers(this._config.baseLayers);
             this.createMap();
+            this.createLayerSwitcher(this._config.baseLayers);
             if (this._config.mouseCoordinates) {
                 this.createMouseCoordinatesControl();
             }
@@ -48,6 +52,73 @@ define([
                     });
                 }
             }
+        },
+        
+        createLayerSwitcher : function (layers) {
+            var _this = this,
+                name,
+                blayers = [],
+                template = Templator.compile(tmpl_layerswitcher);
+            for (name in layers) {
+                if (layers.hasOwnProperty(name)) {
+                    blayers.push({
+                        name: name,
+                        title: layers[name].title,
+                        state: this.isVisible(layers[name]) ? '' : 'disabled'
+                    });
+                }
+            }
+            this._el = $(template({
+                layer_name : layers[this._config.activeBaseLayer].title,
+                layers : blayers
+            }));
+            $('#toolbar').append(this._el);
+            
+            this._el.on('click', 'a.blayer', function (e) {
+                e.preventDefault();
+                if (!$(this).closest('li').hasClass('disabled')) {
+                    _this.changeBaseLayer($(this).data('name'));
+                }
+            });
+            
+            this._map.getView().on('change:resolution', function (e) {
+                var zoom = e.target.getZoom(), name;
+                for (name in layers) {
+                    if (layers.hasOwnProperty(name)) {
+                        if (_this.isVisible(layers[name])) {
+                            _this._el.find('li a[data-name="' + name + '"]').closest('li').removeClass('disabled');
+                        } else {
+                            _this._el.find('li a[data-name="' + name + '"]').closest('li').addClass('disabled');
+                        }
+                    }
+                }
+            });
+            
+            // todo: move to separate module
+            this._el.on('click', 'a.osm-edit', function (e) {
+                e.preventDefault();
+                var url = 'http://openstreetmap.us/iD/release/#editor=id&background=custom:http://kaart.maakaart.ee/orto/{z}/{x}/{y}.jpeg&map=',
+                    center = _this.transform('point', _this._map.getView().getCenter(), 'EPSG:3857', 'EPSG:4326'),
+                    zoom = _this._map.getView().getZoom();
+                window.open(url + zoom + '/' + center[0] + '/' + center[1]);
+            });
+        },
+        
+        isVisible : function (layer) {
+            if (layer.minZoom && this._map.getView().getZoom() < layer.minZoom) {
+                return false;
+            }
+            if (layer.maxZoom && this._map.getView().getZoom() > layer.maxZoom) {
+                return false;
+            }
+            return true;
+        },
+        
+        changeBaseLayer : function (name) {
+            var layers = this._map.getLayers();
+            layers.removeAt(0);
+            layers.insertAt(0, this._baseLayers[name]);
+            this._el.find('.display-name').html(this._baseLayers[name].get('title'));
         },
         
         createMap : function () {
@@ -78,7 +149,7 @@ define([
                     return ol.coordinate.format(coord, '{y}, {x}', 5);
                 },
                 projection: 'EPSG:4326',
-                className: 'mouse-position small',
+                className: 'mouse-position small pull-left',
                 target: 'statusbar',
                 undefinedHTML: '&nbsp;'
             });

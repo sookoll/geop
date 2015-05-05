@@ -1,7 +1,9 @@
 <?php
 
 $tile_url = $_GET['url'];
-$ext = pathinfo($tile_url, PATHINFO_EXTENSION);
+if ($path = parse_url($tile_url, PHP_URL_PATH)) {
+   $ext = pathinfo($path, PATHINFO_EXTENSION);
+}
 
 header('Content-Type: image/'.$ext);
 header('Cache-Control: max-age=1000000, must-revalidate');

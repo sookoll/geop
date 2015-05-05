@@ -1,1 +1,13 @@
-<ul class="layer-switcher btn-group pull-right"></ul>
+<div class="btn-group pull-right layerswitcher">
+    <button type="button" class="btn btn-secondary btn-sm display-name">{{ layer_name }}</button>
+    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        {{#each layers}}
+            <li class="{{state}}"><a href="#" class="blayer" data-name="{{this.name}}">{{this.title}}</a></li>
+        {{/each}}
+        <li class="divider"></li>
+        <li><a href="#" class="osm-edit">Paranda kaarti...</a></li>
+    </ul>
+</div>
