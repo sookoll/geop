@@ -5,8 +5,9 @@ define([
     'jquery',
     'ol',
     'templator',
+    'app/service/featureinfo',
     'text!tmpl/map/layerswitcher.html'
-], function ($, ol, Templator, tmpl_layerswitcher) {
+], function ($, ol, Templator, FeatureInfo, tmpl_layerswitcher) {
     
     'use strict';
     
@@ -20,6 +21,7 @@ define([
             layers: []
         });
         this._el = null;
+        this._featureInfo = null;
     }
     
     Map.prototype = {
@@ -36,7 +38,7 @@ define([
                 this.createMouseCoordinatesControl();
             }
             if (this._config.featureInfo) {
-                this.createFeatureInfoControl();
+                this._featureInfo = new FeatureInfo(this);
             }
         },
         
@@ -133,7 +135,7 @@ define([
                     rotate : false,
                     zoom: false
                 }),
-                target : _this._config.el,
+                target : document.getElementById(_this._config.el),
                 view : new ol.View({
                     center : _this.transform('point', _this._config.center, 'EPSG:4326', 'EPSG:3857'),
                     zoom : _this._config.zoom,
@@ -154,65 +156,6 @@ define([
                 undefinedHTML: '&nbsp;'
             });
             this._map.addControl(control);
-        },
-        
-        createFeatureInfoControl : function () {
-            var _this = this,
-                highlightStyleCache = {},
-                highlight,
-                featureOverlay,
-                displayFeatureInfo;
-            
-            featureOverlay = new ol.FeatureOverlay({
-                map: _this._map,
-                style: function (feature, resolution) {
-                    var text = feature.get('name');
-                    if (!highlightStyleCache[text]) {
-                        highlightStyleCache[text] = [new ol.style.Style({
-                            text: new ol.style.Text({
-                                font: '12px Calibri,sans-serif',
-                                text: text,
-                                offsetY: -14,
-                                fill: new ol.style.Fill({
-                                    color: '#000'
-                                }),
-                                stroke: new ol.style.Stroke({
-                                    color: '#fff',
-                                    width: 3
-                                })
-                            })
-                        })];
-                    }
-                    return highlightStyleCache[text];
-                }
-            });
-
-            displayFeatureInfo = function (pixel) {
-                var feature = _this._map.forEachFeatureAtPixel(pixel, function (feature, layer) {
-                    return feature;
-                });
-                if (feature !== highlight) {
-                    if (highlight) {
-                        featureOverlay.removeFeature(highlight);
-                    }
-                    if (feature) {
-                        featureOverlay.addFeature(feature);
-                    }
-                    highlight = feature;
-                }
-            };
-
-            this._map.on('pointermove', function (evt) {
-                if (evt.dragging) {
-                    return;
-                }
-                var pixel = _this._map.getEventPixel(evt.originalEvent);
-                displayFeatureInfo(pixel);
-            });
-
-            this._map.on('click', function (evt) {
-                displayFeatureInfo(evt.pixel);
-            });
         },
         
         transform : function (method, geom, crs_from, crs_to) {

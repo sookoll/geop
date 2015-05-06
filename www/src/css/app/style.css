@@ -57,3 +57,35 @@ html, body, #map {
 #statusbar .mouse-position {
     color: #eee
 }
+
+
+path {
+  fill: none;
+}
+
+svg text {
+    cursor: pointer
+}
+
+.radial-menu-background {
+    stroke: black;
+    stroke-opacity: 0.5;
+}
+
+.radial-menu-item {
+    fill: white;
+    cursor: pointer;
+}
+
+.radial-menu-item:hover {
+    fill: #ececec;
+}
+
+.radial-menu-item:active {
+    fill: #ececec;
+}
+
+.radial-menu-item.disabled {
+    cursor: auto;
+    fill: rgba(255,255,255,.5);
+}
