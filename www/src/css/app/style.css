@@ -58,34 +58,14 @@ html, body, #map {
     color: #eee
 }
 
-
-path {
-  fill: none;
+.popover {
+    cursor: default
 }
-
-svg text {
-    cursor: pointer
+.popover-title, .popover-content .metadata {
+    white-space: nowrap;
+    min-width: 200px
 }
-
-.radial-menu-background {
-    stroke: black;
-    stroke-opacity: 0.5;
-}
-
-.radial-menu-item {
-    fill: white;
-    cursor: pointer;
-}
-
-.radial-menu-item:hover {
-    fill: #ececec;
-}
-
-.radial-menu-item:active {
-    fill: #ececec;
-}
-
-.radial-menu-item.disabled {
-    cursor: auto;
-    fill: rgba(255,255,255,.5);
+.popover-title a {
+    font-weight: bold;
+    color: inherit
 }

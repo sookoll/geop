@@ -6,7 +6,11 @@ define(function () {
     'use strict';
     
     return {
-        "gp_url" : "http://www.eoy.ee/vaatlused/rest",
+        "geocache" : {
+            "auth_url" : "http://geopeitus.ee",
+            "features_url" : "http://www.geopeitus.ee/index.php?p=301&status[]=1&format=2",
+            "cache_url" : "http://geopeitus.ee/aare/"
+        },
         "map" : {
             "el" : "map",
             "center" : [25.5, 58.5],

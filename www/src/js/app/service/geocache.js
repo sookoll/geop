@@ -4,93 +4,93 @@ define([
     'jquery',
     'ol',
     'templator',
-    'text!tmpl/service/geocache.html',
+    'text!tmpl/service/geocache/tool_loader.html',
+    'text!tmpl/service/geocache/featureinfo.html',
+    'text!tmpl/service/geocache/featureinfo_title.html',
     'jquery.bootstrap'
-], function ($, ol, Templator, tmpl_geocache) {
+], function ($, ol, Templator, tmpl_tool_loader, tmpl_featureinfo, tmpl_featureinfo_title) {
     
     'use strict';
     
-    function Geocache(mapmodule) {
+    function Geocache(config, mapmodule) {
+        this._name = 'geocache';
+        this._config = config;
         this._mapmodule = mapmodule;
         this._el = null;
         this._open = false;
         this._results = null;
         this._layer = null;
-        this._styles = [
-            new ol.style.Style({
-                text: new ol.style.Text({
-                    text: '\uf1b2',
-                    font: 'normal 12px FontAwesome',
-                    textBaseline: 'middle',
+        this._styleCache = {};
+        this._styleConfig = {
+            'base': {
+                text: '\uf041',
+                font: 'normal 16px FontAwesome',
+                textBaseline: 'middle',
+                fill: new ol.style.Fill({
+                    color: 'black'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#fff',
+                    width: 4
+                })
+            },
+            'text': {
+                'Tavaline aare': {
+                    'text': '\uf1b2',
+                    'class': 'fa fa-cube',
+                    'font': 'normal 12px FontAwesome'
+                },
+                'Multiaare': {
+                    'text': '\uf1b3',
+                    'class': 'fa fa-cubes',
+                    'font': 'normal 13px FontAwesome'
+                },
+                'Veebikaamera': {
+                    'text': '\uf030',
+                    'class': 'fa fa-camera',
+                    'font': 'normal 12px FontAwesome'
+                },
+                'Virtuaalne aare': {
+                    'text': '\uf1eb',
+                    'class': 'fa fa-wifi',
+                    'font': 'normal 12px FontAwesome'
+                },
+                'Sündmusaare': {
+                    'text': '\uf19c',
+                    'class': 'fa fa-university',
+                    'font': 'normal 12px FontAwesome'
+                },
+                'Asukohata (tagurpidi) aare': {
+                    'text': '\uf021',
+                    'class': 'fa fa-refresh',
+                    'font': 'normal 12px FontAwesome'
+                },
+                'Mõistatusaare': {
+                    'text': '\uf059',
+                    'class': 'fa fa-question-circle',
+                    'font': 'normal 12px FontAwesome'
+                }
+            },
+            'color': {// leidmata - 0, leitud - 1, minu - 2
+                '0': {
                     fill: new ol.style.Fill({
                         color: 'black'
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: '#fff',
-                        width: 4
                     })
-                })
-            }),
-            new ol.style.Style({
-                text: new ol.style.Text({
-                    text: '\uf1b2',
-                    font: 'normal 12px FontAwesome',
-                    textBaseline: 'middle',
+                },
+                '1': {
                     fill: new ol.style.Fill({
                         color: '#4c9900'
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: '#fff',
-                        width: 4
                     })
-                })
-            }),
-            new ol.style.Style({
-                text: new ol.style.Text({
-                    text: '\uf005',
-                    font: 'normal 13px FontAwesome',
-                    textBaseline: 'middle',
+                },
+                '2': {
                     fill: new ol.style.Fill({
                         color: 'red'
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: '#fff',
-                        width: 3
                     })
-                })
-            }),
-            new ol.style.Style({
-                text: new ol.style.Text({
-                    text: '*',
-                    offsetY: 0,
-                    offsetX: 10,
-                    font: 'normal 13px FontAwesome',
-                    textBaseline: 'middle',
-                    fill: new ol.style.Fill({
-                        color: 'red'
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: '#fff',
-                        width: 3
-                    })
-                })
-            }),
-            new ol.style.Style({
-                text: new ol.style.Text({
-                    text: '\uf1b3',
-                    font: 'normal 14px FontAwesome',
-                    textBaseline: 'middle',
-                    fill: new ol.style.Fill({
-                        color: '#000'
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: '#fff',
-                        width: 4
-                    })
-                })
-            })
-        ];
-        
+                }
+            }
+        };
+        this._tmpl_featureinfo = Templator.compile(tmpl_featureinfo);
+        this._tmpl_featureinfo_title = Templator.compile(tmpl_featureinfo_title);
     }
     
     Geocache.prototype = {
@@ -100,18 +100,29 @@ define([
         },
         
         init : function () {
+            var _this = this,
+                handlers;
             this.createUi();
+            // todo: comment in
             this.createLayer();
+            
+            // register featureinfo for this layer
+            handlers = this._mapmodule.get('featureInfo').get('infoHandlers');
+            if (handlers) {
+                handlers[this._name] = function (feature) {
+                    return _this.getContent(feature);
+                };
+            }
         },
         
         createUi : function () {
             var _this = this,
-                template = Templator.compile(tmpl_geocache);
+                template = Templator.compile(tmpl_tool_loader);
             
-            this._el = $(template({
+            this._el = $(template($.extend(this._config, {
                 load_geocaches: 'Lae aarded',
                 confirm_geocaches: 'Lisa aarded kaardile'
-            }));
+            })));
             
             $('#toolbar').append(this._el);
             
@@ -142,21 +153,44 @@ define([
         },
         
         createLayer : function (json) {
-            var _this = this;
-            this._layer = new ol.layer.Vector({
-                source: new ol.source.GeoJSON({
+            var _this = this, source;
+            // if json, else add from file for testing
+            if (json) {
+                source = {
                     projection: 'EPSG:3857',
                     object: json
-                }),
+                };
+            } else {
+                source = {
+                    projection: 'EPSG:3857',
+                    url: 'data/gp.geojson',
+                    format: new ol.format.GeoJSON()
+                };
+            }
+            this._layer = new ol.layer.Vector({
+                name: 'geocache',
+                source: new ol.source.Vector(source),
                 style: function (feature, resolution) {
-                    var s = [_this._styles[(parseInt(feature.get('fstatus'), 10))]];
-                    if (feature.get('type') === 'Multiaare') {
-                        s = [_this._styles[4]];
+                    var type = feature.get('type'),
+                        fstatus = feature.get('fstatus'),
+                        definition;
+                    if (!_this._styleCache[type]) {
+                        _this._styleCache[type] = {};
                     }
-                    return s;
+                    if (!_this._styleCache[type][fstatus]) {
+                        definition = $.extend(
+                            {},
+                            _this._styleConfig.base,
+                            _this._styleConfig.text[type],
+                            _this._styleConfig.color[fstatus]
+                        );
+                        _this._styleCache[type][fstatus] = [new ol.style.Style({
+                            text: new ol.style.Text(definition)
+                        })];
+                    }
+                    return _this._styleCache[type][fstatus];
                 }
             });
-            
             this._mapmodule.get('vectorLayers').getLayers().push(this._layer);
         },
         
@@ -164,6 +198,29 @@ define([
             this._layer.getSource().clear();
             this._mapmodule.get('vectorLayers').getLayers().remove(this._layer);
             this._layer = null;
+        },
+        
+        getContent : function (feature) {
+            var stat = {
+                '0': '<i class="fa fa-square-o"></i> Leidmata',
+                '1': '<i class="fa fa-check-square-o"></i> Leitud',
+                '2': '<i class="fa fa-user"></i> Minu aare'
+            },
+                prop = feature.getProperties();
+            prop.fstatus = stat[prop.fstatus];
+            prop.type_text = '<i class="' + this._styleConfig.text[prop.type]['class'] + '"></i> ' + prop.type;
+            return {
+                'placement': 'top',
+                'animation': false,
+                'html': true,
+                'title': this._tmpl_featureinfo_title({
+                    'type_class': this._styleConfig.text[prop.type]['class'],
+                    'cache_url': this._config.cache_url,
+                    'id': prop.id,
+                    'name': prop.name
+                }),
+                'content': this._tmpl_featureinfo(prop)
+            };
         }
     };
     

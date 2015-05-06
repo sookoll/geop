@@ -4,24 +4,25 @@
 define([
     'jquery',
     'ol'
-], function ($, ol) {
+], function ($, ol, Templator, tmpl_info) {
     
     'use strict';
     
     function FeatureInfo(mapmodule) {
-        
-        this._mapmodule = mapmodule;
         this._map = mapmodule.get('map');
         this._tooltip = null;
         this._styleCache = {};
         this._highlight = null;
-        
         this._popup = null;
-        
+        this._infoHandlers = {};
         this.init();
     }
     
     FeatureInfo.prototype = {
+        
+        get : function (key) {
+            return this['_' + key];
+        },
         
         init : function () {
             this.createFeatureTooltip();
@@ -91,35 +92,33 @@ define([
             overlay = new ol.Overlay({
                 element: this._popup[0],
                 autoPan: true,
+                autoPanMargin: 50,
                 positioning: 'center-center',
                 offset: [0, -10]
             });
             _this._map.addOverlay(overlay);
 
             // display popup on click
-            _this._map.on('click', function (e) {
-                var geometry, coord,
+            _this._map.on('singleclick', function (e) {
+                var geometry, coord, pop_content,
                     feature = _this._map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
-                        return feature;
+                        return [layer, feature];
                     });
                 _this._popup.popover('destroy');
                 
-                if (feature && feature.get('name')) {
+                if (feature) {
                     // remove tooltip
                     _this._tooltip.removeFeature(_this._highlight);
-                    
-                    geometry = feature.getGeometry();
-                    coord = geometry.getCoordinates();
+                    coord = feature[1].getGeometry().getCoordinates();
                     overlay.setPosition(coord);
-                    _this._popup.popover({
-                        'placement': 'top',
-                        'animation': false,
-                        'html': true,
-                        'title': '<i class="fa fa-cube"></i> ' + feature.get('name'),
-                        'content': function () {
-                            return _this.getContent(feature);
-                        }
-                    }).popover('show');
+                    
+                    if (feature[0] && _this._infoHandlers[feature[0].get('name')]) {
+                        pop_content = _this._infoHandlers[feature[0].get('name')](feature[1]);
+                    } else {
+                        pop_content = _this.getContent(feature[1]);
+                    }
+                    
+                    _this._popup.popover(pop_content).popover('show');
                     
                     
                 } else {
@@ -130,7 +129,19 @@ define([
         },
         
         getContent : function (feature) {
-            
+            var prop = feature.getProperties(), key, content = [];
+            for (key in prop) {
+                if (prop.hasOwnProperty(key) && (typeof prop[key] === 'string' || typeof prop[key] === 'number')) {
+                    content.push(key + ': ' + prop[key]);
+                }
+            }
+            return {
+                'placement': 'top',
+                'animation': false,
+                'html': true,
+                'title': '<i class="fa fa-map-marker"></i> Kaardiobjekt',
+                'content': '<div class="small">' + content.join('<br>') + '</div>'
+            };
         }
         
     };

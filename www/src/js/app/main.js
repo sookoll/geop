@@ -46,7 +46,7 @@ define([
         }
         
         // geocaches
-        app.geocache = new Geocache(app.mapmodule);
+        app.geocache = new Geocache(app.get('settings').geocache, app.mapmodule);
         app.geocache.init();
 
     });
