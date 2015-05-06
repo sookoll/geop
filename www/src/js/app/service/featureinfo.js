@@ -99,7 +99,7 @@ define([
             _this._map.addOverlay(overlay);
 
             // display popup on click
-            _this._map.on('singleclick', function (e) {
+            _this._map.on('click', function (e) {
                 var geometry, coord, pop_content,
                     feature = _this._map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
                         return [layer, feature];
@@ -118,8 +118,14 @@ define([
                         pop_content = _this.getContent(feature[1]);
                     }
                     
-                    _this._popup.popover(pop_content).popover('show');
-                    
+                    _this._popup.popover(pop_content.definition).popover('show');
+                    // when popover's content is shown
+                    _this._popup.on('shown.bs.popover', function () {
+                        pop_content.onShow(feature[1]);
+                    });
+                    // when popover's content is hidden
+                    _this._popup.on('hidden.bs.popover', pop_content.onHide);
+                    _this._popup.popover('show');
                     
                 } else {
                     _this._popup.popover('hide');
@@ -136,11 +142,15 @@ define([
                 }
             }
             return {
-                'placement': 'top',
-                'animation': false,
-                'html': true,
-                'title': '<i class="fa fa-map-marker"></i> Kaardiobjekt',
-                'content': '<div class="small">' + content.join('<br>') + '</div>'
+                'definition' : {
+                    'placement': 'top',
+                    'animation': false,
+                    'html': true,
+                    'title': '<i class="fa fa-map-marker"></i> Kaardiobjekt',
+                    'content': '<div class="small">' + content.join('<br>') + '</div>'
+                },
+                'onShow' : function () {},
+                'onHide' : function () {}
             };
         }
         

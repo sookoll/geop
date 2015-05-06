@@ -17,14 +17,7 @@ html, body, #map {
     color: #ffffff;
     background-color: #000;
 }
-.dropdown-header {
-    font-weight: bold;
-    color: #333;
-    background: #ddd
-}
-.dropdown-header i {
-    margin-left: -15px
-}
+
 .scrollable-menu {
     height: auto;
     max-height: 400px;
@@ -51,6 +44,14 @@ html, body, #map {
 #toolbar .search {
     width: 200px
 }
+#toolbar .search .dropdown-header {
+    font-weight: bold;
+    color: #333;
+    background: #ddd
+}
+#toolbar .search .dropdown-header i {
+    margin-left: -15px
+}
 #toolbar > .pull-right {
     margin-left: 8px
 }
@@ -59,7 +60,8 @@ html, body, #map {
 }
 
 .popover {
-    cursor: default
+    cursor: default;
+    z-index: 999
 }
 .popover-title, .popover-content .metadata {
     white-space: nowrap;
@@ -68,4 +70,16 @@ html, body, #map {
 .popover-title a {
     font-weight: bold;
     color: inherit
+}
+
+.layerswitcher li {
+    position: relative
+}
+
+/* OSMEdit */
+a#osm-edit {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 3px 6px
 }

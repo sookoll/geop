@@ -5,9 +5,11 @@
     </button>
     <ul class="dropdown-menu" role="menu">
         {{#each layers}}
-            <li class="{{state}}"><a href="#" class="blayer" data-name="{{this.name}}">{{this.title}}</a></li>
+            <li class="{{state}}">
+                <a href="#" class="blayer" data-name="{{this.name}}">{{this.title}}</a>
+            </li>
         {{/each}}
         <li class="divider"></li>
-        <li><a href="#" class="osm-edit">Paranda kaarti...</a></li>
+        <li><a href="#" class="">...</a></li>
     </ul>
 </div>

@@ -96,14 +96,6 @@ define([
                 }
             });
             
-            // todo: move to separate module
-            this._el.on('click', 'a.osm-edit', function (e) {
-                e.preventDefault();
-                var url = 'http://openstreetmap.us/iD/release/#editor=id&background=custom:http://kaart.maakaart.ee/orto/{z}/{x}/{y}.jpeg&map=',
-                    center = _this.transform('point', _this._map.getView().getCenter(), 'EPSG:3857', 'EPSG:4326'),
-                    zoom = _this._map.getView().getZoom();
-                window.open(url + zoom + '/' + center[0] + '/' + center[1]);
-            });
         },
         
         isVisible : function (layer) {

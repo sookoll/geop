@@ -91,6 +91,10 @@ define([
         };
         this._tmpl_featureinfo = Templator.compile(tmpl_featureinfo);
         this._tmpl_featureinfo_title = Templator.compile(tmpl_featureinfo_title);
+        this._geotrip = new ol.Collection();
+        this._geotrip.on('add', function (e) {
+            console.log(e);
+        });
     }
     
     Geocache.prototype = {
@@ -138,17 +142,19 @@ define([
                         json = $.parseJSON(content);
                     } catch (err) {}
                 }
-                
                 if (json) {
                     if (_this._layer) {
                         _this.removeLayer();
                     }
                     _this.createLayer(json);
                 }
-                
                 $(this).closest('.modal-content').find('textarea').val('');
                 $(this).closest('.modal').modal('hide');
                 
+            });
+            
+            this._el.find('.geotrip').on('hide.bs.dropdown', function () {
+                return false;
             });
         },
         
@@ -201,26 +207,44 @@ define([
         },
         
         getContent : function (feature) {
-            var stat = {
-                '0': '<i class="fa fa-square-o"></i> Leidmata',
-                '1': '<i class="fa fa-check-square-o"></i> Leitud',
-                '2': '<i class="fa fa-user"></i> Minu aare'
-            },
+            var _this = this,
+                stat = {
+                    '0': '<i class="fa fa-square-o"></i> Leidmata',
+                    '1': '<i class="fa fa-check-square-o"></i> Leitud',
+                    '2': '<i class="fa fa-user"></i> Minu aare'
+                },
                 prop = feature.getProperties();
             prop.fstatus = stat[prop.fstatus];
             prop.type_text = '<i class="' + this._styleConfig.text[prop.type]['class'] + '"></i> ' + prop.type;
+            
             return {
-                'placement': 'top',
-                'animation': false,
-                'html': true,
-                'title': this._tmpl_featureinfo_title({
-                    'type_class': this._styleConfig.text[prop.type]['class'],
-                    'cache_url': this._config.cache_url,
-                    'id': prop.id,
-                    'name': prop.name
-                }),
-                'content': this._tmpl_featureinfo(prop)
+                'definition' : {
+                    'placement': 'top',
+                    'animation': false,
+                    'html': true,
+                    'title': this._tmpl_featureinfo_title({
+                        'type_class': this._styleConfig.text[prop.type]['class'],
+                        'cache_url': this._config.cache_url,
+                        'id': prop.id,
+                        'name': prop.name
+                    }),
+                    'content': this._tmpl_featureinfo(prop)
+                },
+                'onShow' : function (feature) {
+                    $('a.cache-insert').on('click', function (e) {
+                        e.preventDefault();
+                        var id = $(this).data('id');
+                        _this.addCacheToTrip(feature);
+                    });
+                },
+                'onHide' : function () {
+                    $('a.cache-insert').off();
+                }
             };
+        },
+        
+        addCacheToTrip : function (feature) {
+            this._geotrip.push(feature);
         }
     };
     

@@ -6,8 +6,9 @@ define([
     'config/settings',
     'app/map',
     'app/service/search/search',
-    'app/service/geocache'
-], function ($, Settings, Map, Search, Geocache) {
+    'app/service/geocache',
+    'app/service/osm-edit'
+], function ($, Settings, Map, Search, Geocache, OSMEdit) {
     
     'use strict';
     
@@ -38,6 +39,9 @@ define([
         
         app.mapmodule = new Map(app.get('settings').map);
         app.mapmodule.init();
+        
+        // edit osm in id
+        var idLink = new OSMEdit($('.layerswitcher a[data-name="osm"]').closest('li'), app.mapmodule);
         
         // search
         if (app.get('settings').map.geocodingEnabled) {

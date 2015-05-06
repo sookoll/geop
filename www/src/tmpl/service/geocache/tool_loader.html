@@ -2,6 +2,23 @@
     <button class="btn btn-secondary btn-sm" type="button" data-toggle="modal" data-target="#modal_geocache">
         <i class="fa fa-cube"></i> {{load_geocaches}}
     </button>
+    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle geotrip" data-toggle="dropdown" aria-expanded="false" disabled>
+        <i class="fa fa-thumb-tack"></i> <b></b>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li>
+            <a href="#">
+                <i class="fa fa-thumb-tack"></i> Geotuur
+            </a>
+        </li>
+        <li class="divider"></li>
+        <li class="footer">
+            <a href="#">
+                <i class="fa fa-plus"></i> Lisa aardeid geotuurile kaardilt
+            </a>
+        </li>
+    </ul>
+    
     <!-- Modal -->
     <div class="modal fade" id="modal_geocache" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
