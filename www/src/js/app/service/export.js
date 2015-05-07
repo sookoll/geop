@@ -4,9 +4,7 @@
 define([
     'jquery',
     'ol',
-    'app/util',
-    'text!tmpl/service/export.html'
-], function ($, ol, Util, tmpl) {
+], function ($, ol) {
     
     'use strict';
     

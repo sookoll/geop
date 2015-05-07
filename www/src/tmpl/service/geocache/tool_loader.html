@@ -2,17 +2,10 @@
     <button class="btn btn-secondary btn-sm" type="button" data-toggle="modal" data-target="#modal_geocache">
         <i class="fa fa-cube"></i> {{load_geocaches}}
     </button>
-    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle btn-geotrip" data-toggle="dropdown" aria-expanded="false" disabled>
+    <button type="button" class="btn btn-secondary btn-sm btn-geotrip" disabled>
         <i class="fa fa-thumb-tack"></i> <b></b>
     </button>
     <ul class="dropdown-menu geotrip" role="menu">
-        <li class="dropdown-header">
-            <h5>Geotuur</h5>
-        </li>
-        <li class="divider"></li>
-        <li class="dropdown-header footer">
-            <i class="fa fa-thumb-tack"></i> Lisa aardeid kaardilt
-        </li>
     </ul>
     
     <!-- Modal -->
@@ -20,8 +13,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">{{load_geocaches}}</h4>
                 </div>
                 <div class="modal-body">

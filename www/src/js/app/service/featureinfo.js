@@ -100,7 +100,8 @@ define([
 
             // display popup on click
             _this._map.on('click', function (e) {
-                var geometry, coord, pop_content,
+                var geometry, pop_content,
+                    coord = e.coordinate,
                     feature = _this._map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
                         return [layer, feature];
                     });
@@ -109,7 +110,11 @@ define([
                 if (feature) {
                     // remove tooltip
                     _this._tooltip.removeFeature(_this._highlight);
-                    coord = feature[1].getGeometry().getCoordinates();
+                    // if point, then geometry coords
+                    if (feature[1].getGeometry().getType() === 'Point') {
+                        coord = feature[1].getGeometry().getCoordinates();
+                    }
+                    
                     overlay.setPosition(coord);
                     
                     if (feature[0] && _this._infoHandlers[feature[0].get('name')]) {

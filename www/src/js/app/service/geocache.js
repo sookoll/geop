@@ -5,11 +5,11 @@ define([
     'ol',
     'templator',
     'text!tmpl/service/geocache/tool_loader.html',
-    'text!tmpl/service/geocache/geotrip-item.html',
+    'text!tmpl/service/geocache/geotrip.html',
     'text!tmpl/service/geocache/featureinfo.html',
     'text!tmpl/service/geocache/featureinfo_title.html',
     'jquery.bootstrap'
-], function ($, ol, Templator, tmpl_tool_loader, tmpl_geotrip_item,  tmpl_featureinfo, tmpl_featureinfo_title) {
+], function ($, ol, Templator, tmpl_tool_loader, tmpl_geotrip,  tmpl_featureinfo, tmpl_featureinfo_title) {
     
     'use strict';
     
@@ -21,6 +21,7 @@ define([
         this._open = false;
         this._results = null;
         this._layer = null;
+        this._route = null;
         this._styleCache = {};
         this._styleConfig = {
             'base': {
@@ -90,11 +91,12 @@ define([
                 }
             }
         };
-        this._tmpl_geotrip_item = Templator.compile(tmpl_geotrip_item);
+        this._tmpl_geotrip = Templator.compile(tmpl_geotrip);
         this._tmpl_featureinfo = Templator.compile(tmpl_featureinfo);
         this._tmpl_featureinfo_title = Templator.compile(tmpl_featureinfo_title);
         this._geotrip = new ol.Collection();
-        this._geotrip.on('add', this.featureAddedToTrip, this);
+        this._geotrip.on('add', this.renderTrip, this);
+        this._geotrip.on('remove', this.renderTrip, this);
     }
     
     Geocache.prototype = {
@@ -150,11 +152,34 @@ define([
                 }
                 $(this).closest('.modal-content').find('textarea').val('');
                 $(this).closest('.modal').modal('hide');
-                
             });
             
-            this._el.find('.btn-geotrip').on('hide.bs.dropdown', function () {
-                return false;
+            this._el.find('button.btn-geotrip').on('click', function (e) {
+                e.stopPropagation();
+                $(this).toggleClass('active');
+                $(this).closest('.geocache').toggleClass('open');
+            });
+            this._el.on('click', 'button.close', function (e) {
+                e.stopPropagation();
+                _this._el.find('button.btn-geotrip').toggleClass('active');
+                $(this).closest('.geocache').toggleClass('open');
+            });
+            this._el.on('click', 'ul.geotrip li a', function (e) {
+                e.preventDefault();
+                var id = $(this).data('id'),
+                    feature = null;
+                _this._geotrip.forEach(function (item, i) {
+                    if (Number(item.get('id')) === id) {
+                        _this._mapmodule.setView('center', [item.getGeometry().getCoordinates(), 16]);
+                        return;
+                    }
+                });
+            });
+            this._el.on('click', 'ul.geotrip li button.clear', function (e) {
+                _this.clearTrip();
+            });
+            this._el.on('click', 'ul.geotrip li button.export-gpx', function (e) {
+                new GPXExport();
             });
         },
         
@@ -173,6 +198,19 @@ define([
                     format: new ol.format.GeoJSON()
                 };
             }
+            
+            this._route = new ol.layer.Vector({
+                name: 'route',
+                source: new ol.source.Vector(),
+                style: new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(255, 0, 0, 0.6)',
+                        width: 3
+                    })
+                })
+            });
+            this._mapmodule.get('vectorLayers').getLayers().push(this._route);
+            
             this._layer = new ol.layer.Vector({
                 name: 'geocache',
                 source: new ol.source.Vector(source),
@@ -213,7 +251,8 @@ define([
                     '1': '<i class="fa fa-check-square-o"></i> Leitud',
                     '2': '<i class="fa fa-user"></i> Minu aare'
                 },
-                prop = feature.getProperties();
+                prop = feature.getProperties(),
+                in_collection = $.inArray(feature, this._geotrip.getArray());
             prop.fstatus = stat[prop.fstatus];
             prop.type_text = '<i class="' + this._styleConfig.text[prop.type]['class'] + '"></i> ' + prop.type;
             
@@ -226,42 +265,72 @@ define([
                         'type_class': this._styleConfig.text[prop.type]['class'],
                         'cache_url': this._config.cache_url,
                         'id': prop.id,
-                        'name': prop.name
+                        'name': prop.name,
+                        'icon': (in_collection > -1) ? 'fa-minus-square' : 'fa-thumb-tack'
                     }),
                     'content': this._tmpl_featureinfo(prop)
                 },
                 'onShow' : function (feature) {
-                    $('a.cache-insert').on('click', function (e) {
+                    $('a.cache-toggle').on('click', function (e) {
                         e.preventDefault();
-                        var id = $(this).data('id');
-                        _this.addCacheToTrip(feature);
+                        $(this).find('i').toggleClass('fa-thumb-tack fa-minus-square');
+                        if ($.inArray(feature, _this._geotrip.getArray()) > -1) {
+                            _this._geotrip.remove(feature);
+                        } else {
+                            _this._geotrip.push(feature);
+                        }
                     });
                 },
                 'onHide' : function () {
-                    $('a.cache-insert').off();
+                    $('a.cache-toggle').off();
                 }
             };
         },
         
-        addCacheToTrip : function (feature) {
-            this._geotrip.push(feature);
-        },
-        
-        featureAddedToTrip : function (e) {
-            if (this._el.find('button.btn-geotrip').is(':disabled')) {
+        renderTrip : function (e) {
+            var collection = [''],// empty element for 1 based numbering
+                len = this._geotrip.getLength(),
+                line = [];
+            
+            this._geotrip.forEach(function (item, i) {
+                collection.push(item.getProperties());
+                line.push(item.getGeometry().getCoordinates());
+            });
+            if (len === 0) {
+                this._el.find('button.btn-geotrip')
+                    .removeClass('active')
+                    .prop('disabled', true)
+                    .find('b').text('');
+                this._el.removeClass('open');
+            } else if (this._el.find('button.btn-geotrip').is(':disabled')) {
                 this._el.find('button.btn-geotrip')
                     .prop('disabled', false);
             }
-            var len = this._geotrip.getLength(),
-                prop = e.element.getProperties(),
-                pos = len + 1;
-            prop.order = len;
-            this._el.find('button.btn-geotrip b')
-                .text(len);
-            if (len === 1) {
-                this._el.find('ul.geotrip li.footer').before(this._el.find('ul.geotrip li.divider').clone());
+            if (len > 0) {
+                this._el.find('button.btn-geotrip b')
+                    .text(len);
             }
-            this._el.find('ul.geotrip li:eq(' + len + ')').after(this._tmpl_geotrip_item(prop));
+            this._el.find('ul.geotrip').html(this._tmpl_geotrip({
+                collection: collection
+            }));
+            
+            this._route.getSource().clear();
+            if (len > 1) {
+                this._route.getSource().addFeature(new ol.Feature({
+                    geometry: new ol.geom.LineString(line)
+                }));
+                
+                
+            }
+        },
+        
+        clearTrip : function () {
+            this._route.getSource().clear();
+            this._geotrip.clear();
+            var pop = this._mapmodule.get('featureInfo').get('popup');
+            if (pop) {
+                pop.popover('destroy');
+            }
         }
     };
     
