@@ -55,6 +55,9 @@ html, body, #map {
 #toolbar > .pull-right {
     margin-left: 8px
 }
+#toolbar .geocache .dropdown-header h5 {
+    margin: 0;
+}
 #statusbar .mouse-position {
     color: #eee
 }

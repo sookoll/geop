@@ -5,10 +5,11 @@ define([
     'ol',
     'templator',
     'text!tmpl/service/geocache/tool_loader.html',
+    'text!tmpl/service/geocache/geotrip-item.html',
     'text!tmpl/service/geocache/featureinfo.html',
     'text!tmpl/service/geocache/featureinfo_title.html',
     'jquery.bootstrap'
-], function ($, ol, Templator, tmpl_tool_loader, tmpl_featureinfo, tmpl_featureinfo_title) {
+], function ($, ol, Templator, tmpl_tool_loader, tmpl_geotrip_item,  tmpl_featureinfo, tmpl_featureinfo_title) {
     
     'use strict';
     
@@ -89,12 +90,11 @@ define([
                 }
             }
         };
+        this._tmpl_geotrip_item = Templator.compile(tmpl_geotrip_item);
         this._tmpl_featureinfo = Templator.compile(tmpl_featureinfo);
         this._tmpl_featureinfo_title = Templator.compile(tmpl_featureinfo_title);
         this._geotrip = new ol.Collection();
-        this._geotrip.on('add', function (e) {
-            console.log(e);
-        });
+        this._geotrip.on('add', this.featureAddedToTrip, this);
     }
     
     Geocache.prototype = {
@@ -153,7 +153,7 @@ define([
                 
             });
             
-            this._el.find('.geotrip').on('hide.bs.dropdown', function () {
+            this._el.find('.btn-geotrip').on('hide.bs.dropdown', function () {
                 return false;
             });
         },
@@ -245,6 +245,23 @@ define([
         
         addCacheToTrip : function (feature) {
             this._geotrip.push(feature);
+        },
+        
+        featureAddedToTrip : function (e) {
+            if (this._el.find('button.btn-geotrip').is(':disabled')) {
+                this._el.find('button.btn-geotrip')
+                    .prop('disabled', false);
+            }
+            var len = this._geotrip.getLength(),
+                prop = e.element.getProperties(),
+                pos = len + 1;
+            prop.order = len;
+            this._el.find('button.btn-geotrip b')
+                .text(len);
+            if (len === 1) {
+                this._el.find('ul.geotrip li.footer').before(this._el.find('ul.geotrip li.divider').clone());
+            }
+            this._el.find('ul.geotrip li:eq(' + len + ')').after(this._tmpl_geotrip_item(prop));
         }
     };
     

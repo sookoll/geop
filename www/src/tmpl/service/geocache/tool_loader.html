@@ -2,20 +2,16 @@
     <button class="btn btn-secondary btn-sm" type="button" data-toggle="modal" data-target="#modal_geocache">
         <i class="fa fa-cube"></i> {{load_geocaches}}
     </button>
-    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle geotrip" data-toggle="dropdown" aria-expanded="false" disabled>
+    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle btn-geotrip" data-toggle="dropdown" aria-expanded="false" disabled>
         <i class="fa fa-thumb-tack"></i> <b></b>
     </button>
-    <ul class="dropdown-menu" role="menu">
-        <li>
-            <a href="#">
-                <i class="fa fa-thumb-tack"></i> Geotuur
-            </a>
+    <ul class="dropdown-menu geotrip" role="menu">
+        <li class="dropdown-header">
+            <h5>Geotuur</h5>
         </li>
         <li class="divider"></li>
-        <li class="footer">
-            <a href="#">
-                <i class="fa fa-plus"></i> Lisa aardeid geotuurile kaardilt
-            </a>
+        <li class="dropdown-header footer">
+            <i class="fa fa-thumb-tack"></i> Lisa aardeid kaardilt
         </li>
     </ul>
     
