@@ -132,7 +132,8 @@ define([
                     center : _this.transform('point', _this._config.center, 'EPSG:4326', 'EPSG:3857'),
                     zoom : _this._config.zoom,
                     extent : _this.transform('extent', _this._config.extent, 'EPSG:4326', 'EPSG:3857'),
-                    minZoom : (_this._config.zoom - 1)
+                    minZoom : (_this._config.zoom - 1),
+                    maxZoom : 20
                 })
             });
         },

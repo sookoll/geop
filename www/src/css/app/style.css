@@ -55,6 +55,9 @@ html, body, #map {
 #toolbar > .pull-right {
     margin-left: 8px
 }
+#statusbar > .pull-left {
+    margin-right: 8px
+}
 #toolbar .geocache .dropdown-menu {
     min-width: 200px
 }
@@ -65,7 +68,13 @@ html, body, #map {
 #toolbar .geocache .footer {
     padding: 3px 10px
 }
+#statusbar .mouse-position, #statusbar .info-toggle {
+    color: #eee
+}
 #statusbar .mouse-position {
+    padding-top: 3px
+}
+#statusbar .info {
     color: #eee
 }
 

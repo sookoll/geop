@@ -58,6 +58,12 @@ define([
         // import
         app.dataimport = new DataImport(app.mapmodule);
         
+        // info
+        $('#statusbar a.info-toggle').on('click', function (e) {
+            e.preventDefault();
+            $('#statusbar .info').toggleClass('hidden');
+        });
+        
         function setMaxHeight() {
             var bh = $('body').height(),
                 hh = $('header').outerHeight(true),
