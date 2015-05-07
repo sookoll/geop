@@ -4,12 +4,13 @@ define([
     'jquery',
     'ol',
     'templator',
+    'app/service/export',
     'text!tmpl/service/geocache/tool_loader.html',
     'text!tmpl/service/geocache/geotrip.html',
     'text!tmpl/service/geocache/featureinfo.html',
     'text!tmpl/service/geocache/featureinfo_title.html',
     'jquery.bootstrap'
-], function ($, ol, Templator, tmpl_tool_loader, tmpl_geotrip,  tmpl_featureinfo, tmpl_featureinfo_title) {
+], function ($, ol, Templator, Export, tmpl_tool_loader, tmpl_geotrip,  tmpl_featureinfo, tmpl_featureinfo_title) {
     
     'use strict';
     
@@ -110,7 +111,7 @@ define([
                 handlers;
             this.createUi();
             // todo: comment in
-            this.createLayer();
+            //this.createLayer();
             
             // register featureinfo for this layer
             handlers = this._mapmodule.get('featureInfo').get('infoHandlers');
@@ -178,36 +179,63 @@ define([
             this._el.on('click', 'ul.geotrip li button.clear', function (e) {
                 _this.clearTrip();
             });
-            this._el.on('click', 'ul.geotrip li button.export-gpx', function (e) {
-                new GPXExport();
+            this._el.on('click', 'ul.geotrip li a.export-gpx', function (e) {
+                e.preventDefault();
+                var features = [],
+                    clone = null,
+                    route = null,
+                    ex;
+                _this._geotrip.forEach(function (feature) {
+                    clone = feature.clone();
+                    clone.getGeometry().transform('EPSG:3857', 'EPSG:4326');
+                    features.push(clone);
+                });
+                route = _this._route.getSource().getFeatures()[0];
+                if (route) {
+                    clone = route.clone();
+                    clone.getGeometry().transform('EPSG:3857', 'EPSG:4326');
+                    features.push(clone);
+                }
+                ex = new Export('GPX', 'geotuur.gpx', features);
             });
         },
         
         createLayer : function (json) {
-            var _this = this, source;
+            var _this = this, source, format;
             // if json, else add from file for testing
             if (json) {
+                format = new ol.format.GeoJSON();
                 source = {
-                    projection: 'EPSG:3857',
-                    object: json
+                    features: format.readFeatures(json, {
+                        dataProjection : 'EPSG:4326',
+                        featureProjection : 'EPSG:3857'
+                    })
                 };
             } else {
                 source = {
-                    projection: 'EPSG:3857',
-                    url: 'data/gp.geojson',
-                    format: new ol.format.GeoJSON()
+                    format: new ol.format.GeoJSON(),
+                    url: 'data/gp.geojson'
                 };
             }
             
             this._route = new ol.layer.Vector({
                 name: 'route',
                 source: new ol.source.Vector(),
-                style: new ol.style.Style({
-                    stroke: new ol.style.Stroke({
-                        color: 'rgba(255, 0, 0, 0.6)',
-                        width: 3
+                style: [
+                    new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: 'rgba(255, 255, 255, 0.4)',
+                            width: 7
+                        })
+                    }),
+                    new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: 'rgba(255, 0, 0, 0.7)',
+                            width: 3,
+                            lineDash: [15, 10]
+                        })
                     })
-                })
+                ]
             });
             this._mapmodule.get('vectorLayers').getLayers().push(this._route);
             
@@ -240,8 +268,11 @@ define([
         
         removeLayer : function () {
             this._layer.getSource().clear();
+            this._route.getSource().clear();
             this._mapmodule.get('vectorLayers').getLayers().remove(this._layer);
+            this._mapmodule.get('vectorLayers').getLayers().remove(this._route);
             this._layer = null;
+            this._route = null;
         },
         
         getContent : function (feature) {
@@ -315,12 +346,13 @@ define([
             }));
             
             this._route.getSource().clear();
+            this._el.find('ul.geotrip li a.export-gpx').removeAttr('href');
+            
             if (len > 1) {
                 this._route.getSource().addFeature(new ol.Feature({
+                    name: 'Geotuur',
                     geometry: new ol.geom.LineString(line)
                 }));
-                
-                
             }
         },
         

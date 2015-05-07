@@ -58,9 +58,6 @@ define([
             
             this._map.on('pointermove', function (e) {
                 if (e.dragging) {
-                    if (_this._popup) {
-                        _this._popup.popover('hide');
-                    }
                     return;
                 }
                 var pixel = _this._map.getEventPixel(e.originalEvent),
@@ -115,14 +112,12 @@ define([
                         coord = feature[1].getGeometry().getCoordinates();
                     }
                     
-                    overlay.setPosition(coord);
-                    
                     if (feature[0] && _this._infoHandlers[feature[0].get('name')]) {
                         pop_content = _this._infoHandlers[feature[0].get('name')](feature[1]);
                     } else {
                         pop_content = _this.getContent(feature[1]);
                     }
-                    
+                    overlay.setPosition(coord);
                     _this._popup.popover(pop_content.definition).popover('show');
                     // when popover's content is shown
                     _this._popup.on('shown.bs.popover', function () {
@@ -133,30 +128,49 @@ define([
                     _this._popup.popover('show');
                     
                 } else {
-                    _this._popup.popover('hide');
+                    
+                    /*overlay.setPosition(coord);
+                    pop_content = _this.getContent(null, coord);
+                    _this._popup.popover(pop_content.definition).popover('show');*/
                 }
             });
 
         },
         
-        getContent : function (feature) {
-            var prop = feature.getProperties(), key, content = [];
-            for (key in prop) {
-                if (prop.hasOwnProperty(key) && (typeof prop[key] === 'string' || typeof prop[key] === 'number')) {
-                    content.push(key + ': ' + prop[key]);
+        getContent : function (feature, coords) {
+            if (feature) {
+                var prop = feature.getProperties(), key, content = [];
+                for (key in prop) {
+                    if (prop.hasOwnProperty(key) && (typeof prop[key] === 'string' || typeof prop[key] === 'number')) {
+                        content.push(key + ': ' + prop[key]);
+                    }
                 }
+                return {
+                    'definition' : {
+                        'placement': 'top',
+                        'animation': false,
+                        'html': true,
+                        'title': '<i class="fa fa-map-marker"></i> Kaardiobjekt',
+                        'content': '<div class="small">' + content.join('<br>') + '</div>'
+                    },
+                    'onShow' : function () {},
+                    'onHide' : function () {}
+                };
+            } else {
+                // map click
+                return {
+                    'definition' : {
+                        'placement': 'top',
+                        'animation': false,
+                        'html': true,
+                        'title': '<i class="fa fa-map-marker"></i> Koordinaadid',
+                        'content': '<div class="small">' + coords.join(', ') + '</div>'
+                    },
+                    'onShow' : function () {},
+                    'onHide' : function () {}
+                };
             }
-            return {
-                'definition' : {
-                    'placement': 'top',
-                    'animation': false,
-                    'html': true,
-                    'title': '<i class="fa fa-map-marker"></i> Kaardiobjekt',
-                    'content': '<div class="small">' + content.join('<br>') + '</div>'
-                },
-                'onShow' : function () {},
-                'onHide' : function () {}
-            };
+                
         }
         
     };

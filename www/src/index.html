@@ -1,15 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Geopeitus</title>
+    <title>Geotuur</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="css/app.css">
 </head>
 <body>
     <div id="map"></div>
-    <header id="toolbar"></header>
-    <footer id="statusbar"></footer>
+    <header id="toolbar">
+        <span class="hidden">
+            <a id="download-link" download="filename">download</a>
+        </span>
+    </header>
+    <footer id="statusbar">
+        <span class="pull-right small">
+            <a href="http://maakaart.ee" class="text-muted">maakaart</a> |
+            <a href="http://maaamet.ee" class="text-muted">maa-amet</a> |
+            <a href="http://sookoll.ee" class="text-muted">oo</a>
+        </span>
+    </footer>
     <script data-main="js/app.js" src="js/lib/require.js"></script>
 </body>
 </html>

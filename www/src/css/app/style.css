@@ -32,7 +32,7 @@ html, body, #map {
     padding: 8px;
     min-height: 40px;
     background: rgba(0, 0, 0, 0.8);
-    box-shadow: 0 0 10px #333
+    box-shadow: 0 0 10px #333;
 }
 
 #statusbar {
@@ -55,6 +55,9 @@ html, body, #map {
 #toolbar > .pull-right {
     margin-left: 8px
 }
+#toolbar .geocache .dropdown-menu {
+    min-width: 200px
+}
 #toolbar .geocache .dropdown-header h5 {
     margin: 0;
     line-height: 21px
@@ -68,7 +71,7 @@ html, body, #map {
 
 .popover {
     cursor: default;
-    z-index: 999
+    z-index: 999;
 }
 .popover-title a.cache-toggle {
     position: absolute;
@@ -76,13 +79,17 @@ html, body, #map {
     padding-left:3px;
     background: #f7f7f7
 }
-.popover-title, .popover-content .metadata {
+.popover-title {
     white-space: nowrap;
-    min-width: 200px
+    min-width: 200px;
+    overflow: hidden
 }
 .popover-title a {
     font-weight: bold;
     color: inherit
+}
+.popover.content {
+    overflow: hidden
 }
 
 .layerswitcher li {
