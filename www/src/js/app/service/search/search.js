@@ -92,7 +92,7 @@ define([
                     type = $(this).attr('data-type'),
                     item = _this._providers[type].getResultItem(id);
                 if (item && item.bbox && item.bbox.length === 4) {
-                    if (item.bbox[0] === item.bbox[2] || item.bbox[1] === item.bbox[3]) {
+                    if (Math.abs(item.bbox[0] - item.bbox[2]) < 100 || Math.abs(item.bbox[1] - item.bbox[3]) < 100) {
                         _this._mapmodule.setView('center', [[item.bbox[0], item.bbox[1]], 18]);
                     } else {
                         _this._mapmodule.setView('bounds', item.bbox);
