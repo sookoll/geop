@@ -49,7 +49,8 @@ define([
                     this._baseLayers[name] = new ol.layer.Tile({
                         title: layers[name].title,
                         source: new ol.source.OSM({
-                            url: layers[name].url
+                            url: layers[name].url,
+                            crossOrigin: null
                         })
                     });
                 }
