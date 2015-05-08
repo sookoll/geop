@@ -3,6 +3,7 @@
 <head>
     <title>Geotuur</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="css/app.css">
 </head>
@@ -26,13 +27,24 @@
                 <li>Tegu on HTML-rakendusega, sinu arvutist välja andmeid ei liigu.</li>
             </ol>
         </div>
-        <a href="#" class="pull-left info-toggle">
+        <a href="#" class="pull-left btn-geolocation">
+            <i class="fa fa-location-arrow"></i>
+        </a>
+        <span class="mouse-position pull-left small">
+            <a href="#" class="lock pull-left"><i class="fa fa-unlock"></i></a>
+            
+        </span>
+        <span class="geolocation pull-left small hidden">
+            <a href="#" class="unlock pull-left"><i class="fa fa-lock"></i></a>
+            <div class="pull-left"></div>
+        </span>
+        <a href="#" class="pull-right info-toggle">
             <i class="fa fa-question-circle"></i>
         </a>
-        <span class="pull-right small">
-            <a href="http://maakaart.ee" class="text-muted">maakaart</a> |
-            <a href="http://www.maaamet.ee" class="text-muted">maa-amet</a> |
-            <a href="http://sookoll.ee" class="text-muted">oo</a>
+        <span class="attribution pull-right small hidden-xs">
+            <a href="http://maakaart.ee" >maakaart</a> |
+            <a href="http://www.maaamet.ee" >maa-amet</a> |
+            <a href="http://sookoll.ee" >oo</a>
         </span>
     </footer>
     <script data-main="js/app.js" src="js/lib/require.js"></script>

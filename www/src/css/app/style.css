@@ -52,10 +52,10 @@ html, body, #map {
 #toolbar .search .dropdown-header i {
     margin-left: -15px
 }
-#toolbar > .pull-right {
+#toolbar > .pull-right, #statusbar > .pull-right {
     margin-left: 8px
 }
-#statusbar > .pull-left {
+#toolbar > .pull-left, #statusbar > .pull-left {
     margin-right: 8px
 }
 #toolbar .geocache .dropdown-menu {
@@ -68,15 +68,27 @@ html, body, #map {
 #toolbar .geocache .footer {
     padding: 3px 10px
 }
-#statusbar .mouse-position, #statusbar .info-toggle {
+#statusbar, #statusbar a {
     color: #eee
 }
-#statusbar .mouse-position {
-    padding-top: 3px
+#statusbar > * {
+    line-height: 20px
 }
 #statusbar .info {
     color: #eee
 }
+#statusbar .attribution, #statusbar .attribution a {
+    color: #777;
+    text-decoration: none
+}
+#statusbar .attribution a:hover {
+    color: #aaa;
+}
+#statusbar .mouse-position a,
+#statusbar .geolocation a {
+    margin-right: 8px
+}
+
 
 .popover {
     cursor: default;

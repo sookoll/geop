@@ -9,6 +9,7 @@ define([
     'use strict';
     
     function FeatureInfo(mapmodule) {
+        this._mapmodule = mapmodule;
         this._map = mapmodule.get('map');
         this._tooltip = null;
         this._styleCache = {};
@@ -27,6 +28,18 @@ define([
         init : function () {
             this.createFeatureTooltip();
             this.createFeatureInfo();
+            
+            // listen lock events
+            $('#statusbar .geolocation a.unlock').on('click', function (e) {
+                e.preventDefault();
+                $('#statusbar .geolocation').addClass('hidden').find('div').empty();
+                $('#statusbar .mouse-position').removeClass('hidden');
+            });
+            $('#statusbar .mouse-position a.lock').on('click', function (e) {
+                e.preventDefault();
+                $('#statusbar .mouse-position').addClass('hidden');
+                $('#statusbar .geolocation').removeClass('hidden');
+            });
         },
         
         createFeatureTooltip : function () {
@@ -128,10 +141,13 @@ define([
                     _this._popup.popover('show');
                     
                 } else {
+                    // capture coordinates
+                    $('#statusbar .mouse-position').addClass('hidden');
+                    $('#statusbar .geolocation').removeClass('hidden').find('div').html(function () {
+                        var formatted = ol.coordinate.format(_this._mapmodule.transform('point', coord, 'EPSG:3857', 'EPSG:4326'), '{y}, {x}', 5);
+                        return ' ' + formatted;
+                    });
                     
-                    /*overlay.setPosition(coord);
-                    pop_content = _this.getContent(null, coord);
-                    _this._popup.popover(pop_content.definition).popover('show');*/
                 }
             });
 

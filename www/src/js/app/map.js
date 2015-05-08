@@ -15,13 +15,15 @@ define([
         
         this._config = config;
         this._map = null;
-        this._geocoding = null;
         this._baseLayers = {};
         this._vectorLayers = new ol.layer.Group({
             layers: []
         });
         this._el = null;
         this._featureInfo = null;
+        this._controls = {
+            mouseCoordinates : null
+        };
     }
     
     Map.prototype = {
@@ -145,9 +147,9 @@ define([
                     return ol.coordinate.format(coord, '{y}, {x}', 5);
                 },
                 projection: 'EPSG:4326',
-                className: 'mouse-position small pull-left',
-                target: 'statusbar',
-                undefinedHTML: '&nbsp;'
+                className: 'pull-left',
+                target: $('#statusbar .mouse-position')[0],
+                undefinedHTML: ''
             });
             this._map.addControl(control);
         },
