@@ -3,14 +3,16 @@
 
 define([
     'jquery',
-    'ol'
-], function ($, ol, Templator, tmpl_info) {
+    'ol',
+    'app/service/search/nominatim'
+], function ($, ol, Nominatim) {
     
     'use strict';
     
     function FeatureInfo(mapmodule) {
         this._mapmodule = mapmodule;
         this._map = mapmodule.get('map');
+        this._geocode = new Nominatim(mapmodule);
         this._tooltip = null;
         this._styleCache = {};
         this._highlight = null;
@@ -140,14 +142,9 @@ define([
                     _this._popup.on('hidden.bs.popover', pop_content.onHide);
                     _this._popup.popover('show');
                     
-                } else {
+                } else if ($('#statusbar .mouse-position').hasClass('hidden')) {
                     // capture coordinates
-                    $('#statusbar .mouse-position').addClass('hidden');
-                    $('#statusbar .geolocation').removeClass('hidden').find('div').html(function () {
-                        var formatted = ol.coordinate.format(_this._mapmodule.transform('point', coord, 'EPSG:3857', 'EPSG:4326'), '{y}, {x}', 5);
-                        return ' ' + formatted;
-                    });
-                    
+                    _this.setPositionInfo(coord);
                 }
             });
 
@@ -187,6 +184,25 @@ define([
                 };
             }
                 
+        },
+        
+        setPositionInfo : function (coord) {
+            var _this = this;
+            $('#statusbar .geolocation').find('div').html(function () {
+                var formatted = ol.coordinate.format(_this._mapmodule.transform('point', coord, 'EPSG:3857', 'EPSG:4326'), '{y}, {x}', 5);
+                return ' ' + formatted;
+            });
+            // reversed geocode
+            // zoom = this._mapmodule.get('map').getView().getZoom()
+            this._geocode.reverse(
+                this._mapmodule.transform('point', coord, 'EPSG:3857', 'EPSG:4326'),
+                this._mapmodule.get('map').getView().getZoom(),
+                function (result) {
+                    $('<i class="text-muted hidden-xs" style="display:none"> &mdash; ' + result.display_name + '</i>')
+                        .appendTo('#statusbar .geolocation div')
+                        .fadeIn();
+                }
+            );
         }
         
     };

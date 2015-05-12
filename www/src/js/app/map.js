@@ -6,8 +6,9 @@ define([
     'ol',
     'templator',
     'app/service/featureinfo',
+    'app/service/geolocation',
     'text!tmpl/map/layerswitcher.html'
-], function ($, ol, Templator, FeatureInfo, tmpl_layerswitcher) {
+], function ($, ol, Templator, FeatureInfo, GeoLocation, tmpl_layerswitcher) {
     
     'use strict';
     
@@ -21,6 +22,7 @@ define([
         });
         this._el = null;
         this._featureInfo = null;
+        this._geoLocation = null;
         this._controls = {
             mouseCoordinates : null
         };
@@ -41,6 +43,9 @@ define([
             }
             if (this._config.featureInfo) {
                 this._featureInfo = new FeatureInfo(this);
+            }
+            if (this._config.locateEnabled) {
+                this._geoLocation = new GeoLocation(this);
             }
         },
         

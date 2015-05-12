@@ -11,6 +11,7 @@ define([
         this._results = null;
         this._id = 'nominatim';
         this._title = '<i class="glyphicon glyphicon-map-marker"></i> Leitud aadressid';
+        this.xhr = null;
     }
     
     Nominatim.prototype = {
@@ -40,7 +41,10 @@ define([
         },
         
         geocode : function (q, cb) {
-            $.ajax({
+            if (this.xhr && typeof this.xhr.abort === 'function') {
+                this.xhr.abort();
+            }
+            this.xhr = $.ajax({
                 type : 'GET',
                 url : 'http://nominatim.openstreetmap.org/search/',
                 data: {
@@ -50,23 +54,38 @@ define([
                 },
                 dataType: 'json',
                 context: this
-            }).done(cb);
+            })
+                .done(cb)
+                .fail(function (request) {
+                    if (request.statusText === 'abort') {
+                        return;
+                    }
+                });
         },
         
-        reverse : function (latlng, cb) {
-            $.ajax({
+        reverse : function (coords, zoom, cb) {
+            if (this.xhr && typeof this.xhr.abort === 'function') {
+                this.xhr.abort();
+            }
+            this.xhr = $.ajax({
                 type : 'GET',
                 url : 'http://nominatim.openstreetmap.org/reverse/',
                 data: {
-                    lat: latlng.lat,
-                    lon: latlng.lng,
+                    lat: coords[1],
+                    lon: coords[0],
                     format: 'json',
-                    zoom: 18,
+                    zoom: zoom,
                     addressdetails: 1
                 },
                 dataType: 'json',
                 context: this
-            }).done(cb);
+            })
+                .done(cb)
+                .fail(function (request) {
+                    if (request.statusText === 'abort') {
+                        return;
+                    }
+                });
         },
         
         format : function (data) {

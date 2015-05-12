@@ -79,7 +79,8 @@ html, body, #map {
 }
 #statusbar .attribution, #statusbar .attribution a {
     color: #777;
-    text-decoration: none
+    text-decoration: none;
+    transition: all 200ms;
 }
 #statusbar .attribution a:hover {
     color: #aaa;
@@ -87,6 +88,10 @@ html, body, #map {
 #statusbar .mouse-position a,
 #statusbar .geolocation a {
     margin-right: 8px
+}
+
+#statusbar a.btn-geolocation.active {
+    color: aqua
 }
 
 
