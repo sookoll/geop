@@ -11,6 +11,7 @@ requirejs.config({
         "templator" : "lib/handlebars-v3.0.3",
         "jquery" : "lib/jquery-2.1.3.min",
         "jquery.bootstrap" : "lib/bootstrap.min",
+        "jquery.sortable" : "lib/jquery.fn.sortable",
         "d3" : "lib/d3.min",
         "ol" : "lib/ol",
         "config" : "../config",
@@ -19,6 +20,9 @@ requirejs.config({
     },
     "shim": {
         "jquery.bootstrap": {
+            deps: ['jquery']
+        },
+        "jquery.sortable": {
             deps: ['jquery']
         }
     }

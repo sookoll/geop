@@ -9,7 +9,8 @@ define([
     'text!tmpl/service/geocache/geotrip.html',
     'text!tmpl/service/geocache/featureinfo.html',
     'text!tmpl/service/geocache/featureinfo_title.html',
-    'jquery.bootstrap'
+    'jquery.bootstrap',
+    'jquery.sortable'
 ], function ($, ol, Templator, Export, tmpl_tool_loader, tmpl_geotrip,  tmpl_featureinfo, tmpl_featureinfo_title) {
     
     'use strict';
@@ -198,6 +199,7 @@ define([
                 }
                 ex = new Export('GPX', 'geotuur.gpx', features);
             });
+            
         },
         
         createLayer : function (json) {
@@ -319,9 +321,11 @@ define([
         },
         
         renderTrip : function (e) {
+            
             var collection = [''],// empty element for 1 based numbering
                 len = this._geotrip.getLength(),
-                line = [];
+                line = [],
+                _this = this;
             
             this._geotrip.forEach(function (item, i) {
                 collection.push(item.getProperties());
@@ -345,6 +349,16 @@ define([
                 collection: collection
             }));
             
+            // sortable
+            this._el.find('.sortable').sortable({
+                draggable: 'li.sort-item',
+                onUpdate: function (e) {
+                    _this.reorderTrip();
+                    _this.renderTrip();
+                    
+                }
+            });
+            
             this._route.getSource().clear();
             this._el.find('ul.geotrip li a.export-gpx').removeAttr('href');
             
@@ -353,6 +367,35 @@ define([
                     name: 'Geotuur',
                     geometry: new ol.geom.LineString(line)
                 }));
+            }
+        },
+        
+        reorderTrip : function () {
+            // new order for layers
+            var order = [],
+                obj = null,
+                _this = this,
+                i,
+                len;
+            
+            this._el.find('.sortable li.sort-item').each(function (i, li) {
+                order.push($(li).find('a').attr('data-id'));
+            });
+            
+            function getObj(item_id) {
+                var obj;
+                _this._geotrip.forEach(function (item, j) {
+                    if (item.get('id') === item_id) {
+                        obj = item;
+                    }
+                });
+                return obj;
+            }
+            
+            for (i = 0, len = order.length; i < len; i++) {
+                obj = getObj(order[i]);
+                this._geotrip.remove(obj);
+                this._geotrip.insertAt(i, obj);
             }
         },
         
