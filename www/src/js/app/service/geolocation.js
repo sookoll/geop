@@ -12,7 +12,7 @@ define([
         this._mapmodule = mapmodule;
         this._locator = null;
         this._features = {
-            position: new ol.Feature(),
+            position: this._mapmodule.createMarker(null),
             accuracy: new ol.Feature()
         };
         this.init();
@@ -21,24 +21,16 @@ define([
     GeoLocation.prototype = {
         
         init : function () {
-            var _this = this,
-                featuresOverlay;
+            var _this = this;
             
             this._locator = new ol.Geolocation({
                 projection: this._mapmodule.get('map').getView().getProjection()
             });
             
-            this._features.position.setStyle(new ol.style.Style({
-                image: new ol.style.Circle({
-                    radius: 6,
-                    fill: new ol.style.Fill({
-                        color: '#3399CC'
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: '#fff',
-                        width: 2
-                    })
-                })
+            this._features.accuracy.setStyle(new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: 'rgba(51, 153, 204, 0.3)'
+                }),
             }));
             
             this._locator.on('change:accuracyGeometry', function () {
@@ -49,16 +41,11 @@ define([
                 var coordinates = _this._locator.getPosition();
                 if (coordinates) {
                     _this._features.position.setGeometry(new ol.geom.Point(coordinates));
-                    _this._mapmodule.setView('center', [coordinates, 18]);
+                    _this._mapmodule.setView('center', [coordinates, 15]);
                 } else {
                     _this._features.position.setGeometry(null);
                 }
                 
-            });
-
-            featuresOverlay = new ol.FeatureOverlay({
-                map: this._mapmodule.get('map'),
-                features: [this._features.accuracy, this._features.position]
             });
             
             this._locator.on('change', function () {
@@ -85,14 +72,20 @@ define([
         },
         
         enable : function () {
+            var overlay = this._mapmodule.get('overlay');
+            overlay.getFeatures().clear();
+            overlay.addFeature(this._features.accuracy);
+            overlay.addFeature(this._features.position);
             this._locator.setTracking(true);
             $('#statusbar .mouse-position a.lock').trigger('click');
         },
         
         disable : function () {
+            var overlay = this._mapmodule.get('overlay');
             this._locator.setTracking(false);
             this._features.position.setGeometry(null);
             this._features.accuracy.setGeometry(null);
+            overlay.getFeatures().clear();
         }
         
     };

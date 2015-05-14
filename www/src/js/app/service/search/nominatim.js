@@ -1,17 +1,19 @@
 /*jslint browser: true, regexp: true, nomen: true, plusplus: true, continue: true */
 /*global define*/
 define([
-    'jquery'
-], function ($) {
+    'jquery',
+    'app/service/search/coordinates'
+], function ($, CoordinateParser) {
     
     'use strict';
     
     function Nominatim(mapmodule) {
         this._mapmodule = mapmodule;
+        this._coordinateParser = new CoordinateParser();
         this._results = null;
         this._id = 'nominatim';
         this._title = '<i class="glyphicon glyphicon-map-marker"></i> Leitud aadressid';
-        this.xhr = null;
+        this._xhr = null;
     }
     
     Nominatim.prototype = {
@@ -24,27 +26,56 @@ define([
             
         },
         
+        test : function (query) {
+            return true;
+        },
+        
         clear : function () {
             this._results = null;
+            if (this._xhr && typeof this._xhr.abort === 'function') {
+                this._xhr.abort();
+            }
+            this._mapmodule.get('overlay').getFeatures().clear();
         },
         
         find : function (query, cb, context) {
-            this.geocode(query, function (data) {
-                if (data.length > 0) {
-                    data = this.format(data);
-                    this._results = data;
-                }
-                if (typeof cb === 'function') {
-                    cb(this._title, this._results, context);
-                }
-            });
+            // test coordinates
+            var coords = this._coordinateParser.test(query),
+                overlay = this._mapmodule.get('overlay'),
+                clone;
+            if (coords && coords.srid && coords.srid === 'EPSG:4326') {
+                overlay.getFeatures().clear();
+                clone = this._mapmodule.transform('point', [coords.x, coords.y], coords.srid, 'EPSG:3857');
+                overlay.addFeature(this._mapmodule.createMarker(clone));
+                this._mapmodule.setView('center', [clone, 15]);
+                this.reverse([coords.x, coords.y], 18, function (data) {
+                    if (data && data.place_id) {
+                        data.boundingbox = [coords.y, coords.y, coords.x, coords.x];
+                        data = this.format([data]);
+                        this._results = data;
+                    }
+                    if (typeof cb === 'function') {
+                        cb(this._title, this._results, context);
+                    }
+                });
+            } else {
+                this.geocode(query, function (data) {
+                    if (data.length > 0) {
+                        data = this.format(data);
+                        this._results = data;
+                    }
+                    if (typeof cb === 'function') {
+                        cb(this._title, this._results, context);
+                    }
+                });
+            }
         },
         
         geocode : function (q, cb) {
-            if (this.xhr && typeof this.xhr.abort === 'function') {
-                this.xhr.abort();
+            if (this._xhr && typeof this._xhr.abort === 'function') {
+                this._xhr.abort();
             }
-            this.xhr = $.ajax({
+            this._xhr = $.ajax({
                 type : 'GET',
                 url : 'http://nominatim.openstreetmap.org/search/',
                 data: {
@@ -64,10 +95,10 @@ define([
         },
         
         reverse : function (coords, zoom, cb) {
-            if (this.xhr && typeof this.xhr.abort === 'function') {
-                this.xhr.abort();
+            if (this._xhr && typeof this._xhr.abort === 'function') {
+                this._xhr.abort();
             }
-            this.xhr = $.ajax({
+            this._xhr = $.ajax({
                 type : 'GET',
                 url : 'http://nominatim.openstreetmap.org/reverse/',
                 data: {

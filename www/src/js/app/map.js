@@ -26,6 +26,7 @@ define([
         this._controls = {
             mouseCoordinates : null
         };
+        this._overlay = null;
     }
     
     Map.prototype = {
@@ -44,6 +45,10 @@ define([
             if (this._config.featureInfo) {
                 this._featureInfo = new FeatureInfo(this);
             }
+            this._overlay = new ol.FeatureOverlay({
+                map: this._map,
+                features: []
+            });
             if (this._config.locateEnabled) {
                 this._geoLocation = new GeoLocation(this);
             }
@@ -201,6 +206,28 @@ define([
                 }
             });
             return fset;
+        },
+        
+        createMarker : function (coords) {
+            var f =  new ol.Feature();
+            if (coords) {
+                f.setGeometry(new ol.geom.Point(coords));
+            } else {
+                f.setGeometry(null);
+            }
+            f.setStyle(new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 6,
+                    fill: new ol.style.Fill({
+                        color: '#3399CC'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: '#fff',
+                        width: 3
+                    })
+                })
+            }));
+            return f;
         }
         
     };

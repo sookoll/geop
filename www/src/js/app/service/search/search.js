@@ -102,18 +102,14 @@ define([
         },
         
         search : function (query) {
-            var provider;
-            // test query
-            
+            var provider,
+                searches = [];
             // search providers
             for (provider in this._providers) {
                 if (this._providers.hasOwnProperty(provider)) {
                     this._providers[provider].find(query, this.showResults, this);
                 }
             }
-            
-            // search coordinates
-            
         },
 
         showResults : function (title, data, _this) {

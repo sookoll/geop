@@ -23,6 +23,10 @@ define([
             
         },
         
+        test : function (query) {
+            return true;
+        },
+        
         clear : function () {
             this._results = null;
         },
