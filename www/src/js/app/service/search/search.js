@@ -21,6 +21,7 @@ define([
             nominatim: null,
             mapfeatures: null
         };
+        this._counter = 0;
     }
     
     Search.prototype = {
@@ -104,10 +105,12 @@ define([
         search : function (query) {
             var provider,
                 searches = [];
+            this.searchStart();
             // search providers
             for (provider in this._providers) {
                 if (this._providers.hasOwnProperty(provider)) {
                     this._providers[provider].find(query, this.showResults, this);
+                    this._counter++;
                 }
             }
         },
@@ -125,6 +128,22 @@ define([
                     _this._el.find('.dropdown-menu').dropdown('toggle');
                 }
             }
+            _this._counter--;
+            if (_this._counter === 0) {
+                _this.searchEnd();
+            }
+        },
+        
+        searchStart : function () {
+            this._el.find('.dropdown-toggle i')
+                .removeClass('fa-search')
+                .addClass('fa-spinner fa-pulse');
+        },
+        
+        searchEnd : function () {
+            this._el.find('.dropdown-toggle i')
+                .removeClass('fa-spinner fa-pulse')
+                .addClass('fa-search');
         }
 
     };

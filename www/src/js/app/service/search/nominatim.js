@@ -42,7 +42,9 @@ define([
             // test coordinates
             var coords = this._coordinateParser.test(query),
                 overlay = this._mapmodule.get('overlay'),
+                _this = this,
                 clone;
+            this._results = null;
             if (coords && coords.srid && coords.srid === 'EPSG:4326') {
                 overlay.getFeatures().clear();
                 clone = this._mapmodule.transform('point', [coords.x, coords.y], coords.srid, 'EPSG:3857');
@@ -51,21 +53,21 @@ define([
                 this.reverse([coords.x, coords.y], 18, function (data) {
                     if (data && data.place_id) {
                         data.boundingbox = [coords.y, coords.y, coords.x, coords.x];
-                        data = this.format([data]);
-                        this._results = data;
+                        data = _this.format([data]);
+                        _this._results = data;
                     }
                     if (typeof cb === 'function') {
-                        cb(this._title, this._results, context);
+                        cb(_this._title, _this._results, context);
                     }
                 });
             } else {
                 this.geocode(query, function (data) {
                     if (data.length > 0) {
-                        data = this.format(data);
-                        this._results = data;
+                        data = _this.format(data);
+                        _this._results = data;
                     }
                     if (typeof cb === 'function') {
-                        cb(this._title, this._results, context);
+                        cb(_this._title, _this._results, context);
                     }
                 });
             }
@@ -88,6 +90,7 @@ define([
             })
                 .done(cb)
                 .fail(function (request) {
+                    cb(null);
                     if (request.statusText === 'abort') {
                         return;
                     }
@@ -113,6 +116,7 @@ define([
             })
                 .done(cb)
                 .fail(function (request) {
+                    cb(null);
                     if (request.statusText === 'abort') {
                         return;
                     }

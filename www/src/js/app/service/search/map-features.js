@@ -33,27 +33,33 @@ define([
         
         find : function (query, cb, context) {
             var i, len, id, name,
+                _this = this,
                 data = [],
-                fset = this._mapmodule.getAllFeatures();
+                fset = null;
             
-            for (i = 0, len = fset.length; i < len; i++) {
-                id = fset[i].get('id');
-                name = fset[i].get('name');
-                if (name && name.search(new RegExp(query, 'i')) > -1) {
-                    data.push({
-                        'bbox' : fset[i].getGeometry().getExtent(),
-                        'name' : name,
-                        'type' : this._id,
-                        'id' : id
-                    });
+            // async function
+            setTimeout(function () {
+                fset = _this._mapmodule.getAllFeatures();
+                for (i = 0, len = fset.length; i < len; i++) {
+                    id = fset[i].get('id');
+                    name = fset[i].get('name');
+                    if (name && name.search(new RegExp(query, 'i')) > -1) {
+                        data.push({
+                            'bbox' : fset[i].getGeometry().getExtent(),
+                            'name' : name,
+                            'type' : _this._id,
+                            'id' : id
+                        });
+                    }
                 }
-            }
-            if (data.length > 0) {
-                this._results = data;
-            }
-            if (typeof cb === 'function') {
-                cb(this._title, this._results, context);
-            }
+                if (data.length > 0) {
+                    _this._results = data;
+                }
+                if (typeof cb === 'function') {
+                    cb(_this._title, _this._results, context);
+                }
+            });
+            
         },
 
         getResultItem : function (id) {
