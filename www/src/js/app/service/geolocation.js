@@ -30,7 +30,7 @@ define([
             this._features.accuracy.setStyle(new ol.style.Style({
                 fill: new ol.style.Fill({
                     color: 'rgba(51, 153, 204, 0.3)'
-                }),
+                })
             }));
             
             this._locator.on('change:accuracyGeometry', function () {
