@@ -161,7 +161,7 @@ define([
                 $(this).toggleClass('active');
                 $(this).closest('.geocache').toggleClass('open');
             });
-            this._el.on('click', 'button.close', function (e) {
+            this._el.on('click', '.geotrip button.close', function (e) {
                 e.stopPropagation();
                 _this._el.find('button.btn-geotrip').toggleClass('active');
                 $(this).closest('.geocache').toggleClass('open');
