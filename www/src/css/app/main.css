@@ -1,0 +1,44 @@
+html, body, #map {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.btn-secondary {
+    color: #ffffff;
+    background-color: #333;
+    border-color: #000;
+}
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:active,
+.btn-secondary.active,
+.open .dropdown-toggle.btn-secondary {
+    color: #ffffff;
+    background-color: #000;
+}
+
+.scrollable-menu {
+    height: auto;
+    max-height: 400px;
+    overflow-x: hidden;
+}
+
+.panel-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 8px;
+    min-height: 40px;
+    background: rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 10px #333;
+}
+
+.panel-bar > .pull-right {
+    margin-left: 8px
+}
+.panel-bar > .pull-left {
+    margin-right: 8px
+}
+

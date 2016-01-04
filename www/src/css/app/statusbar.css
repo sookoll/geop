@@ -1,0 +1,31 @@
+#statusbar {
+    top: auto;
+    bottom: 0;
+    min-height: 20px;
+}
+
+#statusbar, #statusbar a {
+    color: #eee
+}
+#statusbar > * {
+    line-height: 20px
+}
+#statusbar .info {
+    color: #eee
+}
+#statusbar .attribution, #statusbar .attribution a {
+    color: #777;
+    text-decoration: none;
+    transition: all 200ms;
+}
+#statusbar .attribution a:hover {
+    color: #aaa;
+}
+#statusbar .mouse-position a,
+#statusbar .geolocation a {
+    margin-right: 8px
+}
+
+#statusbar a.btn-geolocation.active {
+    color: aqua
+}

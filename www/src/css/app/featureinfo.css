@@ -1,0 +1,22 @@
+.popover {
+    cursor: default;
+    z-index: 999;
+}
+.popover-title a.cache-toggle {
+    position: absolute;
+    right: 14px;
+    padding-left:3px;
+    background: #f7f7f7
+}
+.popover-title {
+    white-space: nowrap;
+    min-width: 200px;
+    overflow: hidden
+}
+.popover-title a {
+    font-weight: bold;
+    color: inherit
+}
+.popover.content {
+    overflow: hidden
+}

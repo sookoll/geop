@@ -1,0 +1,26 @@
+#toolbar .search {
+    width: 200px
+}
+#toolbar .search .dropdown-header {
+    font-weight: bold;
+    color: #333;
+    background: #ddd
+}
+#toolbar .search .dropdown-header i {
+    margin-left: -15px
+}
+
+#toolbar .geocache .dropdown-menu {
+    min-width: 200px
+}
+#toolbar .geocache .dropdown-header h5 {
+    margin: 0;
+    line-height: 21px
+}
+#toolbar .geocache .footer {
+    padding: 3px 10px
+}
+
+#toolbar .layerswitcher li {
+    position: relative
+}
