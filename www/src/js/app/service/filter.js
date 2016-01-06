@@ -14,7 +14,7 @@ define([
         this._layer = layer;
         this._el = $('#toolbar .filter');
         this._tmpl_filter = Templator.compile(tmpl_filter);
-        this._features = [];
+        this._features = layer.getSource().getFeatures();
         this._filters = {
             fstatus: {
                 '0': 'Leidmata',
@@ -47,9 +47,9 @@ define([
         
         buildPropertyList : function () {
             var attr,
-                filter = {},
-                i;
+                filter = {};
             this._layer.getSource().forEachFeature(function (f) {
+                var i;
                 attr = f.getProperties();
                 for (i in attr) {
                     if (attr.hasOwnProperty(i) && this._filters.hasOwnProperty(i)) {
@@ -95,7 +95,7 @@ define([
             
             this._el.find('ul li input').on('change', function (e) {
                 e.stopPropagation();
-                console.log(this);
+                _this.filter();
             });
         },
         
@@ -104,6 +104,64 @@ define([
             this._el.find('ul button.close').off();
             this._el.find('ul li input').off();
             this._el.find('ul').html('');
+        },
+        
+        filter : function () {
+            var features,
+                params = this.getChecked();
+            
+            this._layer.getSource().clear();
+            if (params) {
+                features = this.query(params);
+                this._layer.getSource().addFeatures(features);
+            } else {
+                this._layer.getSource().addFeatures(this._features);
+            }
+        },
+        
+        getChecked : function () {
+            var checked = this._el.find('input').serializeArray(),
+                params = {},
+                i,
+                len;
+            for (i = 0, len = checked.length; i < len; i++) {
+                if (!params[checked[i].name]) {
+                    params[checked[i].name] = [];
+                }
+                if ($.inArray(checked[i].value, params[checked[i].name]) === -1) {
+                    params[checked[i].name].push(checked[i].value);
+                }
+            }
+            return params;
+        },
+        
+        query : function (params) {
+            var fset = [],
+                i,
+                ii,
+                len,
+                attr,
+                valid = [];
+            
+            for (i = 0, len = this._features.length; i < len; i++) {
+                attr = this._features[i].getProperties();
+                valid = [];
+                for (ii in params) {
+                    if (params.hasOwnProperty(ii)) {
+                        if (attr.hasOwnProperty(ii) && $.inArray(attr[ii], params[ii]) > -1) {
+                            valid.push(true);
+                        } else {
+                            valid.push(false);
+                        }
+                    }
+                }
+                
+                if ($.inArray(false, valid) === -1) {
+                    console.log($.inArray(false, valid));
+                    fset.push(this._features[i]);
+                }
+            }
+            return fset;
         }
     };
 
