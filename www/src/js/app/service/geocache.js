@@ -157,7 +157,7 @@ define([
                     _this.createLayer(json);
                     
                     // create filter
-                    if(_this._filter) {
+                    if (_this._filter) {
                         _this._filter.off();
                         _this._filter = null;
                     }
@@ -189,7 +189,7 @@ define([
                 _this._el.find('button.btn-geotrip').toggleClass('active');
                 $(this).closest('.geocache').find('.geotrip').toggleClass('open');
             });
-            this._el.on('click', 'ul.geotrip li a', function (e) {
+            this._el.on('click', '.geotrip ul li a', function (e) {
                 e.preventDefault();
                 var id = $(this).data('id'),
                     feature = null;

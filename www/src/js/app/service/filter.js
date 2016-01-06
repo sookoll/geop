@@ -111,25 +111,31 @@ define([
                 params = this.getChecked();
             
             this._layer.getSource().clear();
-            if (params) {
-                features = this.query(params);
+            if (params.count > 0) {
+                features = this.query(params.query);
                 this._layer.getSource().addFeatures(features);
+                this._el.closest('.geocache').find('button.btn-filter b').text(features.length);
             } else {
                 this._layer.getSource().addFeatures(this._features);
+                this._el.closest('.geocache').find('button.btn-filter b').text('');
             }
         },
         
         getChecked : function () {
             var checked = this._el.find('input').serializeArray(),
-                params = {},
+                params = {
+                    query: {},
+                    count: 0
+                },
                 i,
                 len;
             for (i = 0, len = checked.length; i < len; i++) {
-                if (!params[checked[i].name]) {
-                    params[checked[i].name] = [];
+                if (!params.query[checked[i].name]) {
+                    params.query[checked[i].name] = [];
                 }
-                if ($.inArray(checked[i].value, params[checked[i].name]) === -1) {
-                    params[checked[i].name].push(checked[i].value);
+                if ($.inArray(checked[i].value, params.query[checked[i].name]) === -1) {
+                    params.query[checked[i].name].push(checked[i].value);
+                    params.count++;
                 }
             }
             return params;
@@ -157,7 +163,6 @@ define([
                 }
                 
                 if ($.inArray(false, valid) === -1) {
-                    console.log($.inArray(false, valid));
                     fset.push(this._features[i]);
                 }
             }
