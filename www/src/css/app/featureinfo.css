@@ -10,7 +10,7 @@
 }
 .popover-title {
     white-space: nowrap;
-    min-width: 200px;
+    min-width: 240px;
     overflow: hidden
 }
 .popover-title a {

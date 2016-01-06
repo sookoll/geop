@@ -1,13 +1,22 @@
-<div class="btn-group geocache pull-left">
-    <button class="btn btn-secondary btn-sm" type="button" data-toggle="modal" data-target="#modal_geocache">
-        <i class="fa fa-cube"></i> {{load_geocaches}}
-    </button>
-    <button type="button" class="btn btn-secondary btn-sm btn-geotrip" disabled>
-        <i class="fa fa-thumb-tack"></i> <b></b>
-    </button>
-    <ul class="dropdown-menu geotrip scrollable-menu sortable" role="menu">
-    </ul>
-    
+<div class="geocache">
+    <div class="btn-group pull-left">
+        <button class="btn btn-secondary btn-sm" type="button" data-toggle="modal" data-target="#modal_geocache">
+            <i class="fa fa-cube"></i> {{load_geocaches}}
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm btn-filter" disabled title="Filtreeri">
+            <i class="fa fa-filter"></i>
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm btn-geotrip" disabled title="Geotuur">
+            <i class="fa fa-thumb-tack"></i> <b></b>
+        </button>
+    </div>
+    <div class="filter">
+        <ul class="dropdown-menu scrollable-menu" role="menu"></ul>
+    </div>
+    <div class="geotrip">
+        <ul class="dropdown-menu scrollable-menu sortable" role="menu"></ul>
+    </div>
+
     <!-- Modal -->
     <div class="modal fade" id="modal_geocache" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
@@ -20,11 +29,11 @@
                     <ul class="list-group">
                         <li class="list-group-item">
                             <span class="badge">1</span>
-                            Mine <a href="{{auth_url}}" target="_blank">geopeitus.ee</a> lehele ja logi seal sisse
+                            Mine <a href="{{auth_url}}" target="geopeitus">geopeitus.ee</a> lehele ja logi seal sisse
                         </li>
                         <li class="list-group-item">
                             <span class="badge">2</span>
-                            Ava <a href="{{features_url}}" target="_blank">link</a>
+                            Ava <a href="{{features_url}}" target="geopeitus">link</a>
                         </li>
                         <li class="list-group-item">
                             <span class="badge">3</span>

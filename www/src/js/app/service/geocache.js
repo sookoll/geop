@@ -5,13 +5,14 @@ define([
     'ol',
     'templator',
     'app/service/export',
+    'app/service/filter',
     'text!tmpl/service/geocache/tool_loader.html',
     'text!tmpl/service/geocache/geotrip.html',
     'text!tmpl/service/geocache/featureinfo.html',
     'text!tmpl/service/geocache/featureinfo_title.html',
     'jquery.bootstrap',
     'jquery.sortable'
-], function ($, ol, Templator, Export, tmpl_tool_loader, tmpl_geotrip,  tmpl_featureinfo, tmpl_featureinfo_title) {
+], function ($, ol, Templator, Export, Filter, tmpl_tool_loader, tmpl_geotrip,  tmpl_featureinfo, tmpl_featureinfo_title) {
     
     'use strict';
     
@@ -20,6 +21,7 @@ define([
         this._config = config;
         this._mapmodule = mapmodule;
         this._el = null;
+        this._filter = null;
         this._open = false;
         this._results = null;
         this._layer = null;
@@ -139,8 +141,10 @@ define([
             });
             
             this._el.find('#modal_geocache').on('click', 'button.confirm', function (e) {
-                var content = $.trim($(this).closest('.modal-content').find('textarea').val()),
+                var $txt = $(this).closest('.modal-content').find('textarea'),
+                    content = $.trim($txt.val()),
                     json;
+                
                 if (content.length > 0) {
                     try {
                         json = $.parseJSON(content);
@@ -151,20 +155,39 @@ define([
                         _this.removeLayer();
                     }
                     _this.createLayer(json);
+                    
+                    // create filter
+                    if(_this._filter) {
+                        _this._filter.off();
+                        _this._filter = null;
+                    }
+                    _this._filter = new Filter(_this._layer);
+                    _this._filter.init();
+                    
                 }
-                $(this).closest('.modal-content').find('textarea').val('');
+                
+                $txt.val('');
                 $(this).closest('.modal').modal('hide');
+                $(this).closest('.geocache').find('.btn-filter').prop('disabled', false);
             });
             
             this._el.find('button.btn-geotrip').on('click', function (e) {
                 e.stopPropagation();
+                
+                $(this).closest('.geocache')
+                    .find('button.btn-filter')
+                    .removeClass('active');
+                $(this).closest('.geocache')
+                    .find('.filter')
+                    .removeClass('open');
+                
                 $(this).toggleClass('active');
-                $(this).closest('.geocache').toggleClass('open');
+                $(this).closest('.geocache').find('.geotrip').toggleClass('open');
             });
             this._el.on('click', '.geotrip button.close', function (e) {
                 e.stopPropagation();
                 _this._el.find('button.btn-geotrip').toggleClass('active');
-                $(this).closest('.geocache').toggleClass('open');
+                $(this).closest('.geocache').find('.geotrip').toggleClass('open');
             });
             this._el.on('click', 'ul.geotrip li a', function (e) {
                 e.preventDefault();
@@ -177,10 +200,10 @@ define([
                     }
                 });
             });
-            this._el.on('click', 'ul.geotrip li button.clear', function (e) {
+            this._el.on('click', '.geotrip ul li button.clear', function (e) {
                 _this.clearTrip();
             });
-            this._el.on('click', 'ul.geotrip li a.export-gpx', function (e) {
+            this._el.on('click', '.geotrip ul li a.export-gpx', function (e) {
                 e.preventDefault();
                 var features = [],
                     clone = null,
@@ -201,6 +224,8 @@ define([
             });
             
         },
+        
+        
         
         createLayer : function (json) {
             var _this = this, source, format;
@@ -336,7 +361,7 @@ define([
                     .removeClass('active')
                     .prop('disabled', true)
                     .find('b').text('');
-                this._el.removeClass('open');
+                this._el.find('.geotrip').removeClass('open');
             } else if (this._el.find('button.btn-geotrip').is(':disabled')) {
                 this._el.find('button.btn-geotrip')
                     .prop('disabled', false);
@@ -345,12 +370,12 @@ define([
                 this._el.find('button.btn-geotrip b')
                     .text(len);
             }
-            this._el.find('ul.geotrip').html(this._tmpl_geotrip({
+            this._el.find('.geotrip ul').html(this._tmpl_geotrip({
                 collection: collection
             }));
             
             // sortable
-            this._el.find('.sortable').sortable({
+            this._el.find('.geotrip .sortable').sortable({
                 draggable: 'li.sort-item',
                 onUpdate: function (e) {
                     _this.reorderTrip();
@@ -360,7 +385,7 @@ define([
             });
             
             this._route.getSource().clear();
-            this._el.find('ul.geotrip li a.export-gpx').removeAttr('href');
+            this._el.find('.geotrip ul li a.export-gpx').removeAttr('href');
             
             if (len > 1) {
                 this._route.getSource().addFeature(new ol.Feature({
@@ -378,7 +403,7 @@ define([
                 i,
                 len;
             
-            this._el.find('.sortable li.sort-item').each(function (i, li) {
+            this._el.find('.geotrip .sortable li.sort-item').each(function (i, li) {
                 order.push($(li).find('a').attr('data-id'));
             });
             

@@ -6,5 +6,6 @@
 @import url("app/main.css");
 @import url("app/toolbar.css");
 @import url("app/statusbar.css");
+@import url("app/search.css");
 @import url("app/featureinfo.css");
 @import url("app/osm-edit.css");

@@ -198,9 +198,11 @@ define([
                 this._mapmodule.transform('point', coord, 'EPSG:3857', 'EPSG:4326'),
                 this._mapmodule.get('map').getView().getZoom(),
                 function (result) {
-                    $('<i class="text-muted hidden-xs" style="display:none"> &mdash; ' + result.display_name + '</i>')
-                        .appendTo('#statusbar .geolocation div')
-                        .fadeIn();
+                    if (result && result.display_name) {
+                        $('<i class="text-muted hidden-xs" style="display:none"> &mdash; ' + result.display_name + '</i>')
+                            .appendTo('#statusbar .geolocation div')
+                            .fadeIn();
+                    }
                 }
             );
         }

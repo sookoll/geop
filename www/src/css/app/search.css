@@ -1,0 +1,11 @@
+#toolbar .search {
+    width: 200px
+}
+#toolbar .search .dropdown-header {
+    font-weight: bold;
+    color: #333;
+    background: #ddd
+}
+#toolbar .search .dropdown-header i {
+    margin-left: -15px
+}
