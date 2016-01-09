@@ -8,7 +8,7 @@ requirejs.config({
     "paths" : {
         "text" : "lib/text",
         "templator" : "lib/handlebars-v3.0.3",
-        "jquery" : "lib/jquery-2.1.3.min",
+        "jquery" : "lib/jquery-2.2.0.min",
         "jquery.bootstrap" : "lib/bootstrap.min",
         "jquery.sortable" : "lib/jquery.fn.sortable",
         "d3" : "lib/d3.min",
