@@ -35,7 +35,7 @@ define([
             if (this._xhr && typeof this._xhr.abort === 'function') {
                 this._xhr.abort();
             }
-            this._mapmodule.get('overlay').getFeatures().clear();
+            this._mapmodule.get('overlay').getSource().clear();
         },
         
         find : function (query, cb, context) {
@@ -46,9 +46,9 @@ define([
                 clone;
             this._results = null;
             if (coords && coords.srid && coords.srid === 'EPSG:4326') {
-                overlay.getFeatures().clear();
+                overlay.getSource().clear();
                 clone = this._mapmodule.transform('point', [coords.x, coords.y], coords.srid, 'EPSG:3857');
-                overlay.addFeature(this._mapmodule.createMarker(clone));
+                overlay.getSource().addFeature(this._mapmodule.createMarker(clone));
                 this._mapmodule.setView('center', [clone, 15]);
                 this.reverse([coords.x, coords.y], 18, function (data) {
                     if (data && data.place_id) {

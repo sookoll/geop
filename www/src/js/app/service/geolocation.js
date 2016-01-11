@@ -73,9 +73,8 @@ define([
         
         enable : function () {
             var overlay = this._mapmodule.get('overlay');
-            overlay.getFeatures().clear();
-            overlay.addFeature(this._features.accuracy);
-            overlay.addFeature(this._features.position);
+            overlay.getSource().clear();
+            overlay.getSource().addFeatures([this._features.accuracy, this._features.position]);
             this._locator.setTracking(true);
             $('#statusbar .mouse-position a.lock').trigger('click');
         },
@@ -85,7 +84,7 @@ define([
             this._locator.setTracking(false);
             this._features.position.setGeometry(null);
             this._features.accuracy.setGeometry(null);
-            overlay.getFeatures().clear();
+            overlay.getSource().clear();
         }
         
     };

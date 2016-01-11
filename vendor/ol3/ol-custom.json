@@ -1,0 +1,78 @@
+{
+    "exports": [
+        "ol.layer.Group",
+	"ol.layer.Group#getLayers",
+        "ol.layer.Vector",
+	"ol.layer.Vector#*",
+        "ol.source.Vector",
+	"ol.source.Vector#*",
+        "ol.layer.Tile",
+        "ol.source.OSM",
+        "ol.Map",
+	"ol.Map#*",
+        "ol.control.defaults",
+	"ol.coordinate.format",
+        "ol.View",
+	"ol.View#*",
+        "ol.control.MousePosition",
+        "ol.Feature",
+	"ol.Feature#*",
+        "ol.geom.Point",
+	"ol.geom.Point#getType",
+	"ol.geom.Point#getCoordinates",
+	"ol.geom.Point#transform",
+        "ol.geom.LineString",
+	"ol.geom.LineString#getType",
+	"ol.geom.LineString#transform",
+	"ol.geom.MultiLineString#getType",
+        "ol.style.Style",
+        "ol.style.Circle",
+        "ol.style.Fill",
+        "ol.style.Stroke",
+        "ol.style.Text",
+        "ol.interaction.DragAndDrop",
+	"ol.interaction.DragAndDrop#on",
+        "ol.format.GPX",
+	"ol.format.GPX#*",
+        "ol.format.GeoJSON",
+	"ol.format.GeoJSON#*",
+        "ol.Overlay",
+	"ol.Overlay#setPosition",
+        "ol.Collection",
+	"ol.Collection#*",
+	"ol.proj.Projection",
+	"ol.proj.transform",
+	"ol.proj.transformExtent",
+	"ol.Geolocation",
+	"ol.Geolocation#*"
+    ],
+    "compile": {
+        "externs": [
+            "externs/oli.js",
+            "externs/olx.js",
+            "externs/geojson.js"
+        ],
+        "define": [
+            "ol.ENABLE_DOM=false",
+            "ol.ENABLE_WEBGL=false",
+            "ol.ENABLE_PROJ4JS=false",
+            "ol.ENABLE_IMAGE=false",
+            "ol.ENABLE_NAMED_COLORS=false",
+            "ol.ENABLE_RASTER_REPROJECTION=false",
+            "ol.ENABLE_VECTOR_TILE=false",
+            "goog.array.ASSUME_NATIVE_FUNCTIONS=true",
+            "goog.dom.ASSUME_STANDARDS_MODE=true",
+            "goog.json.USE_NATIVE_JSON=true",
+            "goog.DEBUG=false"
+        ],
+        "jscomp_off": [
+            "unknownDefines"
+        ],
+        "extra_annotation_name": [
+            "api",
+            "observable"
+        ],
+        "compilation_level": "ADVANCED_OPTIMIZATIONS",
+        "manage_closure_dependencies": true
+    }
+}

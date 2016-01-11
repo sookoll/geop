@@ -45,10 +45,14 @@ define([
         },
         
         createFeatureTooltip : function () {
-            var _this = this;
+            var _this = this,
+                tooltipVisible = false;
             
-            this._tooltip = new ol.FeatureOverlay({
+            this._tooltip = new ol.layer.Vector({
                 map: _this._map,
+                source: new ol.source.Vector({
+                    features: []
+                }),
                 style: function (feature, resolution) {
                     var text = feature.get('name');
                     if (!_this._styleCache[text]) {
@@ -77,24 +81,36 @@ define([
                 }
                 var pixel = _this._map.getEventPixel(e.originalEvent),
                     hit = _this._map.hasFeatureAtPixel(pixel);
-                _this._map.getTarget().style.cursor = hit ? 'pointer' : '';
-                _this.featureTooltip(e.pixel);
+                
+                if (hit) {
+                    _this._map.getTarget().style.cursor = 'pointer';
+                    tooltipVisible = _this.showTooltip(e.pixel);
+                } else {
+                    _this._map.getTarget().style.cursor = hit ? 'pointer' : '';
+                    tooltipVisible = _this.showTooltip();
+                }
+                
             });
         },
         
-        featureTooltip : function (px) {
+        showTooltip : function (px) {
+            // if !px then remove tooltip and return false
+            if (!px) {
+                this._tooltip.getSource().clear();
+                this._highlight = null;
+                return false;
+            }
+            // get feature
             var feature = this._map.forEachFeatureAtPixel(px, function (feature, layer) {
                 return feature;
             });
+            // if not same feature
             if (feature !== this._highlight) {
-                if (this._highlight) {
-                    this._tooltip.removeFeature(this._highlight);
-                }
-                if (feature) {
-                    this._tooltip.addFeature(feature);
-                }
+                this._tooltip.getSource().clear();
+                this._tooltip.getSource().addFeature(feature);
                 this._highlight = feature;
             }
+            return true;
         },
         
         createFeatureInfo : function () {
@@ -121,7 +137,8 @@ define([
                 
                 if (feature) {
                     // remove tooltip
-                    _this._tooltip.removeFeature(_this._highlight);
+                    //_this._tooltip.removeFeature(_this._highlight);
+                    _this._tooltip.getSource().removeFeature(_this._highlight);
                     // if point, then geometry coords
                     if (feature[1].getGeometry().getType() === 'Point') {
                         coord = feature[1].getGeometry().getCoordinates();

@@ -70,6 +70,7 @@ define([
                 if (featureStyleFunction) {
                     return featureStyleFunction.call(feature, resolution);
                 } else {
+                    console.log(feature.getGeometry())
                     return defaultStyle[feature.getGeometry().getType()];
                 }
             },
@@ -80,8 +81,6 @@ define([
                 ]
             });
 
-        // TODO: add interaction to map
-        // interactions: ol.interaction.defaults().extend([dragAndDropInteraction])
         map.addInteraction(dragAndDropInteraction);
 
         dragAndDropInteraction.on('addfeatures', function (event) {
@@ -93,7 +92,7 @@ define([
                 source: vectorSource,
                 style: styleFunction
             }));
-            map.getView().fitExtent(vectorSource.getExtent(), (map.getSize()));
+            mapmodule.setView('bounds', vectorSource.getExtent());
         });
     };
 

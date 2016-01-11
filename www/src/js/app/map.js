@@ -45,9 +45,14 @@ define([
             if (this._config.featureInfo) {
                 this._featureInfo = new FeatureInfo(this);
             }
-            this._overlay = new ol.FeatureOverlay({
+            this._overlay = new ol.layer.Vector({
                 map: this._map,
-                features: []
+                source: new ol.source.Vector({
+                    features: [],
+                    useSpatialIndex: false
+                }),
+                updateWhileAnimating: true,
+                updateWhileInteracting: true
             });
             if (this._config.locateEnabled) {
                 this._geoLocation = new GeoLocation(this);
@@ -179,7 +184,7 @@ define([
             var zoom;
             switch (method) {
             case 'bounds':
-                this._map.getView().fitExtent(params, this._map.getSize());
+                this._map.getView().fit(params, this._map.getSize());
                 break;
             case 'center':
                 if (params[1]) {

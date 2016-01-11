@@ -7,12 +7,12 @@ requirejs.config({
     "baseUrl" : "js",
     "paths" : {
         "text" : "lib/text",
-        "templator" : "lib/handlebars-v3.0.3",
+        "templator" : "lib/handlebars-v4.0.5",
         "jquery" : "lib/jquery-2.2.0.min",
         "jquery.bootstrap" : "lib/bootstrap.min",
         "jquery.sortable" : "lib/jquery.fn.sortable",
         "d3" : "lib/d3.min",
-        "ol" : "lib/ol",
+        "ol" : "lib/ol-custom",
         "config" : "../config",
         "app": "app",
         "tmpl": "../tmpl"
@@ -23,6 +23,9 @@ requirejs.config({
         },
         "jquery.sortable": {
             deps: ['jquery']
+        },
+        "ol": {
+            exports: 'ol'
         }
     }
 });
