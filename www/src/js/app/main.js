@@ -8,8 +8,9 @@ define([
     'app/service/search/search',
     'app/service/geocache',
     'app/service/osm-edit',
-    'app/service/data-import'
-], function ($, Settings, Map, Search, Geocache, OSMEdit, DataImport) {
+    'app/service/data-import',
+    'app/service/fullscreen'
+], function ($, Settings, Map, Search, Geocache, OSMEdit, DataImport, FullScreen) {
     
     'use strict';
     
@@ -57,6 +58,9 @@ define([
         
         // import
         app.dataimport = new DataImport(app.mapmodule);
+        
+        // full screen
+        app.fullscreen = new FullScreen($('.btn-fullscreen'));
         
         // info
         $('#statusbar a.info-toggle').on('click', function (e) {
