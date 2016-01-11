@@ -26,6 +26,11 @@
     margin-right: 8px
 }
 
-#statusbar a.btn-geolocation.active {
+#statusbar a.btn-geolocation.active,
+#statusbar a.btn-fullscreen.active {
     color: aqua
+}
+#statusbar a.btn-fullscreen.disabled {
+    color: #777;
+    pointer-events: none;
 }
