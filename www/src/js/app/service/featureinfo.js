@@ -107,7 +107,7 @@ define([
             // if not same feature
             if (feature !== this._highlight) {
                 this._tooltip.getSource().clear();
-                this._tooltip.getSource().addFeature(feature);
+                this._tooltip.getSource().addFeatures([feature]);
                 this._highlight = feature;
             }
             return true;

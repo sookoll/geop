@@ -100,10 +100,15 @@ define([
         },
         
         off : function () {
-            this._el.closest('.geocache').find('button.btn-filter').off();
+            this._el.closest('.geocache')
+                .find('button.btn-filter')
+                .removeClass('active')
+                .off()
+                .find('b').text('');
             this._el.find('ul button.close').off();
             this._el.find('ul li input').off();
             this._el.find('ul').html('');
+            this._el.removeClass('open');
         },
         
         filter : function () {

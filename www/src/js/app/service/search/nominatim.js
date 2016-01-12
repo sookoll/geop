@@ -48,7 +48,7 @@ define([
             if (coords && coords.srid && coords.srid === 'EPSG:4326') {
                 overlay.getSource().clear();
                 clone = this._mapmodule.transform('point', [coords.x, coords.y], coords.srid, 'EPSG:3857');
-                overlay.getSource().addFeature(this._mapmodule.createMarker(clone));
+                overlay.getSource().addFeatures([this._mapmodule.createMarker(clone)]);
                 this._mapmodule.setView('center', [clone, 15]);
                 this.reverse([coords.x, coords.y], 18, function (data) {
                     if (data && data.place_id) {

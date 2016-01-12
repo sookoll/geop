@@ -144,6 +144,8 @@ define([
                 var $txt = $(this).closest('.modal-content').find('textarea'),
                     content = $.trim($txt.val()),
                     json;
+                // clear old
+                _this._geotrip.clear();
                 
                 if (content.length > 0) {
                     try {
@@ -388,10 +390,10 @@ define([
             this._el.find('.geotrip ul li a.export-gpx').removeAttr('href');
             
             if (len > 1) {
-                this._route.getSource().addFeature(new ol.Feature({
+                this._route.getSource().addFeatures([new ol.Feature({
                     name: 'Geotuur',
                     geometry: new ol.geom.LineString(line)
-                }));
+                })]);
             }
         },
         
