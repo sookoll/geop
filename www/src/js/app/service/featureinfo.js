@@ -137,8 +137,7 @@ define([
                 
                 if (feature) {
                     // remove tooltip
-                    //_this._tooltip.removeFeature(_this._highlight);
-                    _this._tooltip.getSource().removeFeature(_this._highlight);
+                    _this._tooltip.getSource().clear();
                     // if point, then geometry coords
                     if (feature[1].getGeometry().getType() === 'Point') {
                         coord = feature[1].getGeometry().getCoordinates();
