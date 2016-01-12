@@ -8,7 +8,10 @@
     color: #eee
 }
 #statusbar > * {
-    line-height: 20px
+    line-height: 22px
+}
+#statusbar a.btn {
+    padding: 0 6px
 }
 #statusbar .info {
     color: #eee
