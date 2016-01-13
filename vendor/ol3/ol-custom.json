@@ -30,6 +30,7 @@
 	"ol.View#getZoom",
 	"ol.View#getProjection",
 	"ol.View#fit",
+	"ol.View#getCenter",
 	"ol.View#setCenter",
 	"ol.View#setZoom",
         "ol.control.MousePosition",

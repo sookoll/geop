@@ -14,6 +14,7 @@ To build openlayers node, npm, grunt, pip must be installed
     $ cd repos
     $ git clone <openlayers_github>
     $ cd ol3
+    $ git checkout <version_tag>
     $ make check-deps
     $ npm install
     $ sudo pip install -r requirements.txt
@@ -21,4 +22,3 @@ To build openlayers node, npm, grunt, pip must be installed
 Copy vendor/ol/ol-custom.json to ol3/build/
 
     $ node tasks/build.js build/ol-custom.json build/ol-custom.js
-

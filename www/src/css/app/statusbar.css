@@ -2,6 +2,7 @@
     top: auto;
     bottom: 0;
     min-height: 20px;
+    padding: 4px 6px
 }
 
 #statusbar, #statusbar a {
