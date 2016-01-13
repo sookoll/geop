@@ -170,7 +170,6 @@ define([
                 
                 $txt.val('');
                 $(this).closest('.modal').modal('hide');
-                $(this).closest('.geocache').find('.btn-filter').prop('disabled', false);
             });
             
             this._el.find('button.btn-geotrip').on('click', function (e) {

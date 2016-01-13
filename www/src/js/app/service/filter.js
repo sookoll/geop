@@ -73,19 +73,21 @@ define([
                 collection: filter
             }));
             
-            this._el.closest('.geocache').find('button.btn-filter').on('click', function (e) {
-                e.stopPropagation();
-                
-                $(this).closest('.geocache')
-                    .find('button.btn-geotrip')
-                    .removeClass('active');
-                $(this).closest('.geocache')
-                    .find('.geotrip')
-                    .removeClass('open');
-                
-                $(this).toggleClass('active');
-                $(this).closest('.geocache').find('.filter').toggleClass('open');
-            });
+            this._el.closest('.geocache').find('button.btn-filter')
+                .prop('disabled', false)
+                .on('click', function (e) {
+                    e.stopPropagation();
+
+                    $(this).closest('.geocache')
+                        .find('button.btn-geotrip')
+                        .removeClass('active');
+                    $(this).closest('.geocache')
+                        .find('.geotrip')
+                        .removeClass('open');
+
+                    $(this).toggleClass('active');
+                    $(this).closest('.geocache').find('.filter').toggleClass('open');
+                });
             
             this._el.find('ul button.close').on('click', function (e) {
                 e.stopPropagation();
