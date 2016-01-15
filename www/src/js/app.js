@@ -12,7 +12,7 @@ requirejs.config({
         "jquery.bootstrap" : "lib/bootstrap.min",
         "jquery.sortable" : "lib/jquery.fn.sortable",
         "d3" : "lib/d3.min",
-        "ol" : "lib/ol-custom",
+        "ol" : "lib/ol",
         "config" : "../config",
         "app": "app",
         "tmpl": "../tmpl"

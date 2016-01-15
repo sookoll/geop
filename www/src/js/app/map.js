@@ -12,9 +12,9 @@ define([
     
     'use strict';
     
-    proj4.defs("EPSG:3301","+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+    proj4.defs("EPSG:3301", "+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
     var proj3301 = ol.proj.get('EPSG:3301');
-    proj23032.setExtent([40500,5993000,1064500,7017000]);
+    proj3301.setExtent([40500, 5993000, 1064500, 7017000]);
     
     function Map(config) {
         
@@ -67,14 +67,34 @@ define([
             var name;
             for (name in layers) {
                 if (layers.hasOwnProperty(name)) {
-                    this._baseLayers[name] = new ol.layer.Tile({
-                        title: layers[name].title,
-                        source: new ol.source.OSM({
-                            url: layers[name].url,
-                            projection: layers[name].projection,
-                            crossOrigin: null
-                        })
-                    });
+                    switch (layers[name].type) {
+                    case 'osm':
+                        this._baseLayers[name] = new ol.layer.Tile({
+                            title: layers[name].title,
+                            source: new ol.source.OSM({
+                                url: layers[name].url,
+                                projection: layers[name].projection,
+                                crossOrigin: null
+                            })
+                        });
+                        break;
+                    case 'xyz':
+                        this._baseLayers[name] = new ol.layer.Tile({
+                            title: layers[name].title,
+                            source: new ol.source.XYZ({
+                                url: layers[name].url,
+                                projection: layers[name].projection,
+                                crossOrigin: null,
+                                /*tileUrlFunction: function (coordinate) {
+                                    return 'http://tiles.maaamet.ee/tm/s/1.0.0/kaart/' + coordinate[0] + '/' + coordinate[1] + '/' + coordinate[2] + '.png';
+                                    
+                                }*/
+                            })
+                        });
+                        break;
+
+                    }
+                            
                 }
             }
         },
@@ -134,6 +154,7 @@ define([
         changeBaseLayer : function (name) {
             var layers = this._map.getLayers();
             layers.removeAt(0);
+            
             layers.insertAt(0, this._baseLayers[name]);
             this._el.find('.display-name').html(this._baseLayers[name].get('title'));
         },
