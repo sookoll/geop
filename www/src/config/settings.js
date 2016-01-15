@@ -19,16 +19,24 @@ define(function () {
             'baseLayers' : {
                 osm_et : {
                     title : 'OSM Eesti',
-                    url : 'http://kaart.maakaart.ee/osm/tiles/1.0.0/osm_EPSG900913/{z}/{x}/{y}.png?origin=nw'
+                    url : 'http://kaart.maakaart.ee/osm/tiles/1.0.0/osm_EPSG900913/{z}/{x}/{y}.png?origin=nw',
+                    projection: 'EPSG:3857'
                 },
                 osm : {
                     title : 'OSM',
-                    url : 'http://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                    url : 'http://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    projection: 'EPSG:3857'
                 },
-                orto : {
+                /*orto : {
                     title : 'Fotokaart',
                     url : 'http://kaart.maakaart.ee/orto/{z}/{x}/{y}.jpeg',
-                    minZoom: 14
+                    minZoom: 14,
+                    projection: 'EPSG:3857'
+                }*/
+                orto : {
+                    title : 'Fotokaart',
+                    url : 'http://tiles.maaamet.ee/tm/s/1.0.0/kaart/{z}/{x}/{y}.png',
+                    projection: 'EPSG:3301'
                 }
             },
             'activeBaseLayer' : 'osm_et',
