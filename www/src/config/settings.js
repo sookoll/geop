@@ -18,14 +18,22 @@ define(function () {
             'extent' : [21, 57, 29, 60],
             'baseLayers' : {
                 osm_et : {
+                    type: 'osm',
                     title : 'OSM Eesti',
                     url : 'http://kaart.maakaart.ee/osm/tiles/1.0.0/osm_EPSG900913/{z}/{x}/{y}.png?origin=nw',
                     projection: 'EPSG:3857'
                 },
                 osm : {
+                    type: 'osm',
                     title : 'OSM',
                     url : 'http://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                     projection: 'EPSG:3857'
+                },
+                ma_kaart : {
+                    type: 'xyz',
+                    title : 'MA Kaart',
+                    url : 'http://tiles.maaamet.ee/tm/s/1.0.0/kaart/{z}/{x}/{-y}.png',
+                    projection: 'EPSG:3301'
                 },
                 /*orto : {
                     title : 'Fotokaart',
@@ -33,9 +41,10 @@ define(function () {
                     minZoom: 14,
                     projection: 'EPSG:3857'
                 }*/
-                orto : {
-                    title : 'Fotokaart',
-                    url : 'http://tiles.maaamet.ee/tm/s/1.0.0/kaart/{z}/{x}/{y}.png',
+                ma_orto : {
+                    type: 'xyz',
+                    title : 'MA Foto',
+                    url : 'http://tiles.maaamet.ee/tm/s/1.0.0/foto/{z}/{x}/{-y}.jpg',
                     projection: 'EPSG:3301'
                 }
             },
