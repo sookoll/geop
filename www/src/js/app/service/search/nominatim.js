@@ -79,6 +79,7 @@ define([
             }
             this._xhr = $.ajax({
                 type : 'GET',
+                crossDomain : true,
                 url : 'http://nominatim.openstreetmap.org/search/',
                 data: {
                     q: q,

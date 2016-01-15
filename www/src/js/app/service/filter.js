@@ -47,7 +47,8 @@ define([
         
         buildPropertyList : function () {
             var attr,
-                filter = {};
+                filter = {},
+                i;
             this._layer.getSource().forEachFeature(function (f) {
                 var i;
                 attr = f.getProperties();
@@ -63,6 +64,14 @@ define([
                 }
                 
             }, this);
+            // remove < 2
+            for (i in filter) {
+                if (filter.hasOwnProperty(i)) {
+                    if (Object.keys(filter[i]).length < 2) {
+                        delete filter[i];
+                    }
+                }
+            }
             return filter;
         },
         

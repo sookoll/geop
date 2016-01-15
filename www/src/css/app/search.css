@@ -9,3 +9,19 @@
 #toolbar .search .dropdown-header i {
     margin-left: -15px
 }
+
+#toolbar .search .fill-width.dropdown {
+    position: static;
+}
+#toolbar .search .fill-width.dropdown > .dropdown-menu {
+    left: auto;
+}
+#toolbar .search .fill-width.dropdown > .dropdown-menu > li > a {
+   white-space: normal;
+}
+
+@media screen and (min-width: 460px){
+    #toolbar .search {
+        width: 240px
+    }
+}

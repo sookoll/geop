@@ -1,7 +1,8 @@
 <div class="btn-group pull-right layerswitcher">
-    <button type="button" class="btn btn-secondary btn-sm display-name">{{ layer_name }}</button>
+    <!--<button type="button" class="btn btn-secondary btn-sm display-name">{{ layer_name }}</button>-->
     <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-        <span class="caret"></span>
+        <span class="display-name hidden-xs">{{ layer_name }}</span>
+        <i class="fa fa-globe"></i>
     </button>
     <ul class="dropdown-menu" role="menu">
         {{#each layers}}
