@@ -1,5 +1,5 @@
 #toolbar .search {
-    width: 200px
+    width: 146px
 }
 #toolbar .search .dropdown-header {
     font-weight: bold;
@@ -18,6 +18,12 @@
 }
 #toolbar .search .fill-width.dropdown > .dropdown-menu > li > a {
    white-space: normal;
+}
+
+@media screen and (min-width: 360px){
+    #toolbar .search {
+        width: 200px
+    }
 }
 
 @media screen and (min-width: 460px){
