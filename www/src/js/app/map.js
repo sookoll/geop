@@ -64,9 +64,48 @@ define([
         },
         
         createBaseLayers : function (layers) {
-            var name;
+            var name,
+                i,
+                len,
+                layer,
+                arr = [];
             for (name in layers) {
                 if (layers.hasOwnProperty(name)) {
+                    
+                    if (layers[name].type === 'Group') {
+                        for (i = 0, len = layers[name].layers.length; i < len; i++) {
+                            layer = new ol.layer.Tile({
+                                source: new ol.source[layers[name].layers[i].type]({
+                                    url: layers[name].layers[i].url,
+                                    projection: layers[name].projection,
+                                    crossOrigin: null
+                                })
+                            });
+                            if (layers[name].layers[i].minResolution) {
+                                layer.setMinResolution(layers[name].layers[i].minResolution);
+                            }
+                            if (layers[name].layers[i].maxResolution) {
+                                layer.setMaxResolution(layers[name].layers[i].maxResolution);
+                            }
+                            arr.push(layer);
+                        }
+                        this._baseLayers[name] = new ol.layer.Group({
+                            title: layers[name].title,
+                            layers: arr
+                        });
+                    } else {
+                        this._baseLayers[name] = new ol.layer.Tile({
+                            title: layers[name].title,
+                            source: new ol.source[layers[name].type]({
+                                url: layers[name].url,
+                                projection: layers[name].projection,
+                                crossOrigin: null
+                            })
+                        });
+                    }
+                    
+                        
+                    /*
                     switch (layers[name].type) {
                     case 'osm':
                         this._baseLayers[name] = new ol.layer.Tile({
@@ -84,17 +123,11 @@ define([
                             source: new ol.source.XYZ({
                                 url: layers[name].url,
                                 projection: layers[name].projection,
-                                crossOrigin: null,
-                                /*tileUrlFunction: function (coordinate) {
-                                    return 'http://tiles.maaamet.ee/tm/s/1.0.0/kaart/' + coordinate[0] + '/' + coordinate[1] + '/' + coordinate[2] + '.png';
-                                    
-                                }*/
+                                crossOrigin: null
                             })
                         });
                         break;
-
-                    }
-                            
+                    }*/
                 }
             }
         },
@@ -154,6 +187,25 @@ define([
         changeBaseLayer : function (name) {
             var layers = this._map.getLayers();
             layers.removeAt(0);
+            /*
+            var prop = {
+                projection: 'EPSG:3301',
+                center : this.transform('point', this._map.getView().getCenter(), 'EPSG:3857', 'EPSG:3301'),
+                resolutions: [
+                    4000.0, 2000.0, 1000.0, 500.0, 250.0, 125.0, 62.5, 31.25, 15.625, 7.8125, 3.90625,
+                    1.953125, 0.9765625, 0.48828125, 0.244140625, 0.122070313, 0.061035157
+                ]
+            }
+            
+            var resolution = this._map.getView().getResolution();
+            prop.resolution = prop.resolutions.reduce(function (prev, curr) {
+                return (Math.abs(curr - resolution) < Math.abs(prev - resolution) ? curr : prev);
+            });
+            
+            console.log(resolution, prop.resolution)
+            
+            this._map.setView(new ol.View(prop));
+            */
             
             layers.insertAt(0, this._baseLayers[name]);
             this._el.find('.display-name').html(this._baseLayers[name].get('title'));

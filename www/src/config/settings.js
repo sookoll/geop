@@ -18,33 +18,35 @@ define(function () {
             'extent' : [21, 57, 29, 60],
             'baseLayers' : {
                 osm_et : {
-                    type: 'osm',
-                    title : 'OSM Eesti',
-                    url : 'http://kaart.maakaart.ee/osm/tiles/1.0.0/osm_EPSG900913/{z}/{x}/{y}.png?origin=nw',
+                    type: 'OSM',
+                    title: 'OSM Eesti',
+                    url: 'http://kaart.maakaart.ee/osm/tiles/1.0.0/osm_EPSG900913/{z}/{x}/{y}.png?origin=nw',
                     projection: 'EPSG:3857'
                 },
                 osm : {
-                    type: 'osm',
-                    title : 'OSM',
-                    url : 'http://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    type: 'OSM',
+                    title: 'OSM',
+                    url: 'http://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                     projection: 'EPSG:3857'
                 },
                 ma_kaart : {
-                    type: 'xyz',
-                    title : 'MA Kaart',
-                    url : 'http://tiles.maaamet.ee/tm/s/1.0.0/kaart/{z}/{x}/{-y}.png',
-                    projection: 'EPSG:3301'
+                    type: 'Group',
+                    title: 'MA Kaart',
+                    projection: 'EPSG:3301',
+                    layers: [{
+                        type: 'XYZ',
+                        url: 'http://tiles.maaamet.ee/tm/s/1.0.0/kaart/{z}/{x}/{-y}.png',
+                        minResolution: 7.8125
+                    }, {
+                        type: 'XYZ',
+                        url: 'http://tiles.maaamet.ee/tm/s/1.0.0/epk_vv/{z}/{x}/{-y}.png',
+                        maxResolution: 7.8125
+                    }]
                 },
-                /*orto : {
-                    title : 'Fotokaart',
-                    url : 'http://kaart.maakaart.ee/orto/{z}/{x}/{y}.jpeg',
-                    minZoom: 14,
-                    projection: 'EPSG:3857'
-                }*/
                 ma_orto : {
-                    type: 'xyz',
-                    title : 'MA Foto',
-                    url : 'http://tiles.maaamet.ee/tm/s/1.0.0/foto/{z}/{x}/{-y}.jpg',
+                    type: 'XYZ',
+                    title: 'MA Foto',
+                    url: 'http://tiles.maaamet.ee/tm/s/1.0.0/foto/{z}/{x}/{-y}.jpg',
                     projection: 'EPSG:3301'
                 }
             },
