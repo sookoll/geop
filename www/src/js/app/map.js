@@ -74,19 +74,7 @@ define([
                     
                     if (layers[name].type === 'Group') {
                         for (i = 0, len = layers[name].layers.length; i < len; i++) {
-                            layer = new ol.layer.Tile({
-                                source: new ol.source[layers[name].layers[i].type]({
-                                    url: layers[name].layers[i].url,
-                                    projection: layers[name].projection,
-                                    crossOrigin: null
-                                })
-                            });
-                            if (layers[name].layers[i].minResolution) {
-                                layer.setMinResolution(layers[name].layers[i].minResolution);
-                            }
-                            if (layers[name].layers[i].maxResolution) {
-                                layer.setMaxResolution(layers[name].layers[i].maxResolution);
-                            }
+                            layer = this.createTileLayer(layers[name].layers[i]);
                             arr.push(layer);
                         }
                         this._baseLayers[name] = new ol.layer.Group({
@@ -94,42 +82,24 @@ define([
                             layers: arr
                         });
                     } else {
-                        this._baseLayers[name] = new ol.layer.Tile({
-                            title: layers[name].title,
-                            source: new ol.source[layers[name].type]({
-                                url: layers[name].url,
-                                projection: layers[name].projection,
-                                crossOrigin: null
-                            })
-                        });
+                        this._baseLayers[name] = this.createTileLayer(layers[name]);
                     }
-                    
-                        
-                    /*
-                    switch (layers[name].type) {
-                    case 'osm':
-                        this._baseLayers[name] = new ol.layer.Tile({
-                            title: layers[name].title,
-                            source: new ol.source.OSM({
-                                url: layers[name].url,
-                                projection: layers[name].projection,
-                                crossOrigin: null
-                            })
-                        });
-                        break;
-                    case 'xyz':
-                        this._baseLayers[name] = new ol.layer.Tile({
-                            title: layers[name].title,
-                            source: new ol.source.XYZ({
-                                url: layers[name].url,
-                                projection: layers[name].projection,
-                                crossOrigin: null
-                            })
-                        });
-                        break;
-                    }*/
                 }
             }
+        },
+        
+        createTileLayer : function (lconf) {
+            var layer = new ol.layer.Tile({
+                source: new ol.source[lconf.type](lconf)
+            });
+            if (lconf.minResolution) {
+                layer.setMinResolution(lconf.minResolution);
+            }
+            if (lconf.maxResolution) {
+                layer.setMaxResolution(lconf.maxResolution);
+            }
+            
+            return layer;
         },
         
         createLayerSwitcher : function (layers) {
@@ -160,7 +130,7 @@ define([
             });
             
             this._map.getView().on('change:resolution', function (e) {
-                var zoom = e.target.getZoom(), name;
+                var resolution = e.target.getResolution(), name;
                 for (name in layers) {
                     if (layers.hasOwnProperty(name)) {
                         if (_this.isVisible(layers[name])) {
@@ -175,10 +145,10 @@ define([
         },
         
         isVisible : function (layer) {
-            if (layer.minZoom && this._map.getView().getZoom() < layer.minZoom) {
+            if (layer.minResolution && this._map.getView().getResolution() < layer.minResolution) {
                 return false;
             }
-            if (layer.maxZoom && this._map.getView().getZoom() > layer.maxZoom) {
+            if (layer.maxResolution && this._map.getView().getResolution() > layer.maxResolution) {
                 return false;
             }
             return true;
