@@ -70,7 +70,6 @@ define([
                 if (featureStyleFunction) {
                     return featureStyleFunction.call(feature, resolution);
                 } else {
-                    console.log(feature.getGeometry())
                     return defaultStyle[feature.getGeometry().getType()];
                 }
             },
