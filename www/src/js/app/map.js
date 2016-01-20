@@ -20,7 +20,9 @@ define([
         
         this._config = config;
         this._map = null;
-        this._baseLayers = {};
+        this._baseLayers = new ol.layer.Group({
+            layers: []
+        });
         this._vectorLayers = new ol.layer.Group({
             layers: []
         });
@@ -68,21 +70,32 @@ define([
                 i,
                 len,
                 layer,
-                arr = [];
+                arr = [],
+                visible = false;
             for (name in layers) {
                 if (layers.hasOwnProperty(name)) {
+                    // visible
+                    visible = (name === this._config.activeBaseLayer);
+                    arr = [];
                     
                     if (layers[name].type === 'Group') {
                         for (i = 0, len = layers[name].layers.length; i < len; i++) {
+                            // add projection to sublayer
+                            layers[name].layers[i].projection = layers[name].projection;
                             layer = this.createTileLayer(layers[name].layers[i]);
                             arr.push(layer);
                         }
-                        this._baseLayers[name] = new ol.layer.Group({
+                        this._baseLayers.getLayers().push(new ol.layer.Group({
+                            id: name,
                             title: layers[name].title,
-                            layers: arr
-                        });
+                            layers: arr,
+                            visible: visible
+                        }));
                     } else {
-                        this._baseLayers[name] = this.createTileLayer(layers[name]);
+                        layer = this.createTileLayer(layers[name]);
+                        layer.set('id', name);
+                        layer.setVisible(visible);
+                        this._baseLayers.getLayers().push(layer);
                     }
                 }
             }
@@ -90,6 +103,7 @@ define([
         
         createTileLayer : function (lconf) {
             var layer = new ol.layer.Tile({
+                title: lconf.title,
                 source: new ol.source[lconf.type](lconf)
             });
             if (lconf.minResolution) {
@@ -112,6 +126,7 @@ define([
                     blayers.push({
                         name: name,
                         title: layers[name].title,
+                        crs: layers[name].projection,
                         state: this.isVisible(layers[name]) ? '' : 'disabled'
                     });
                 }
@@ -155,8 +170,7 @@ define([
         },
         
         changeBaseLayer : function (name) {
-            var layers = this._map.getLayers();
-            layers.removeAt(0);
+            
             /*
             var prop = {
                 projection: 'EPSG:3301',
@@ -177,15 +191,19 @@ define([
             this._map.setView(new ol.View(prop));
             */
             
-            layers.insertAt(0, this._baseLayers[name]);
-            this._el.find('.display-name').html(this._baseLayers[name].get('title'));
+            this._baseLayers.getLayers().forEach(function (layer) {
+                layer.set('visible', (layer.get('id') == name));
+            });
+            
+            this._el.find('.display-name').html(this._config.baseLayers[name].title);
         },
         
         createMap : function () {
             var _this = this;
+            //this._baseLayer = _this._baseLayers[_this._config.activeBaseLayer];
             this._map = new ol.Map({
                 layers : [
-                    _this._baseLayers[_this._config.activeBaseLayer],
+                    _this._baseLayers,
                     _this._vectorLayers
                 ],
                 controls : ol.control.defaults({

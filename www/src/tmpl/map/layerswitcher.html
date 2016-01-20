@@ -7,7 +7,7 @@
     <ul class="dropdown-menu" role="menu">
         {{#each layers}}
             <li class="{{state}}">
-                <a href="#" class="blayer" data-name="{{this.name}}">{{this.title}}</a>
+                <a href="#" class="blayer" data-name="{{this.name}}" data-crs="{{this.crs}}">{{this.title}}</a>
             </li>
         {{/each}}
         <li class="divider"></li>
