@@ -3,15 +3,17 @@
 
 define([
     'jquery',
+    'proj4',
     'ol',
     'templator',
     'app/service/featureinfo',
     'app/service/geolocation',
     'text!tmpl/map/layerswitcher.html'
-], function ($, ol, Templator, FeatureInfo, GeoLocation, tmpl_layerswitcher) {
+], function ($, proj4, ol, Templator, FeatureInfo, GeoLocation, tmpl_layerswitcher) {
     
     'use strict';
     
+    ol.proj.setProj4(proj4);
     proj4.defs("EPSG:3301", "+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
     var proj3301 = ol.proj.get('EPSG:3301');
     proj3301.setExtent([40500, 5993000, 1064500, 7017000]);
@@ -192,7 +194,7 @@ define([
             */
             
             this._baseLayers.getLayers().forEach(function (layer) {
-                layer.set('visible', (layer.get('id') == name));
+                layer.set('visible', (layer.get('id') === name));
             });
             
             this._el.find('.display-name').html(this._config.baseLayers[name].title);

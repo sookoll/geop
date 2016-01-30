@@ -30,24 +30,7 @@ define(function () {
                     url: 'http://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                     projection: 'EPSG:3857',
                     crossOrigin: null
-                },/*
-                ma_orto : {
-                    type: 'XYZ',
-                    title: 'MA Foto',
-                    projection: 'EPSG:3301',
-                    url: 'http://tiles.maaamet.ee/tm/s/1.0.0/foto/{z}/{x}/{-y}.jpg',
-                    minResolution: 0.8,
-                    crossOrigin: null
                 },
-                ma_kaart : {
-                    type: 'XYZ',
-                    title: 'MA Foto',
-                    projection: 'EPSG:3301',
-                    url: 'http://tiles.maaamet.ee/tm/s/1.0.0/kaart/{z}/{x}/{-y}.png',
-                    minResolution: 0.8,
-                    crossOrigin: null
-                },
-                */
                 ma_orto : {
                     type: 'Group',
                     title: 'MA Foto',
