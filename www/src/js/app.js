@@ -12,7 +12,7 @@ requirejs.config({
         "jquery.bootstrap" : "lib/bootstrap.min",
         "jquery.sortable" : "lib/jquery.fn.sortable",
         "proj4" : "lib/proj4",
-        "ol" : "lib/ol",
+        "ol" : "lib/ol-debug",
         "config" : "../config",
         "app": "app",
         "tmpl": "../tmpl"
@@ -26,9 +26,6 @@ requirejs.config({
         },
         "proj4": {
             exports: 'proj4'
-        },
-        "ol": {
-            exports: 'ol'
         }
     }
 });

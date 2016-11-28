@@ -31,6 +31,14 @@ define(function () {
                     projection: 'EPSG:3857',
                     crossOrigin: null
                 },
+                /*ma_orto : {
+                    type: 'XYZ',
+                    title: 'MA Foto',
+                    url: 'http://tiles.maaamet.ee/tm/s/1.0.0/foto/{z}/{x}/{-y}.jpg',
+                    projection: 'EPSG:3301',
+                    //minResolution: 0.8,
+                    crossOrigin: null
+                },*/
                 ma_orto : {
                     type: 'Group',
                     title: 'MA Foto',

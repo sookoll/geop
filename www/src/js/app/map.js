@@ -73,7 +73,8 @@ define([
                 len,
                 layer,
                 arr = [],
-                visible = false;
+                visible = false,
+                prefix = 'Image';
             for (name in layers) {
                 if (layers.hasOwnProperty(name)) {
                     // visible
@@ -84,7 +85,11 @@ define([
                         for (i = 0, len = layers[name].layers.length; i < len; i++) {
                             // add projection to sublayer
                             layers[name].layers[i].projection = layers[name].projection;
-                            layer = this.createTileLayer(layers[name].layers[i]);
+                            if (layers[name].layers[i].type.slice(0, prefix.length) === prefix) {
+                                layer = this.createImageLayer(layers[name].layers[i]);
+                            } else {
+                                layer = this.createTileLayer(layers[name].layers[i]);
+                            }
                             arr.push(layer);
                         }
                         this._baseLayers.getLayers().push(new ol.layer.Group({
@@ -94,7 +99,12 @@ define([
                             visible: visible
                         }));
                     } else {
-                        layer = this.createTileLayer(layers[name]);
+                        if (layers[name].type.slice(0, prefix.length) === prefix) {
+                            layer = this.createImageLayer(layers[name]);
+                        } else {
+                            layer = this.createTileLayer(layers[name]);
+                        }
+                        
                         layer.set('id', name);
                         layer.setVisible(visible);
                         this._baseLayers.getLayers().push(layer);
@@ -105,6 +115,21 @@ define([
         
         createTileLayer : function (lconf) {
             var layer = new ol.layer.Tile({
+                title: lconf.title,
+                source: new ol.source[lconf.type](lconf)
+            });
+            if (lconf.minResolution) {
+                layer.setMinResolution(lconf.minResolution);
+            }
+            if (lconf.maxResolution) {
+                layer.setMaxResolution(lconf.maxResolution);
+            }
+            
+            return layer;
+        },
+        
+        createImageLayer : function (lconf) {
+            var layer = new ol.layer.Image({
                 title: lconf.title,
                 source: new ol.source[lconf.type](lconf)
             });
