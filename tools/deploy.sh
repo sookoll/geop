@@ -70,7 +70,7 @@ parse_args() {
 	# vars should be declared here, with sane defaults if applicable.
 
 	# Source directory & target branch.
-	deploy_directory=${"www/dist":-dist}
+	deploy_directory=${www/dist}
 	deploy_branch=${GIT_DEPLOY_BRANCH:-gh-pages}
 
 	#if no user identity is already set in the current git environment, use this:
@@ -78,7 +78,7 @@ parse_args() {
 	default_email=${GIT_DEPLOY_EMAIL:-}
 
 	#repository to deploy to. must be readable and writable.
-	repo=${"https://github.com/sookoll/geop.git":-origin}
+	repo=${https://github.com/sookoll/geop.git}
 
 	#append commit hash to the end of message by default
 	append_hash=${GIT_DEPLOY_APPEND_HASH:-true}
