@@ -86,6 +86,7 @@
         "externs": [
             "externs/oli.js",
             "externs/olx.js",
+            "externs/closure-compiler.js",
             "externs/geojson.js"
         ],
         "define": [
