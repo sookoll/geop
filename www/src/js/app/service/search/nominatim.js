@@ -4,10 +4,11 @@ define([
     'jquery',
     'app/service/search/coordinates'
 ], function ($, CoordinateParser) {
-    
+
     'use strict';
-    
+
     function Nominatim(mapmodule) {
+        this._url = 'https://nominatim.openstreetmap.org';
         this._mapmodule = mapmodule;
         this._coordinateParser = new CoordinateParser();
         this._results = null;
@@ -15,21 +16,21 @@ define([
         this._title = '<i class="glyphicon glyphicon-map-marker"></i> Leitud aadressid';
         this._xhr = null;
     }
-    
+
     Nominatim.prototype = {
-        
+
         get : function (key) {
             return this['_' + key];
         },
-        
+
         init : function () {
-            
+
         },
-        
+
         test : function (query) {
             return true;
         },
-        
+
         clear : function () {
             this._results = null;
             if (this._xhr && typeof this._xhr.abort === 'function') {
@@ -37,7 +38,7 @@ define([
             }
             this._mapmodule.get('overlay').getSource().clear();
         },
-        
+
         find : function (query, cb, context) {
             // test coordinates
             var coords = this._coordinateParser.test(query),
@@ -72,7 +73,7 @@ define([
                 });
             }
         },
-        
+
         geocode : function (q, cb) {
             if (this._xhr && typeof this._xhr.abort === 'function') {
                 this._xhr.abort();
@@ -80,7 +81,7 @@ define([
             this._xhr = $.ajax({
                 type : 'GET',
                 crossDomain : true,
-                url : 'http://nominatim.openstreetmap.org/search/',
+                url : this._url + '/search/',
                 data: {
                     q: q,
                     countrycodes: 'ee',
@@ -97,14 +98,14 @@ define([
                     }
                 });
         },
-        
+
         reverse : function (coords, zoom, cb) {
             if (this._xhr && typeof this._xhr.abort === 'function') {
                 this._xhr.abort();
             }
             this._xhr = $.ajax({
                 type : 'GET',
-                url : 'http://nominatim.openstreetmap.org/reverse/',
+                url : this._url + '/reverse/',
                 data: {
                     lat: coords[1],
                     lon: coords[0],
@@ -123,7 +124,7 @@ define([
                     }
                 });
         },
-        
+
         format : function (data) {
             var i, len, bbox, formatted = [];
             for (i = 0, len = data.length; i < len; i++) {
@@ -155,6 +156,6 @@ define([
             return null;
         }
     };
-    
+
     return Nominatim;
 });
