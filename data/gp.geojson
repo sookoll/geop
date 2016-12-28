@@ -22,6 +22,132 @@
         "type": "Feature",
         "geometry": {
             "type": "Point",
+            "coordinates": [25.9834442139, 58.6645011902]
+        },
+        "properties": {
+            "id": "3371",
+            "name": "Künnimehe",
+            "fstatus": "0",
+            "date_hidden": "03.05.2015",
+            "user_name": "",
+            "user_id": "phantom",
+            "type": "Tavaline aare",
+            "difficulty": "1.5",
+            "terrain": "1.5",
+            "size": "normaalne"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [24.9995994568, 59.4611015320]
+        },
+        "properties": {
+            "id": "3373",
+            "name": "Kaevandusjumala",
+            "fstatus": "0",
+            "date_hidden": "03.05.2015",
+            "user_name": "Taimo, Ingrid, Astrid",
+            "user_id": "taxu",
+            "type": "Multiaare",
+            "difficulty": "2.5",
+            "terrain": "3.0",
+            "size": "suur"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [21.9760169983, 58.2379684448]
+        },
+        "properties": {
+            "id": "3369",
+            "name": "Nonni",
+            "fstatus": "0",
+            "date_hidden": "02.05.2015",
+            "user_name": "Sepi&Indrek",
+            "user_id": "indreq",
+            "type": "Tavaline aare",
+            "difficulty": "1.5",
+            "terrain": "3.0",
+            "size": "väike"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [26.7497215271, 58.3705558777]
+        },
+        "properties": {
+            "id": "3370",
+            "name": "Suure sea",
+            "fstatus": "0",
+            "date_hidden": "02.05.2015",
+            "user_name": "",
+            "user_id": "phantom",
+            "type": "Mõistatusaare",
+            "difficulty": "2.5",
+            "terrain": "1.5",
+            "size": "väike"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [22.4633026123, 58.8222274780]
+        },
+        "properties": {
+            "id": "3372",
+            "name": "Mänspäe kabel",
+            "fstatus": "0",
+            "date_hidden": "02.05.2015",
+            "user_name": "Madis",
+            "user_id": "madis1989",
+            "type": "Tavaline aare",
+            "difficulty": "2.0",
+            "terrain": "2.0",
+            "size": "normaalne"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [25.5944442749, 58.8882789612]
+        },
+        "properties": {
+            "id": "3350",
+            "name": "Tõusuallikas",
+            "fstatus": "0",
+            "date_hidden": "01.05.2015",
+            "user_name": "",
+            "user_id": "nuffi",
+            "type": "Multiaare",
+            "difficulty": "2.5",
+            "terrain": "2.0",
+            "size": "normaalne"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [25.4386863708, 58.8982658386]
+        },
+        "properties": {
+            "id": "3367",
+            "name": "Fordson",
+            "fstatus": "0",
+            "date_hidden": "01.05.2015",
+            "user_name": "",
+            "user_id": "armastan",
+            "type": "Tavaline aare",
+            "difficulty": "3.0",
+            "terrain": "1.5",
+            "size": "mikro"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
             "coordinates": [26.7130832672, 58.3919334412]
         },
         "properties": {
@@ -35,24 +161,6 @@
             "difficulty": "2.5",
             "terrain": "3.0",
             "size": "väike"
-        }
-    }, {
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
-            "coordinates": [24.3436946869, 59.4251670837]
-        },
-        "properties": {
-            "id": "3346",
-            "name": "Teeme Ära 2015: Harku vald",
-            "fstatus": "0",
-            "date_hidden": "26.04.2015",
-            "user_name": "Marje & Aasta keskkonnasõber Paavo",
-            "user_id": "speedy",
-            "type": "Sündmusaare",
-            "difficulty": "1.5",
-            "terrain": "2.0",
-            "size": "suur"
         }
     }, {
         "type": "Feature",
@@ -106,24 +214,6 @@
             "type": "Mõistatusaare",
             "difficulty": "3.0",
             "terrain": "2.0",
-            "size": "mikro"
-        }
-    }, {
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
-            "coordinates": [23.0796165466, 58.5586166382]
-        },
-        "properties": {
-            "id": "3360",
-            "name": "Aasta puuks",
-            "fstatus": "0",
-            "date_hidden": "25.04.2015",
-            "user_name": "bemm ja",
-            "user_id": "pilditibi",
-            "type": "Tavaline aare",
-            "difficulty": "2.0",
-            "terrain": "1.5",
             "size": "mikro"
         }
     }, {
@@ -184,18 +274,18 @@
         "type": "Feature",
         "geometry": {
             "type": "Point",
-            "coordinates": [24.7221336365, 58.9678153992]
+            "coordinates": [24.7231674194, 58.9676322937]
         },
         "properties": {
             "id": "3356",
             "name": "Metsapargi",
             "fstatus": "0",
             "date_hidden": "22.04.2015",
-            "user_name": "",
+            "user_name": "Juss,Sass ja",
             "user_id": "ahtoj",
             "type": "Tavaline aare",
-            "difficulty": "3.5",
-            "terrain": "3.0",
+            "difficulty": "2.5",
+            "terrain": "3.5",
             "size": "väike"
         }
     }, {
@@ -251,6 +341,42 @@
             "difficulty": "1.5",
             "terrain": "2.0",
             "size": "normaalne"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [24.5808563232, 59.3854904175]
+        },
+        "properties": {
+            "id": "3368",
+            "name": "Pangaröövi",
+            "fstatus": "0",
+            "date_hidden": "20.04.2015",
+            "user_name": "",
+            "user_id": "puutetundlik",
+            "type": "Mõistatusaare",
+            "difficulty": "2.5",
+            "terrain": "2.5",
+            "size": "normaalne"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [23.5422172546, 58.5926322937]
+        },
+        "properties": {
+            "id": "3366",
+            "name": "Ohvritorni",
+            "fstatus": "0",
+            "date_hidden": "18.04.2015",
+            "user_name": ":)",
+            "user_id": "pilditibi",
+            "type": "Multiaare",
+            "difficulty": "3.0",
+            "terrain": "2.5",
+            "size": "mikro"
         }
     }, {
         "type": "Feature",
@@ -356,7 +482,7 @@
             "user_name": " ",
             "user_id": "tunk",
             "type": "Mõistatusaare",
-            "difficulty": "3.5",
+            "difficulty": "3.0",
             "terrain": "2.0",
             "size": "mikro"
         }
@@ -1223,24 +1349,6 @@
             "difficulty": "3.5",
             "terrain": "1.5",
             "size": "mikro"
-        }
-    }, {
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
-            "coordinates": [24.7671508789, 59.4295196533]
-        },
-        "properties": {
-            "id": "3294",
-            "name": "Keldrimäe",
-            "fstatus": "0",
-            "date_hidden": "17.02.2015",
-            "user_name": "Sisalik, Jrud, Krk",
-            "user_id": "sisalik",
-            "type": "Tavaline aare",
-            "difficulty": "2.0",
-            "terrain": "3.0",
-            "size": "väike"
         }
     }, {
         "type": "Feature",
@@ -6430,6 +6538,24 @@
         "type": "Feature",
         "geometry": {
             "type": "Point",
+            "coordinates": [24.6644992828, 59.3771705627]
+        },
+        "properties": {
+            "id": "2955",
+            "name": "Kopsuhaigla",
+            "fstatus": "0",
+            "date_hidden": "12.06.2014",
+            "user_name": "",
+            "user_id": "lapsuke",
+            "type": "Tavaline aare",
+            "difficulty": "1.0",
+            "terrain": "1.5",
+            "size": "väike"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
             "coordinates": [24.7648334503, 59.5882759094]
         },
         "properties": {
@@ -6880,6 +7006,24 @@
         "type": "Feature",
         "geometry": {
             "type": "Point",
+            "coordinates": [24.6163501740, 59.3976135254]
+        },
+        "properties": {
+            "id": "2926",
+            "name": "Astangu laskemoonalaod",
+            "fstatus": "0",
+            "date_hidden": "20.05.2014",
+            "user_name": "Madis",
+            "user_id": "madis1989",
+            "type": "Tavaline aare",
+            "difficulty": "2.0",
+            "terrain": "4.0",
+            "size": "normaalne"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
             "coordinates": [25.0000000000, 59.5000000000]
         },
         "properties": {
@@ -7199,6 +7343,24 @@
             "difficulty": "2.0",
             "terrain": "1.5",
             "size": "mikro"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [24.6315937042, 59.3439254761]
+        },
+        "properties": {
+            "id": "2904",
+            "name": "See ei ole prügi!",
+            "fstatus": "0",
+            "date_hidden": "10.05.2014",
+            "user_name": "[shadow] & ",
+            "user_id": "ademox",
+            "type": "Tavaline aare",
+            "difficulty": "1.0",
+            "terrain": "4.5",
+            "size": "väike"
         }
     }, {
         "type": "Feature",
@@ -7645,24 +7807,6 @@
             "date_hidden": "01.05.2014",
             "user_name": "Madis",
             "user_id": "sauevallakas",
-            "type": "Tavaline aare",
-            "difficulty": "1.5",
-            "terrain": "1.5",
-            "size": "mikro"
-        }
-    }, {
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
-            "coordinates": [22.7732505798, 58.9589462280]
-        },
-        "properties": {
-            "id": "2877",
-            "name": "Tubala vai",
-            "fstatus": "0",
-            "date_hidden": "30.04.2014",
-            "user_name": "mummi",
-            "user_id": "mummi",
             "type": "Tavaline aare",
             "difficulty": "1.5",
             "terrain": "1.5",
@@ -8716,24 +8860,6 @@
         "type": "Feature",
         "geometry": {
             "type": "Point",
-            "coordinates": [24.2883892059, 59.2191123962]
-        },
-        "properties": {
-            "id": "2800",
-            "name": "VJS 1",
-            "fstatus": "0",
-            "date_hidden": "14.03.2014",
-            "user_name": "Laur",
-            "user_id": "laur",
-            "type": "Tavaline aare",
-            "difficulty": "1.5",
-            "terrain": "2.5",
-            "size": "väike"
-        }
-    }, {
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
             "coordinates": [24.2534809113, 59.2272987366]
         },
         "properties": {
@@ -9382,6 +9508,24 @@
         "type": "Feature",
         "geometry": {
             "type": "Point",
+            "coordinates": [24.2434444427, 59.0719985962]
+        },
+        "properties": {
+            "id": "2759",
+            "name": "Kingitus Priidule",
+            "fstatus": "0",
+            "date_hidden": "30.01.2014",
+            "user_name": "Tiiu Mart",
+            "user_id": "lelo",
+            "type": "Mõistatusaare",
+            "difficulty": "4.0",
+            "terrain": "2.0",
+            "size": "normaalne"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
             "coordinates": [26.7477779388, 58.3719444275]
         },
         "properties": {
@@ -9664,24 +9808,6 @@
             "type": "Tavaline aare",
             "difficulty": "2.0",
             "terrain": "1.5",
-            "size": "väike"
-        }
-    }, {
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
-            "coordinates": [24.7415390015, 59.4310226440]
-        },
-        "properties": {
-            "id": "2745",
-            "name": "Suur Prantsuse revolutsioon",
-            "fstatus": "0",
-            "date_hidden": "11.01.2014",
-            "user_name": "Liis",
-            "user_id": "cherub",
-            "type": "Mõistatusaare",
-            "difficulty": "3.0",
-            "terrain": "2.0",
             "size": "väike"
         }
     }, {
@@ -9989,24 +10115,6 @@
             "difficulty": "2.0",
             "terrain": "1.5",
             "size": "mikro"
-        }
-    }, {
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
-            "coordinates": [26.7458324432, 58.3736114502]
-        },
-        "properties": {
-            "id": "2719",
-            "name": "Sudoku",
-            "fstatus": "0",
-            "date_hidden": "22.12.2013",
-            "user_name": "Tanel",
-            "user_id": "phantom",
-            "type": "Mõistatusaare",
-            "difficulty": "3.5",
-            "terrain": "1.5",
-            "size": "väike"
         }
     }, {
         "type": "Feature",
@@ -13684,24 +13792,6 @@
         "type": "Feature",
         "geometry": {
             "type": "Point",
-            "coordinates": [25.5354728699, 58.8843345642]
-        },
-        "properties": {
-            "id": "2457",
-            "name": "NKT 455",
-            "fstatus": "0",
-            "date_hidden": "11.05.2013",
-            "user_name": "[airce], [max], ja",
-            "user_id": "lelo",
-            "type": "Tavaline aare",
-            "difficulty": "1.5",
-            "terrain": "1.5",
-            "size": "mikro"
-        }
-    }, {
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
             "coordinates": [25.5430831909, 58.8887481689]
         },
         "properties": {
@@ -13949,6 +14039,24 @@
             "difficulty": "1.5",
             "terrain": "1.5",
             "size": "mikro"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [25.2694435120, 58.9480552673]
+        },
+        "properties": {
+            "id": "2400",
+            "name": "NKT Vahastu linnamägi",
+            "fstatus": "0",
+            "date_hidden": "10.05.2013",
+            "user_name": "Priit ja Airi",
+            "user_id": "airce",
+            "type": "Mõistatusaare",
+            "difficulty": "4.0",
+            "terrain": "3.0",
+            "size": "väike"
         }
     }, {
         "type": "Feature",
@@ -16636,24 +16744,6 @@
         "type": "Feature",
         "geometry": {
             "type": "Point",
-            "coordinates": [22.8042163849, 58.9870338440]
-        },
-        "properties": {
-            "id": "2291",
-            "name": "Paluküla kirik",
-            "fstatus": "0",
-            "date_hidden": "22.04.2013",
-            "user_name": "Anette ja mummi",
-            "user_id": "mummi",
-            "type": "Tavaline aare",
-            "difficulty": "1.5",
-            "terrain": "1.5",
-            "size": "väike"
-        }
-    }, {
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
             "coordinates": [22.5107669830, 58.9834518433]
         },
         "properties": {
@@ -18670,7 +18760,7 @@
         "type": "Feature",
         "geometry": {
             "type": "Point",
-            "coordinates": [24.8122768402, 58.9000549316]
+            "coordinates": [24.8109169006, 58.9002227783]
         },
         "properties": {
             "id": "2150",
@@ -26572,6 +26662,24 @@
         "type": "Feature",
         "geometry": {
             "type": "Point",
+            "coordinates": [25.7989997864, 59.6822776794]
+        },
+        "properties": {
+            "id": "1638",
+            "name": "Ekholm",
+            "fstatus": "0",
+            "date_hidden": "11.06.2011",
+            "user_name": "Ove",
+            "user_id": "ove",
+            "type": "Tavaline aare",
+            "difficulty": "1.0",
+            "terrain": "4.5",
+            "size": "väike"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
             "coordinates": [25.0855007172, 58.4643898010]
         },
         "properties": {
@@ -27071,6 +27179,24 @@
             "difficulty": "1.0",
             "terrain": "1.5",
             "size": "mikro"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [25.0228614807, 59.6987228394]
+        },
+        "properties": {
+            "id": "1605",
+            "name": "Keri ...",
+            "fstatus": "0",
+            "date_hidden": "07.05.2011",
+            "user_name": "Rita ja Lauri",
+            "user_id": "algaja",
+            "type": "Tavaline aare",
+            "difficulty": "1.5",
+            "terrain": "2.0",
+            "size": "väike"
         }
     }, {
         "type": "Feature",
@@ -28552,6 +28678,24 @@
         "type": "Feature",
         "geometry": {
             "type": "Point",
+            "coordinates": [24.9468059540, 59.0646934509]
+        },
+        "properties": {
+            "id": "1493",
+            "name": "Batjuška 8",
+            "fstatus": "0",
+            "date_hidden": "04.09.2010",
+            "user_name": "Irokas, Pikkkasso, Maire ja Rene",
+            "user_id": "irokas100",
+            "type": "Tavaline aare",
+            "difficulty": "1.5",
+            "terrain": "1.0",
+            "size": "mikro"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
             "coordinates": [24.5912780762, 59.3373870850]
         },
         "properties": {
@@ -29488,6 +29632,24 @@
         "type": "Feature",
         "geometry": {
             "type": "Point",
+            "coordinates": [24.1274452209, 58.9314727783]
+        },
+        "properties": {
+            "id": "1421",
+            "name": "Kadunud hiilgus- Maidla",
+            "fstatus": "0",
+            "date_hidden": "30.06.2010",
+            "user_name": "Kadri ja Peep",
+            "user_id": "pekadrip",
+            "type": "Tavaline aare",
+            "difficulty": "1.5",
+            "terrain": "2.0",
+            "size": "väike"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
             "coordinates": [23.7976493835, 58.9028511047]
         },
         "properties": {
@@ -30131,6 +30293,24 @@
             "difficulty": "3.0",
             "terrain": "1.5",
             "size": "suur"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [24.7319717407, 59.4018325806]
+        },
+        "properties": {
+            "id": "1367",
+            "name": "Ringraja 2",
+            "fstatus": "0",
+            "date_hidden": "05.05.2010",
+            "user_name": "Paavo",
+            "user_id": "speedy",
+            "type": "Multiaare",
+            "difficulty": "3.5",
+            "terrain": "2.0",
+            "size": "normaalne"
         }
     }, {
         "type": "Feature",
@@ -32866,24 +33046,6 @@
             "type": "Tavaline aare",
             "difficulty": "2.0",
             "terrain": "1.0",
-            "size": "mikro"
-        }
-    }, {
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
-            "coordinates": [24.6790275574, 59.4223594666]
-        },
-        "properties": {
-            "id": "1124",
-            "name": "Kommunaar",
-            "fstatus": "0",
-            "date_hidden": "28.07.2009",
-            "user_name": "Kristo, Martti",
-            "user_id": "kristof",
-            "type": "Tavaline aare",
-            "difficulty": "1.0",
-            "terrain": "2.0",
             "size": "mikro"
         }
     }, {
@@ -37138,24 +37300,6 @@
         "type": "Feature",
         "geometry": {
             "type": "Point",
-            "coordinates": [23.8391838074, 58.6946678162]
-        },
-        "properties": {
-            "id": "762",
-            "name": "Lihula Linnuse",
-            "fstatus": "0",
-            "date_hidden": "21.03.2008",
-            "user_name": "Jaanus, Eneli, Mirell, adopteeris",
-            "user_id": "armastan",
-            "type": "Tavaline aare",
-            "difficulty": "2.0",
-            "terrain": "2.0",
-            "size": "väike"
-        }
-    }, {
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
             "coordinates": [22.1027221680, 58.2941093445]
         },
         "properties": {
@@ -39010,6 +39154,24 @@
         "type": "Feature",
         "geometry": {
             "type": "Point",
+            "coordinates": [12.2379446030, 61.3051948547]
+        },
+        "properties": {
+            "id": "570",
+            "name": "Trysil",
+            "fstatus": "0",
+            "date_hidden": "13.01.2007",
+            "user_name": "Mrtn (Martin2)",
+            "user_id": "vuss",
+            "type": "Tavaline aare",
+            "difficulty": "2.0",
+            "terrain": "2.0",
+            "size": "normaalne"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
             "coordinates": [23.5167503357, 59.1432228088]
         },
         "properties": {
@@ -39550,6 +39712,24 @@
         "type": "Feature",
         "geometry": {
             "type": "Point",
+            "coordinates": [22.8508338928, 38.0283317566]
+        },
+        "properties": {
+            "id": "521",
+            "name": "The Last Battle Before Athens",
+            "fstatus": "0",
+            "date_hidden": "19.08.2006",
+            "user_name": "joonas ja abilised",
+            "user_id": "joonas444",
+            "type": "Tavaline aare",
+            "difficulty": "1.5",
+            "terrain": "3.0",
+            "size": "normaalne"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
             "coordinates": [24.8031158447, 59.4110488892]
         },
         "properties": {
@@ -39869,24 +40049,6 @@
             "difficulty": "1.0",
             "terrain": "2.5",
             "size": "normaalne"
-        }
-    }, {
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
-            "coordinates": [24.7779827118, 58.9673347473]
-        },
-        "properties": {
-            "id": "487",
-            "name": "Raudruuna",
-            "fstatus": "0",
-            "date_hidden": "05.06.2006",
-            "user_name": "hulkur ja j444",
-            "user_id": "joonas444",
-            "type": "Tavaline aare",
-            "difficulty": "1.5",
-            "terrain": "2.5",
-            "size": "väike"
         }
     }, {
         "type": "Feature",
@@ -42610,6 +42772,24 @@
         "type": "Feature",
         "geometry": {
             "type": "Point",
+            "coordinates": [25.9240169525, 61.2770347595]
+        },
+        "properties": {
+            "id": "281",
+            "name": "Vallatu tee / Funny Road",
+            "fstatus": "0",
+            "date_hidden": "21.07.2004",
+            "user_name": "Kerstin, Rasmus, Ulvi ja Märt",
+            "user_id": "mart",
+            "type": "Tavaline aare",
+            "difficulty": "1.0",
+            "terrain": "2.0",
+            "size": "normaalne"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
             "coordinates": [23.3065834045, 58.4322509766]
         },
         "properties": {
@@ -44585,6 +44765,24 @@
             "difficulty": "1.0",
             "terrain": "2.5",
             "size": "väike"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [24.6424999237, 59.3455543518]
+        },
+        "properties": {
+            "id": "78",
+            "name": "Peeter I aare",
+            "fstatus": "0",
+            "date_hidden": "21.12.2002",
+            "user_name": "Siim, Aare ja Koit",
+            "user_id": "siimsi",
+            "type": "Mõistatusaare",
+            "difficulty": "1.0",
+            "terrain": "2.5",
+            "size": "normaalne"
         }
     }, {
         "type": "Feature",
