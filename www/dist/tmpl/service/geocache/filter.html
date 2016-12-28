@@ -1,0 +1,17 @@
+<li class="dropdown-header">
+    <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h5>Filter</h5>
+</li>
+<li class="dropdown-header small">
+    <i class="fa fa-filter"></i> Filtreeri aardeid
+</li>
+{{#each collection}}
+<li class="divider"></li>
+{{#each this}}
+<li>
+    <label>
+        <input type="checkbox" name="{{@../key}}" data-filter="{{@../key}}" value="{{@key}}"> {{this}}
+    </label>
+</li>
+{{/each}}
+{{/each}}
