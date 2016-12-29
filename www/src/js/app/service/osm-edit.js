@@ -11,7 +11,6 @@ define([], function () {
 
         el.append('<a href="#" id="osm-edit"><i class="fa fa-pencil"></i></a>');
 
-        // todo: move to separate module
         el.on('click', 'a#osm-edit', function (e) {
             e.preventDefault();
             var center = mapmodule.transform('point', mapmodule.get('map').getView().getCenter(), 'EPSG:3857', 'EPSG:4326'),

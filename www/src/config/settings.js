@@ -2,9 +2,9 @@
 /*global define*/
 
 define(function () {
-    
+
     'use strict';
-    
+
     return {
         'geocache' : {
             'auth_url' : 'http://geopeitus.ee',
@@ -80,7 +80,7 @@ define(function () {
                     }]
                 }
             },
-            'activeBaseLayer' : 'osm_et',
+            'activeBaseLayer' : 'osm',
             'geocodingEnabled' : true,
             'locateEnabled' : true,
             'clustered' : false,
