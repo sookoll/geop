@@ -3,11 +3,7 @@ Simple ol3 tool for Estonian geocache game
 
 require, bootstrap, ol3 map
 
-To run r optimizer:
-
-    $ node tools/r.js -o tools/build.js
-
-To build openlayers node, npm, grunt, pip must be installed
+### To build openlayers node, npm, grunt, pip must be installed
 
     $ cd
     $ mkdir repos
@@ -21,3 +17,15 @@ To build openlayers node, npm, grunt, pip must be installed
 Copy vendor/ol/ol-custom.json to ol3/build/
 
     $ node tasks/build.js build/ol-custom.json build/ol-custom.js
+
+Copy build/ol-custom.js to src/lib/
+
+### To build app:
+
+    $ node tools/r.js -o tools/build.js
+
+### Deploy to prod:
+
+Make sure all changes are commited and app builded.
+
+    $ ./tools/deploy.sh

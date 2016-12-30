@@ -31,22 +31,14 @@ define(function () {
                     projection: 'EPSG:3857',
                     crossOrigin: null
                 },
-                /*ma_orto : {
-                    type: 'XYZ',
-                    title: 'MA Foto',
-                    url: 'http://tiles.maaamet.ee/tm/s/1.0.0/foto/{z}/{x}/{-y}.jpg',
-                    projection: 'EPSG:3301',
-                    //minResolution: 0.8,
-                    crossOrigin: null
-                },*/
                 ma_orto : {
                     type: 'Group',
-                    title: 'MA Foto',
+                    title: 'Foto',
                     projection: 'EPSG:3301',
                     layers: [{
                         type: 'XYZ',
                         url: 'http://tiles.maaamet.ee/tm/s/1.0.0/foto/{z}/{x}/{-y}.jpg',
-                        minResolution: 0.8,
+                        minResolution: 1,
                         crossOrigin: null
                     }, {
                         type: 'TileWMS',
@@ -57,25 +49,37 @@ define(function () {
                             FORMAT: 'image/png',
                             VERSION: '1.1.1'
                         },
-                        maxResolution: 0.8,
+                        maxResolution: 1,
                         gutter: 20,
                         crossOrigin: null
                     }]
                 },
                 ma_kaart : {
                     type: 'Group',
-                    title: 'MA Kaart',
+                    title: 'Põhikaart',
                     projection: 'EPSG:3301',
                     layers: [{
                         type: 'XYZ',
                         url: 'http://tiles.maaamet.ee/tm/s/1.0.0/kaart/{z}/{x}/{-y}.png',
-                        minResolution: 7.8125,
+                        minResolution: 7,
                         crossOrigin: null
                     }, {
                         type: 'XYZ',
                         url: 'http://tiles.maaamet.ee/tm/s/1.0.0/epk_vv/{z}/{x}/{-y}.png',
-                        minResolution: 0.8,
+                        minResolution: 1,
                         maxResolution: 7.8125,
+                        crossOrigin: null
+                    }, {
+                        type: 'TileWMS',
+                        url: 'http://kaart.maaamet.ee/wms/alus',
+                        params: {
+                            LAYERS: 'pohi_vv',
+                            TILED: true,
+                            FORMAT: 'image/png',
+                            VERSION: '1.1.1'
+                        },
+                        maxResolution: 1,
+                        gutter: 20,
                         crossOrigin: null
                     }]
                 }

@@ -3,23 +3,23 @@
 
 define([
     'jquery',
-    'proj4',
     'ol',
+    'proj4',
     'templator',
     'app/service/featureinfo',
     'app/service/geolocation',
     'text!tmpl/map/layerswitcher.html'
-], function ($, proj4, ol, Templator, FeatureInfo, GeoLocation, tmpl_layerswitcher) {
-    
+], function ($, ol, proj4, Templator, FeatureInfo, GeoLocation, tmpl_layerswitcher) {
+
     'use strict';
-    
-    ol.proj.setProj4(proj4);
-    proj4.defs("EPSG:3301", "+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
-    var proj3301 = ol.proj.get('EPSG:3301');
-    proj3301.setExtent([40500, 5993000, 1064500, 7017000]);
-    
+
     function Map(config) {
-        
+
+        ol.proj.setProj4(proj4);
+        proj4.defs("EPSG:3301", "+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+        var proj3301 = ol.proj.get('EPSG:3301');
+        proj3301.setExtent([40500, 5993000, 1064500, 7017000]);
+
         this._config = config;
         this._map = null;
         this._baseLayers = new ol.layer.Group({
@@ -36,13 +36,13 @@ define([
         };
         this._overlay = null;
     }
-    
+
     Map.prototype = {
-        
+
         get : function (key) {
             return this['_' + key];
         },
-        
+
         init : function () {
             this.createBaseLayers(this._config.baseLayers);
             this.createMap();
@@ -66,7 +66,7 @@ define([
                 this._geoLocation = new GeoLocation(this);
             }
         },
-        
+
         createBaseLayers : function (layers) {
             var name,
                 i,
@@ -80,7 +80,7 @@ define([
                     // visible
                     visible = (name === this._config.activeBaseLayer);
                     arr = [];
-                    
+
                     if (layers[name].type === 'Group') {
                         for (i = 0, len = layers[name].layers.length; i < len; i++) {
                             // add projection to sublayer
@@ -104,7 +104,7 @@ define([
                         } else {
                             layer = this.createTileLayer(layers[name]);
                         }
-                        
+
                         layer.set('id', name);
                         layer.setVisible(visible);
                         this._baseLayers.getLayers().push(layer);
@@ -112,7 +112,7 @@ define([
                 }
             }
         },
-        
+
         createTileLayer : function (lconf) {
             var layer = new ol.layer.Tile({
                 title: lconf.title,
@@ -124,10 +124,10 @@ define([
             if (lconf.maxResolution) {
                 layer.setMaxResolution(lconf.maxResolution);
             }
-            
+
             return layer;
         },
-        
+
         createImageLayer : function (lconf) {
             var layer = new ol.layer.Image({
                 title: lconf.title,
@@ -139,10 +139,10 @@ define([
             if (lconf.maxResolution) {
                 layer.setMaxResolution(lconf.maxResolution);
             }
-            
+
             return layer;
         },
-        
+
         createLayerSwitcher : function (layers) {
             var _this = this,
                 name,
@@ -163,29 +163,26 @@ define([
                 layers : blayers
             }));
             $('#toolbar').append(this._el);
-            
+
             this._el.on('click', 'a.blayer', function (e) {
                 e.preventDefault();
                 if (!$(this).closest('li').hasClass('disabled')) {
                     _this.changeBaseLayer($(this).data('name'));
                 }
             });
-            
-            this._map.getView().on('change:resolution', function (e) {
-                var resolution = e.target.getResolution(), name;
-                for (name in layers) {
-                    if (layers.hasOwnProperty(name)) {
-                        if (_this.isVisible(layers[name])) {
-                            _this._el.find('li a[data-name="' + name + '"]').closest('li').removeClass('disabled');
-                        } else {
-                            _this._el.find('li a[data-name="' + name + '"]').closest('li').addClass('disabled');
-                        }
+
+            this._map.getView().on('change:resolution', function () {
+                Object.keys(layers).forEach(function (name) {
+                    if (_this.isVisible(layers[name])) {
+                        _this._el.find('li a[data-name="' + name + '"]').closest('li').removeClass('disabled');
+                    } else {
+                        _this._el.find('li a[data-name="' + name + '"]').closest('li').addClass('disabled');
                     }
-                }
+                });
             });
-            
+
         },
-        
+
         isVisible : function (layer) {
             if (layer.minResolution && this._map.getView().getResolution() < layer.minResolution) {
                 return false;
@@ -195,9 +192,9 @@ define([
             }
             return true;
         },
-        
+
         changeBaseLayer : function (name) {
-            
+
             /*
             var prop = {
                 projection: 'EPSG:3301',
@@ -207,24 +204,24 @@ define([
                     1.953125, 0.9765625, 0.48828125, 0.244140625, 0.122070313, 0.061035157
                 ]
             }
-            
+
             var resolution = this._map.getView().getResolution();
             prop.resolution = prop.resolutions.reduce(function (prev, curr) {
                 return (Math.abs(curr - resolution) < Math.abs(prev - resolution) ? curr : prev);
             });
-            
+
             console.log(resolution, prop.resolution)
-            
+
             this._map.setView(new ol.View(prop));
             */
-            
+
             this._baseLayers.getLayers().forEach(function (layer) {
                 layer.set('visible', (layer.get('id') === name));
             });
-            
+
             this._el.find('.display-name').html(this._config.baseLayers[name].title);
         },
-        
+
         createMap : function () {
             var _this = this;
             //this._baseLayer = _this._baseLayers[_this._config.activeBaseLayer];
@@ -247,7 +244,7 @@ define([
                 })
             });
         },
-        
+
         createMouseCoordinatesControl : function () {
             var control = new ol.control.MousePosition({
                 coordinateFormat: function (coord) {
@@ -260,7 +257,7 @@ define([
             });
             this._map.addControl(control);
         },
-        
+
         transform : function (method, geom, crs_from, crs_to) {
             switch (method) {
             case 'point':
@@ -270,10 +267,10 @@ define([
                 geom = ol.proj.transformExtent(geom, crs_from, crs_to);
                 break;
             }
-            
+
             return geom;
         },
-        
+
         setView : function (method, params, zoomOnlyIn) {
             var zoom;
             switch (method) {
@@ -294,17 +291,17 @@ define([
                 break;
             }
         },
-        
+
         getAllFeatures : function () {
             var fset = [];
-            this._vectorLayers.getLayers().forEach(function (layer, i) {
+            this._vectorLayers.getLayers().forEach(function (layer) {
                 if (layer instanceof ol.layer.Vector) {
                     $.merge(fset, layer.getSource().getFeatures());
                 }
             });
             return fset;
         },
-        
+
         createMarker : function (coords) {
             var f =  new ol.Feature();
             if (coords) {
@@ -326,9 +323,9 @@ define([
             }));
             return f;
         }
-        
+
     };
-    
+
     return Map;
-    
+
 });
