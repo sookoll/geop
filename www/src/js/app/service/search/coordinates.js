@@ -160,8 +160,8 @@ define(function () {
                 if (matches && matches.length > 0) {
                     coords = this._formats[i].get(matches);
                     return {
-                        'x' : coords[1],
-                        'y' : coords[0],
+                        'x' : coords[0],
+                        'y' : coords[1],
                         'srid' : this._formats[i].srid
                     };
                 }

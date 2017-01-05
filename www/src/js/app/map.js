@@ -13,10 +13,13 @@ define([
 
     'use strict';
 
+    proj4.defs("EPSG:3301", "+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+    proj4.defs("EPSG:32634", "+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs");
+    proj4.defs("EPSG:32635", "+proj=utm +zone=35 +datum=WGS84 +units=m +no_defs");
+
     function Map(config) {
 
         ol.proj.setProj4(proj4);
-        proj4.defs("EPSG:3301", "+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
         var proj3301 = ol.proj.get('EPSG:3301');
         proj3301.setExtent([40500, 5993000, 1064500, 7017000]);
 
@@ -194,27 +197,6 @@ define([
         },
 
         changeBaseLayer : function (name) {
-
-            /*
-            var prop = {
-                projection: 'EPSG:3301',
-                center : this.transform('point', this._map.getView().getCenter(), 'EPSG:3857', 'EPSG:3301'),
-                resolutions: [
-                    4000.0, 2000.0, 1000.0, 500.0, 250.0, 125.0, 62.5, 31.25, 15.625, 7.8125, 3.90625,
-                    1.953125, 0.9765625, 0.48828125, 0.244140625, 0.122070313, 0.061035157
-                ]
-            }
-
-            var resolution = this._map.getView().getResolution();
-            prop.resolution = prop.resolutions.reduce(function (prev, curr) {
-                return (Math.abs(curr - resolution) < Math.abs(prev - resolution) ? curr : prev);
-            });
-
-            console.log(resolution, prop.resolution)
-
-            this._map.setView(new ol.View(prop));
-            */
-
             this._baseLayers.getLayers().forEach(function (layer) {
                 layer.set('visible', (layer.get('id') === name));
             });
@@ -224,7 +206,6 @@ define([
 
         createMap : function () {
             var _this = this;
-            //this._baseLayer = _this._baseLayers[_this._config.activeBaseLayer];
             this._map = new ol.Map({
                 layers : [
                     _this._baseLayers,
@@ -259,15 +240,16 @@ define([
         },
 
         transform : function (method, geom, crs_from, crs_to) {
-            switch (method) {
-            case 'point':
-                geom = ol.proj.transform(geom, crs_from, crs_to);
-                break;
-            case 'extent':
-                geom = ol.proj.transformExtent(geom, crs_from, crs_to);
-                break;
+            if (proj4.defs(crs_from) && proj4.defs(crs_to)) {
+                switch (method) {
+                case 'point':
+                    geom = ol.proj.transform(geom, crs_from, crs_to);
+                    break;
+                case 'extent':
+                    geom = ol.proj.transformExtent(geom, crs_from, crs_to);
+                    break;
+                }
             }
-
             return geom;
         },
 

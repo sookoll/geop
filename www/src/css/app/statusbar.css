@@ -15,7 +15,17 @@
     padding: 0 6px
 }
 #statusbar .info {
-    color: #eee
+    color: #eee;
+}
+#statusbar .info > div {
+    margin-left: 0;
+    margin-right: 0;
+}
+#statusbar .info > div ol, #statusbar .info > div ul {
+    padding: 0;
+}
+#statusbar .info > div ul {
+    list-style-type: none;
 }
 #statusbar .attribution, #statusbar .attribution a {
     color: #777;

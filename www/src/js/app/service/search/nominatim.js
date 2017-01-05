@@ -46,7 +46,7 @@ define([
                 _this = this,
                 clone;
             this._results = null;
-            if (coords && coords.srid && coords.srid === 'EPSG:4326') {
+            if (coords && coords.srid) {
                 overlay.getSource().clear();
                 clone = this._mapmodule.transform('point', [coords.x, coords.y], coords.srid, 'EPSG:3857');
                 overlay.getSource().addFeatures([this._mapmodule.createMarker(clone)]);
