@@ -9,8 +9,9 @@ define([
     'app/service/geocache',
     'app/service/osm-edit',
     'app/service/data-import',
-    'app/service/fullscreen'
-], function ($, Settings, Map, Search, Geocache, OSMEdit, DataImport, FullScreen) {
+    'app/service/fullscreen',
+    'app/service/wms-layer'
+], function ($, Settings, Map, Search, Geocache, OSMEdit, DataImport, FullScreen, WMSLayer) {
 
     'use strict';
 
@@ -45,6 +46,7 @@ define([
 
         // edit osm in id
         idLink = new OSMEdit($('.layerswitcher a[data-name="osm"]').closest('li'), app.mapmodule);
+        app.wms = new WMSLayer($('.layerswitcher ul'), app.mapmodule);
 
         // search
         if (app.get('settings').map.geocodingEnabled) {

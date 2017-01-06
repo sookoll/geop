@@ -13,9 +13,9 @@ define([
     'jquery.bootstrap',
     'jquery.sortable'
 ], function ($, ol, Templator, Export, Filter, tmpl_tool_loader, tmpl_geotrip,  tmpl_featureinfo, tmpl_featureinfo_title) {
-    
+
     'use strict';
-    
+
     function Geocache(config, mapmodule) {
         this._name = 'geocache';
         this._config = config;
@@ -102,20 +102,20 @@ define([
         this._geotrip.on('add', this.renderTrip, this);
         this._geotrip.on('remove', this.renderTrip, this);
     }
-    
+
     Geocache.prototype = {
-        
+
         get : function (key) {
             return this['_' + key];
         },
-        
+
         init : function () {
             var _this = this,
                 handlers;
             this.createUi();
             // todo: comment in
             //this.createLayer();
-            
+
             // register featureinfo for this layer
             handlers = this._mapmodule.get('featureInfo').get('infoHandlers');
             if (handlers) {
@@ -124,29 +124,29 @@ define([
                 };
             }
         },
-        
+
         createUi : function () {
             var _this = this,
                 template = Templator.compile(tmpl_tool_loader);
-            
+
             this._el = $(template($.extend(this._config, {
                 load_geocaches: 'Lae aarded',
                 confirm_geocaches: 'Lisa aarded kaardile'
             })));
-            
+
             $('#toolbar').append(this._el);
-            
+
             this._el.find('.modal').on('shown.bs.modal', function (e) {
-                $(this).find('textarea').focus();
+                //$(this).find('textarea').focus();
             });
-            
+
             this._el.find('#modal_geocache').on('click', 'button.confirm', function (e) {
                 var $txt = $(this).closest('.modal-content').find('textarea'),
                     content = $.trim($txt.val()),
                     json;
                 // clear old
                 _this._geotrip.clear();
-                
+
                 if (content.length > 0) {
                     try {
                         json = $.parseJSON(content);
@@ -157,7 +157,7 @@ define([
                         _this.removeLayer();
                     }
                     _this.createLayer(json);
-                    
+
                     // create filter
                     if (_this._filter) {
                         _this._filter.off();
@@ -165,23 +165,23 @@ define([
                     }
                     _this._filter = new Filter(_this._layer);
                     _this._filter.init();
-                    
+
                 }
-                
+
                 $txt.val('');
                 $(this).closest('.modal').modal('hide');
             });
-            
+
             this._el.find('button.btn-geotrip').on('click', function (e) {
                 e.stopPropagation();
-                
+
                 $(this).closest('.geocache')
                     .find('button.btn-filter')
                     .removeClass('active');
                 $(this).closest('.geocache')
                     .find('.filter')
                     .removeClass('open');
-                
+
                 $(this).toggleClass('active');
                 $(this).closest('.geocache').find('.geotrip').toggleClass('open');
             });
@@ -223,11 +223,11 @@ define([
                 }
                 ex = new Export('GPX', 'geotuur.gpx', features);
             });
-            
+
         },
-        
-        
-        
+
+
+
         createLayer : function (json) {
             var _this = this, source, format;
             // if json, else add from file for testing
@@ -245,7 +245,7 @@ define([
                     url: 'data/gp.geojson'
                 };
             }
-            
+
             this._route = new ol.layer.Vector({
                 name: 'route',
                 source: new ol.source.Vector(),
@@ -266,7 +266,7 @@ define([
                 ]
             });
             this._mapmodule.get('vectorLayers').getLayers().push(this._route);
-            
+
             this._layer = new ol.layer.Vector({
                 name: 'geocache',
                 source: new ol.source.Vector(source),
@@ -293,7 +293,7 @@ define([
             });
             this._mapmodule.get('vectorLayers').getLayers().push(this._layer);
         },
-        
+
         removeLayer : function () {
             this._layer.getSource().clear();
             this._route.getSource().clear();
@@ -302,7 +302,7 @@ define([
             this._layer = null;
             this._route = null;
         },
-        
+
         getContent : function (feature) {
             var _this = this,
                 stat = {
@@ -314,7 +314,7 @@ define([
                 in_collection = $.inArray(feature, this._geotrip.getArray());
             prop.fstatus = stat[prop.fstatus];
             prop.type_text = '<i class="' + this._styleConfig.text[prop.type]['class'] + '"></i> ' + prop.type;
-            
+
             return {
                 'definition' : {
                     'placement': 'top',
@@ -345,14 +345,14 @@ define([
                 }
             };
         },
-        
+
         renderTrip : function (e) {
-            
+
             var collection = [''],// empty element for 1 based numbering
                 len = this._geotrip.getLength(),
                 line = [],
                 _this = this;
-            
+
             this._geotrip.forEach(function (item, i) {
                 collection.push(item.getProperties());
                 line.push(item.getGeometry().getCoordinates());
@@ -374,20 +374,20 @@ define([
             this._el.find('.geotrip ul').html(this._tmpl_geotrip({
                 collection: collection
             }));
-            
+
             // sortable
             this._el.find('.geotrip .sortable').sortable({
                 draggable: 'li.sort-item',
                 onUpdate: function (e) {
                     _this.reorderTrip();
                     _this.renderTrip();
-                    
+
                 }
             });
-            
+
             this._route.getSource().clear();
             this._el.find('.geotrip ul li a.export-gpx').removeAttr('href');
-            
+
             if (len > 1) {
                 this._route.getSource().addFeatures([new ol.Feature({
                     name: 'Geotuur',
@@ -395,7 +395,7 @@ define([
                 })]);
             }
         },
-        
+
         reorderTrip : function () {
             // new order for layers
             var order = [],
@@ -403,11 +403,11 @@ define([
                 _this = this,
                 i,
                 len;
-            
+
             this._el.find('.geotrip .sortable li.sort-item').each(function (i, li) {
                 order.push($(li).find('a').attr('data-id'));
             });
-            
+
             function getObj(item_id) {
                 var obj;
                 _this._geotrip.forEach(function (item, j) {
@@ -417,14 +417,14 @@ define([
                 });
                 return obj;
             }
-            
+
             for (i = 0, len = order.length; i < len; i++) {
                 obj = getObj(order[i]);
                 this._geotrip.remove(obj);
                 this._geotrip.insertAt(i, obj);
             }
         },
-        
+
         clearTrip : function () {
             this._route.getSource().clear();
             this._geotrip.clear();
@@ -434,6 +434,6 @@ define([
             }
         }
     };
-    
+
     return Geocache;
 });

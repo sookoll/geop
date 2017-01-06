@@ -117,10 +117,34 @@ define([
         },
 
         createTileLayer : function (lconf) {
+            var affix = 'WMS',
+                tileSize = 1024,
+                source,
+                layer;
+            // if WMS, then 512 tile
+            if (lconf.type.slice(-(affix.length)) === affix) {
+                var projExtent = ol.proj.get(lconf.projection).getExtent();
+                var startResolution = ol.extent.getWidth(projExtent) / tileSize;
+                var resolutions = new Array(22);
+                for (var i = 0, ii = resolutions.length; i < ii; ++i) {
+                    resolutions[i] = startResolution / Math.pow(2, i);
+                }
+                var tileGrid = new ol.tilegrid.TileGrid({
+                    extent: projExtent,
+                    resolutions: resolutions,
+                    tileSize: [tileSize, tileSize]
+                });
+
+                lconf.tileGrid = tileGrid;
+            }
+
             var layer = new ol.layer.Tile({
                 title: lconf.title,
                 source: new ol.source[lconf.type](lconf)
             });
+            if (lconf.id) {
+                layer.set('id', lconf.id);
+            }
             if (lconf.minResolution) {
                 layer.setMinResolution(lconf.minResolution);
             }
@@ -162,8 +186,10 @@ define([
                 }
             }
             this._el = $(template({
-                layer_name : layers[this._config.activeBaseLayer].title,
-                layers : blayers
+                layer_name: layers[this._config.activeBaseLayer].title,
+                layers: blayers,
+                create_new_layer: 'Lisa uus WMS kiht',
+                confirm: 'Lisa'
             }));
             $('#toolbar').append(this._el);
 

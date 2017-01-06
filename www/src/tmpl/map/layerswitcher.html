@@ -1,5 +1,4 @@
 <div class="btn-group pull-right layerswitcher">
-    <!--<button type="button" class="btn btn-secondary btn-sm display-name">{{ layer_name }}</button>-->
     <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
         <span class="display-name hidden-xs">{{ layer_name }}</span>
         <i class="fa fa-globe"></i>
@@ -10,14 +9,5 @@
                 <a href="#" class="blayer" data-name="{{this.name}}" data-crs="{{this.crs}}">{{this.title}}</a>
             </li>
         {{/each}}
-        <li class="divider"></li>
-        <li class="dropdown-header">
-            <i class="fa fa-plus"></i> Lisa WMS
-        </li>
-        <li class="divider"></li>
-        <li class="dropdown-header">
-            Kui <i class="fa fa-eye"></i> kaardil viga,<br>
-            siis <i class="fa fa-pencil"></i> ära <i class="fa fa-exclamation-circle"></i>
-        </li>
     </ul>
 </div>
