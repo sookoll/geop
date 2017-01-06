@@ -23,6 +23,10 @@ css/app/toolbar.css
 ----------------
 css/app/toolbar.css
 
+css/app/wms-layer.css
+----------------
+css/app/wms-layer.css
+
 css/app.css
 ----------------
 css/lib/bootstrap.min.css
@@ -34,6 +38,7 @@ css/app/statusbar.css
 css/app/search.css
 css/app/featureinfo.css
 css/app/osm-edit.css
+css/app/wms-layer.css
 css/app.css
 
 css/lib/bootstrap.min.css
@@ -79,4 +84,7 @@ js/app/service/geocache.js
 js/app/service/osm-edit.js
 js/app/service/data-import.js
 js/app/service/fullscreen.js
+text!tmpl/service/wms-layers.html
+text!tmpl/service/wms-modal.html
+js/app/service/wms-layer.js
 js/app/main.js
