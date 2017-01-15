@@ -27,7 +27,7 @@ define(function () {
                 osm : {
                     type: 'OSM',
                     title: 'OSM',
-                    url: 'http://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    url: 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                     projection: 'EPSG:3857',
                     crossOrigin: null
                 },

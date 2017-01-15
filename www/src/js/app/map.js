@@ -31,6 +31,7 @@ define([
         this._vectorLayers = new ol.layer.Group({
             layers: []
         });
+        this._activeBaseLayer = null;
         this._el = null;
         this._featureInfo = null;
         this._geoLocation = null;
@@ -38,6 +39,7 @@ define([
             mouseCoordinates : null
         };
         this._overlay = null;
+        this._shouldUpdate = true;
     }
 
     Map.prototype = {
@@ -47,8 +49,9 @@ define([
         },
 
         init : function () {
-            this.createBaseLayers(this._config.baseLayers);
-            this.createMap();
+            var permalink = this.getPermalink();
+            this.createBaseLayers(this._config.baseLayers, permalink);
+            this.createMap(permalink);
             this.createLayerSwitcher(this._config.baseLayers);
             if (this._config.mouseCoordinates) {
                 this.createMouseCoordinatesControl();
@@ -68,9 +71,10 @@ define([
             if (this._config.locateEnabled) {
                 this._geoLocation = new GeoLocation(this);
             }
+            this.activatePermalink();
         },
 
-        createBaseLayers : function (layers) {
+        createBaseLayers : function (layers, permalink) {
             var name,
                 i,
                 len,
@@ -81,7 +85,7 @@ define([
             for (name in layers) {
                 if (layers.hasOwnProperty(name)) {
                     // visible
-                    visible = (name === this._config.activeBaseLayer);
+                    visible = (name === permalink.blayer);
                     arr = [];
 
                     if (layers[name].type === 'Group') {
@@ -114,6 +118,7 @@ define([
                     }
                 }
             }
+            this._activeBaseLayer = permalink.blayer;
         },
 
         createTileLayer : function (lconf) {
@@ -226,28 +231,29 @@ define([
             this._baseLayers.getLayers().forEach(function (layer) {
                 layer.set('visible', (layer.get('id') === name));
             });
-
             this._el.find('.display-name').html(this._config.baseLayers[name].title);
+            this._activeBaseLayer = name;
+            this.updatePermalink();
         },
 
-        createMap : function () {
+        createMap : function (permalink) {
             var _this = this;
             this._map = new ol.Map({
-                layers : [
+                layers: [
                     _this._baseLayers,
                     _this._vectorLayers
                 ],
-                controls : ol.control.defaults({
+                controls: ol.control.defaults({
                     attribution : false,
                     rotate : false,
                     zoom: false
                 }),
-                target : document.getElementById(_this._config.el),
-                view : new ol.View({
+                target: document.getElementById(_this._config.el),
+                view: new ol.View({
                     projection: 'EPSG:3857',
-                    center : _this.transform('point', _this._config.center, 'EPSG:4326', 'EPSG:3857'),
-                    zoom : _this._config.zoom,
-                    maxZoom : 20
+                    center: _this.transform('point', permalink.center, 'EPSG:4326', 'EPSG:3857'),
+                    zoom: permalink.zoom,
+                    maxZoom: 20
                 })
             });
         },
@@ -330,6 +336,73 @@ define([
                 })
             }));
             return f;
+        },
+
+        getPermalink: function () {
+            // default zoom, center and rotation
+            var permalink = {
+                blayer: this._config.activeBaseLayer,
+                zoom: this._config.zoom,
+                center: this._config.center
+            };
+
+            if (window.location.hash !== '') {
+                // try to restore center, zoom-level and rotation from the URL
+                var hash = window.location.hash.replace('#/', '');
+                var parts = hash.split('/');
+                if (parts[0]) {
+                    permalink.blayer = parts[0];
+                }
+                if (parts[1]) {
+                    permalink.zoom = parseInt(parts[1], 10);
+                }
+                if (parts[2] && parts[3]) {
+                    permalink.center = [
+                        parseFloat(parts[3]),
+                        parseFloat(parts[2])
+                    ];
+                }
+            }
+            return permalink;
+        },
+
+        activatePermalink: function () {
+            var _this = this,
+                view = this._map.getView();
+            this._map.on('moveend', this.updatePermalink, this);
+            // restore the view state when navigating through the history, see
+            // https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onpopstate
+            window.addEventListener('popstate', function(event) {
+                if (event.state === null) {
+                    return;
+                }
+                var center = _this.transform('point', event.state.center, 'EPSG:4326', 'EPSG:3857');
+                view.setCenter(center);
+                view.setZoom(event.state.zoom);
+                _this._shouldUpdate = false;
+            });
+        },
+
+        updatePermalink: function () {
+            var view = this._map.getView(),
+                center = this.transform('point', view.getCenter(), 'EPSG:3857', 'EPSG:4326'),
+                blayer = this._activBaseLayer,
+                hash;
+            if (!this._shouldUpdate) {
+                // do not update the URL when the view was changed in the 'popstate' handler
+                this._shouldUpdate = true;
+                return;
+            }
+
+            hash = '#/' + this._activeBaseLayer + '/' +
+            Math.round(view.getZoom() * 100) / 100 + '/' +
+            Math.round(center[1] * 10000) / 10000 + '/' +
+            Math.round(center[0] * 10000) / 10000;
+            var state = {
+                zoom: view.getZoom(),
+                center: view.getCenter()
+            };
+            window.history.pushState(state, 'map', hash);
         }
 
     };

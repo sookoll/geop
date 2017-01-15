@@ -78,21 +78,32 @@ define([
                     ol.format.GPX,
                     ol.format.GeoJSON
                 ]
-            });
+            }),
+            layer = new ol.layer.Group({
+                layers: []
+            }),
+            extent = [];
 
+        map.getLayers().push(layer);
         map.addInteraction(dragAndDropInteraction);
 
         dragAndDropInteraction.on('addfeatures', function (event) {
-            var vectorSource = new ol.source.Vector({
-                features: event.features,
-                projection: event.projection
-            });
-            map.getLayers().push(new ol.layer.Vector({
-                source: vectorSource,
+            var fileLayer = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    features: event.features,
+                    projection: event.projection
+                }),
                 style: styleFunction
-            }));
-            mapmodule.setView('bounds', vectorSource.getExtent());
+            });
+            layer.getLayers().push(fileLayer);
+            if (extent.length === 4) {
+                ol.extent.extend(extent, fileLayer.getSource().getExtent());
+            } else {
+                extent = fileLayer.getSource().getExtent();
+            }
+            mapmodule.setView('bounds', extent);
         });
+
     };
 
     return Import;
