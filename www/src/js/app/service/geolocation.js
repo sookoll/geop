@@ -38,9 +38,9 @@ define([
                 })
             }));
 
-            this._locator.on('change:accuracyGeometry', function () {
+            /*this._locator.on('change:accuracyGeometry', function () {
                 _this._features.accuracy.setGeometry(_this._locator.getAccuracyGeometry());
-            });
+            });*/
 
             this._locator.on('change:position', function () {
                 var coordinates = _this._locator.getPosition();
