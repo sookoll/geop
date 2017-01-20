@@ -52,7 +52,7 @@ define([
             var permalink = this.getPermalink();
             this.createBaseLayers(this._config.baseLayers, permalink);
             this.createMap(permalink);
-            this.createLayerSwitcher(this._config.baseLayers);
+            this.createLayerSwitcher(this._config.baseLayers, permalink);
             if (this._config.mouseCoordinates) {
                 this.createMouseCoordinatesControl();
             }
@@ -175,7 +175,7 @@ define([
             return layer;
         },
 
-        createLayerSwitcher : function (layers) {
+        createLayerSwitcher : function (layers, permalink) {
             var _this = this,
                 name,
                 blayers = [],
@@ -191,7 +191,7 @@ define([
                 }
             }
             this._el = $(template({
-                layer_name: layers[this._config.activeBaseLayer].title,
+                layer_name: layers[permalink.blayer].title,
                 layers: blayers,
                 create_new_layer: 'Lisa uus WMS kiht',
                 confirm: 'Lisa'
