@@ -63,7 +63,7 @@ define([
                     useSpatialIndex: false
                 }),
                 updateWhileAnimating: true,
-                updateWhileInteracting: true
+                updateWhileInteracting: false
             });
             if (this._config.locateEnabled) {
                 this._geoLocation = new GeoLocation(this);
