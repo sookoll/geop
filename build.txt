@@ -72,6 +72,8 @@ text!tmpl/service/search/search-item.html
 js/app/service/search/map-features.js
 js/lib/bootstrap.min.js
 js/app/service/search/search.js
+js/lib/polyline.js
+js/lib/jsonpack.js
 js/app/service/export.js
 text!tmpl/service/geocache/filter.html
 js/app/service/filter.js
