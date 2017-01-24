@@ -116,7 +116,8 @@ define([
                 handlers,
                 hash,
                 features,
-                json;
+                json,
+                fset;
             this.createUi();
             // todo: comment in
             //this.createLayer();
@@ -132,8 +133,7 @@ define([
             // get permalink
             hash = window.location.hash.split('&hash=');
             if (hash[1]) {
-                console.log(jsonpack.unpack(hash[1]));
-                features = jsonpack.unpack(hash[1]);
+                features = jsonpack.unpack(decodeURIComponent(hash[1]));
                 if (features && features.length) {
                     json = {
                         type: 'FeatureCollection',
@@ -141,7 +141,12 @@ define([
                     };
                     this.clearTrip();
                     if (json) {
-                        this.initTrip(json);
+                        fset = this.initTrip(json);
+                        fset && fset.forEach(function (feature) {
+                            _this._geotrip.push(feature);
+                        });
+
+                        //this.renderTrip();
                     }
                 }
             }
@@ -311,6 +316,7 @@ define([
                 }
             });
             this._mapmodule.get('vectorLayers').getLayers().push(this._layer);
+            return source.features || [];
         },
 
         removeLayer : function () {
@@ -369,7 +375,7 @@ define([
             if (this._layer) {
                 this.removeLayer();
             }
-            this.createLayer(json);
+            var features = this.createLayer(json);
 
             // create filter
             if (this._filter) {
@@ -378,6 +384,7 @@ define([
             }
             this._filter = new Filter(this._layer);
             this._filter.init();
+            return features;
         },
 
         renderTrip : function (e) {
