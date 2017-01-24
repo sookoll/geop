@@ -344,12 +344,15 @@ define([
                 blayer: this._config.activeBaseLayer,
                 zoom: this._config.zoom,
                 center: this._config.center
-            };
+            },
+                hash,
+                parts;
 
             if (window.location.hash !== '') {
                 // try to restore center, zoom-level and rotation from the URL
-                var hash = window.location.hash.replace('#/', '');
-                var parts = hash.split('/');
+                hash = window.location.hash.split('&hash=');
+                hash = hash[0].replace('#map=', '');
+                parts = hash.split('/');
                 if (parts[0]) {
                     permalink.blayer = parts[0];
                 }
@@ -394,7 +397,7 @@ define([
                 return;
             }
 
-            hash = '#/' + this._activeBaseLayer + '/' +
+            hash = '#map=' + this._activeBaseLayer + '/' +
             Math.round(view.getZoom() * 100) / 100 + '/' +
             Math.round(center[1] * 10000) / 10000 + '/' +
             Math.round(center[0] * 10000) / 10000;

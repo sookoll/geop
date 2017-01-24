@@ -13,6 +13,8 @@ requirejs.config({
         "jquery.sortable" : "lib/jquery.fn.sortable",
         "proj4" : "lib/proj4",
         "ol" : "lib/ol-custom",
+        "polyline" : "lib/polyline",
+        "jsonpack" : "lib/jsonpack",
         "config" : "../config",
         "app": "app",
         "tmpl": "../tmpl"
@@ -26,6 +28,9 @@ requirejs.config({
         },
         "ol": {
             exports: 'ol'
+        },
+        "polyline": {
+            exports: 'polyline'
         }
     }
 });

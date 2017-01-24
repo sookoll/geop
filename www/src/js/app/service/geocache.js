@@ -4,6 +4,8 @@ define([
     'jquery',
     'ol',
     'templator',
+    'polyline',
+    'jsonpack',
     'app/service/export',
     'app/service/filter',
     'text!tmpl/service/geocache/tool_loader.html',
@@ -12,7 +14,7 @@ define([
     'text!tmpl/service/geocache/featureinfo_title.html',
     'jquery.bootstrap',
     'jquery.sortable'
-], function ($, ol, Templator, Export, Filter, tmpl_tool_loader, tmpl_geotrip,  tmpl_featureinfo, tmpl_featureinfo_title) {
+], function ($, ol, Templator, polyline, jsonpack, Export, Filter, tmpl_tool_loader, tmpl_geotrip,  tmpl_featureinfo, tmpl_featureinfo_title) {
 
     'use strict';
 
@@ -111,7 +113,10 @@ define([
 
         init : function () {
             var _this = this,
-                handlers;
+                handlers,
+                hash,
+                features,
+                json;
             this.createUi();
             // todo: comment in
             //this.createLayer();
@@ -122,6 +127,23 @@ define([
                 handlers[this._name] = function (feature) {
                     return _this.getContent(feature);
                 };
+            }
+
+            // get permalink
+            hash = window.location.hash.split('&hash=');
+            if (hash[1]) {
+                console.log(jsonpack.unpack(hash[1]));
+                features = jsonpack.unpack(hash[1]);
+                if (features && features.length) {
+                    json = {
+                        type: 'FeatureCollection',
+                        features: features
+                    };
+                    this.clearTrip();
+                    if (json) {
+                        this.initTrip(json);
+                    }
+                }
             }
         },
 
@@ -145,7 +167,7 @@ define([
                     content = $.trim($txt.val()),
                     json;
                 // clear old
-                _this._geotrip.clear();
+                _this.clearTrip();
 
                 if (content.length > 0) {
                     try {
@@ -153,19 +175,7 @@ define([
                     } catch (err) {}
                 }
                 if (json) {
-                    if (_this._layer) {
-                        _this.removeLayer();
-                    }
-                    _this.createLayer(json);
-
-                    // create filter
-                    if (_this._filter) {
-                        _this._filter.off();
-                        _this._filter = null;
-                    }
-                    _this._filter = new Filter(_this._layer);
-                    _this._filter.init();
-
+                    _this.initTrip(json);
                 }
 
                 $txt.val('');
@@ -201,9 +211,11 @@ define([
                     }
                 });
             });
+            // clear trip
             this._el.on('click', '.geotrip ul li button.clear', function (e) {
                 _this.clearTrip();
             });
+            // export trip
             this._el.on('click', '.geotrip ul li a.export-gpx', function (e) {
                 e.preventDefault();
                 var features = [],
@@ -223,10 +235,18 @@ define([
                 }
                 ex = new Export('GPX', 'geotuur.gpx', features);
             });
-
+            // share trip
+            this._el.on('click', '.geotrip ul li button.share', function (e) {
+                var format = new ol.format.GeoJSON(),
+                    json = format.writeFeaturesObject(_this._geotrip.getArray(), {
+                        dataProjection : 'EPSG:4326',
+                        featureProjection : 'EPSG:3857',
+                        decimals: 5
+                    }),
+                    compressed = jsonpack.pack(json.features);
+                window.location.hash += '&hash=' + compressed;
+            });
         },
-
-
 
         createLayer : function (json) {
             var _this = this, source, format;
@@ -252,15 +272,14 @@ define([
                 style: [
                     new ol.style.Style({
                         stroke: new ol.style.Stroke({
-                            color: 'rgba(255, 255, 255, 0.4)',
+                            color: 'rgba(255, 255, 255, 0.6)',
                             width: 7
                         })
                     }),
                     new ol.style.Style({
                         stroke: new ol.style.Stroke({
-                            color: 'rgba(255, 0, 0, 0.7)',
-                            width: 3,
-                            lineDash: [15, 10]
+                            color: 'rgba(0, 0, 0, 0.3)',
+                            width: 5
                         })
                     })
                 ]
@@ -346,6 +365,21 @@ define([
             };
         },
 
+        initTrip : function (json) {
+            if (this._layer) {
+                this.removeLayer();
+            }
+            this.createLayer(json);
+
+            // create filter
+            if (this._filter) {
+                this._filter.off();
+                this._filter = null;
+            }
+            this._filter = new Filter(this._layer);
+            this._filter.init();
+        },
+
         renderTrip : function (e) {
 
             var collection = [''],// empty element for 1 based numbering
@@ -426,7 +460,9 @@ define([
         },
 
         clearTrip : function () {
-            this._route.getSource().clear();
+            if (this._route) {
+                this._route.getSource().clear();
+            }
             this._geotrip.clear();
             var pop = this._mapmodule.get('featureInfo').get('popup');
             if (pop) {
