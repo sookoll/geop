@@ -5,13 +5,14 @@ define([
     'jquery',
     'config/settings',
     'app/map',
+    'app/service/store',
     'app/service/search/search',
     'app/service/geocache',
     'app/service/osm-edit',
     'app/service/data-import',
     'app/service/fullscreen',
     'app/service/wms-layer'
-], function ($, Settings, Map, Search, Geocache, OSMEdit, DataImport, FullScreen, WMSLayer) {
+], function ($, Settings, Map, AppStore, Search, Geocache, OSMEdit, DataImport, FullScreen, WMSLayer) {
 
     'use strict';
 
@@ -39,8 +40,10 @@ define([
             idLink;
         app.init();
 
-        // map module
+        app.store = new AppStore(app);
+        app.store.init();
 
+        // map module
         app.mapmodule = new Map(app.get('settings').map);
         app.mapmodule.init();
 
