@@ -7,7 +7,7 @@ define([], function () {
 
     var OSMEdit = function (el, mapmodule) {
 
-        var href = 'http://openstreetmap.us/iD/release/#editor=id&background=custom:http://kaart.maakaart.ee/orto/{z}/{x}/{y}.jpeg&map=';
+        var href = 'https://www.openstreetmap.org/edit?editor=id#background=custom:http://kaart.maakaart.ee/orto/{z}/{x}/{y}.jpeg&map=';
 
         el.append('<a href="#" id="osm-edit"><i class="fa fa-pencil"></i></a>');
 
