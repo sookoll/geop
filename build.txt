@@ -67,6 +67,8 @@ js/app/service/geolocation.js
 js/lib/text.js
 text!tmpl/map/layerswitcher.html
 js/app/map.js
+js/lib/store.js
+js/app/service/store.js
 text!tmpl/service/search/search.html
 text!tmpl/service/search/search-item.html
 js/app/service/search/map-features.js
