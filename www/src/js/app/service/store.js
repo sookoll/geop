@@ -12,7 +12,7 @@ define([
   };
 
   AppStore.prototype.init = function () {
-    console.log('init')
+    //console.log('init')
   };
 
   return AppStore;

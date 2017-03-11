@@ -15,7 +15,7 @@ requirejs.config({
         "ol" : "lib/ol-custom",
         "polyline" : "lib/polyline",
         "jsonpack" : "lib/jsonpack",
-        "store" : "lib/store",
+        "store" : "lib/store.modern.min",
         "config" : "../config",
         "app": "app",
         "tmpl": "../tmpl"
