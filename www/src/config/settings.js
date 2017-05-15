@@ -89,7 +89,8 @@ define(function () {
             'locateEnabled' : true,
             'clustered' : false,
             'mouseCoordinates' : true,
-            'featureInfo' : true
+            'featureInfo' : true,
+            'scaleLine' : true
         }
     };
 });

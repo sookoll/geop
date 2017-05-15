@@ -13,6 +13,7 @@ requirejs.config({
         "jquery.sortable" : "lib/jquery.fn.sortable",
         "proj4" : "lib/proj4",
         "ol" : "lib/ol-custom",
+        //"ol" : "lib/ol4/ol",
         "polyline" : "lib/polyline",
         "jsonpack" : "lib/jsonpack",
         "store" : "lib/store.modern.min",
