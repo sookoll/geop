@@ -1,8 +1,7 @@
 /* libs */
 @import url("lib/bootstrap.min.css");
 @import url("lib/font-awesome.min.css");
-/*@import url("lib/ol.css");*/
-@import url("lib/ol4/ol.css");
+@import url("lib/ol.css");
 /* app */
 @import url("app/main.css");
 @import url("app/toolbar.css");

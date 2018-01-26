@@ -145,8 +145,7 @@ define([
                 });
 
                 lconf.tileGrid = tileGrid;
-            }
-
+            };
             var layer = new ol.layer.Tile({
                 title: lconf.title,
                 source: new ol.source[lconf.type](lconf)

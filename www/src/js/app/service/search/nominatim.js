@@ -110,7 +110,7 @@ define([
                     lat: coords[1],
                     lon: coords[0],
                     format: 'json',
-                    zoom: zoom,
+                    zoom: Math.round(zoom),
                     addressdetails: 1
                 },
                 dataType: 'json',

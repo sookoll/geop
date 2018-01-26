@@ -11,7 +11,13 @@
         "ol.source.Vector#clear",
         "ol.source.Vector#getExtent",
         "ol.layer.Tile",
+        "ol.layer.Base#setVisible",
+        "ol.layer.Base#getVisible",
+        "ol.layer.Base#setMinResolution",
+        "ol.layer.Base#setMaxResolution",
         "ol.source.OSM",
+        "ol.source.XYZ",
+        "ol.source.TileWMS",
         "ol.Map",
         "ol.Map#getView",
         "ol.Map#addControl",
@@ -36,6 +42,7 @@
         "ol.View#getCenter",
         "ol.View#setCenter",
         "ol.View#setZoom",
+        "ol.View#setRotation",
         "ol.Feature",
         "ol.Feature#getGeometry",
         "ol.Feature#setGeometry",
@@ -64,7 +71,7 @@
         "ol.format.GPX#writeFeatures",
         "ol.format.GeoJSON",
         "ol.format.GeoJSON#readFeatures",
-        "ol.format.GeoJSON#writeFeatures",
+        "ol.format.GeoJSON#writeFeaturesObject",
         "ol.Overlay",
         "ol.Overlay#setPosition",
         "ol.Collection",
@@ -78,19 +85,29 @@
         "ol.Collection#forEach",
         "ol.Collection#clear",
         "ol.proj.Projection",
+        "ol.proj.Projection#setExtent",
+        "ol.proj.Projection#getExtent",
         "ol.proj.setProj4",
         "ol.proj.get",
         "ol.proj.transform",
         "ol.proj.transformExtent",
         "ol.Geolocation",
-        "ol.Geolocation#*"
+        "ol.Geolocation#*",
+        "ol.extent.getWidth",
+        "ol.tilegrid.TileGrid"
     ],
     "compile": {
         "externs": [
-            "externs/oli.js",
-            "externs/olx.js",
-            "externs/closure-compiler.js",
-            "externs/geojson.js"
+          "externs/bingmaps.js",
+          "externs/cartodb.js",
+          "externs/closure-compiler.js",
+          "externs/esrijson.js",
+          "externs/geojson.js",
+          "externs/oli.js",
+          "externs/olx.js",
+          "externs/proj4js.js",
+          "externs/tilejson.js",
+          "externs/topojson.js"
         ],
         "define": [
             "ol.ENABLE_DOM=false",
@@ -98,7 +115,7 @@
             "ol.ENABLE_PROJ4JS=true",
             "ol.ENABLE_IMAGE=false",
             "ol.ENABLE_NAMED_COLORS=false",
-            "ol.ENABLE_RASTER_REPROJECTION=false",
+            "ol.ENABLE_RASTER_REPROJECTION=true",
             "ol.ENABLE_VECTOR_TILE=false",
             "goog.array.ASSUME_NATIVE_FUNCTIONS=true",
             "goog.dom.ASSUME_STANDARDS_MODE=true",
@@ -112,7 +129,8 @@
             "api",
             "observable"
         ],
-        "compilation_level": "ADVANCED_OPTIMIZATIONS",
-        "manage_closure_dependencies": true
+        "compilation_level": "ADVANCED",
+        "manage_closure_dependencies": true,
+        "rewrite_polyfills": false
     }
 }
