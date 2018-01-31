@@ -1,0 +1,1 @@
+define([],function(){"use strict";function t(t,e){this._name="measure"}return Geocache.prototype={get:function(t){return this["_"+t]},init:function(){this.createUi()},createUi:function(){}},t});
