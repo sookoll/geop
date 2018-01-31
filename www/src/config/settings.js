@@ -90,7 +90,8 @@ define(function () {
             'clustered' : false,
             'mouseCoordinates' : true,
             'featureInfo' : true,
-            'scaleLine' : true
+            'scaleLine' : true,
+            'measureTool': false
         }
     };
 });

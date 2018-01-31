@@ -20,7 +20,6 @@ define([
 
     function Map(config) {
 
-
         var proj3301 = ol.proj.get('EPSG:3301');
         proj3301.setExtent([40500, 5993000, 1064500, 7017000]);
 
@@ -74,6 +73,10 @@ define([
             });
             if (this._config.locateEnabled) {
                 this._geoLocation = new GeoLocation(this);
+            }
+            if (this._config.measureTool) {
+                this._measure = new Measure(this);
+                this._measure.init();
             }
             this.activatePermalink();
         },
@@ -275,15 +278,6 @@ define([
         },
 
         createScaleLineControl : function () {
-            /*var control = new ol.control.MousePosition({
-                coordinateFormat: function (coord) {
-                    return ol.coordinate.format(coord, '{y}, {x}', 5);
-                },
-                projection: 'EPSG:4326',
-                className: 'pull-left',
-                target: $('#statusbar .mouse-position')[0],
-                undefinedHTML: ''
-            });*/
             var control = new ol.control.ScaleLine({
               className: 'ol-scale-line',
               target: $('#statusbar .scale-line')[0]
