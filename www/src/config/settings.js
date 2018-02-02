@@ -17,13 +17,6 @@ define(function () {
             'zoom' : 7,
             'extent' : [21, 57, 29, 60],
             'baseLayers' : {
-                osm_et : {
-                    type: 'OSM',
-                    title: 'OSM Eesti',
-                    url: 'http://kaart.maakaart.ee/osm/tiles/1.0.0/osm_EPSG900913/{z}/{x}/{y}.png?origin=nw',
-                    projection: 'EPSG:3857',
-                    crossOrigin: null
-                },
                 osm : {
                     type: 'OSM',
                     title: 'OSM',
@@ -37,7 +30,9 @@ define(function () {
                     projection: 'EPSG:3301',
                     layers: [{
                         type: 'XYZ',
-                        url: 'http://tiles.maaamet.ee/tm/s/1.0.0/foto/{z}/{x}/{-y}.jpg',
+                        projection: 'EPSG:3857',
+                        //url: 'http://tiles.maaamet.ee/tm/s/1.0.0/foto/{z}/{x}/{-y}.jpg',
+                        url: 'http://tiles.maaamet.ee/tm/tms/1.0.0/foto@GMC/{z}/{x}/{-y}.png',
                         minResolution: 1,
                         crossOrigin: null
                     }, {

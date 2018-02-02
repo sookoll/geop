@@ -98,7 +98,9 @@ define([
                     if (layers[name].type === 'Group') {
                         for (i = 0, len = layers[name].layers.length; i < len; i++) {
                             // add projection to sublayer
-                            layers[name].layers[i].projection = layers[name].projection;
+                            if (!layers[name].layers[i].projection) {
+                              layers[name].layers[i].projection = layers[name].projection;
+                            }
                             if (layers[name].layers[i].type.slice(0, prefix.length) === prefix) {
                                 layer = this.createImageLayer(layers[name].layers[i]);
                             } else {
