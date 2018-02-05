@@ -1,4 +1,8 @@
 
+css/app/contextmenu.css
+----------------
+css/app/contextmenu.css
+
 css/app/featureinfo.css
 ----------------
 css/app/featureinfo.css
@@ -39,6 +43,7 @@ css/app/search.css
 css/app/featureinfo.css
 css/app/osm-edit.css
 css/app/wms-layer.css
+css/app/contextmenu.css
 css/app.css
 
 css/lib/bootstrap.min.css
@@ -64,6 +69,8 @@ js/app/service/search/coordinates.js
 js/app/service/search/nominatim.js
 js/app/service/featureinfo.js
 js/app/service/geolocation.js
+js/app/service/measure.js
+js/app/service/contextmenu.js
 js/lib/text.js
 text!tmpl/map/layerswitcher.html
 js/app/map.js
