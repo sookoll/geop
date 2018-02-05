@@ -11,7 +11,7 @@ define([], function () {
 
     };
 
-    Geocache.prototype = {
+    Measure.prototype = {
         get: function (key) {
             return this['_' + key];
         },

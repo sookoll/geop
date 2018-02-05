@@ -8,8 +8,10 @@ define([
     'templator',
     'app/service/featureinfo',
     'app/service/geolocation',
+    'app/service/measure',
+    'app/service/contextmenu',
     'text!tmpl/map/layerswitcher.html'
-], function ($, ol, proj4, Templator, FeatureInfo, GeoLocation, tmpl_layerswitcher) {
+], function ($, ol, proj4, Templator, FeatureInfo, GeoLocation, Measure, ContextMenu, tmpl_layerswitcher) {
 
     'use strict';
 
@@ -78,7 +80,13 @@ define([
                 this._measure = new Measure(this);
                 this._measure.init();
             }
+            this._contextmenu = new ContextMenu(this);
+            this._contextmenu.init();
             this.activatePermalink();
+            // do not listen mousemove when on Overlay
+            $('.ol-overlaycontainer-stopevent').on('pointermove', function(e){
+                e.stopPropagation();
+            });
         },
 
         createBaseLayers : function (layers, permalink) {
