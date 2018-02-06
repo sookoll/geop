@@ -70,7 +70,6 @@ js/app/service/search/nominatim.js
 js/app/service/featureinfo.js
 js/app/service/geolocation.js
 js/app/service/measure.js
-js/app/service/contextmenu.js
 js/lib/text.js
 text!tmpl/map/layerswitcher.html
 js/app/map.js
@@ -98,4 +97,5 @@ js/app/service/fullscreen.js
 text!tmpl/service/wms-layers.html
 text!tmpl/service/wms-modal.html
 js/app/service/wms-layer.js
+js/app/service/contextmenu.js
 js/app/main.js
