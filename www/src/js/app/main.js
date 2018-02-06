@@ -11,8 +11,21 @@ define([
     'app/service/osm-edit',
     'app/service/data-import',
     'app/service/fullscreen',
-    'app/service/wms-layer'
-], function ($, Settings, Map, AppStore, Search, Geocache, OSMEdit, DataImport, FullScreen, WMSLayer) {
+    'app/service/wms-layer',
+    'app/service/contextmenu'
+], function (
+    $,
+    Settings,
+    Map,
+    AppStore,
+    Search,
+    Geocache,
+    OSMEdit,
+    DataImport,
+    FullScreen,
+    WMSLayer,
+    ContextMenu
+) {
 
     'use strict';
 
@@ -66,6 +79,22 @@ define([
 
         // full screen
         app.fullscreen = new FullScreen($('.btn-fullscreen'));
+
+        // contextmenu
+        var context = [{
+          icon: 'fa fa-map-marker',
+          content: function (coord) {
+              return ol.coordinate.format(app.mapmodule.transform('point', coord, 'EPSG:3857', 'EPSG:4326'), '{y}, {x}', 5);
+          }
+        }, {
+          icon: 'fa fa-street-view',
+          content: function (coord) {
+              var formatted = ol.coordinate.format(app.mapmodule.transform('point', coord, 'EPSG:3857', 'EPSG:4326'), '{y}, {x}', 5);
+              return '<a target="streetview" href="' + app.get('settings').streetview_url + formatted + '">Google Streetview</a>';
+          }
+        }];
+        app.contextmenu = new ContextMenu(app.mapmodule);
+        app.contextmenu.init(context);
 
         // info
         $('#statusbar a.info-toggle').on('click', function (e) {

@@ -4,7 +4,6 @@
 define([], function () {
 
     'use strict';
-    var streetview_url = 'http://maps.google.com/maps?q=&layer=c&cbll=';
 
     function ContextMenu(mapmodule) {
         this._name = 'contextmenu';
@@ -17,8 +16,9 @@ define([], function () {
             return this['_' + key];
         },
 
-        init: function () {
+        init: function (items) {
             var t = this;
+            this._items = items;
             this.createUi();
             this._map.on('click', function (e) {
                 this._popup.popover('destroy');
@@ -65,17 +65,17 @@ define([], function () {
         },
 
         getContent : function (coord) {
-          var formatted = ol.coordinate.format(this._mapmodule.transform('point', coord, 'EPSG:3857', 'EPSG:4326'), '{y}, {x}', 5);
+          var content = this._items.map(function (item) {
+              var icon = '<i class="' + (item.icon? item.icon : 'fa fa-chevron-circle-right') + '"></i>';
+              var cont = (typeof item.content === 'function')? item.content(coord) : item.content;
+              return '<li class="list-group-item">' + icon + ' ' + cont + '</li>';
+          });
           return {
               'definition' : {
                   'placement': 'right',
                   'animation': false,
                   'html': true,
-                  //'title': '<i class="fa fa-map-marker"></i> ' + formatted,
-                  'content': [
-                      '<li class="list-group-item"><i class="fa fa-map-marker"></i> ' + formatted + '</li>',
-                      '<li class="list-group-item"><i class="fa fa-street-view"></i> <a target="streetview" href="' + streetview_url + formatted + '">Google Streetview</a></li>'
-                  ].join(''),
+                  'content': content.join(''),
                   'template': '<div class="popover contextmenu"><div class="arrow"></div><div class="popover-content"></div></div>'
               },
               'onShow' : function () {},

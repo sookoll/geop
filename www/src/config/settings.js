@@ -87,6 +87,7 @@ define(function () {
             'featureInfo' : true,
             'scaleLine' : true,
             'measureTool': false
-        }
+        },
+        streetview_url: 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint='
     };
 });
