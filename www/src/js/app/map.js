@@ -48,6 +48,15 @@ define([
             return this['_' + key];
         },
 
+        // convert radians to degrees
+        radToDeg: function (rad) {
+          return rad * 360 / (Math.PI * 2);
+        },
+        // convert degrees to radians
+        degToRad: function (deg) {
+          return deg * Math.PI * 2 / 360;
+        },
+
         init : function () {
             var permalink = this.getPermalink(),
                 t = this;
