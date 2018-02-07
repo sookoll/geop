@@ -2,7 +2,8 @@
     cursor: default;
     z-index: 999;
 }
-.popover-title a.cache-toggle {
+.popover-title a.cache-toggle,
+.popover-title a.remove-marker {
     position: absolute;
     right: 14px;
     padding-left:3px;

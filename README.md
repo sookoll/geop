@@ -18,7 +18,7 @@ Copy vendor/ol/ol-custom.json to ol3/build/
 
     $ node tasks/build.js build/ol-custom.json build/ol-custom.js
 
-Copy build/ol-custom.js to src/lib/
+Copy build/ol-custom.js to src/js/lib/
 
 ### To build app:
 

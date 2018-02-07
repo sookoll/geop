@@ -13,13 +13,13 @@ define([
 
     'use strict';
 
+    ol.proj.setProj4(proj4);
     proj4.defs("EPSG:3301", "+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
     proj4.defs("EPSG:32634", "+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs");
     proj4.defs("EPSG:32635", "+proj=utm +zone=35 +datum=WGS84 +units=m +no_defs");
 
     function Map(config) {
 
-        ol.proj.setProj4(proj4);
         var proj3301 = ol.proj.get('EPSG:3301');
         proj3301.setExtent([40500, 5993000, 1064500, 7017000]);
 
@@ -49,12 +49,16 @@ define([
         },
 
         init : function () {
-            var permalink = this.getPermalink();
+            var permalink = this.getPermalink(),
+                t = this;
             this.createBaseLayers(this._config.baseLayers, permalink);
             this.createMap(permalink);
             this.createLayerSwitcher(this._config.baseLayers, permalink);
             if (this._config.mouseCoordinates) {
                 this.createMouseCoordinatesControl();
+            }
+            if (this._config.scaleLine) {
+                this.createScaleLineControl();
             }
             if (this._config.featureInfo) {
                 this._featureInfo = new FeatureInfo(this);
@@ -71,7 +75,12 @@ define([
             if (this._config.locateEnabled) {
                 this._geoLocation = new GeoLocation(this);
             }
+            // permalink
             this.activatePermalink();
+            // do not listen mousemove when on Overlay
+            $('.ol-overlaycontainer-stopevent').on('pointermove', function(e){
+                e.stopPropagation();
+            });
         },
 
         createBaseLayers : function (layers, permalink) {
@@ -91,7 +100,9 @@ define([
                     if (layers[name].type === 'Group') {
                         for (i = 0, len = layers[name].layers.length; i < len; i++) {
                             // add projection to sublayer
-                            layers[name].layers[i].projection = layers[name].projection;
+                            if (!layers[name].layers[i].projection) {
+                              layers[name].layers[i].projection = layers[name].projection;
+                            }
                             if (layers[name].layers[i].type.slice(0, prefix.length) === prefix) {
                                 layer = this.createImageLayer(layers[name].layers[i]);
                             } else {
@@ -141,8 +152,7 @@ define([
                 });
 
                 lconf.tileGrid = tileGrid;
-            }
-
+            };
             var layer = new ol.layer.Tile({
                 title: lconf.title,
                 source: new ol.source[lconf.type](lconf)
@@ -271,6 +281,14 @@ define([
             this._map.addControl(control);
         },
 
+        createScaleLineControl : function () {
+            var control = new ol.control.ScaleLine({
+              className: 'ol-scale-line',
+              target: $('#statusbar .scale-line')[0]
+            });
+            this._map.addControl(control);
+        },
+
         transform : function (method, geom, crs_from, crs_to) {
             if (proj4.defs(crs_from) && proj4.defs(crs_to)) {
                 switch (method) {
@@ -316,24 +334,47 @@ define([
             return fset;
         },
 
-        createMarker : function (coords) {
+        addMarker: function (coord, props) {
+            var marker = this.createMarker(coord, props);
+            var layer = this._vectorLayers.getLayers().getArray().filter(function (layer) {
+                if (layer.get('name') === 'markers') {
+                    return layer;
+                }
+            })[0];
+            if (!layer) {
+                layer = new ol.layer.Vector({
+                  source: new ol.source.Vector(),
+                  name: 'markers'
+                });
+            }
+            layer.getSource().addFeatures([marker]);
+            this._vectorLayers.getLayers().remove(layer);
+            this._vectorLayers.getLayers().push(layer);
+        },
+
+        createMarker : function (coords, props) {
             var f =  new ol.Feature();
             if (coords) {
                 f.setGeometry(new ol.geom.Point(coords));
             } else {
                 f.setGeometry(null);
             }
+            if (props) {
+                f.setProperties(props);
+            }
             f.setStyle(new ol.style.Style({
-                image: new ol.style.Circle({
-                    radius: 6,
-                    fill: new ol.style.Fill({
-                        color: '#3399CC'
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: '#fff',
-                        width: 3
-                    })
-                })
+              text: new ol.style.Text({
+                  text: '\uf276',
+                  font: 'normal 16px FontAwesome',
+                  textBaseline: 'bottom',
+                  fill: new ol.style.Fill({
+                      color: 'black'
+                  }),
+                  stroke: new ol.style.Stroke({
+                      color: '#fff',
+                      width: 4
+                  })
+              })
             }));
             return f;
         },

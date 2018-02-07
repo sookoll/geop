@@ -48,3 +48,13 @@
     color: #777;
     pointer-events: none;
 }
+#statusbar .scale-line {
+
+}
+#statusbar .scale-line .ol-scale-line {
+  position: relative;
+  background: transparent;
+  bottom: -3px;
+  left: 0;
+  line-height: 10px;
+}

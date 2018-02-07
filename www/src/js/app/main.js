@@ -11,8 +11,23 @@ define([
     'app/service/osm-edit',
     'app/service/data-import',
     'app/service/fullscreen',
-    'app/service/wms-layer'
-], function ($, Settings, Map, AppStore, Search, Geocache, OSMEdit, DataImport, FullScreen, WMSLayer) {
+    'app/service/wms-layer',
+    'app/service/measure',
+    'app/service/contextmenu'
+], function (
+    $,
+    Settings,
+    Map,
+    AppStore,
+    Search,
+    Geocache,
+    OSMEdit,
+    DataImport,
+    FullScreen,
+    WMSLayer,
+    Measure,
+    ContextMenu
+) {
 
     'use strict';
 
@@ -66,6 +81,43 @@ define([
 
         // full screen
         app.fullscreen = new FullScreen($('.btn-fullscreen'));
+
+        // measure
+        if (app.get('settings').map.measureTool) {
+            app.measure = new Measure(app.mapmodule);
+        }
+
+        // contextmenu
+        var context = [{
+          icon: 'fa fa-map-marker',
+          content: function (coord) {
+              return ol.coordinate.format(app.mapmodule.transform('point', coord, 'EPSG:3857', 'EPSG:4326'), '{y}, {x}', 5);
+          },
+          onclick: function (e, coord) {
+              var xy = ol.coordinate.format(app.mapmodule.transform('point', coord, 'EPSG:3857', 'EPSG:4326'), '{y}, {x}', 5);
+              app.mapmodule.addMarker(coord, {'WGS84': xy});
+          },
+          closeonclick: true
+        }, {
+          icon: 'fa fa-street-view',
+          content: function (coord) {
+              var formatted = ol.coordinate.format(app.mapmodule.transform('point', coord, 'EPSG:3857', 'EPSG:4326'), '{y}, {x}', 5);
+              return '<a target="streetview" href="' + app.get('settings').streetview_url + formatted + '">Streetview</a>';
+          }
+        }];
+        // add measure
+        if (app.get('settings').map.measureTool) {
+            context.push({
+              icon: 'gp-icon gp-icon-ruler',
+              content: 'Mõõda',
+              onclick: function (e, coord) {
+                  app.measure.init(coord);
+              },
+              closeonclick: true
+            })
+        }
+        app.contextmenu = new ContextMenu(app.mapmodule);
+        app.contextmenu.init(context);
 
         // info
         $('#statusbar a.info-toggle').on('click', function (e) {
