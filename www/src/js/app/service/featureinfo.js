@@ -156,7 +156,7 @@ define([
                     this._overlay.setOffset([0, -12]);
                 } else {
                     pop_content = this.getContent(feature[1], feature[0]);
-                    this._overlay.setOffset([0, -36]);
+                    this._overlay.setOffset([0, -18]);
                 }
                 this._overlay.setPosition(coord);
                 this._popup.popover(pop_content.definition).popover('show');

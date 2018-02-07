@@ -364,8 +364,8 @@ define([
             }
             f.setStyle(new ol.style.Style({
               text: new ol.style.Text({
-                  text: '\uf041',
-                  font: 'normal 36px FontAwesome',
+                  text: '\uf276',
+                  font: 'normal 16px FontAwesome',
                   textBaseline: 'bottom',
                   fill: new ol.style.Fill({
                       color: 'black'
