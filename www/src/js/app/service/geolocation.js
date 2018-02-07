@@ -15,6 +15,22 @@ define([
             position: this._mapmodule.createMarker(null),
             accuracy: new ol.Feature()
         };
+        this._features.position.setStyle(new ol.style.Style({
+            text: new ol.style.Text({
+                text: '\uf124',
+                class: 'fa fa-location-arrow',
+                font: 'normal 24px FontAwesome',
+                rotation: -45 * Math.PI / 180,
+                textBaseline: 'middle',
+                fill: new ol.style.Fill({
+                    color: '#44C9DA'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#fff',
+                    width: 6
+                })
+            })
+        }));
         this._firstposition = true;
         this.init();
     }
@@ -27,8 +43,9 @@ define([
             this._locator = new ol.Geolocation({
                 projection: this._mapmodule.get('map').getView().getProjection(),
                 trackingOptions: {
-                  enableHighAccuracy: true,
-                  maximumAge: 0
+                  enableHighAccuracy: false,
+                  maximumAge: 15000,
+                  timeout: 30000
                 }
             });
 
@@ -38,12 +55,12 @@ define([
                 })
             }));
 
-            /*this._locator.on('change:accuracyGeometry', function () {
-                _this._features.accuracy.setGeometry(_this._locator.getAccuracyGeometry());
-            });*/
-
-            this._locator.on('change:position', function () {
+            this._locator.on('change', function () {
                 var coordinates = _this._locator.getPosition();
+                var rad = _this._locator.getHeading();
+                if (rad) {
+                    this._mapmodule.get('map').getView().setRotation(rad);
+                }
                 if (coordinates) {
                     _this._features.position.setGeometry(new ol.geom.Point(coordinates));
                     if (_this._firstposition) {
@@ -52,26 +69,10 @@ define([
                     } else {
                       _this._mapmodule.setView('center', [coordinates]);
                     }
+                    _this._mapmodule.get('featureInfo').setPositionInfo(coordinates);
                 } else {
                     _this._features.position.setGeometry(null);
                 }
-            });
-
-            this._locator.on('change:heading', function () {
-                var rad = _this._locator.getHeading();
-                if (rad) {
-                    this._mapmodule.get('map').getView().setRotation(rad)
-                }
-            });
-
-            this._locator.on('change', function () {
-                _this._mapmodule.get('featureInfo').setPositionInfo(_this._locator.getPosition());
-            });
-            // handle geolocation error.
-            this._locator.on('error', function (error) {
-                //var info = document.getElementById('info');
-                //info.innerHTML = error.message;
-                //info.style.display = '';
             });
 
             $('#statusbar a.btn-geolocation').on('click', function (e) {
@@ -83,7 +84,6 @@ define([
                     _this.enable();
                     $(this).addClass('active');
                 }
-
             });
         },
 

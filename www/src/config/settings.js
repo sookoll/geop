@@ -86,7 +86,7 @@ define(function () {
             'mouseCoordinates' : true,
             'featureInfo' : true,
             'scaleLine' : true,
-            'measureTool': false
+            'measureTool': true
         },
         streetview_url: 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint='
     };

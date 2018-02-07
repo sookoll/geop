@@ -6,9 +6,9 @@ define([
     'ol',
     'app/service/search/nominatim'
 ], function ($, ol, Nominatim) {
-    
+
     'use strict';
-    
+
     function FeatureInfo(mapmodule) {
         this._mapmodule = mapmodule;
         this._map = mapmodule.get('map');
@@ -20,17 +20,17 @@ define([
         this._infoHandlers = {};
         this.init();
     }
-    
+
     FeatureInfo.prototype = {
-        
+
         get : function (key) {
             return this['_' + key];
         },
-        
+
         init : function () {
             this.createFeatureTooltip();
             this.createFeatureInfo();
-            
+
             // listen lock events
             $('#statusbar .geolocation a.unlock').on('click', function (e) {
                 e.preventDefault();
@@ -43,11 +43,11 @@ define([
                 $('#statusbar .geolocation').removeClass('hidden');
             });
         },
-        
+
         createFeatureTooltip : function () {
             var _this = this,
                 tooltipVisible = false;
-            
+
             this._tooltip = new ol.layer.Vector({
                 map: _this._map,
                 source: new ol.source.Vector({
@@ -74,14 +74,14 @@ define([
                     return _this._styleCache[text];
                 }
             });
-            
+
             this._map.on('pointermove', function (e) {
                 if (e.dragging) {
                     return;
                 }
                 var pixel = _this._map.getEventPixel(e.originalEvent),
                     hit = _this._map.hasFeatureAtPixel(pixel);
-                
+
                 if (hit) {
                     _this._map.getTarget().style.cursor = 'pointer';
                     tooltipVisible = _this.showTooltip(e.pixel);
@@ -89,10 +89,10 @@ define([
                     _this._map.getTarget().style.cursor = hit ? 'pointer' : '';
                     tooltipVisible = _this.showTooltip();
                 }
-                
+
             });
         },
-        
+
         showTooltip : function (px) {
             // if !px then remove tooltip and return false
             if (!px) {
@@ -112,61 +112,69 @@ define([
             }
             return true;
         },
-        
+
         createFeatureInfo : function () {
-            var _this = this, overlay;
             this._popup = $('<div id="popup"></div>');
-            
-            overlay = new ol.Overlay({
+            this._overlay = new ol.Overlay({
                 element: this._popup[0],
                 autoPan: true,
                 autoPanMargin: 50,
                 positioning: 'center-center',
-                offset: [0, -10]
+                offset: [0, -16]
             });
-            _this._map.addOverlay(overlay);
-
-            // display popup on click
-            _this._map.on('click', function (e) {
-                var geometry, pop_content,
-                    coord = e.coordinate,
-                    feature = _this._map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
-                        return [layer, feature];
-                    });
-                _this._popup.popover('destroy');
-                
-                if (feature) {
-                    // remove tooltip
-                    _this._tooltip.getSource().clear();
-                    // if point, then geometry coords
-                    if (feature[1].getGeometry().getType() === 'Point') {
-                        coord = feature[1].getGeometry().getCoordinates();
-                    }
-                    
-                    if (feature[0] && _this._infoHandlers[feature[0].get('name')]) {
-                        pop_content = _this._infoHandlers[feature[0].get('name')](feature[1]);
-                    } else {
-                        pop_content = _this.getContent(feature[1]);
-                    }
-                    overlay.setPosition(coord);
-                    _this._popup.popover(pop_content.definition).popover('show');
-                    // when popover's content is shown
-                    _this._popup.on('shown.bs.popover', function () {
-                        pop_content.onShow(feature[1]);
-                    });
-                    // when popover's content is hidden
-                    _this._popup.on('hidden.bs.popover', pop_content.onHide);
-                    _this._popup.popover('show');
-                    
-                } else if ($('#statusbar .mouse-position').hasClass('hidden')) {
-                    // capture coordinates
-                    _this.setPositionInfo(coord);
-                }
-            });
-
+            this._map.addOverlay(this._overlay);
+            this.enableClick();
         },
-        
-        getContent : function (feature, coords) {
+
+        enableClick: function () {
+            this._map.on('click', this.clicked, this);
+        },
+
+        disableClick: function () {
+            this._map.un('click', this.clicked, this);
+        },
+
+        clicked: function (e) {
+            var geometry, pop_content,
+                coord = e.coordinate,
+                feature = this._map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
+                    if (layer) {
+                      return [layer, feature];
+                    }
+                });
+
+            this._popup.popover('destroy');
+            if (feature) {
+                // remove tooltip
+                this._tooltip.getSource().clear();
+                // if point, then geometry coords
+                if (feature[1].getGeometry().getType() === 'Point') {
+                    coord = feature[1].getGeometry().getCoordinates();
+                }
+                if (feature[0] && this._infoHandlers[feature[0].get('name')]) {
+                    pop_content = this._infoHandlers[feature[0].get('name')](feature[1]);
+                    this._overlay.setOffset([0, -12]);
+                } else {
+                    pop_content = this.getContent(feature[1], feature[0]);
+                    this._overlay.setOffset([0, -36]);
+                }
+                this._overlay.setPosition(coord);
+                this._popup.popover(pop_content.definition).popover('show');
+                // when popover's content is shown
+                this._popup.on('shown.bs.popover', function (e) {
+                    pop_content.onShow(feature, e);
+                });
+                // when popover's content is hidden
+                this._popup.on('hidden.bs.popover', pop_content.onHide);
+                this._popup.popover('show');
+            } else if ($('#statusbar .mouse-position').hasClass('hidden')) {
+                // capture coordinates
+                this.setPositionInfo(coord);
+            }
+        },
+
+        getContent : function (feature, layer) {
+            var t = this;
             if (feature) {
                 var prop = feature.getProperties(), key, content = [];
                 for (key in prop) {
@@ -174,34 +182,30 @@ define([
                         content.push(key + ': ' + prop[key]);
                     }
                 }
+                var title = '<i class="fa fa-map-marker"></i> Kaardiobjekt<a href="#" class="remove-marker" title="Eemalda"><i class="fa fa-trash"></i></a>';
                 return {
                     'definition' : {
                         'placement': 'top',
                         'animation': false,
                         'html': true,
-                        'title': '<i class="fa fa-map-marker"></i> Kaardiobjekt',
+                        'title': title,
                         'content': '<div class="small">' + content.join('<br>') + '</div>'
                     },
-                    'onShow' : function () {},
-                    'onHide' : function () {}
-                };
-            } else {
-                // map click
-                return {
-                    'definition' : {
-                        'placement': 'top',
-                        'animation': false,
-                        'html': true,
-                        'title': '<i class="fa fa-map-marker"></i> Koordinaadid',
-                        'content': '<div class="small">' + coords.join(', ') + '</div>'
+                    'onShow' : function (f, e) {
+                        $(e.currentTarget.nextSibling).on('click', '.remove-marker', function (e) {
+                            e.preventDefault();
+                            if (f[0]) {
+                                f[0].getSource().removeFeature(f[1]);
+                                t._popup.popover('destroy');
+                            }
+
+                        })
                     },
-                    'onShow' : function () {},
                     'onHide' : function () {}
                 };
             }
-                
         },
-        
+
         setPositionInfo : function (coord) {
             var _this = this;
             $('#statusbar .geolocation').find('div').html(function () {
@@ -222,9 +226,9 @@ define([
                 }
             );
         }
-        
+
     };
 
     return FeatureInfo;
-    
+
 });

@@ -119,6 +119,7 @@ define([
                 json,
                 fset;
             this.createUi();
+
             // todo: comment in
             //this.createLayer();
 
@@ -358,10 +359,10 @@ define([
                     $('a.cache-toggle').on('click', function (e) {
                         e.preventDefault();
                         $(this).find('i').toggleClass('fa-thumb-tack fa-minus-square');
-                        if ($.inArray(feature, _this._geotrip.getArray()) > -1) {
-                            _this._geotrip.remove(feature);
+                        if ($.inArray(feature[1], _this._geotrip.getArray()) > -1) {
+                            _this._geotrip.remove(feature[1]);
                         } else {
-                            _this._geotrip.push(feature);
+                            _this._geotrip.push(feature[1]);
                         }
                     });
                 },

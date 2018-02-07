@@ -8,9 +8,8 @@ define([
     'templator',
     'app/service/featureinfo',
     'app/service/geolocation',
-    'app/service/measure',
     'text!tmpl/map/layerswitcher.html'
-], function ($, ol, proj4, Templator, FeatureInfo, GeoLocation, Measure, tmpl_layerswitcher) {
+], function ($, ol, proj4, Templator, FeatureInfo, GeoLocation, tmpl_layerswitcher) {
 
     'use strict';
 
@@ -75,11 +74,6 @@ define([
             });
             if (this._config.locateEnabled) {
                 this._geoLocation = new GeoLocation(this);
-            }
-
-            if (this._config.measureTool) {
-                this._measure = new Measure(this);
-                this._measure.init();
             }
             // permalink
             this.activatePermalink();
@@ -340,24 +334,47 @@ define([
             return fset;
         },
 
-        createMarker : function (coords) {
+        addMarker: function (coord, props) {
+            var marker = this.createMarker(coord, props);
+            var layer = this._vectorLayers.getLayers().getArray().filter(function (layer) {
+                if (layer.get('name') === 'markers') {
+                    return layer;
+                }
+            })[0];
+            if (!layer) {
+                layer = new ol.layer.Vector({
+                  source: new ol.source.Vector(),
+                  name: 'markers'
+                });
+            }
+            layer.getSource().addFeatures([marker]);
+            this._vectorLayers.getLayers().remove(layer);
+            this._vectorLayers.getLayers().push(layer);
+        },
+
+        createMarker : function (coords, props) {
             var f =  new ol.Feature();
             if (coords) {
                 f.setGeometry(new ol.geom.Point(coords));
             } else {
                 f.setGeometry(null);
             }
+            if (props) {
+                f.setProperties(props);
+            }
             f.setStyle(new ol.style.Style({
-                image: new ol.style.Circle({
-                    radius: 6,
-                    fill: new ol.style.Fill({
-                        color: '#3399CC'
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: '#fff',
-                        width: 3
-                    })
-                })
+              text: new ol.style.Text({
+                  text: '\uf041',
+                  font: 'normal 36px FontAwesome',
+                  textBaseline: 'bottom',
+                  fill: new ol.style.Fill({
+                      color: 'black'
+                  }),
+                  stroke: new ol.style.Stroke({
+                      color: '#fff',
+                      width: 4
+                  })
+              })
             }));
             return f;
         },

@@ -56,8 +56,8 @@ define([], function () {
             this._overlay.setPosition(coord);
             this._popup.popover(pop_content.definition);
             // when popover's content is shown
-            this._popup.on('shown.bs.popover', function () {
-                pop_content.onShow();
+            this._popup.on('shown.bs.popover', function (e) {
+                pop_content.onShow(e);
             });
             // when popover's content is hidden
             this._popup.on('hidden.bs.popover', pop_content.onHide);
@@ -65,10 +65,11 @@ define([], function () {
         },
 
         getContent : function (coord) {
-          var content = this._items.map(function (item) {
+          var t = this;
+          var content = this._items.map(function (item, i) {
               var icon = '<i class="' + (item.icon? item.icon : 'fa fa-chevron-circle-right') + '"></i>';
               var cont = (typeof item.content === 'function')? item.content(coord) : item.content;
-              return '<li class="list-group-item">' + icon + ' ' + cont + '</li>';
+              return '<li class="list-group-item item-' + i + '">' + icon + ' ' + cont + '</li>';
           });
           return {
               'definition' : {
@@ -76,9 +77,21 @@ define([], function () {
                   'animation': false,
                   'html': true,
                   'content': content.join(''),
-                  'template': '<div class="popover contextmenu"><div class="arrow"></div><div class="popover-content"></div></div>'
+                  'template': '<div class="popover contextmenu"><div class="arrow"></div><div class="popover-content small"></div></div>'
               },
-              'onShow' : function () {},
+              'onShow' : function (e) {
+                  t._items.forEach(function (item, i) {
+                      if (typeof item.onclick === 'function') {
+                          $(e.currentTarget.nextSibling).on('click', '.item-' + i, function (evt) {
+                              e.preventDefault();
+                              item.onclick(evt, coord);
+                              if (item.closeonclick) {
+                                  t._popup.popover('destroy');
+                              }
+                          })
+                      }
+                  })
+              },
               'onHide' : function () {}
           };
         },

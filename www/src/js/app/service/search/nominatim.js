@@ -36,20 +36,17 @@ define([
             if (this._xhr && typeof this._xhr.abort === 'function') {
                 this._xhr.abort();
             }
-            this._mapmodule.get('overlay').getSource().clear();
         },
 
         find : function (query, cb, context) {
             // test coordinates
             var coords = this._coordinateParser.test(query),
-                overlay = this._mapmodule.get('overlay'),
                 _this = this,
                 clone;
             this._results = null;
             if (coords && coords.srid) {
-                overlay.getSource().clear();
                 clone = this._mapmodule.transform('point', [coords.x, coords.y], coords.srid, 'EPSG:3857');
-                overlay.getSource().addFeatures([this._mapmodule.createMarker(clone)]);
+                this._mapmodule.addMarker(clone);
                 this._mapmodule.setView('center', [clone, 15]);
                 this.reverse([coords.x, coords.y], 18, function (data) {
                     if (data && data.place_id) {
