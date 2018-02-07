@@ -32,10 +32,10 @@ define([], function () {
                       return [layer, feature];
                     }
                 });
-                if (!feature) {
-                    content = t.getContent(coords);
+                if (feature && feature[1].getGeometry() instanceof ol.geom.Point) {
+                  coords = feature[1].getGeometry().getCoordinates();
+                  content = t.getContent(coords);
                 } else {
-                    coords = feature[1].getGeometry().getCoordinates();
                     content = t.getContent(coords);
                 }
                 t.open(coords, content);

@@ -96,12 +96,12 @@ define(['ol', 'jquery'], function (ol, $) {
         },
 
         enableClick: function () {
-            this._map.on('click', this.clicked, this);
+            this._map.on('singleclick', this.clicked, this);
             this._map.on('pointermove', this.mousemoved, this);
         },
 
         disableClick: function () {
-            this._map.un('click', this.clicked, this);
+            this._map.un('singleclick', this.clicked, this);
             this._map.un('pointermove', this.mousemoved, this);
         },
 
@@ -140,7 +140,6 @@ define(['ol', 'jquery'], function (ol, $) {
         finish: function () {
             this.disableClick();
             this._sketch.getGeometry().setCoordinates([]);
-            //this._mapmodule.get('featureInfo').enableClick();
             this.updateResults();
             this._map.addInteraction(this._modify);
             this._drawing.getGeometry().on('change', this.updateResults, this);

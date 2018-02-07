@@ -31,6 +31,11 @@ define([
                 })
             })
         }));
+        this._features.accuracy.setStyle(new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'rgba(51, 153, 204, 0.2)'
+            })
+        }));
         this._firstposition = true;
         this.init();
     }
@@ -43,17 +48,11 @@ define([
             this._locator = new ol.Geolocation({
                 projection: this._mapmodule.get('map').getView().getProjection(),
                 trackingOptions: {
-                  enableHighAccuracy: false,
-                  maximumAge: 15000,
+                  enableHighAccuracy: true,
+                  maximumAge: 1000,
                   timeout: 30000
                 }
             });
-
-            this._features.accuracy.setStyle(new ol.style.Style({
-                fill: new ol.style.Fill({
-                    color: 'rgba(51, 153, 204, 0.3)'
-                })
-            }));
 
             this._locator.on('change', function () {
                 var coordinates = _this._locator.getPosition();
@@ -100,7 +99,7 @@ define([
             this._locator.setTracking(false);
             this._features.position.setGeometry(null);
             this._features.accuracy.setGeometry(null);
-            this._mapmodule.get('map').getView().setRotation(0)
+            this._mapmodule.get('map').getView().setRotation(0);
             overlay.getSource().clear();
             this._firstposition = true;
         }
