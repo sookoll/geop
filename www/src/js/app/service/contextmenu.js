@@ -28,11 +28,14 @@ define([], function () {
                 var coords = t._map.getEventCoordinate(e);
                 var content;
                 var feature = t._map.forEachFeatureAtPixel(t._map.getEventPixel(e), function (feature, layer) {
-                    return [layer, feature];
+                    if (layer) {
+                      return [layer, feature];
+                    }
                 });
                 if (!feature) {
                     content = t.getContent(coords);
                 } else {
+                    coords = feature[1].getGeometry().getCoordinates();
                     content = t.getContent(coords);
                 }
                 t.open(coords, content);
