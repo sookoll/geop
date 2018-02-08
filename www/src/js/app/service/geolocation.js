@@ -17,12 +17,21 @@ define([
         this._previousM = 0;
         // Geolocation marker
         this._markerEl = $('<img id="geolocation_marker" />');
-        this._markerEl.attr('src', 'css/img/geolocation_marker_heading.png');
+        this._markerEl.attr('src', 'css/img/geolocation_marker.png');
         this._features = {
             position: new ol.Overlay({
               positioning: 'center-center',
               element: this._markerEl[0],
-              stopEvent: false
+              stopEvent: false,
+              offset: [0, 0]
+            }),
+            // FIXME
+            anchor: new ol.Overlay({
+              positioning: 'center-center',
+              element: $('<div style="width:3px;height:3px;background-color:red" />')[0],
+              stopEvent: false,
+              insertFirst: false,
+              offset: [0, 0]
             }),
             // LineString to store the different geolocation positions. This LineString
             // is time aware.
@@ -108,6 +117,9 @@ define([
               overlay.getSource().clear();
               overlay.getSource().addFeatures([this._features.accuracy]);
               this._map.addOverlay(this._features.position);
+              // FIXME
+              this._map.addOverlay(this._features.anchor);
+
               this._locator.setTracking(true);
               $('#statusbar .mouse-position a.lock').trigger('click');
 
@@ -179,6 +191,9 @@ define([
             // if not tracking, then set position
             if (this.trackingStatus[this.currentStatus] === 'active') {
               this._features.position.setPosition([x, y]);
+              // FIXME
+              this._features.anchor.setPosition([x, y]);
+
               if (this.firstPosition) {
                   this._view.setCenter([x, y]);
                   this.firstPosition = false;
@@ -189,8 +204,8 @@ define([
                 this._markerEl.attr('src', 'css/img/geolocation_marker_heading.png');
                 // if not tracking, then rotate icon
                 if (this.trackingStatus[this.currentStatus] === 'active') {
-                    //var viewRotation = this._view.getRotation();
-                    //heading = heading - viewRotation;
+                    var viewRotation = this._view.getRotation();
+                    heading = viewRotation - heading;
                     this._markerEl.css({
                         "-webkit-transform": "rotate("+heading+"rad)",
                         "-moz-transform": "rotate("+heading+"rad)",
@@ -198,7 +213,7 @@ define([
                     });
                 }
             } else {
-                this._markerEl.attr('src', 'css/img/geolocation_marker_heading.png');
+                this._markerEl.attr('src', 'css/img/geolocation_marker.png');
             }
         },
 
