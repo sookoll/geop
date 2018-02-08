@@ -111,6 +111,11 @@ define([
               this._locator.setTracking(true);
               $('#statusbar .mouse-position a.lock').trigger('click');
             } else if (this.trackingStatus[this.currentStatus] === 'tracking') {
+              this._markerEl.css({
+                  "-webkit-transform": "rotate(0rad)",
+                  "-moz-transform": "rotate(0rad)",
+                  "transform": "rotate(0rad)"
+              });
               this._map.on('pointerdrag', this.disableTracking, this);
               this._map.on('postcompose', this.updateView, this);
               this._map.render();
@@ -139,11 +144,6 @@ define([
             this._map.un('pointerdrag', this.disableTracking, this);
             $('#statusbar a.btn-geolocation').removeClass(this.trackingStatus[this.currentStatus]);
             this.currentStatus = this.trackingStatus.indexOf('active');
-            this._markerEl.css({
-                "-webkit-transform": "rotate(0rad)",
-                "-moz-transform": "rotate(0rad)",
-                "transform": "rotate(0rad)"
-            });
         },
 
         // modulo for negative values
@@ -183,6 +183,8 @@ define([
                 this._markerEl.attr('src', 'css/img/geolocation_marker_heading.png');
                 // if not tracking, then rotate icon
                 if (this.trackingStatus[this.currentStatus] === 'active') {
+                    var viewRotation = this._view.getRotation();
+                    heading = heading - viewRotation;
                     this._markerEl.css({
                         "-webkit-transform": "rotate("+heading+"rad)",
                         "-moz-transform": "rotate("+heading+"rad)",

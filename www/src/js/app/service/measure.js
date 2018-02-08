@@ -134,12 +134,12 @@ define(['ol', 'jquery'], function (ol, $) {
             var coord1 = coords[coords.length - 1];
             var coord2 = this.getSnappedCoordinate(e.coordinate, coords, this._snap);
             this._sketch.getGeometry().setCoordinates([coord1, coord2]);
-            var arr = coords.slice(0);
+            /*var arr = coords.slice(0);
             arr.push(coord2);
             var len = this.formatLength(new ol.geom.LineString(arr));
             var html = 'Vahemaa: ' + len;
             html += '<br>Pindala: lõpeta joone alguses';
-            this._el.find('div').html(html);
+            this._el.find('div').html(html);*/
         },
 
         finish: function () {
