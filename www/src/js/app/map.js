@@ -257,7 +257,7 @@ define([
 
         createMap : function (permalink) {
             var _this = this;
-            this._map = new ol.Map({
+            this._map = new ol.CanvasMap({
                 layers: [
                     _this._baseLayers,
                     _this._vectorLayers
@@ -268,7 +268,6 @@ define([
                     zoom: false
                 }),
                 target: document.getElementById(_this._config.el),
-                moveTolerance: 10,
                 view: new ol.View({
                     projection: 'EPSG:3857',
                     center: _this.transform('point', permalink.center, 'EPSG:4326', 'EPSG:3857'),
