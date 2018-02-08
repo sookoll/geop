@@ -25,14 +25,6 @@ define([
               stopEvent: false,
               offset: [0, 0]
             }),
-            // FIXME
-            anchor: new ol.Overlay({
-              positioning: 'center-center',
-              element: $('<div style="width:3px;height:3px;background-color:red" />')[0],
-              stopEvent: false,
-              insertFirst: false,
-              offset: [0, 0]
-            }),
             // LineString to store the different geolocation positions. This LineString
             // is time aware.
             // The Z dimension is actually used to store the rotation (heading).
@@ -117,14 +109,9 @@ define([
               overlay.getSource().clear();
               overlay.getSource().addFeatures([this._features.accuracy]);
               this._map.addOverlay(this._features.position);
-              // FIXME
-              this._map.addOverlay(this._features.anchor);
-
               this._locator.setTracking(true);
               $('#statusbar .mouse-position a.lock').trigger('click');
-
               this._view.on('change:rotation', this.rotateMarker, this);
-
             } else if (this.trackingStatus[this.currentStatus] === 'tracking') {
               this._view.un('change:rotation', this.rotateMarker, this);
               this._markerEl.css({
@@ -191,9 +178,6 @@ define([
             // if not tracking, then set position
             if (this.trackingStatus[this.currentStatus] === 'active') {
               this._features.position.setPosition([x, y]);
-              // FIXME
-              this._features.anchor.setPosition([x, y]);
-
               if (this.firstPosition) {
                   this._view.setCenter([x, y]);
                   this.firstPosition = false;
@@ -205,7 +189,8 @@ define([
                 // if not tracking, then rotate icon
                 if (this.trackingStatus[this.currentStatus] === 'active') {
                     var viewRotation = this._view.getRotation();
-                    heading = viewRotation - heading;
+                    $('.search input').val([this._mapmodule.radToDeg(heading), this._mapmodule.radToDeg(viewRotation), this._mapmodule.radToDeg(viewRotation + heading)])
+                    heading = viewRotation + heading;
                     this._markerEl.css({
                         "-webkit-transform": "rotate("+heading+"rad)",
                         "-moz-transform": "rotate("+heading+"rad)",
