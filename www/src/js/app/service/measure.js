@@ -89,6 +89,9 @@ define(['ol', 'jquery'], function (ol, $) {
             this._el = $('<div class="alert alert-warning alert-dismissible measure" role="alert"></div>');
             this._el.append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
             this._el.append('<div class="small" />');
+            var html = 'Vahemaa: lõpeta joone viimases punktis';
+            html += '<br>Pindala: lõpeta joone alguses';
+            this._el.find('div').html(html);
             $('body').append(this._el);
             this._el.on('closed.bs.alert', function () {
                 t.reset();
@@ -134,8 +137,8 @@ define(['ol', 'jquery'], function (ol, $) {
             var arr = coords.slice(0);
             arr.push(coord2);
             var len = this.formatLength(new ol.geom.LineString(arr));
-            var html = 'Joone pikkus: ' + len;
-            html += '<br>Pindala leidmiseks lõpeta joone alguses';
+            var html = 'Vahemaa: ' + len;
+            html += '<br>Pindala: lõpeta joone alguses';
             this._el.find('div').html(html);
         },
 
@@ -181,14 +184,14 @@ define(['ol', 'jquery'], function (ol, $) {
 
         updateResults: function () {
             var len = this.formatLength(this._drawing.getGeometry());
-            var html = 'Joone pikkus: ' + len;
+            var html = 'Vahemaa: ' + len;
             var coords = this._drawing.getGeometry().getCoordinates();
             // if closed, calculate area
             if (coords[0][0] === coords[coords.length - 1][0] && coords[0][1] === coords[coords.length - 1][1]) {
                 var area = this.formatArea(new ol.geom.Polygon([coords]));
                 html += '<br>Pindala: ' + area;
             } else {
-                html += '<br>Pindala leidmiseks lõpeta joone alguses';
+                html += '<br>Pindala: lõpeta joone alguses';
             }
             this._el.find('div').html(html);
         },

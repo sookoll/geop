@@ -17,7 +17,7 @@ define([
         this._previousM = 0;
         // Geolocation marker
         this._markerEl = $('<img id="geolocation_marker" />');
-        this._markerEl.attr('src', 'css/img/geolocation_marker.png');
+        this._markerEl.attr('src', 'css/img/geolocation_marker_heading.png');
         this._features = {
             position: new ol.Overlay({
               positioning: 'center-center',
@@ -89,26 +89,6 @@ define([
               $('#statusbar a.btn-geolocation').removeClass(_this.trackingStatus.join(' '));
             }, this);
 
-            /*this._locator.on('change', function () {
-                var coordinates = _this._locator.getPosition();
-                var rad = _this._locator.getHeading();
-                if (rad) {
-                    this._mapmodule.get('map').getView().setRotation(rad);
-                }
-                if (coordinates) {
-                    _this._features.position.setGeometry(new ol.geom.Point(coordinates));
-                    if (_this._firstposition) {
-                      _this._mapmodule.setView('center', [coordinates, 15]);
-                      _this._firstposition = false;
-                    } else {
-                      _this._mapmodule.setView('center', [coordinates]);
-                    }
-                    _this._mapmodule.get('featureInfo').setPositionInfo(coordinates);
-                } else {
-                    _this._features.position.setGeometry(null);
-                }
-            });*/
-
             $('#statusbar a.btn-geolocation').on('click', function (e) {
                 e.preventDefault();
                 _this.currentStatus = (_this.currentStatus + 1 >= _this.trackingStatus.length) ? 0 : _this.currentStatus + 1;
@@ -159,6 +139,11 @@ define([
             this._map.un('pointerdrag', this.disableTracking, this);
             $('#statusbar a.btn-geolocation').removeClass(this.trackingStatus[this.currentStatus]);
             this.currentStatus = this.trackingStatus.indexOf('active');
+            this._markerEl.css({
+                "-webkit-transform": "rotate(0rad)",
+                "-moz-transform": "rotate(0rad)",
+                "transform": "rotate(0rad)"
+            });
         },
 
         // modulo for negative values
@@ -205,7 +190,7 @@ define([
                     });
                 }
             } else {
-                this._markerEl.attr('src', 'css/img/geolocation_marker.png');
+                this._markerEl.attr('src', 'css/img/geolocation_marker_heading.png');
             }
         },
 
