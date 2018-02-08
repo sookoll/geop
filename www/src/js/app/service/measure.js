@@ -108,6 +108,7 @@ define(['ol', 'jquery'], function (ol, $) {
         clicked: function (e) {
             var coords = this._drawing.getGeometry().getCoordinates();
             var coord2 = this.getSnappedCoordinate(e.coordinate, coords, this._snap);
+            this._sketch.getGeometry().setCoordinates([]);
             // clicked first
             if (coords.length > 1 && coords[0][0] === coord2[0] && coords[0][1] === coord2[1]) {
                 coords.push(coord2);
@@ -134,6 +135,7 @@ define(['ol', 'jquery'], function (ol, $) {
             arr.push(coord2);
             var len = this.formatLength(new ol.geom.LineString(arr));
             var html = 'Joone pikkus: ' + len;
+            html += '<br>Pindala leidmiseks lõpeta joone alguses';
             this._el.find('div').html(html);
         },
 
@@ -185,6 +187,8 @@ define(['ol', 'jquery'], function (ol, $) {
             if (coords[0][0] === coords[coords.length - 1][0] && coords[0][1] === coords[coords.length - 1][1]) {
                 var area = this.formatArea(new ol.geom.Polygon([coords]));
                 html += '<br>Pindala: ' + area;
+            } else {
+                html += '<br>Pindala leidmiseks lõpeta joone alguses';
             }
             this._el.find('div').html(html);
         },
