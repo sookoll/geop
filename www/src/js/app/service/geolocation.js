@@ -110,7 +110,11 @@ define([
               this._map.addOverlay(this._features.position);
               this._locator.setTracking(true);
               $('#statusbar .mouse-position a.lock').trigger('click');
+
+              this._view.on('change:rotation', this.rotateMarker, this);
+
             } else if (this.trackingStatus[this.currentStatus] === 'tracking') {
+              this._view.un('change:rotation', this.rotateMarker, this);
               this._markerEl.css({
                   "-webkit-transform": "rotate(0rad)",
                   "-moz-transform": "rotate(0rad)",
@@ -142,6 +146,7 @@ define([
         disableTracking: function () {
             this._map.un('postcompose', this.updateView, this);
             this._map.un('pointerdrag', this.disableTracking, this);
+            this._view.on('change:rotation', this.rotateMarker, this);
             $('#statusbar a.btn-geolocation').removeClass(this.trackingStatus[this.currentStatus]);
             this.currentStatus = this.trackingStatus.indexOf('active');
         },
@@ -219,6 +224,15 @@ define([
             this._view.setRotation(-c[2]);
             this._features.position.setPosition(c);
           }
+        },
+
+        rotateMarker: function () {
+          var viewRotation = this._view.getRotation();
+          this._markerEl.css({
+              "-webkit-transform": "rotate("+viewRotation+"rad)",
+              "-moz-transform": "rotate("+viewRotation+"rad)",
+              "transform": "rotate("+viewRotation+"rad)"
+          });
         }
     };
 
