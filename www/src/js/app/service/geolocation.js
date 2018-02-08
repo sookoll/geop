@@ -64,24 +64,21 @@ define([
                 var heading = this._locator.getHeading() || 0;
                 var speed = this._locator.getSpeed() || 0;
                 var m = Date.now();
-
                 this.addPosition(position, heading, m, speed);
-
                 var coords = this._features.track.getCoordinates();
                 var len = coords.length;
                 if (len >= 2) {
                   this._deltaMean = (coords[len - 1][3] - coords[0][3]) / (len - 1);
                 }
-
                 var html = [
-                  'Position: ' + position[0].toFixed(2) + ', ' + position[1].toFixed(2),
+                  'Position: ' + ol.coordinate.format(_this._mapmodule.transform('point', position, 'EPSG:3857', 'EPSG:4326'), '{y}, {x}', 5),
                   'Accuracy: ' + accuracy,
                   'Heading: ' + Math.round(this._mapmodule.radToDeg(heading)) + '&deg;',
                   'Speed: ' + (speed * 3.6).toFixed(1) + ' km/h',
                   'Delta: ' + Math.round(this._deltaMean) + 'ms'
                 ].join('<br />');
-                this._mapmodule.get('featureInfo').setPositionInfo(position);
-                //document.getElementById('info').innerHTML = html;
+                //this._mapmodule.get('featureInfo').setPositionInfo(position);
+                $('#statusbar .locationinfo').html(html);
             }, this);
 
             this._locator.on('error', function() {
@@ -110,7 +107,7 @@ define([
               overlay.getSource().addFeatures([this._features.accuracy]);
               this._map.addOverlay(this._features.position);
               this._locator.setTracking(true);
-              $('#statusbar .mouse-position a.lock').trigger('click');
+              //$('#statusbar .mouse-position a.lock').trigger('click');
               this._view.on('change:rotation', this.rotateMarker, this);
             } else if (this.trackingStatus[this.currentStatus] === 'tracking') {
               this._view.un('change:rotation', this.rotateMarker, this);
@@ -146,7 +143,6 @@ define([
             this._map.un('postcompose', this.updateView, this);
             this._map.un('pointerdrag', this.disableTracking, this);
             this._view.on('change:rotation', this.rotateMarker, this);
-
             $('#statusbar a.btn-geolocation').removeClass(this.trackingStatus[this.currentStatus]);
             this.currentStatus = this.trackingStatus.indexOf('active');
         },
@@ -189,7 +185,6 @@ define([
                 // if not tracking, then rotate icon
                 if (this.trackingStatus[this.currentStatus] === 'active') {
                     var viewRotation = this._view.getRotation();
-                    $('.search input').val([this._mapmodule.radToDeg(heading), this._mapmodule.radToDeg(viewRotation), this._mapmodule.radToDeg(viewRotation + heading)])
                     heading = viewRotation + heading;
                     this._markerEl.css({
                         "-webkit-transform": "rotate("+heading+"rad)",

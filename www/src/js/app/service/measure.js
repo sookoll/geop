@@ -41,6 +41,7 @@ define(['ol', 'jquery'], function (ol, $) {
         this._sketch = new ol.Feature({
           geometry: new ol.geom.LineString([])
         });
+        this._measureLine = new ol.geom.LineString([]);
         this._snap = 10;
         this._modify = new ol.interaction.Modify({
             features: new ol.Collection([this._drawing]),
@@ -99,19 +100,19 @@ define(['ol', 'jquery'], function (ol, $) {
         },
 
         enableClick: function () {
-            this._map.on('singleclick', this.clicked, this);
+            this._map.on('click', this.clicked, this);
             this._map.on('pointermove', this.mousemoved, this);
         },
 
         disableClick: function () {
-            this._map.un('singleclick', this.clicked, this);
+            this._map.un('click', this.clicked, this);
             this._map.un('pointermove', this.mousemoved, this);
         },
 
         clicked: function (e) {
+            this._sketch.getGeometry().setCoordinates([]);
             var coords = this._drawing.getGeometry().getCoordinates();
             var coord2 = this.getSnappedCoordinate(e.coordinate, coords, this._snap);
-            this._sketch.getGeometry().setCoordinates([]);
             // clicked first
             if (coords.length > 1 && coords[0][0] === coord2[0] && coords[0][1] === coord2[1]) {
                 coords.push(coord2);
@@ -134,12 +135,13 @@ define(['ol', 'jquery'], function (ol, $) {
             var coord1 = coords[coords.length - 1];
             var coord2 = this.getSnappedCoordinate(e.coordinate, coords, this._snap);
             this._sketch.getGeometry().setCoordinates([coord1, coord2]);
-            /*var arr = coords.slice(0);
+            var arr = coords.slice(0);
             arr.push(coord2);
-            var len = this.formatLength(new ol.geom.LineString(arr));
+            this._measureLine.setCoordinates(arr);
+            var len = this.formatLength(this._measureLine);
             var html = 'Vahemaa: ' + len;
             html += '<br>Pindala: lõpeta joone alguses';
-            this._el.find('div').html(html);*/
+            this._el.find('div').html(html);
         },
 
         finish: function () {
@@ -147,11 +149,16 @@ define(['ol', 'jquery'], function (ol, $) {
             this._sketch.getGeometry().setCoordinates([]);
             this.updateResults();
             this._map.addInteraction(this._modify);
-            this._drawing.getGeometry().on('change', this.updateResults, this);
+            this._drawing.getGeometry().on('change', this.onmodify, this);
+        },
+
+        onmodify: function (e) {
+
+            this.updateResults();
         },
 
         reset: function () {
-            this._drawing.getGeometry().un('change', this.updateResults, this);
+            this._drawing.getGeometry().un('change', this.onmodify, this);
             this._map.removeInteraction(this._modify);
             this.disableClick();
             this._mapmodule.get('featureInfo').enableClick();

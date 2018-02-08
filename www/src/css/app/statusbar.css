@@ -18,8 +18,14 @@
     color: #eee;
 }
 #statusbar .info > div {
-    margin-left: 0;
-    margin-right: 0;
+    margin-left: -6px;
+    margin-right: -6px;
+    max-height: 150px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, .4);
+}
+#statusbar .info > div > div {
+  margin-bottom: 20px;
 }
 #statusbar .info > div ol, #statusbar .info > div ul {
     padding: 0;
