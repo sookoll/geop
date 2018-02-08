@@ -147,6 +147,7 @@ define([
             this._map.un('postcompose', this.updateView, this);
             this._map.un('pointerdrag', this.disableTracking, this);
             this._view.on('change:rotation', this.rotateMarker, this);
+
             $('#statusbar a.btn-geolocation').removeClass(this.trackingStatus[this.currentStatus]);
             this.currentStatus = this.trackingStatus.indexOf('active');
         },
@@ -188,8 +189,8 @@ define([
                 this._markerEl.attr('src', 'css/img/geolocation_marker_heading.png');
                 // if not tracking, then rotate icon
                 if (this.trackingStatus[this.currentStatus] === 'active') {
-                    var viewRotation = this._view.getRotation();
-                    heading = heading - viewRotation;
+                    //var viewRotation = this._view.getRotation();
+                    //heading = heading - viewRotation;
                     this._markerEl.css({
                         "-webkit-transform": "rotate("+heading+"rad)",
                         "-moz-transform": "rotate("+heading+"rad)",
