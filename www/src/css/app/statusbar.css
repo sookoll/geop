@@ -44,6 +44,11 @@
 #statusbar a.btn-fullscreen.active {
     color: aqua
 }
+#statusbar a.btn-geolocation.active.tracking i {
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
 #statusbar a.btn-fullscreen.disabled {
     color: #777;
     pointer-events: none;

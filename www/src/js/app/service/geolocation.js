@@ -35,6 +35,8 @@ define([
                 color: 'rgba(51, 153, 204, 0.2)'
             })
         }));
+        this.trackingStatus = ['', 'active', 'tracking'];
+        this.currentStatus = 0;
         this.init();
     }
 
@@ -82,8 +84,9 @@ define([
 
             this._locator.on('error', function() {
               console.error('geolocation error');
-              // FIXME we should remove the coordinates in positions
-            });
+              this.disable();
+              $('#statusbar a.btn-geolocation').removeClass(_this.trackingStatus.join(' '));
+            }, this);
 
             /*this._locator.on('change', function () {
                 var coordinates = _this._locator.getPosition();
@@ -107,25 +110,30 @@ define([
 
             $('#statusbar a.btn-geolocation').on('click', function (e) {
                 e.preventDefault();
-                if (_this._locator.getTracking()) {
+                var newStatus = (_this.currentStatus + 1 >= _this.trackingStatus.length) ? 0 : _this.currentStatus + 1;
+                if (newStatus === 0) {
                     _this.disable();
-                    $(this).removeClass('active');
+                    $(this).removeClass(_this.trackingStatus.join(' '));
                 } else {
                     _this.enable();
-                    $(this).addClass('active');
+                    $(this).addClass(_this.trackingStatus[newStatus]);
                 }
+                _this.currentStatus = newStatus;
             });
         },
 
         enable : function () {
-            var overlay = this._mapmodule.get('overlay');
-            overlay.getSource().clear();
-            overlay.getSource().addFeatures([this._features.accuracy]);
-            this._map.addOverlay(this._features.position);
-            this._locator.setTracking(true);
-            //this._map.on('postcompose', this.updateView, this);
-            //this._map.render();
-            $('#statusbar .mouse-position a.lock').trigger('click');
+            if (!this._locator.getTracking()) {
+              var overlay = this._mapmodule.get('overlay');
+              overlay.getSource().clear();
+              overlay.getSource().addFeatures([this._features.accuracy]);
+              this._map.addOverlay(this._features.position);
+              this._locator.setTracking(true);
+              $('#statusbar .mouse-position a.lock').trigger('click');
+            } else {
+              this._map.on('postcompose', this.updateView, this);
+              this._map.render();
+            }
         },
 
         disable : function () {
@@ -136,6 +144,11 @@ define([
             this._mapmodule.get('map').getView().setRotation(0);
             overlay.getSource().clear();
             this._map.un('postcompose', this.updateView, this);
+            this._markerEl.css({
+                "-webkit-transform": "rotate(0rad)",
+                "-moz-transform": "rotate(0rad)",
+                "transform": "rotate(0rad)"
+            });
         },
 
         // modulo for negative values
@@ -163,17 +176,20 @@ define([
             this._features.track.setCoordinates(this._features.track.getCoordinates().slice(-20));
 
             // if not tracking, then set position
-            this._features.position.setPosition([x, y]);
+            if (this.trackingStatus[this.currentStatus] === 'active') {
+              this._features.position.setPosition([x, y]);
+            }
 
-            // FIXME use speed instead
-            if (heading && speed) {
+            if (speed) {
                 this._markerEl.attr('src', 'css/img/geolocation_marker_heading.png');
                 // if not tracking, then rotate icon
-                this._markerEl.css({
-                    "-webkit-transform": "rotate("+heading+"rad)",
-                    "-moz-transform": "rotate("+heading+"rad)",
-                    "transform": "rotate("+heading+"rad)"
-                });
+                if (this.trackingStatus[this.currentStatus] === 'active') {
+                    this._markerEl.css({
+                        "-webkit-transform": "rotate("+heading+"rad)",
+                        "-moz-transform": "rotate("+heading+"rad)",
+                        "transform": "rotate("+heading+"rad)"
+                    });
+                }
             } else {
                 this._markerEl.attr('src', 'css/img/geolocation_marker.png');
             }
