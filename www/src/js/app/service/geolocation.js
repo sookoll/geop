@@ -37,6 +37,7 @@ define([
         }));
         this.trackingStatus = ['', 'active', 'tracking'];
         this.currentStatus = 0;
+        this.firstPosition = true;
         this.init();
     }
 
@@ -110,27 +111,27 @@ define([
 
             $('#statusbar a.btn-geolocation').on('click', function (e) {
                 e.preventDefault();
-                var newStatus = (_this.currentStatus + 1 >= _this.trackingStatus.length) ? 0 : _this.currentStatus + 1;
-                if (newStatus === 0) {
+                _this.currentStatus = (_this.currentStatus + 1 >= _this.trackingStatus.length) ? 0 : _this.currentStatus + 1;
+                if (_this.currentStatus === 0) {
                     _this.disable();
                     $(this).removeClass(_this.trackingStatus.join(' '));
                 } else {
                     _this.enable();
-                    $(this).addClass(_this.trackingStatus[newStatus]);
+                    $(this).addClass(_this.trackingStatus[_this.currentStatus]);
                 }
-                _this.currentStatus = newStatus;
             });
         },
 
         enable : function () {
-            if (!this._locator.getTracking()) {
+            if (this.trackingStatus[this.currentStatus] === 'active') {
               var overlay = this._mapmodule.get('overlay');
               overlay.getSource().clear();
               overlay.getSource().addFeatures([this._features.accuracy]);
               this._map.addOverlay(this._features.position);
               this._locator.setTracking(true);
               $('#statusbar .mouse-position a.lock').trigger('click');
-            } else {
+            } else if (this.trackingStatus[this.currentStatus] === 'tracking') {
+              this._map.on('pointerdrag', this.disableTracking, this);
               this._map.on('postcompose', this.updateView, this);
               this._map.render();
             }
@@ -144,11 +145,20 @@ define([
             this._mapmodule.get('map').getView().setRotation(0);
             overlay.getSource().clear();
             this._map.un('postcompose', this.updateView, this);
+            this._map.un('pointerdrag', this.disableTracking, this);
             this._markerEl.css({
                 "-webkit-transform": "rotate(0rad)",
                 "-moz-transform": "rotate(0rad)",
                 "transform": "rotate(0rad)"
             });
+            this.firstPosition = true;
+        },
+
+        disableTracking: function () {
+            this._map.un('postcompose', this.updateView, this);
+            this._map.un('pointerdrag', this.disableTracking, this);
+            $('#statusbar a.btn-geolocation').removeClass(this.trackingStatus[this.currentStatus]);
+            this.currentStatus = this.trackingStatus.indexOf('active');
         },
 
         // modulo for negative values
@@ -178,6 +188,10 @@ define([
             // if not tracking, then set position
             if (this.trackingStatus[this.currentStatus] === 'active') {
               this._features.position.setPosition([x, y]);
+              if (this.firstPosition) {
+                  this._view.setCenter([x, y]);
+                  this.firstPosition = false;
+              }
             }
 
             if (speed) {
