@@ -268,7 +268,7 @@ define([
                     zoom: false
                 }),
                 target: document.getElementById(_this._config.el),
-                moveTolerance: 3,
+                moveTolerance: 10,
                 view: new ol.View({
                     projection: 'EPSG:3857',
                     center: _this.transform('point', permalink.center, 'EPSG:4326', 'EPSG:3857'),
