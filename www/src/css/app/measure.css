@@ -4,5 +4,13 @@
   width: 300px;
   left: 50%;
   margin-left: -150px;
-  
+}
+.measure .form-inline {
+  margin-bottom: 4px;
+}
+.measure label {
+  width: 60px;
+}
+.measure input {
+  width: 80px!important
 }

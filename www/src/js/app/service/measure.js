@@ -6,6 +6,7 @@ define(['ol', 'jquery'], function (ol, $) {
     'use strict';
 
     function Measure(mapmodule) {
+        var t = this;
         this._name = 'measure';
         this._mapmodule = mapmodule;
         this._map = mapmodule.get('map');
@@ -30,21 +31,30 @@ define(['ol', 'jquery'], function (ol, $) {
               })
             }),
             geometry: function(feature) {
-              var coordinates = feature.getGeometry().getCoordinates();
-              return new ol.geom.MultiPoint(coordinates);
+              if (feature.getGeometry() instanceof ol.geom.LineString) {
+                var coordinates = feature.getGeometry().getCoordinates();
+                return new ol.geom.MultiPoint(coordinates);
+              }
             }
           })]
         });
+        this._measureType = null;
         this._drawing = new ol.Feature({
           geometry: new ol.geom.LineString([])
         });
+        this._circle = new ol.Feature();
         this._sketch = new ol.Feature({
           geometry: new ol.geom.LineString([])
         });
         this._measureLine = new ol.geom.LineString([]);
-        this._snap = 10;
+        this._snapTolerance = 10;
+        this._snapFeatures = null;
+        this._snap = null;
         this._modify = new ol.interaction.Modify({
             features: new ol.Collection([this._drawing]),
+            insertVertexCondition: function (e) {
+              return t._measureType === 'circle' ? false : true;
+            },
             style: new ol.style.Style({
               image: new ol.style.Circle({
                 radius: 5,
@@ -65,15 +75,26 @@ define(['ol', 'jquery'], function (ol, $) {
             return this['_' + key];
         },
 
-        init: function (coord) {
+        init: function (coord, type) {
+            if (!type) {
+              type = 'distance';
+            }
+            this._measureType = type;
             this.createUi();
             this.reset();
+            // get all features
+            this._snapFeatures = new ol.Collection(this._mapmodule.getAllFeatures());
+            this._drawing.getGeometry().setCoordinates([coord]);
+            this._snapFeatures.push(this._drawing);
+            if (type === 'circle') {
+              this._circle.setGeometry(new ol.geom.Circle(coord));
+              //this._snapFeatures.push(this._circle);
+              this._source.addFeatures([this._circle, this._drawing, this._sketch]);
+            } else {
+              this._source.addFeatures([this._drawing, this._sketch]);
+            }
             this._mapmodule.get('featureInfo').disableClick();
             this._mapmodule.get('vectorLayers').getLayers().push(this._layer);
-            this._source.addFeatures([this._drawing, this._sketch]);
-            if (coord) {
-                this._drawing.getGeometry().setCoordinates([coord]);
-            }
             this.enableClick();
             this._map.getInteractions().getArray().forEach(function (interaction) {
                 if (interaction instanceof ol.interaction.DoubleClickZoom) {
@@ -90,13 +111,31 @@ define(['ol', 'jquery'], function (ol, $) {
             this._el = $('<div class="alert alert-warning alert-dismissible measure" role="alert"></div>');
             this._el.append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
             this._el.append('<div class="small" />');
-            var html = 'Vahemaa: lõpeta joone viimases punktis';
-            html += '<br>Pindala: lõpeta joone alguses';
+            var html = '';
+            if (this._measureType === 'circle') {
+                html += this.getCircleUI();
+            } else {
+              html = 'Vahemaa: lõpeta joone viimases punktis';
+              html += '<br>Pindala: lõpeta joone alguses';
+            }
+
             this._el.find('div').html(html);
             $('body').append(this._el);
             this._el.on('closed.bs.alert', function () {
                 t.reset();
             });
+        },
+
+        getCircleUI: function (coord) {
+            return [
+              '<div class="form-inline">',
+              '<label for="angle">Nurk: </label>',
+              '<input type="text" name="angle" class="form-control input-sm"> &deg;',
+              '</div><div class="form-inline">',
+              '<label for="radius">Raadius: </label>',
+              '<input type="text" name="radius" class="form-control input-sm"> m',
+              '</div>'
+            ].join('');
         },
 
         enableClick: function () {
@@ -112,36 +151,53 @@ define(['ol', 'jquery'], function (ol, $) {
         clicked: function (e) {
             this._sketch.getGeometry().setCoordinates([]);
             var coords = this._drawing.getGeometry().getCoordinates();
-            var coord2 = this.getSnappedCoordinate(e.coordinate, coords, this._snap);
-            // clicked first
-            if (coords.length > 1 && coords[0][0] === coord2[0] && coords[0][1] === coord2[1]) {
-                coords.push(coord2);
-                this._drawing.getGeometry().setCoordinates(coords);
-                this.finish();
-            }
-            // clicked last
-            else if (coords.length > 1 && coords[coords.length -1][0] === coord2[0] && coords[coords.length -1][1] === coord2[1]) {
-                this.finish();
-            }
-            // else
-            else {
-                coords.push(coord2);
-                this._drawing.getGeometry().setCoordinates(coords);
+            var coord2 = this.getSnappedCoordinate(e.coordinate, this._snapFeatures.getArray(), this._snapTolerance);
+            if (this._measureType === 'circle') {
+              var coord1 = coords[0];
+              this._drawing.getGeometry().setCoordinates([coord1, coord2]);
+              this.finish();
+            } else {
+              // clicked first
+              if (coords.length > 1 && coords[0][0] === coord2[0] && coords[0][1] === coord2[1]) {
+                  coords.push(coord2);
+                  this._drawing.getGeometry().setCoordinates(coords);
+                  this.finish();
+              }
+              // clicked last
+              else if (coords.length > 1 && coords[coords.length -1][0] === coord2[0] && coords[coords.length -1][1] === coord2[1]) {
+                  this.finish();
+              }
+              // else
+              else {
+                  coords.push(coord2);
+                  this._drawing.getGeometry().setCoordinates(coords);
+              }
             }
         },
 
         mousemoved: function (e) {
-            var coords = this._drawing.getGeometry().getCoordinates();
-            var coord1 = coords[coords.length - 1];
-            var coord2 = this.getSnappedCoordinate(e.coordinate, coords, this._snap);
+            var coords = this._drawing.getGeometry().getCoordinates(),
+                coord1, coord2;
+            if (this._measureType === 'circle') {
+                coord1 = coords[0];
+            } else {
+                coord1 = coords[coords.length - 1];
+            }
+            var coord2 = this.getSnappedCoordinate(e.coordinate, this._snapFeatures.getArray(), this._snapTolerance);
             this._sketch.getGeometry().setCoordinates([coord1, coord2]);
-            var arr = coords.slice(0);
-            arr.push(coord2);
-            this._measureLine.setCoordinates(arr);
-            var len = this.formatLength(this._measureLine);
-            var html = 'Vahemaa: ' + len;
-            html += '<br>Pindala: lõpeta joone alguses';
-            this._el.find('div').html(html);
+            if (this._measureType === 'circle') {
+              var r = this.getCoordinatesDistance(coord1, coord2);
+              this._circle.getGeometry().setRadius(r);
+              this.updateCircleResults();
+            } else {
+              var arr = coords.slice(0);
+              arr.push(coord2);
+              this._measureLine.setCoordinates(arr);
+              var len = this.formatLength(this._measureLine);
+              var html = 'Vahemaa: ' + len;
+              html += '<br>Pindala: lõpeta joone alguses';
+              this._el.find('div').html(html);
+            }
         },
 
         finish: function () {
@@ -149,21 +205,35 @@ define(['ol', 'jquery'], function (ol, $) {
             this._sketch.getGeometry().setCoordinates([]);
             this.updateResults();
             this._map.addInteraction(this._modify);
+            this._snap = new ol.interaction.Snap({features: this._snapFeatures});
+            this._map.addInteraction(this._snap);
             this._drawing.getGeometry().on('change', this.onmodify, this);
         },
 
         onmodify: function (e) {
-
+            if (this._measureType === 'circle') {
+              // _sketch
+              var coords = this._drawing.getGeometry().getCoordinates();
+              var g = this._circle.getGeometry();
+              var r = this.getCoordinatesDistance(coords[0], coords[1]);
+              g.setCenter(coords[0]);
+              g.setRadius(r);
+            }
             this.updateResults();
         },
 
         reset: function () {
             this._drawing.getGeometry().un('change', this.onmodify, this);
             this._map.removeInteraction(this._modify);
+            this._map.removeInteraction(this._snap);
+            this._snapFeatures = null;
             this.disableClick();
             this._mapmodule.get('featureInfo').enableClick();
             this._drawing.getGeometry().setCoordinates([]);
             this._sketch.getGeometry().setCoordinates([]);
+            if (this._measureType === 'circle') {
+                this._circle.setGeometry(null);
+            }
             this._source.clear();
             this._mapmodule.get('vectorLayers').getLayers().remove(this._layer);
             this._map.getInteractions().getArray().forEach(function (interaction) {
@@ -174,22 +244,46 @@ define(['ol', 'jquery'], function (ol, $) {
         },
 
         getSnappedCoordinate: function (needle, haystack, tolerance) {
-            var coord = needle;
-            var p2 = this._map.getPixelFromCoordinate(needle);
-            var t = this;
-            haystack.forEach(function (item) {
-                var p1 = t._map.getPixelFromCoordinate(item);
-                var a = Math.abs(p1[0]-p2[0]);
-                var b = Math.abs(p1[1]-p2[1]);
-                var dist = Math.sqrt(a*a+b*b);
-                if (dist <= tolerance) {
-                    coord = item;
-                }
-            });
+            var coord = needle,
+                t = this,
+                dist,
+                i,
+                len,
+                c,
+                test;
+            var calculatePxDistance = function (c1, c2) {
+              var p1 = t._map.getPixelFromCoordinate(c1);
+              var p2 = t._map.getPixelFromCoordinate(c2);
+              return t.getCoordinatesDistance(p1, p2);
+            }
+            for (i = 0, len = haystack.length; i < len; i++) {
+              c = haystack[i].getGeometry().getCoordinates();
+              // if point
+              if (c && typeof c[0] === 'number') {
+                  dist = calculatePxDistance(c, needle);
+                  if (dist <= tolerance) {
+                      coord = c;
+                      break;
+                  }
+              } else {
+                  test = c.filter(function (item) {
+                    dist = calculatePxDistance(item, needle);
+                    if (dist <= tolerance) {
+                      return true;
+                    }
+                  });
+                  if (test.length > 0) {
+                    coord = test[0];
+                  }
+              }
+            }
             return coord;
         },
 
         updateResults: function () {
+          if (this._measureType === 'circle') {
+            this.updateCircleResults();
+          } else {
             var len = this.formatLength(this._drawing.getGeometry());
             var html = 'Vahemaa: ' + len;
             var coords = this._drawing.getGeometry().getCoordinates();
@@ -201,6 +295,22 @@ define(['ol', 'jquery'], function (ol, $) {
                 html += '<br>Pindala: lõpeta joone alguses';
             }
             this._el.find('div').html(html);
+          }
+        },
+
+        updateCircleResults: function () {
+          var g = this._sketch.getGeometry();
+          var coords = g.getCoordinates();
+          if (coords.length === 0) {
+            g = this._drawing.getGeometry();
+            coords = g.getCoordinates();
+          }
+          var coord1 = coords[0];
+          var coord2 = coords[coords.length - 1];
+          var angle = Math.atan2(coord2[0] - coord1[0], coord2[1] - coord1[1]) * 180 / Math.PI;
+          var radius = ol.Sphere.getLength(g);
+          this._el.find('input[name=angle]').val(angle.toFixed(1));
+          this._el.find('input[name=radius]').val(radius.toFixed(2));
         },
 
         formatLength: function(line) {
@@ -227,6 +337,19 @@ define(['ol', 'jquery'], function (ol, $) {
                   ' ' + 'm<sup>2</sup>';
             }
             return output;
+        },
+
+        getCoordinateByAngleDistance: function (coord, angle, distance) {
+          var newPoint = [];
+          newPoint[0] = Math.round(Math.cos(angle * Math.PI / 180) * distance + coord[0]);
+          newPoint[1] = Math.round(Math.sin(angle * Math.PI / 180) * distance + coord[1]);
+          return newPoint;
+        },
+
+        getCoordinatesDistance: function (coord1, coord2) {
+          var a = Math.abs(coord1[0]-coord2[0]);
+          var b = Math.abs(coord1[1]-coord2[1]);
+          return Math.sqrt(a*a+b*b);
         }
     }
 

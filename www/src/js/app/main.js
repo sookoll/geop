@@ -109,12 +109,20 @@ define([
         if (app.get('settings').map.measureTool) {
             context.push({
               icon: 'gp-icon gp-icon-ruler',
-              content: 'Mõõda',
+              content: 'Mõõda vahemaad',
               onclick: function (e, coord) {
                   app.measure.init(coord);
               },
               closeonclick: true
-            })
+            });
+            context.push({
+              icon: 'fa fa-dot-circle-o',
+              content: 'Mõõda raadiust',
+              onclick: function (e, coord) {
+                  app.measure.init(coord, 'circle');
+              },
+              closeonclick: true
+            });
         }
         app.contextmenu = new ContextMenu(app.mapmodule);
         app.contextmenu.init(context);
