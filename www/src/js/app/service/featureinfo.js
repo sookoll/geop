@@ -118,7 +118,6 @@ define([
             this._overlay = new ol.Overlay({
                 element: this._popup[0],
                 autoPan: true,
-                autoPanMargin: 50,
                 positioning: 'center-center',
                 offset: [0, -16]
             });
