@@ -53,8 +53,17 @@ define(['ol', 'jquery'], function (ol, $) {
         this._modify = new ol.interaction.Modify({
             features: new ol.Collection([this._drawing]),
             insertVertexCondition: function (e) {
-              return t._measureType === 'circle' ? false : true;
+              if (t._measureType === 'circle') {
+                //return ol.events.condition.never(e);
+                return false;
+              } else {
+                //return ol.events.condition.always(e);
+                return true;
+              }
             },
+            /*deleteCondition: function (e) {
+              return ol.events.condition.doubleClick(e);
+            },*/
             style: new ol.style.Style({
               image: new ol.style.Circle({
                 radius: 5,
@@ -121,6 +130,19 @@ define(['ol', 'jquery'], function (ol, $) {
 
             this._el.find('div').html(html);
             $('body').append(this._el);
+            if (this._measureType === 'circle') {
+              this._el.on('focus', 'input', function (e) {
+                  t._modify.setActive(false);
+              });
+              this._el.on('blur', 'input', function (e) {
+                  var a = t._el.find('input[name=angle]').val();
+                  var r = t._el.find('input[name=radius]').val();
+                  var coords = t._drawing.getGeometry().getCoordinates();
+                  var coord2 = t.getCoordinateByAngleDistance(coords[0], Number(a), Number(r));
+                  t._drawing.getGeometry().setCoordinates([coords[0], coord2]);
+                  t._modify.setActive(true);
+              });
+            }
             this._el.on('closed.bs.alert', function () {
                 t.reset();
             });
@@ -130,10 +152,10 @@ define(['ol', 'jquery'], function (ol, $) {
             return [
               '<div class="form-inline">',
               '<label for="angle">Nurk: </label>',
-              '<input type="text" name="angle" class="form-control input-sm"> &deg;',
+              '<input type="text" name="angle" class="form-control input-sm" readonly> &deg;',
               '</div><div class="form-inline">',
               '<label for="radius">Raadius: </label>',
-              '<input type="text" name="radius" class="form-control input-sm"> m',
+              '<input type="text" name="radius" class="form-control input-sm" readonly> m',
               '</div>'
             ].join('');
         },
@@ -155,6 +177,7 @@ define(['ol', 'jquery'], function (ol, $) {
             if (this._measureType === 'circle') {
               var coord1 = coords[0];
               this._drawing.getGeometry().setCoordinates([coord1, coord2]);
+              this._el.find('input').prop('readonly', false);
               this.finish();
             } else {
               // clicked first
@@ -307,10 +330,13 @@ define(['ol', 'jquery'], function (ol, $) {
           }
           var coord1 = coords[0];
           var coord2 = coords[coords.length - 1];
-          var angle = Math.atan2(coord2[0] - coord1[0], coord2[1] - coord1[1]) * 180 / Math.PI;
+          var angle = this._mapmodule.radToDeg(Math.atan2(coord2[0] - coord1[0], coord2[1] - coord1[1]));
+          if (angle < 0) {
+            angle = 360 + angle;
+          }
           var radius = ol.Sphere.getLength(g);
-          this._el.find('input[name=angle]').val(angle.toFixed(1));
-          this._el.find('input[name=radius]').val(radius.toFixed(2));
+          this._el.find('input[name=angle]').val(Math.round((angle + 0.00001) * 100) / 100);
+          this._el.find('input[name=radius]').val(Math.round((radius + 0.00001) * 1000) / 1000);
         },
 
         formatLength: function(line) {
@@ -339,11 +365,18 @@ define(['ol', 'jquery'], function (ol, $) {
             return output;
         },
 
-        getCoordinateByAngleDistance: function (coord, angle, distance) {
-          var newPoint = [];
-          newPoint[0] = Math.round(Math.cos(angle * Math.PI / 180) * distance + coord[0]);
-          newPoint[1] = Math.round(Math.sin(angle * Math.PI / 180) * distance + coord[1]);
-          return newPoint;
+        getCoordinateByAngleDistance: function(coord, bearing, distance) {
+            // distance in KM, bearing in degrees
+            var R = 6378137,
+                lonlat = this._mapmodule.transform('point', coord, 'EPSG:3857', 'EPSG:4326'),
+                brng = this._mapmodule.degToRad(bearing),
+                lat = this._mapmodule.degToRad(lonlat[1]),
+                lon = this._mapmodule.degToRad(lonlat[0]);
+            // Do the math magic
+            lat = Math.asin(Math.sin(lat) * Math.cos(distance / R) + Math.cos(lat) * Math.sin(distance / R) * Math.cos(brng));
+            lon += Math.atan2(Math.sin(brng) * Math.sin(distance / R) * Math.cos(lat), Math.cos(distance/R)-Math.sin(lat)*Math.sin(lat));
+            // Coords back to degrees and return
+            return this._mapmodule.transform('point', [this._mapmodule.radToDeg(lon),this._mapmodule.radToDeg(lat)], 'EPSG:4326', 'EPSG:3857');
         },
 
         getCoordinatesDistance: function (coord1, coord2) {

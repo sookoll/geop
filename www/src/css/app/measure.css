@@ -12,5 +12,6 @@
   width: 60px;
 }
 .measure input {
-  width: 80px!important
+  width: 80px!important;
+  display: inline-block!important;
 }

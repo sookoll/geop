@@ -126,7 +126,10 @@
         "ol.extent.getWidth",
         "ol.tilegrid.TileGrid",
         "ol.Sphere.getLength",
-        "ol.Sphere.getArea"
+        "ol.Sphere.getArea",
+        "ol.events.condition.always",
+        "ol.events.condition.never",
+        "ol.events.condition.doubleClick"
     ],
     "compile": {
         "externs": [
