@@ -1,6 +1,7 @@
 .popover {
     cursor: default;
     z-index: 999;
+    user-select: auto;
 }
 .popover-title a.cache-toggle,
 .popover-title a.remove-marker {

@@ -1,12 +1,14 @@
 .contextmenu {
     top: -20px!important;
-    width: 180px
+    width: 180px;
+    z-index: 1000;
 }
 .contextmenu .arrow {
     top: 20px!important
 }
 .contextmenu .popover-content {
-    padding: 0
+    padding: 0;
+    user-select: auto;
 }
 .contextmenu .list-group-item {
     border-top: 1px solid #ddd;
