@@ -8,7 +8,7 @@
 }
 .contextmenu .popover-content {
     padding: 0;
-    user-select: auto;
+    user-select: auto
 }
 .contextmenu .list-group-item {
     border-top: 1px solid #ddd;

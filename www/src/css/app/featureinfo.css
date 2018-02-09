@@ -1,7 +1,6 @@
 .popover {
     cursor: default;
     z-index: 999;
-    user-select: auto;
 }
 .popover-title a.cache-toggle,
 .popover-title a.remove-marker {
@@ -19,6 +18,7 @@
     font-weight: bold;
     color: inherit
 }
-.popover.content {
-    overflow: hidden
+.popover-content {
+    overflow: hidden;
+    user-select: text
 }
