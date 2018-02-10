@@ -54,16 +54,16 @@ define(['ol', 'jquery'], function (ol, $) {
             features: new ol.Collection([this._drawing]),
             insertVertexCondition: function (e) {
               if (t._measureType === 'circle') {
-                //return ol.events.condition.never(e);
+                return ol.events.condition.never(e);
                 return false;
               } else {
-                //return ol.events.condition.always(e);
+                return ol.events.condition.always(e);
                 return true;
               }
             },
-            /*deleteCondition: function (e) {
+            deleteCondition: function (e) {
               return ol.events.condition.doubleClick(e);
-            },*/
+            },
             style: new ol.style.Style({
               image: new ol.style.Circle({
                 radius: 5,
