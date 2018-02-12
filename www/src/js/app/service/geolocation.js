@@ -61,13 +61,19 @@ define([
 
             // Listen to position changes
             this._locator.on('change', function() {
-                var position = this._locator.getPosition();
-                var accuracy = this._locator.getAccuracy();
-                var heading = this._locator.getHeading() || 0;
-                var speed = this._locator.getSpeed() || 0;
-                var m = Date.now();
+                var position = this._locator.getPosition(),
+                    accuracy = this._locator.getAccuracy(),
+                    heading = this._locator.getHeading() || 0,
+                    speed = this._locator.getSpeed() || 0,
+                    m = Date.now(),
+                    coords;
+                // if no movement, then heading is previous heading
+                if (speed === 0) {
+                  coords = this._features.track.getCoordinates();
+                  heading = coords[coords.length - 1][2];
+                }
                 this.addPosition(position, heading, m, speed);
-                var coords = this._features.track.getCoordinates();
+                coords = this._features.track.getCoordinates();
                 var len = coords.length;
                 if (len >= 2) {
                   this._deltaMean = (coords[len - 1][3] - coords[0][3]) / (len - 1);

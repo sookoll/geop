@@ -6,11 +6,11 @@ define([
     'templator',
     'text!tmpl/service/geocache/filter.html'
 ], function ($, Templator, tmpl_filter) {
-    
+
     'use strict';
-    
+
     function Filter(layer) {
-        
+
         this._layer = layer;
         this._el = $('#toolbar .filter');
         this._tmpl_filter = Templator.compile(tmpl_filter);
@@ -29,22 +29,25 @@ define([
                 'Sündmusaare': 'Sündmusaare',
                 'Asukohata (tagurpidi) aare': 'Asukohata aare',
                 'Mõistatusaare': 'Mõistatusaare'
+            },
+            new_cache: {
+                'yes': 'Uus aare (30p)'
             }
         };
-        
+
     }
-    
+
     Filter.prototype = {
-        
+
         get : function (key) {
             return this['_' + key];
         },
-        
+
         init : function () {
             var filter = this.buildPropertyList();
             this.createUi(filter);
         },
-        
+
         buildPropertyList : function () {
             var attr,
                 filter = {},
@@ -62,7 +65,7 @@ define([
                         }
                     }
                 }
-                
+
             }, this);
             // remove < 2
             for (i in filter) {
@@ -74,14 +77,14 @@ define([
             }
             return filter;
         },
-        
+
         createUi : function (filter) {
             var _this = this;
-            
+
             this._el.find('ul').html(this._tmpl_filter({
                 collection: filter
             }));
-            
+
             this._el.closest('.geocache').find('button.btn-filter')
                 .prop('disabled', false)
                 .on('click', function (e) {
@@ -97,19 +100,19 @@ define([
                     $(this).toggleClass('active');
                     $(this).closest('.geocache').find('.filter').toggleClass('open');
                 });
-            
+
             this._el.find('ul button.close').on('click', function (e) {
                 e.stopPropagation();
                 $(this).closest('.geocache').find('button.btn-filter').toggleClass('active');
                 $(this).closest('.filter').toggleClass('open');
             });
-            
+
             this._el.find('ul li input').on('change', function (e) {
                 e.stopPropagation();
                 _this.filter();
             });
         },
-        
+
         off : function () {
             this._el.closest('.geocache')
                 .find('button.btn-filter')
@@ -121,11 +124,11 @@ define([
             this._el.find('ul').html('');
             this._el.removeClass('open');
         },
-        
+
         filter : function () {
             var features,
                 params = this.getChecked();
-            
+
             this._layer.getSource().clear();
             if (params.count > 0) {
                 features = this.query(params.query);
@@ -136,7 +139,7 @@ define([
                 this._el.closest('.geocache').find('button.btn-filter b').text('');
             }
         },
-        
+
         getChecked : function () {
             var checked = this._el.find('input').serializeArray(),
                 params = {
@@ -156,7 +159,7 @@ define([
             }
             return params;
         },
-        
+
         query : function (params) {
             var fset = [],
                 i,
@@ -164,7 +167,7 @@ define([
                 len,
                 attr,
                 valid = [];
-            
+
             for (i = 0, len = this._features.length; i < len; i++) {
                 attr = this._features[i].getProperties();
                 valid = [];
@@ -177,7 +180,7 @@ define([
                         }
                     }
                 }
-                
+
                 if ($.inArray(false, valid) === -1) {
                     fset.push(this._features[i]);
                 }
@@ -187,5 +190,5 @@ define([
     };
 
     return Filter;
-    
+
 });

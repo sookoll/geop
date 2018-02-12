@@ -95,6 +95,14 @@ define([
                         color: 'red'
                     })
                 }
+            },
+            'new_cache': {
+                'yes': {
+                    stroke: new ol.style.Stroke({
+                        color: '#ffff00',
+                        width: 4
+                    })
+                }
             }
         };
         this._tmpl_geotrip = Templator.compile(tmpl_geotrip);
@@ -256,6 +264,7 @@ define([
 
         createLayer : function (json) {
             var _this = this, source, format;
+            var today = new Date();
             // if json, else add from file for testing
             if (json) {
                 format = new ol.format.GeoJSON();
@@ -298,24 +307,31 @@ define([
                 style: function (feature, resolution) {
                     var type = feature.get('type'),
                         fstatus = feature.get('fstatus'),
+                        new_cache = feature.get('new_cache'),
+                        hash = type + fstatus + new_cache,
                         definition;
-                    if (!_this._styleCache[type]) {
-                        _this._styleCache[type] = {};
-                    }
-                    if (!_this._styleCache[type][fstatus]) {
+                    if (!_this._styleCache[hash]) {
                         definition = $.extend(
                             {},
                             _this._styleConfig.base,
                             _this._styleConfig.text[type],
-                            _this._styleConfig.color[fstatus]
+                            _this._styleConfig.color[fstatus],
+                            _this._styleConfig.new_cache[new_cache] || {}
                         );
-                        _this._styleCache[type][fstatus] = [new ol.style.Style({
+                        _this._styleCache[hash] = [new ol.style.Style({
                             text: new ol.style.Text(definition)
                         })];
                     }
-                    return _this._styleCache[type][fstatus];
+                    return _this._styleCache[hash];
                 }
             });
+            this._layer.getSource().forEachFeature(function (feature) {
+                // set new_cache prop
+                var date = new Date(feature.get('date_hidden')),
+                test = new Date(date.getFullYear(), date.getMonth(), date.getDate()+30),
+                newCache = test > today ? 'yes' : 'no';
+                feature.set('new_cache', newCache);
+            }, this);
             this._mapmodule.get('vectorLayers').getLayers().push(this._layer);
             return source.features || [];
         },
