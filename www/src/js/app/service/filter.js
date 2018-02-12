@@ -17,8 +17,8 @@ define([
         this._features = layer.getSource().getFeatures();
         this._filters = {
             fstatus: {
-                '0': 'Leidmata',
-                '1': 'Leitud',
+                //'0': 'Leidmata',
+                //'1': 'Leitud',
                 '2': 'Minu aare'
             },
             type: {
@@ -75,6 +75,7 @@ define([
                     }
                 }
             }
+            console.log(filter)
             return filter;
         },
 
@@ -89,7 +90,6 @@ define([
                 .prop('disabled', false)
                 .on('click', function (e) {
                     e.stopPropagation();
-
                     $(this).closest('.geocache')
                         .find('button.btn-geotrip')
                         .removeClass('active');

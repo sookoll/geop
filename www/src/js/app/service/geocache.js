@@ -327,9 +327,10 @@ define([
             });
             this._layer.getSource().forEachFeature(function (feature) {
                 // set new_cache prop
-                var date = new Date(feature.get('date_hidden')),
-                test = new Date(date.getFullYear(), date.getMonth(), date.getDate()+30),
-                newCache = test > today ? 'yes' : 'no';
+                var fstatus = feature.get('fstatus'),
+                    date = new Date(feature.get('date_hidden')),
+                    test = new Date(date.getFullYear(), date.getMonth(), date.getDate()+30),
+                    newCache = (fstatus == '0' && test > today) ? 'yes' : 'no';
                 feature.set('new_cache', newCache);
             }, this);
             this._mapmodule.get('vectorLayers').getLayers().push(this._layer);
