@@ -68,14 +68,13 @@ define([
 
             }, this);
             // remove < 2
-            for (i in filter) {
+            /*for (i in filter) {
                 if (filter.hasOwnProperty(i)) {
                     if (Object.keys(filter[i]).length < 2) {
                         delete filter[i];
                     }
                 }
-            }
-            console.log(filter)
+            }*/
             return filter;
         },
 
