@@ -31,14 +31,16 @@ define([
             track: new ol.geom.LineString([], ('XYZM')),
             accuracy: new ol.Feature()
         };
+        this._meanPointsCount = 10;
         this._features.accuracy.setStyle(new ol.style.Style({
             fill: new ol.style.Fill({
                 color: 'rgba(51, 153, 204, 0.2)'
             })
         }));
-        this.trackingStatus = ['', 'active', 'tracking'];
-        this.currentStatus = 0;
-        this.firstPosition = true;
+        this._trackingStatus = ['', 'active', 'tracking'];
+        this._currentStatus = 0;
+        this._firstPosition = true;
+        this._zoom = 16;
         this.init();
     }
 
@@ -84,24 +86,24 @@ define([
             this._locator.on('error', function() {
               console.error('geolocation error');
               this.disable();
-              $('#statusbar a.btn-geolocation').removeClass(_this.trackingStatus.join(' '));
+              $('#statusbar a.btn-geolocation').removeClass(_this._trackingStatus.join(' '));
             }, this);
 
             $('#statusbar a.btn-geolocation').on('click', function (e) {
                 e.preventDefault();
-                _this.currentStatus = (_this.currentStatus + 1 >= _this.trackingStatus.length) ? 0 : _this.currentStatus + 1;
-                if (_this.currentStatus === 0) {
+                _this._currentStatus = (_this._currentStatus + 1 >= _this._trackingStatus.length) ? 0 : _this._currentStatus + 1;
+                if (_this._currentStatus === 0) {
                     _this.disable();
-                    $(this).removeClass(_this.trackingStatus.join(' '));
+                    $(this).removeClass(_this._trackingStatus.join(' '));
                 } else {
                     _this.enable();
-                    $(this).addClass(_this.trackingStatus[_this.currentStatus]);
+                    $(this).addClass(_this._trackingStatus[_this._currentStatus]);
                 }
             });
         },
 
         enable : function () {
-            if (this.trackingStatus[this.currentStatus] === 'active') {
+            if (this._trackingStatus[this._currentStatus] === 'active') {
               var overlay = this._mapmodule.get('overlay');
               overlay.getSource().clear();
               overlay.getSource().addFeatures([this._features.accuracy]);
@@ -109,7 +111,7 @@ define([
               this._locator.setTracking(true);
               //$('#statusbar .mouse-position a.lock').trigger('click');
               this._view.on('change:rotation', this.rotateMarker, this);
-            } else if (this.trackingStatus[this.currentStatus] === 'tracking') {
+            } else if (this._trackingStatus[this._currentStatus] === 'tracking') {
               this._view.un('change:rotation', this.rotateMarker, this);
               this._markerEl.css({
                   "-webkit-transform": "rotate(0rad)",
@@ -136,15 +138,15 @@ define([
                 "-moz-transform": "rotate(0rad)",
                 "transform": "rotate(0rad)"
             });
-            this.firstPosition = true;
+            this._firstPosition = true;
         },
 
         disableTracking: function () {
             this._map.un('postcompose', this.updateView, this);
             this._map.un('pointerdrag', this.disableTracking, this);
             this._view.on('change:rotation', this.rotateMarker, this);
-            $('#statusbar a.btn-geolocation').removeClass(this.trackingStatus[this.currentStatus]);
-            this.currentStatus = this.trackingStatus.indexOf('active');
+            $('#statusbar a.btn-geolocation').removeClass(this._trackingStatus[this._currentStatus]);
+            this._currentStatus = this._trackingStatus.indexOf('active');
         },
 
         // modulo for negative values
@@ -169,21 +171,22 @@ define([
             }
             this._features.track.appendCoordinate([x, y, heading, m]);
             // only keep the 20 last coordinates
-            this._features.track.setCoordinates(this._features.track.getCoordinates().slice(-20));
+            this._features.track.setCoordinates(this._features.track.getCoordinates().slice(-this._meanPointsCount));
 
             // if not tracking, then set position
-            if (this.trackingStatus[this.currentStatus] === 'active') {
+            if (this._trackingStatus[this._currentStatus] === 'active') {
               this._features.position.setPosition([x, y]);
-              if (this.firstPosition) {
+              if (this._firstPosition) {
                   this._view.setCenter([x, y]);
-                  this.firstPosition = false;
+                  this._view.setZoom(this._zoom);
+                  this._firstPosition = false;
               }
             }
 
-            if (speed) {
+            if (speed && heading) {
                 this._markerEl.attr('src', 'css/img/geolocation_marker_heading.png');
                 // if not tracking, then rotate icon
-                if (this.trackingStatus[this.currentStatus] === 'active') {
+                if (this._trackingStatus[this._currentStatus] === 'active') {
                     var viewRotation = this._view.getRotation();
                     heading = viewRotation + heading;
                     this._markerEl.css({
