@@ -13,7 +13,8 @@ define([
     'app/service/fullscreen',
     'app/service/wms-layer',
     'app/service/measure',
-    'app/service/contextmenu'
+    'app/service/contextmenu',
+    'app/service/compass'
 ], function (
     $,
     Settings,
@@ -26,7 +27,8 @@ define([
     FullScreen,
     WMSLayer,
     Measure,
-    ContextMenu
+    ContextMenu,
+    Compass
 ) {
 
     'use strict';
@@ -81,6 +83,8 @@ define([
 
         // full screen
         app.fullscreen = new FullScreen($('.btn-fullscreen'));
+        // Compass
+        app.compass = new Compass($('.btn-compass'), app.mapmodule);
 
         // measure
         if (app.get('settings').map.measureTool) {
