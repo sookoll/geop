@@ -103,4 +103,5 @@ text!tmpl/service/wms-modal.html
 js/app/service/wms-layer.js
 js/app/service/measure.js
 js/app/service/contextmenu.js
+js/app/service/compass.js
 js/app/main.js
