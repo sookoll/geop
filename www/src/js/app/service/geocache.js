@@ -64,8 +64,8 @@ define([
                     'font': 'normal 12px FontAwesome'
                 },
                 'Sündmusaare': {
-                    'text': '\uf19c',
-                    'class': 'fa fa-university',
+                    'text': '\uf274',
+                    'class': 'fa fa-calendar-check-o',
                     'font': 'normal 12px FontAwesome'
                 },
                 'Asukohata (tagurpidi) aare': {
@@ -76,6 +76,16 @@ define([
                 'Mõistatusaare': {
                     'text': '\uf059',
                     'class': 'fa fa-question-circle',
+                    'font': 'normal 12px FontAwesome'
+                },
+                'Kirjakastiaare': {
+                    'text': '\uf0e0',
+                    'class': 'fa fa-envelope',
+                    'font': 'normal 12px FontAwesome'
+                },
+                'KusMaLäen': {
+                    'text': '\uf0a9',
+                    'class': 'fa fa-arrow-circle-right',
                     'font': 'normal 12px FontAwesome'
                 }
             },

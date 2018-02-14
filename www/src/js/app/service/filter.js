@@ -31,7 +31,9 @@ define([
                 'Virtuaalne aare': 'Virtuaalne aare',
                 'Sündmusaare': 'Sündmusaare',
                 'Asukohata (tagurpidi) aare': 'Asukohata aare',
-                'Mõistatusaare': 'Mõistatusaare'
+                'Mõistatusaare': 'Mõistatusaare',
+                'Kirjakastiaare': 'Kirjakastiaare',
+                'KusMaLäen': 'KusMaLäen'
             }
         };
 
