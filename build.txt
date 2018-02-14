@@ -70,9 +70,6 @@ config/settings.js
 js/lib/ol-custom.js
 js/lib/proj4.js
 js/lib/handlebars-v4.0.5.js
-js/app/service/search/coordinates.js
-js/app/service/search/nominatim.js
-js/app/service/featureinfo.js
 js/app/service/geolocation.js
 js/lib/text.js
 text!tmpl/map/layerswitcher.html
@@ -81,9 +78,13 @@ js/lib/store.modern.min.js
 js/app/service/store.js
 text!tmpl/service/search/search.html
 text!tmpl/service/search/search-item.html
+js/app/service/search/coordinates.js
+js/app/service/search/nominatim.js
 js/app/service/search/map-features.js
 js/lib/bootstrap.min.js
 js/app/service/search/search.js
+text!tmpl/service/geocache/featureinfo_title.html
+js/app/service/featureinfo.js
 js/lib/polyline.js
 js/lib/jsonpack.js
 js/app/service/export.js
@@ -92,7 +93,6 @@ js/app/service/filter.js
 text!tmpl/service/geocache/tool_loader.html
 text!tmpl/service/geocache/geotrip.html
 text!tmpl/service/geocache/featureinfo.html
-text!tmpl/service/geocache/featureinfo_title.html
 js/lib/jquery.fn.sortable.js
 js/app/service/geocache.js
 js/app/service/osm-edit.js
