@@ -7,6 +7,7 @@ define([
     'app/map',
     'app/service/store',
     'app/service/search/search',
+    'app/service/featureinfo',
     'app/service/geocache',
     'app/service/osm-edit',
     'app/service/data-import',
@@ -21,6 +22,7 @@ define([
     Map,
     AppStore,
     Search,
+    FeatureInfo,
     Geocache,
     OSMEdit,
     DataImport,
@@ -73,6 +75,11 @@ define([
             app.geocoding = new Search(app.mapmodule);
             app.geocoding.init();
         }
+        // featureinfo
+        if (app.get('settings').map.featureInfo) {
+            app.featureInfo = new FeatureInfo(app);
+            app.mapmodule.set('featureInfo', app.featureInfo);
+        }
 
         // geocaches
         app.geocache = new Geocache(app.get('settings').geocache, app.mapmodule);
@@ -99,7 +106,7 @@ define([
           },
           onclick: function (e, coord) {
               var xy = ol.coordinate.format(app.mapmodule.transform('point', coord, 'EPSG:3857', 'EPSG:4326'), '{y}, {x}', 5);
-              app.mapmodule.addMarker(coord, {'WGS84': xy});
+              app.mapmodule.addMarker(coord, {coordinates: xy});
           },
           closeonclick: true
         }, {

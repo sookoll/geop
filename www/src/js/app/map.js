@@ -6,10 +6,9 @@ define([
     'ol',
     'proj4',
     'templator',
-    'app/service/featureinfo',
     'app/service/geolocation',
     'text!tmpl/map/layerswitcher.html'
-], function ($, ol, proj4, Templator, FeatureInfo, GeoLocation, tmpl_layerswitcher) {
+], function ($, ol, proj4, Templator, GeoLocation, tmpl_layerswitcher) {
 
     'use strict';
 
@@ -33,7 +32,6 @@ define([
         });
         this._activeBaseLayer = null;
         this._el = null;
-        this._featureInfo = null;
         this._geoLocation = null;
         this._controls = {
             mouseCoordinates : null
@@ -46,6 +44,10 @@ define([
 
         get : function (key) {
             return this['_' + key];
+        },
+
+        set: function (key, value) {
+            this['_' + key] = value;
         },
 
         // convert radians to degrees
@@ -68,9 +70,6 @@ define([
             }
             if (this._config.scaleLine) {
                 this.createScaleLineControl();
-            }
-            if (this._config.featureInfo) {
-                this._featureInfo = new FeatureInfo(this);
             }
             this._overlay = new ol.layer.Vector({
                 map: this._map,
@@ -360,6 +359,7 @@ define([
             layer.getSource().addFeatures([marker]);
             this._vectorLayers.getLayers().remove(layer);
             this._vectorLayers.getLayers().push(layer);
+            return marker;
         },
 
         createMarker : function (coords, props) {
@@ -368,6 +368,13 @@ define([
                 f.setGeometry(new ol.geom.Point(coords));
             } else {
                 f.setGeometry(null);
+            }
+            f.setId(Date.now() + '_' + Math.random());
+            if (!props) {
+                props = {};
+            }
+            if (!props.name) {
+                props.name = 'Kaardiobjekt';
             }
             if (props) {
                 f.setProperties(props);

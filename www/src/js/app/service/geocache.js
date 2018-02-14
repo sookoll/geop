@@ -125,7 +125,7 @@ define([
                 hash,
                 features,
                 json,
-                fset;
+                fset = [];
             this.createUi();
 
             // todo: comment in
@@ -138,25 +138,40 @@ define([
                     return _this.getContent(feature);
                 };
             }
-
             // get permalink
             hash = window.location.hash.split('&hash=');
             if (hash[1]) {
                 features = jsonpack.unpack(decodeURIComponent(hash[1]));
-                if (features && features.length) {
+                var caches = features.filter(function (feature) {
+                    return (typeof feature.properties.fstatus !== 'undefined');
+                });
+                var markers = features.filter(function (feature) {
+                    return (typeof feature.properties.fstatus === 'undefined');
+                });
+                if (caches && caches.length) {
                     json = {
                         type: 'FeatureCollection',
-                        features: features
+                        features: caches
                     };
                     this.clearTrip();
-                    if (json) {
-                        fset = this.initTrip(json);
-                        fset && fset.forEach(function (feature) {
-                            _this._geotrip.push(feature);
+                    fset = this.initTrip(json);
+                }
+                if (markers && markers.length) {
+                    markers = markers.map(function (marker) {
+                        var feature = _this._mapmodule.addMarker(_this._mapmodule.transform('point', marker.geometry.coordinates, 'EPSG:4326', 'EPSG:3857'), marker.properties);
+                        feature.setId(marker.id);
+                        fset.push(feature);
+                    });
+                }
+                if (fset) {
+                    features.forEach(function (item) {
+                        var feature = fset.filter(function(f) {
+                            return f.getId() === item.id;
                         });
-
-                        //this.renderTrip();
-                    }
+                        if (feature && feature.length > 0) {
+                            _this._geotrip.push(feature[0]);
+                        }
+                    });
                 }
             }
         },
@@ -184,9 +199,13 @@ define([
                 _this.clearTrip();
 
                 if (content.length > 0) {
+                    // FIXME: temporary hack to fix known json false
+                    content = content.replace('"NAVY"', 'NAVY');
                     try {
                         json = $.parseJSON(content);
-                    } catch (err) {}
+                    } catch (err) {
+                        console.error(err);
+                    }
                 }
                 if (json) {
                     _this.initTrip(json);
@@ -219,7 +238,7 @@ define([
                 var id = $(this).data('id'),
                     feature = null;
                 _this._geotrip.forEach(function (item, i) {
-                    if (Number(item.get('id')) === id) {
+                    if (item.getId() === id) {
                         _this._mapmodule.setView('center', [item.getGeometry().getCoordinates(), 16]);
                         return;
                     }
@@ -281,25 +300,7 @@ define([
                 };
             }
 
-            this._route = new ol.layer.Vector({
-                name: 'route',
-                source: new ol.source.Vector(),
-                style: [
-                    new ol.style.Style({
-                        stroke: new ol.style.Stroke({
-                            color: 'rgba(255, 255, 255, 0.6)',
-                            width: 7
-                        })
-                    }),
-                    new ol.style.Style({
-                        stroke: new ol.style.Stroke({
-                            color: 'rgba(0, 0, 0, 0.3)',
-                            width: 5
-                        })
-                    })
-                ]
-            });
-            this._mapmodule.get('vectorLayers').getLayers().push(this._route);
+            this.createRouteLayer();
 
             this._layer = new ol.layer.Vector({
                 name: 'geocache',
@@ -331,10 +332,37 @@ define([
                     date = new Date(feature.get('date_hidden')),
                     test = new Date(date.getFullYear(), date.getMonth(), date.getDate()+30),
                     newCache = (fstatus == '0' && test > today) ? 'yes' : 'no';
-                feature.set('new_cache', newCache);
+                if (!feature.get('new_cache')) {
+                    feature.set('new_cache', newCache);
+                }
+                if (!feature.getId()) {
+                    feature.setId(Date.now() + '_' + Math.random());
+                }
             }, this);
             this._mapmodule.get('vectorLayers').getLayers().push(this._layer);
             return source.features || [];
+        },
+
+        createRouteLayer: function () {
+          this._route = new ol.layer.Vector({
+              name: 'route',
+              source: new ol.source.Vector(),
+              style: [
+                  new ol.style.Style({
+                      stroke: new ol.style.Stroke({
+                          color: 'rgba(255, 255, 255, 0.6)',
+                          width: 7
+                      })
+                  }),
+                  new ol.style.Style({
+                      stroke: new ol.style.Stroke({
+                          color: 'rgba(0, 0, 0, 0.3)',
+                          width: 5
+                      })
+                  })
+              ]
+          });
+          this._mapmodule.get('vectorLayers').getLayers().push(this._route);
         },
 
         removeLayer : function () {
@@ -365,9 +393,8 @@ define([
                     'html': true,
                     'title': this._tmpl_featureinfo_title({
                         'type_class': this._styleConfig.text[prop.type]['class'],
-                        'cache_url': this._config.cache_url,
-                        'id': prop.id,
-                        'name': prop.name,
+                        'text': '<a href="'+this._config.cache_url+prop.id+'" target="_blank">'+prop.name+'</a>',
+                        'trash': '',
                         'icon': (in_collection > -1) ? 'fa-minus-square' : 'fa-thumb-tack'
                     }),
                     'content': this._tmpl_featureinfo(prop)
@@ -410,11 +437,16 @@ define([
             var collection = [''],// empty element for 1 based numbering
                 len = this._geotrip.getLength(),
                 line = [],
-                _this = this;
+                _this = this,
+                prop;
 
             this._geotrip.forEach(function (item, i) {
-                collection.push(item.getProperties());
-                line.push(item.getGeometry().getCoordinates());
+                if (item) {
+                  prop = item.getProperties();
+                  prop._id = item.getId();
+                  collection.push(prop);
+                  line.push(item.getGeometry().getCoordinates());
+                }
             });
             if (len === 0) {
                 this._el.find('button.btn-geotrip')
@@ -440,9 +472,12 @@ define([
                 onUpdate: function (e) {
                     _this.reorderTrip();
                     _this.renderTrip();
-
                 }
             });
+
+            if (!this._route) {
+                this.createRouteLayer();
+            }
 
             this._route.getSource().clear();
             this._el.find('.geotrip ul li a.export-gpx').removeAttr('href');
@@ -470,7 +505,7 @@ define([
             function getObj(item_id) {
                 var obj;
                 _this._geotrip.forEach(function (item, j) {
-                    if (item.get('id') === item_id) {
+                    if (item && item.getId() === item_id) {
                         obj = item;
                     }
                 });
@@ -479,8 +514,10 @@ define([
 
             for (i = 0, len = order.length; i < len; i++) {
                 obj = getObj(order[i]);
-                this._geotrip.remove(obj);
-                this._geotrip.insertAt(i, obj);
+                if (obj) {
+                    this._geotrip.remove(obj);
+                    this._geotrip.insertAt(i, obj);
+                }
             }
         },
 

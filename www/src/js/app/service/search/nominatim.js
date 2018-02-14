@@ -1,16 +1,12 @@
 /*jslint browser: true, regexp: true, nomen: true, plusplus: true, continue: true */
 /*global define*/
-define([
-    'jquery',
-    'app/service/search/coordinates'
-], function ($, CoordinateParser) {
+define(['jquery'], function ($) {
 
     'use strict';
 
-    function Nominatim(mapmodule) {
+    function Nominatim(search) {
         this._url = 'https://nominatim.openstreetmap.org';
-        this._mapmodule = mapmodule;
-        this._coordinateParser = new CoordinateParser();
+        this._mapmodule = search._mapmodule;
         this._results = null;
         this._id = 'nominatim';
         this._title = '<i class="glyphicon glyphicon-map-marker"></i> Leitud aadressid';
@@ -40,35 +36,17 @@ define([
 
         find : function (query, cb, context) {
             // test coordinates
-            var coords = this._coordinateParser.test(query),
-                _this = this,
-                clone;
+            var _this = this;
             this._results = null;
-            if (coords && coords.srid) {
-                clone = this._mapmodule.transform('point', [coords.x, coords.y], coords.srid, 'EPSG:3857');
-                this._mapmodule.addMarker(clone, {'WGS84': ol.coordinate.format([coords.x, coords.y], '{y}, {x}', 5)});
-                this._mapmodule.setView('center', [clone, 15]);
-                this.reverse([coords.x, coords.y], 18, function (data) {
-                    if (data && data.place_id) {
-                        data.boundingbox = [coords.y, coords.y, coords.x, coords.x];
-                        data = _this.format([data]);
-                        _this._results = data;
-                    }
-                    if (typeof cb === 'function') {
-                        cb(_this._title, _this._results, context);
-                    }
-                });
-            } else {
-                this.geocode(query, function (data) {
-                    if (data.length > 0) {
-                        data = _this.format(data);
-                        _this._results = data;
-                    }
-                    if (typeof cb === 'function') {
-                        cb(_this._title, _this._results, context);
-                    }
-                });
-            }
+            this.geocode(query, function (data) {
+                if (data.length > 0) {
+                    data = _this.format(data);
+                    _this._results = data;
+                }
+                if (typeof cb === 'function') {
+                    cb(_this._title, _this._results, context);
+                }
+            });
         },
 
         geocode : function (q, cb) {

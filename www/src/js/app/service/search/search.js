@@ -5,47 +5,50 @@ define([
     'templator',
     'text!tmpl/service/search/search.html',
     'text!tmpl/service/search/search-item.html',
+    'app/service/search/coordinates',
     'app/service/search/nominatim',
     'app/service/search/map-features',
     'jquery.bootstrap'
-], function ($, Templator, tmpl_search, tmpl_search_item, Nominatim, MapFeatures) {
-    
+], function ($, Templator, tmpl_search, tmpl_search_item, CoordinateParser, Nominatim, MapFeatures) {
+
     'use strict';
-    
+
     function Search(mapmodule) {
         this._mapmodule = mapmodule;
         this._el = null;
         this._open = false;
         this._result = false;
         this._providers = {
+            coordinates: null,
             nominatim: null,
             mapfeatures: null
         };
         this._counter = 0;
     }
-    
+
     Search.prototype = {
-        
+
         get : function (key) {
             return this['_' + key];
         },
-        
+
         init : function () {
-            this._providers.nominatim = new Nominatim(this._mapmodule);
-            this._providers.mapfeatures = new MapFeatures(this._mapmodule);
+            this._providers.coordinates = new CoordinateParser(this);
+            this._providers.nominatim = new Nominatim(this);
+            this._providers.mapfeatures = new MapFeatures(this);
             this.createUi();
         },
-        
+
         createUi : function () {
             var _this = this,
                 template = Templator.compile(tmpl_search);
-            
+
             this._el = $(template({
                 search: 'Otsi'
             }));
-            
+
             $('#toolbar').append(this._el);
-            
+
             this._el.find('.dropdown')
                 .on('shown.bs.dropdown', function () {
                     _this._open = true;
@@ -53,7 +56,7 @@ define([
                 .on('hidden.bs.dropdown', function () {
                     _this._open = false;
                 });
-            
+
             this._el.find('input').on('keyup', function (e) {
                 var val, provider;
                 // clear
@@ -79,14 +82,14 @@ define([
                     _this.search(val);
                 }
             });
-            
+
             this._el.find('.dropdown-toggle').on('click', function (e) {
                 var val = $.trim(_this._el.find('input').val());
                 if (!_this._result && val.length > 1) {
                     _this.search(val);
                 }
             });
-            
+
             this._el.find('.dropdown-menu').on('click', 'li a', function (e) {
                 e.preventDefault();
                 var id = $(this).attr('data-id'),
@@ -101,7 +104,7 @@ define([
                 }
             });
         },
-        
+
         search : function (query) {
             var provider,
                 searches = [];
@@ -133,13 +136,13 @@ define([
                 _this.searchEnd();
             }
         },
-        
+
         searchStart : function () {
             this._el.find('.dropdown-toggle i')
                 .removeClass('fa-search')
                 .addClass('fa-spinner fa-pulse');
         },
-        
+
         searchEnd : function () {
             this._el.find('.dropdown-toggle i')
                 .removeClass('fa-spinner fa-pulse')
@@ -147,6 +150,6 @@ define([
         }
 
     };
-    
+
     return Search;
 });

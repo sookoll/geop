@@ -67,6 +67,8 @@
         "ol.Feature#getProperties",
         "ol.Feature#setProperties",
         "ol.Feature#getStyleFunction",
+        "ol.Feature#getId",
+        "ol.Feature#setId",
         "ol.geom.Point",
         "ol.geom.Point#getType",
         "ol.geom.Point#getCoordinates",

@@ -85,7 +85,6 @@ define([
                   'Speed: ' + (speed * 3.6).toFixed(1) + ' km/h',
                   'Delta: ' + Math.round(this._deltaMean) + 'ms'
                 ].join('<br />');
-                //this._mapmodule.get('featureInfo').setPositionInfo(position);
                 $('#statusbar .locationinfo').html(html);
             }, this);
 

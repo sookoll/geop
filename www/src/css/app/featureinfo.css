@@ -6,8 +6,11 @@
 .popover-title a.remove-marker {
     position: absolute;
     right: 14px;
-    padding-left:3px;
+    padding-left:10px;
     background: #f7f7f7
+}
+.popover-title a.remove-marker {
+    right: 34px;
 }
 .popover-title {
     white-space: nowrap;

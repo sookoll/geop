@@ -4,20 +4,24 @@
 define([
     'jquery',
     'ol',
-    'app/service/search/nominatim'
-], function ($, ol, Nominatim) {
+    'templator',
+    'app/service/search/nominatim',
+    'text!tmpl/service/geocache/featureinfo_title.html'
+], function ($, ol, Templator, Nominatim, tmpl_featureinfo_title) {
 
     'use strict';
 
-    function FeatureInfo(mapmodule) {
-        this._mapmodule = mapmodule;
-        this._map = mapmodule.get('map');
-        this._geocode = new Nominatim(mapmodule);
+    function FeatureInfo(app) {
+        this._app = app;
+        this._mapmodule = app.mapmodule;
+        this._map = this._mapmodule.get('map');
+        this._geocode = new Nominatim(this._mapmodule);
         this._tooltip = null;
         this._styleCache = {};
         this._highlight = null;
         this._popup = null;
         this._infoHandlers = {};
+        this._tmpl_featureinfo_title = Templator.compile(tmpl_featureinfo_title);
         this.init();
     }
 
@@ -181,7 +185,14 @@ define([
                         content.push(key + ': ' + prop[key]);
                     }
                 }
-                var title = '<i class="fa fa-map-marker"></i> Kaardiobjekt<a href="#" class="remove-marker" title="Eemalda"><i class="fa fa-trash"></i></a>';
+                var in_collection = $.inArray(feature, this._app.geocache.get('geotrip').getArray());
+                var title = this._tmpl_featureinfo_title({
+                    'type_class': 'fa fa-map-marker',
+                    'text': 'Kaardiobjekt',
+                    'trash': '<a href="#" class="remove-marker" title="Eemalda"><i class="fa fa-trash"></i></a>',
+                    'icon': (in_collection > -1) ? 'fa-minus-square' : 'fa-thumb-tack'
+                });
+                var geotrip = t._app.geocache.get('geotrip');
                 return {
                     'definition' : {
                         'placement': 'top',
@@ -195,10 +206,19 @@ define([
                             e.preventDefault();
                             if (f[0]) {
                                 f[0].getSource().removeFeature(f[1]);
+                                geotrip.remove(f[1]);
                                 t._popup.popover('destroy');
                             }
-
-                        })
+                        });
+                        $('a.cache-toggle').on('click', function (e) {
+                            e.preventDefault();
+                            $(this).find('i').toggleClass('fa-thumb-tack fa-minus-square');
+                            if ($.inArray(f[1], geotrip.getArray()) > -1) {
+                                geotrip.remove(f[1]);
+                            } else {
+                                geotrip.push(f[1]);
+                            }
+                        });
                     },
                     'onHide' : function () {}
                 };

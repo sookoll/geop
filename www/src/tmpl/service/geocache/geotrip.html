@@ -7,9 +7,9 @@
 </li>
 <li class="divider"></li>
 {{#each collection}}
-{{#if this.id}}
+{{#if this._id}}
 <li class="sort-item">
-    <a href="#" data-id="{{this.id}}">
+    <a href="#" data-id="{{this._id}}">
         <span>{{@key}}</span>. {{this.name}}
     </a>
 </li>

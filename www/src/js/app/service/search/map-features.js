@@ -3,40 +3,40 @@
 define([
     'jquery'
 ], function ($) {
-    
+
     'use strict';
-    
-    function MapFeatures(mapmodule) {
-        this._mapmodule = mapmodule;
+
+    function MapFeatures(search) {
+        this._mapmodule = search._mapmodule;
         this._results = null;
         this._id = 'mapfeatures';
         this._title = '<i class="fa fa-cube"></i> Leitud aarded';
     }
-    
+
     MapFeatures.prototype = {
-        
+
         get : function (key) {
             return this['_' + key];
         },
-        
+
         init : function () {
-            
+
         },
-        
+
         test : function (query) {
             return true;
         },
-        
+
         clear : function () {
             this._results = null;
         },
-        
+
         find : function (query, cb, context) {
             var i, len, id, name,
                 _this = this,
                 data = [],
                 fset = null;
-            
+
             // async function
             setTimeout(function () {
                 fset = _this._mapmodule.getAllFeatures();
@@ -59,7 +59,7 @@ define([
                     cb(_this._title, _this._results, context);
                 }
             });
-            
+
         },
 
         getResultItem : function (id) {
@@ -72,6 +72,6 @@ define([
             return null;
         }
     };
-    
+
     return MapFeatures;
 });

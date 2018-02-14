@@ -17,9 +17,12 @@ define([
         this._features = layer.getSource().getFeatures();
         this._filters = {
             fstatus: {
-                //'0': 'Leidmata',
-                //'1': 'Leitud',
+                '0': 'Leidmata',
+                '1': 'Leitud',
                 '2': 'Minu aare'
+            },
+            new_cache: {
+                'yes': 'Uus aare (30p)'
             },
             type: {
                 'Tavaline aare': 'Tavaline aare',
@@ -29,9 +32,6 @@ define([
                 'Sündmusaare': 'Sündmusaare',
                 'Asukohata (tagurpidi) aare': 'Asukohata aare',
                 'Mõistatusaare': 'Mõistatusaare'
-            },
-            new_cache: {
-                'yes': 'Uus aare (30p)'
             }
         };
 

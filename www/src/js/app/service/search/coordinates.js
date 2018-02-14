@@ -4,8 +4,8 @@ define(function () {
 
     'use strict';
 
-    function CoordinateParser() {
-
+    function CoordinateParser(search) {
+        this._mapmodule = search._mapmodule;
         // coordinates formats parsers
         this._formats = [{
             /*
@@ -153,6 +153,10 @@ define(function () {
 
         },
 
+        clear : function () {
+            this._results = null;
+        },
+
         test : function (query) {
             var matches, i, len, coords;
             for (i = 0, len = this._formats.length; i < len; i++) {
@@ -167,6 +171,28 @@ define(function () {
                 }
             }
             return false;
+        },
+
+        find : function (query, cb, context) {
+            // test coordinates
+            var coords = this.test(query),
+                clone;
+            this._results = null;
+            if (coords && coords.srid) {
+                clone = this._mapmodule.transform('point', [coords.x, coords.y], coords.srid, 'EPSG:3857');
+                this._mapmodule.addMarker(clone, {coordinates: ol.coordinate.format([coords.x, coords.y], '{y}, {x}', 5)});
+                this._mapmodule.setView('center', [clone, 15]);
+                /*this.reverse([coords.x, coords.y], 18, function (data) {
+                    if (data && data.place_id) {
+                        data.boundingbox = [coords.y, coords.y, coords.x, coords.x];
+                        data = _this.format([data]);
+                        _this._results = data;
+                    }
+                    if (typeof cb === 'function') {
+                        cb(_this._title, _this._results, context);
+                    }
+                });*/
+            }
         }
     };
 
