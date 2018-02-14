@@ -70,7 +70,9 @@ define([
                 // if no movement, then heading is previous heading
                 if (speed === 0) {
                   coords = this._features.track.getCoordinates();
-                  heading = coords[coords.length - 1][2];
+                  if (coords.length > 0) {
+                      heading = coords[coords.length - 1][2];
+                  }
                 }
                 this.addPosition(position, heading, m, speed);
                 coords = this._features.track.getCoordinates();
