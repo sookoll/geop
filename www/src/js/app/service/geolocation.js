@@ -49,9 +49,9 @@ define([
           }),
           style: new ol.style.Style({
               stroke: new ol.style.Stroke({
-                  color: 'rgba(255, 0, 0, 0.7)',
+                  color: 'rgba(255, 0, 0, 0.5)',
                   width: 3,
-                  lineDash: [3, 1]
+                  lineDash: [5, 5]
               })
           })
         });
@@ -152,7 +152,7 @@ define([
             this._locator.setTracking(false);
             this._features.position.setPosition(null);
             this._features.accuracy.setGeometry(null);
-            this._features.track.setCoordinates(null);
+            this._features.track.setCoordinates([]);
             this._mapmodule.get('map').getView().setRotation(0);
             overlay.getSource().clear();
             this._map.un('postcompose', this.updateView, this);
@@ -235,7 +235,7 @@ define([
           ];
         },
 
-        updateView: function () {
+        updateView_: function () {
           // use sampling period to get a smooth transition
           var m = Date.now() - this._deltaMean * 1.5;
           m = Math.max(m, this._previousM);
@@ -244,6 +244,16 @@ define([
           var c = this._features.track.getCoordinateAtM(m, true);
           if (c) {
             this._view.setCenter(this.getCenterWithHeading(c, -c[2], this._view.getResolution()));
+            this._view.setRotation(-c[2]);
+            this._features.position.setPosition(c);
+          }
+        },
+
+        updateView: function () {
+          var fCoords = this._features.track.getCoordinates();
+          var c = fCoords[fCoords.length - 1];
+          if (c) {
+            this._view.setCenter(c);
             this._view.setRotation(-c[2]);
             this._features.position.setPosition(c);
           }
