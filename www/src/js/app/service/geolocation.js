@@ -195,7 +195,7 @@ define([
             }
             this._features.track.appendCoordinate([x, y, heading, m]);
             // only keep the 20 last coordinates
-            this._features.track.setCoordinates(this._features.track.getCoordinates().slice(-this._meanPointsCount));
+            // this._features.track.setCoordinates(this._features.track.getCoordinates().slice(-this._meanPointsCount));
 
             // if not tracking, then set position
             if (this._trackingStatus[this._currentStatus] === 'active') {
@@ -252,8 +252,8 @@ define([
         updateView: function () {
           var fCoords = this._features.track.getCoordinates();
           var c = fCoords[fCoords.length - 1];
-          if (c) {
-            this._view.setCenter(c);
+          if (c && c[0] && c[1]) {
+            this._view.setCenter(this.getCenterWithHeading(c, -c[2], this._view.getResolution()));
             this._view.setRotation(-c[2]);
             this._features.position.setPosition(c);
           }
