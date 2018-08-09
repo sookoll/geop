@@ -3,10 +3,11 @@
 
 define([
     'jquery',
+    'ol',
     'templator',
     'text!tmpl/service/wms-layers.html',
     'text!tmpl/service/wms-modal.html'
-], function ($, Templator, tmpl_wms, tmpl_wmsmodal) {
+], function ($, ol, Templator, tmpl_wms, tmpl_wmsmodal) {
 
     'use strict';
 
@@ -41,6 +42,67 @@ define([
             confirm: 'Lisa'
         }));
 
+        this.defaultStyle = {
+            'Point': [new ol.style.Style({
+              text: new ol.style.Text({
+                  text: '\uf276',
+                  font: 'normal 16px FontAwesome',
+                  textBaseline: 'bottom',
+                  fill: new ol.style.Fill({
+                      color: 'black'
+                  }),
+                  stroke: new ol.style.Stroke({
+                      color: '#fff',
+                      width: 4
+                  })
+              })
+            })],
+            'LineString': [new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: '#f0f',
+                    width: 3
+                })
+            })],
+            'Polygon': [new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: 'rgba(0,255,255,0.5)'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#0ff',
+                    width: 1
+                })
+            })],
+            'MultiPoint': [new ol.style.Style({
+              text: new ol.style.Text({
+                  text: '\uf276',
+                  font: 'normal 16px FontAwesome',
+                  textBaseline: 'bottom',
+                  fill: new ol.style.Fill({
+                      color: 'black'
+                  }),
+                  stroke: new ol.style.Stroke({
+                      color: '#fff',
+                      width: 4
+                  })
+              })
+            })],
+            'MultiLineString': [new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: '#f0f',
+                    width: 1
+                })
+            })],
+            'MultiPolygon': [new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: 'rgba(0,0,255,0.5)'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#00f',
+                    width: 1
+                })
+            })]
+        };
+
         $('body').append(this._modal);
 
         this._modal.on('click', 'button.confirm', $.proxy(function (e) {
@@ -65,6 +127,25 @@ define([
             e.stopPropagation();
             this.removeLayer($(e.currentTarget).data('id'));
         }, this));
+
+        this._parentEl.on('click', 'a.add-gpx-layer', $.proxy(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $(e.target).closest('li').find('input').trigger('click');
+        }, this));
+
+        this._parentEl.on('change', 'input.gpx-input', $.proxy(function (e) {
+            var files = e.target.files,
+                this_ = this;
+            if (files && files[0] && files[0].name.split('.').pop().toLowerCase() === 'gpx') {
+              var reader = new FileReader();
+              reader.onload = function (e) {
+                this_.createGPXLayer(files[0].name, e.target.result);
+              }
+              reader.readAsText(files[0]);
+            }
+        }, this));
+
     };
 
     WMSLayer.prototype = {
@@ -112,6 +193,33 @@ define([
             }
         },
 
+        createGPXLayer: function (filename, content) {
+          var format = new ol.format.GPX(),
+            this_ = this;
+          var gpxFeatures = format.readFeatures(content, {
+            dataProjection:'EPSG:4326',
+            featureProjection:'EPSG:3857'
+          });
+          if (gpxFeatures.length > 0) {
+            var fileLayer = new ol.layer.Vector({
+              id: filename,
+              title: filename,
+              source: new ol.source.Vector({
+                features: gpxFeatures
+              }),
+              style: function (feature, resolution) {
+                var featureStyleFunction = feature.getStyleFunction();
+                if (featureStyleFunction) {
+                  return featureStyleFunction.call(feature, resolution);
+                } else {
+                  return this_.defaultStyle[feature.getGeometry().getType()];
+                }
+              }
+            });
+            this.addLayer(fileLayer);
+          }
+        },
+
         addLayer: function (layer) {
             this._layers.push(layer);
             this._mapmodule.get('vectorLayers').getLayers().push(layer);
@@ -124,6 +232,7 @@ define([
         render: function (lset) {
             var el = $(this._tmpl.layers({
                 title: 'Lisa WMS kiht',
+                title_gpx: 'Lisa GPX kiht',
                 layers: lset.map(function (item) {
                     //console.log(item.getSource().getParams())
                     return {

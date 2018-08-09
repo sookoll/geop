@@ -31,9 +31,8 @@ define(function () {
                     layers: [{
                         type: 'XYZ',
                         projection: 'EPSG:3857',
-                        //url: 'http://tiles.maaamet.ee/tm/s/1.0.0/foto/{z}/{x}/{-y}.jpg',
                         url: 'http://tiles.maaamet.ee/tm/tms/1.0.0/foto@GMC/{z}/{x}/{-y}.png',
-                        minResolution: 1,
+                        minResolution: 0.5,
                         crossOrigin: null
                     }, {
                         type: 'TileWMS',
@@ -44,24 +43,53 @@ define(function () {
                             FORMAT: 'image/png',
                             VERSION: '1.1.1'
                         },
-                        maxResolution: 1,
+                        maxResolution: 0.5,
                         gutter: 20,
                         crossOrigin: null
                     }]
                 },
                 ma_kaart : {
                     type: 'Group',
+                    title: 'Kaart',
+                    projection: 'EPSG:3301',
+                    layers: [{
+                        type: 'XYZ',
+                        projection: 'EPSG:3857',
+                        url: 'http://tiles.maaamet.ee/tm/tms/1.0.0/kaart@GMC/{z}/{x}/{-y}.png',
+                        minResolution: 0.5,
+                        crossOrigin: null
+                    }, {
+                        type: 'TileWMS',
+                        url: 'http://kaart.maaamet.ee/wms/kaart',
+                        params: {
+                            LAYERS: 'MA-KAART',
+                            TILED: true,
+                            FORMAT: 'image/png',
+                            VERSION: '1.1.1'
+                        },
+                        maxResolution: 0.5,
+                        gutter: 20,
+                        crossOrigin: null
+                    }]
+                },
+                ma_pkaart : {
+                    type: 'Group',
                     title: 'Põhikaart',
                     projection: 'EPSG:3301',
                     layers: [{
                         type: 'XYZ',
-                        url: 'http://tiles.maaamet.ee/tm/s/1.0.0/kaart/{z}/{x}/{-y}.png',
+                        url: 'http://tiles.maaamet.ee/tm/s/1.0.0/vreljeef@LEST/{z}/{x}/{-y}.png',
+                        minResolution: 7,
+                        crossOrigin: null
+                    }, {
+                        type: 'XYZ',
+                        url: 'http://tiles.maaamet.ee/tm/s/1.0.0/hybriid@LEST/{z}/{x}/{-y}.png',
                         minResolution: 7,
                         crossOrigin: null
                     }, {
                         type: 'XYZ',
                         url: 'http://tiles.maaamet.ee/tm/s/1.0.0/epk_vv/{z}/{x}/{-y}.png',
-                        minResolution: 1,
+                        minResolution: 0.5,
                         maxResolution: 7.8125,
                         crossOrigin: null
                     }, {
@@ -73,7 +101,7 @@ define(function () {
                             FORMAT: 'image/png',
                             VERSION: '1.1.1'
                         },
-                        maxResolution: 1,
+                        maxResolution: 0.5,
                         gutter: 20,
                         crossOrigin: null
                     }]

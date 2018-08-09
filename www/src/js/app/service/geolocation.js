@@ -13,7 +13,7 @@ define([
         this._map = mapmodule.get('map');
         this._view = this._map.getView();
         this._locator = null;
-        this._deltaMean = 500; // the geolocation sampling period mean in ms
+        this._deltaMean = 150; // the geolocation sampling period mean in ms
         this._previousM = 0;
         // Geolocation marker
         this._markerEl = $('<img id="geolocation_marker" />');
@@ -31,7 +31,7 @@ define([
             track: new ol.geom.LineString([], ('XYZM')),
             accuracy: new ol.Feature()
         };
-        this._meanPointsCount = 10;
+        this._meanPointsCount = 20000;
         this._features.accuracy.setStyle(new ol.style.Style({
             fill: new ol.style.Fill({
                 color: 'rgba(51, 153, 204, 0.2)'
@@ -41,6 +41,20 @@ define([
         this._currentStatus = 0;
         this._firstPosition = true;
         this._zoom = 16;
+        this._layer = new ol.layer.Vector({
+          source: new ol.source.Vector({
+            features: [new ol.Feature({
+              geometry: this._features.track
+            })]
+          }),
+          style: new ol.style.Style({
+              stroke: new ol.style.Stroke({
+                  color: 'rgba(255, 0, 0, 0.7)',
+                  width: 3,
+                  lineDash: [3, 1]
+              })
+          })
+        });
         this.init();
     }
 
@@ -48,6 +62,8 @@ define([
 
         init : function () {
             var _this = this;
+
+            this._map.getLayers().push(this._layer)
 
             // Geolocation Control
             this._locator = new ol.Geolocation({
@@ -136,6 +152,7 @@ define([
             this._locator.setTracking(false);
             this._features.position.setPosition(null);
             this._features.accuracy.setGeometry(null);
+            this._features.track.setCoordinates(null);
             this._mapmodule.get('map').getView().setRotation(0);
             overlay.getSource().clear();
             this._map.un('postcompose', this.updateView, this);
