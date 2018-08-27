@@ -108,10 +108,19 @@ define([
                 $(this).closest('.filter').toggleClass('open');
             });
 
-            this._el.find('ul li input').on('change', function (e) {
+            this._el.find('ul li input[data-filter]').on('change', function (e) {
                 e.stopPropagation();
                 _this.filter();
             });
+
+            this._el.find('ul li input[name=radiusStyle]').on('change', function (e) {
+                e.stopPropagation();
+                var radiusConf = _this._layer.get('radiusStyle');
+                radiusConf.visible = $(this).is(':checked');
+                _this._layer.set('radiusStyle', radiusConf);
+                _this.filter();
+            });
+            this._el.closest('.geocache').find('button.btn-filter b').text(this._features.length);
         },
 
         off : function () {
@@ -137,12 +146,12 @@ define([
                 this._el.closest('.geocache').find('button.btn-filter b').text(features.length);
             } else {
                 this._layer.getSource().addFeatures(this._features);
-                this._el.closest('.geocache').find('button.btn-filter b').text('');
+                this._el.closest('.geocache').find('button.btn-filter b').text(this._features.length);
             }
         },
 
         getChecked : function () {
-            var checked = this._el.find('input').serializeArray(),
+            var checked = this._el.find('input[data-filter]').serializeArray(),
                 params = {
                     query: {},
                     count: 0

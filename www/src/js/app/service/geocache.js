@@ -19,6 +19,7 @@ define([
     'use strict';
 
     function Geocache(config, mapmodule) {
+        var _this = this;
         this._name = 'geocache';
         this._config = config;
         this._mapmodule = mapmodule;
@@ -28,6 +29,11 @@ define([
         this._results = null;
         this._layer = null;
         this._route = null;
+        this.radiusStyle = {
+          visible: false,
+          maxResolution: 30,
+          radius: 160
+        }
         this._styleCache = {};
         this._styleConfig = {
             'base': {
@@ -113,7 +119,18 @@ define([
                         width: 4
                     })
                 }
-            }
+            },
+            'radiusStyle': new ol.style.Style({
+              fill: new ol.style.Fill({
+                  color: 'rgba(255, 0, 0, 0.1)'
+              }),
+              geometry: function (feature) {
+                var coordinates = feature.getGeometry().getCoordinates();
+                var lonlat = ol.proj.transform(coordinates, 'EPSG:3857', 'EPSG:4326');
+                var scaleF = 1 / Math.cos(_this._mapmodule.degToRad(lonlat[1]));
+                return new ol.geom.Circle(coordinates, (_this.radiusStyle.radius * scaleF));
+              }
+            })
         };
         this._tmpl_geotrip = Templator.compile(tmpl_geotrip);
         this._tmpl_featureinfo = Templator.compile(tmpl_featureinfo);
@@ -329,11 +346,17 @@ define([
                             _this._styleConfig.color[fstatus],
                             _this._styleConfig.new_cache[new_cache] || {}
                         );
-                        _this._styleCache[hash] = [new ol.style.Style({
+                        _this._styleCache[hash] = new ol.style.Style({
                             text: new ol.style.Text(definition)
-                        })];
+                        });
                     }
-                    return _this._styleCache[hash];
+                    if (_this._layer.get('radiusStyle').visible && resolution <= _this._layer.get('radiusStyle').maxResolution) {
+                      return [
+                        _this._styleCache[hash],
+                        _this._styleConfig.radiusStyle
+                      ];
+                    }
+                    return [_this._styleCache[hash]];
                 }
             });
             this._layer.getSource().forEachFeature(function (feature) {
@@ -349,6 +372,7 @@ define([
                     feature.setId(Date.now() + '_' + Math.random());
                 }
             }, this);
+            this._layer.set('radiusStyle', _this.radiusStyle)
             this._mapmodule.get('vectorLayers').getLayers().push(this._layer);
             return source.features || [];
         },

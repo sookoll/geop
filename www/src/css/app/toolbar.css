@@ -11,7 +11,11 @@
 }
 #toolbar .geocache ul li label {
     padding: 0px 12px;
-    font-weight: normal
+    font-weight: normal;
+    margin-bottom: 0;
+}
+#toolbar .geocache ul li label input {
+  margin-top: 1px
 }
 
 #toolbar .layerswitcher li {
