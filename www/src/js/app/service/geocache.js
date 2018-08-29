@@ -357,7 +357,9 @@ define([
                       ];
                     }
                     return [_this._styleCache[hash]];
-                }
+                },
+                // for 160m radius buffer around marker not hide when marker out of viewport
+                renderBuffer: 1800
             });
             this._layer.getSource().forEachFeature(function (feature) {
                 // set new_cache prop
