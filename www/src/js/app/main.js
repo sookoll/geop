@@ -115,6 +115,20 @@ define([
               var formatted = ol.coordinate.format(app.mapmodule.transform('point', coord, 'EPSG:3857', 'EPSG:4326'), '{y}, {x}', 5);
               return '<a target="streetview" href="' + app.get('settings').streetview_url + formatted + '">Streetview</a>';
           }
+        }, {
+          icon: 'fa fa-map-signs',
+          content: 'Teekond siit',
+          onclick: function (e, coord) {
+            console.log(coord)
+          },
+          closeonclick: true
+        }, {
+          icon: 'fa fa-map-signs',
+          content: 'Teekond siia',
+          onclick: function (e, coord) {
+            console.log(coord)
+          },
+          closeonclick: true
         }];
         // add measure
         if (app.get('settings').map.measureTool) {
