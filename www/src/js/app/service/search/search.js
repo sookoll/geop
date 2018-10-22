@@ -108,6 +108,7 @@ define([
         search : function (query) {
             var provider,
                 searches = [];
+            this._counter = 0;
             this.searchStart();
             // search providers
             for (provider in this._providers) {
@@ -132,6 +133,7 @@ define([
                 }
             }
             _this._counter--;
+            console.log(_this._counter)
             if (_this._counter === 0) {
                 _this.searchEnd();
             }

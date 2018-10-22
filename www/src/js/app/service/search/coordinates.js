@@ -182,16 +182,9 @@ define(function () {
                 clone = this._mapmodule.transform('point', [coords.x, coords.y], coords.srid, 'EPSG:3857');
                 this._mapmodule.addMarker(clone, {coordinates: ol.coordinate.format([coords.x, coords.y], '{y}, {x}', 5)});
                 this._mapmodule.setView('center', [clone, 15]);
-                /*this.reverse([coords.x, coords.y], 18, function (data) {
-                    if (data && data.place_id) {
-                        data.boundingbox = [coords.y, coords.y, coords.x, coords.x];
-                        data = _this.format([data]);
-                        _this._results = data;
-                    }
-                    if (typeof cb === 'function') {
-                        cb(_this._title, _this._results, context);
-                    }
-                });*/
+            }
+            if (typeof cb === 'function') {
+                cb(null, [], context);
             }
         }
     };
