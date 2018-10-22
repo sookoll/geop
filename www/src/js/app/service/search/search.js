@@ -133,7 +133,6 @@ define([
                 }
             }
             _this._counter--;
-            console.log(_this._counter)
             if (_this._counter === 0) {
                 _this.searchEnd();
             }
