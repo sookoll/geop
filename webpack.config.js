@@ -43,14 +43,14 @@ module.exports = {
     ]
   },
   plugins: [
-    new CleanWebpackPlugin(path.join(__dirname, './dist'), {} ),
+    new CleanWebpackPlugin(path.join(__dirname, 'dist'), {} ),
     new MiniCssExtractPlugin({
       filename: 'style.css',
     }),
     new HtmlWebpackPlugin({
       hash: true,
-      path: path.join(__dirname, './dist'),
-      //template: './src/index.html',
+      path: path.join(__dirname, 'dist'),
+      template: path.join(__dirname, 'src', 'index.html'),
       filename: 'index.html'
     })
   ],
