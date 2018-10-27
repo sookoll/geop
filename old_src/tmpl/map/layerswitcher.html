@@ -1,0 +1,13 @@
+<div class="btn-group pull-right layerswitcher">
+    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+        <span class="display-name hidden-xs">{{ layer_name }}</span>
+        <i class="fa fa-globe"></i>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        {{#each layers}}
+            <li class="{{state}}">
+                <a href="#" class="blayer" data-name="{{this.name}}" data-crs="{{this.crs}}">{{this.title}}</a>
+            </li>
+        {{/each}}
+    </ul>
+</div>

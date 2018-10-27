@@ -1,0 +1,32 @@
+<li class="dropdown-header">
+    <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h5>Geotuur</h5>
+</li>
+<li class="dropdown-header small">
+    <i class="fa fa-thumb-tack"></i> Lisa aardeid kaardilt
+</li>
+<li class="divider"></li>
+{{#each collection}}
+{{#if this._id}}
+<li class="sort-item">
+    <a href="#" data-id="{{this._id}}">
+        <span>{{@key}}</span>. {{this.name}}
+    </a>
+</li>
+{{/if}}
+{{/each}}
+<li class="divider"></li>
+<li class="dropdown-header footer">
+    <div class="btn-group pull-right">
+        <button type="button" class="btn btn-xs btn-secondary share">
+            <i class="fa fa-share-alt"></i>
+        </button>
+        <a class="btn btn-xs btn-secondary export-gpx" download="geotuur.gpx">
+            <i class="fa fa-download"></i> GPX
+        </a>
+        <button type="button" class="btn btn-xs btn-secondary clear">
+            <i class="fa fa-trash-o"></i>
+        </button>
+    </div>
+    <div class="clearfix"></div>
+</li>
