@@ -1,6 +1,6 @@
 /* eslint no-unused-vars: off */
 import Component from 'Geop/Component'
-import {GroupLayer, ImageLayer, TileLayer} from 'Components/map/LayerCreator'
+import {GroupLayer, ImageLayer, TileLayer} from 'Components/layerManager/LayerCreator'
 import {map as mapConf, layers as layerConf} from 'Conf/settings'
 import Map from 'ol/Map'
 import View from 'ol/View'
@@ -40,7 +40,8 @@ class MapEngine extends Component {
   }
 
   init () {
-    const permalink = this.permalinkToViewConf(this.$permalink.get('map'))
+    const permalink = this.permalinkToViewConf(
+      this.$permalink ? this.$permalink.get('map') : null)
     this.activeBaseLayer = permalink.baselayer
     this.map = this.createMap(permalink)
     this.createBaseLayers(layerConf.baseLayers, this.activeBaseLayer)
@@ -107,8 +108,23 @@ class MapEngine extends Component {
         layer.set('id', name)
         layer.setVisible(visible)
       }
-      this.layers.base.getLayers().push(layer)
+      this.addBaseLayer(layer)
     })
+  }
+
+  addBaseLayer (layer) {
+    this.layers.base.getLayers().push(layer)
+  }
+
+  addLayer (layer) {
+    this.layers.overlays.getLayers().push(layer)
+  }
+
+  // TODO: id filter
+  getLayer (group, id = null) {
+    if (group in this.layers) {
+      return this.layers.group
+    }
   }
 
 }
