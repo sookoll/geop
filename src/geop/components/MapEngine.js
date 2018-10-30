@@ -7,6 +7,8 @@ import View from 'ol/View'
 import {get as getProjection, fromLonLat} from 'ol/proj'
 import {register} from 'ol/proj/proj4'
 import proj4 from 'proj4'
+import 'ol/ol.css'
+import './MapEngine.styl'
 
 proj4.defs("EPSG:3301", "+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
 proj4.defs("EPSG:32634", "+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs")
@@ -17,6 +19,7 @@ getProjection('EPSG:3301').setExtent([0, 0, 700000, 1300000])
 class MapEngine extends Component {
   constructor (App) {
     super(App)
+    this.$el = mapConf.el
     this.map = null
     this.layers = {
       base: new GroupLayer({
@@ -44,9 +47,9 @@ class MapEngine extends Component {
   }
 
   permalinkToViewConf (permalink) {
-    const parts = permalink.split('-')
+    const parts = permalink ? permalink.split('-') : []
     return {
-      center: [parts[1], parts[0]] || mapConf.center,
+      center: (parts[1] && parts[0]) ? [parts[1], parts[0]] : mapConf.center,
       zoom: parts[2] || mapConf.zoom,
       rotation: parts[3] || 0,
       baselayer: parts[4] || mapConf.activeBaseLayer
@@ -60,7 +63,7 @@ class MapEngine extends Component {
         this.layers.overlays
       ],
       controls: [],
-      target: document.getElementById(mapConf.el),
+      target: document.querySelector(mapConf.el),
       moveTolerance: 2,
       view: new View({
         projection: mapConf.crs,

@@ -13,7 +13,7 @@ export const geocache = {
   cache_url: 'http://geopeitus.ee/aare/'
 }
 export const map = {
-  el: 'map',
+  el: '#map',
   center: [25.5, 58.5],
   zoom: 7,
   extent: [21, 57, 29, 60],

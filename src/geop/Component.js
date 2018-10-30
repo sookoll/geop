@@ -8,6 +8,12 @@ class Component extends Base {
     this.$permalink = App.permalink
     this.$el = null
   }
+
+  render () {
+    if (this.$el) {
+      
+    }
+  }
 }
 
 export default Component

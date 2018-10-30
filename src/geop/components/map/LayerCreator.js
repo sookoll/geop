@@ -1,4 +1,3 @@
-/* eslint no-unused-vars: off */
 import Group from 'ol/layer/Group'
 import Image from 'ol/layer/Image'
 import Tile from 'ol/layer/Tile'
@@ -39,7 +38,6 @@ export class TileLayer extends Tile {
       const projExtent = getProjection(opts.projection).getExtent()
       const startResolution = getWidth(projExtent) / opts.tileSize
       const resolutions = range(mapConf.minZoom, mapConf.maxZoom + 1)
-      console.log(resolutions)
       for (let i = 0, ii = resolutions.length; i < ii; ++i) {
         resolutions[i] = startResolution / Math.pow(2, i)
       }
@@ -54,7 +52,7 @@ export class TileLayer extends Tile {
       title: opts.title,
       source: new sources[opts.type](opts)
     }
-    super(opts)
+    super(options)
     if (opts.id) {
         this.set('id', opts.id)
     }
