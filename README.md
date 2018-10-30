@@ -1,31 +1,37 @@
 # geop
+
 Simple ol3 tool for Estonian geocache game
 
-require, bootstrap, ol3 map
+https://gp.sookoll.ee
 
-### To build openlayers node, npm, grunt, pip must be installed
+## Development
 
-    $ cd
-    $ mkdir repos
-    $ cd repos
-    $ git clone <openlayers_github>
-    $ cd ol3
-    $ git checkout <version_tag>
-    $ make check-deps
-    $ npm install
+### Dev.env Requirements
 
-Copy vendor/ol/ol-custom.json to ol3/build/
+* Node and npm
+* Python 3.7 (only for start:prod to test production build)
 
-    $ node tasks/build.js build/ol-custom.json build/ol-custom.js
+### To build app for debug:
 
-Copy build/ol-custom.js to src/js/lib/
+    npm run build
 
-### To build app:
+### To build app for production
 
-    $ node tools/r.js -o tools/build.js
+    npm run build:prod
+
+### To run dev.server
+
+    npm start
+
+### To test production build
+
+    npm run start:prod
 
 ### Deploy to prod:
 
-Make sure all changes are commited and app builded.
+Make sure all changes are commited in current branch.
+Usually you want to merge all development branches (done) to master before deploy.
 
     $ ./tools/deploy.sh
+
+It will build:prod app and commit dist folder to gh-pages branch and push to github.

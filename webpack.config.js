@@ -1,7 +1,8 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
+const WorkboxPlugin = require('workbox-webpack-plugin')
 
 module.exports = {
   optimization: {
@@ -42,6 +43,14 @@ module.exports = {
       }
     ]
   },
+  resolve: {
+    alias: {
+      Utilities: path.join(__dirname, 'src', 'geop', 'utilities'),
+      Components: path.join(__dirname, 'src', 'geop', 'components'),
+      Geop: path.join(__dirname, 'src', 'geop'),
+      Conf: path.join(__dirname, 'src', 'config')
+    }
+  },
   plugins: [
     new CleanWebpackPlugin(path.join(__dirname, 'dist'), {} ),
     new MiniCssExtractPlugin({
@@ -52,6 +61,14 @@ module.exports = {
       path: path.join(__dirname, 'dist'),
       template: path.join(__dirname, 'src', 'index.html'),
       filename: 'index.html'
+    }),
+    // leave it last!!
+    new WorkboxPlugin.GenerateSW({
+      // these options encourage the ServiceWorkers to get in there fast
+      // and not allow any straggling "old" SWs to hang around
+      swDest: 'sw.js',
+      clientsClaim: true,
+      skipWaiting: true
     })
   ],
   devServer: {
