@@ -1,4 +1,4 @@
-import dropdown from 'bootstrap/js/dist/dropdown'
+import 'bootstrap/js/dist/dropdown'
 import {getState} from 'Utilities/store'
 import {layers as layerConf} from 'Conf/settings'
 import Component from 'Geop/Component'
@@ -11,7 +11,6 @@ class LayerManager extends Component {
       activeBaseLayer: getState('map/activeBaseLayer'),
       baseLayers: getState('map/baseLayers')
     }
-    console.log(dropdown)
   }
 
   layerVisible (layer) {
