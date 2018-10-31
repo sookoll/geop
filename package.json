@@ -58,6 +58,7 @@
     "mini-toastr": "^0.8.1",
     "ol": "^5.2.0",
     "ol-contextmenu": "^3.3.0",
+    "popper.js": "^1.14.4",
     "proj4": "^2.5.0",
     "sortablejs": "^1.7.0"
   }
