@@ -1,7 +1,8 @@
 /* eslint no-unused-vars: off */
 import Component from 'Geop/Component'
-import {GroupLayer, ImageLayer, TileLayer} from 'Components/layerManager/LayerCreator'
+import {GroupLayer, ImageLayer, TileLayer} from 'Components/layer/LayerCreator'
 import {map as mapConf, layers as layerConf} from 'Conf/settings'
+import {getState, setState} from 'Utilities/store'
 import Map from 'ol/Map'
 import View from 'ol/View'
 import {get as getProjection, fromLonLat} from 'ol/proj'
@@ -17,9 +18,8 @@ register(proj4)
 getProjection('EPSG:3301').setExtent([0, 0, 700000, 1300000])
 
 class MapEngine extends Component {
-  constructor (App) {
-    super(App)
-    this.$el = mapConf.el
+  constructor () {
+    super()
     this.map = null
     this.layers = {
       base: new GroupLayer({
@@ -37,6 +37,9 @@ class MapEngine extends Component {
     this.overlay = null
     this.shouldUpdate = true
     this.init()
+    // set layer to store
+    setState('map/baseLayers', this.layers.base.getLayers())
+    setState('map/activeBaseLayer', this.activeBaseLayer)
   }
 
   init () {
@@ -52,7 +55,7 @@ class MapEngine extends Component {
     return {
       center: (parts[1] && parts[0]) ? [parts[1], parts[0]] : mapConf.center,
       zoom: parts[2] || mapConf.zoom,
-      rotation: parts[3] || 0,
+      rotation: parts[3] || mapConf.rotation,
       baselayer: parts[4] || mapConf.activeBaseLayer
     }
   }
@@ -78,9 +81,9 @@ class MapEngine extends Component {
 
   createBaseLayers (layers, activeBaseLayer) {
     const prefix = 'Image'
-    let layer
     Object.keys(layers).forEach(name => {
       const visible = (name === activeBaseLayer)
+      let layer
       if (layers[name].type === 'Group') {
         const arr = layers[name].layers.map(conf => {
           // add projection to sublayer
@@ -123,7 +126,7 @@ class MapEngine extends Component {
   // TODO: id filter
   getLayer (group, id = null) {
     if (group in this.layers) {
-      return this.layers.group
+      return this.layers[group]
     }
   }
 

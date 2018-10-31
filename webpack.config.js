@@ -9,9 +9,10 @@ module.exports = {
     splitChunks: {
       // Must be specified for HtmlWebpackPlugin to work correctly.
       // See: https://github.com/jantimon/html-webpack-plugin/issues/882
-      chunks: 'all',
-    },
+      chunks: 'all'
+    }
   },
+  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -49,7 +50,8 @@ module.exports = {
       Components: path.join(__dirname, 'src', 'geop', 'components'),
       Geop: path.join(__dirname, 'src', 'geop'),
       Conf: path.join(__dirname, 'src', 'config')
-    }
+    },
+    extensions: ['*', '.js', '.json']
   },
   plugins: [
     new CleanWebpackPlugin(path.join(__dirname, 'dist'), {} ),

@@ -1,18 +1,12 @@
-import Base from 'Geop/Base'
+document.componentRegistry = {}
 
-class Component extends Base {
-  constructor (App) {
-    super()
-    this.$components = App.components
-    this.$store = App.store
-    this.$permalink = App.permalink
-    this.$el = null
+class Component {
+  constructor() {
+    this.$id = ++Object.keys(document.componentRegistry).length
+    document.componentRegistry[this.$id] = this
   }
-
   render () {
-    if (this.$el) {
-      
-    }
+    return ''
   }
 }
 

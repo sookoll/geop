@@ -1,18 +1,9 @@
-import Base from 'Geop/Base'
+const state = {}
 
-class Store extends Base {
-  constructor () {
-    super()
-    this.state = {}
-  }
-
-  set (item, value) {
-    this.state[item] = value
-  }
-
-  get (item) {
-    return this.state[item]
-  }
+export function setState (item, value) {
+  state[item] = value
 }
 
-export default Store
+export function getState (item) {
+  return state[item]
+}

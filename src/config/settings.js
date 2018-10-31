@@ -1,4 +1,5 @@
 export const app = {
+  locale: 'et',
   geocodingEnabled: true,
   locateEnabled: true,
   mouseCoordinates: true,
@@ -16,6 +17,7 @@ export const map = {
   el: '#map',
   center: [25.5, 58.5],
   zoom: 7,
+  rotation: 0,
   extent: [21, 57, 29, 60],
   crs: 'EPSG:3857',
   activeBaseLayer: 'osm',

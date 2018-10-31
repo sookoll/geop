@@ -1,40 +1,31 @@
-import Base from 'Geop/Base'
 import {parseURL} from 'Utilities/util'
 
-class Permalink extends Base {
-  constructor () {
-    super()
-    this.state = {
-      oldURL: null,
-      newURL: parseURL(document.URL),
-      hash: null
-    }
-    this.state.hash = this.parseHash(this.state.newURL.hash)
-    this.activatePermalink()
-  }
+const state = {
+  oldURL: null,
+  newURL: parseURL(document.URL),
+  hash: parseHash(parseURL(document.URL).hash)
+}
 
-  activatePermalink () {
-    window.addEventListener('hashchange', (event) => {
-      this.state.oldURL = this.state.newURL
-      this.state.newURL = parseURL(event.newURL)
-      this.state.hash = this.parseHash(this.state.newURL.hash)
-      console.log(this.state)
-    }, false)
-  }
+export function activatePermalink () {
+  window.addEventListener('hashchange', (event) => {
+    state.oldURL = state.newURL
+    state.newURL = parseURL(event.newURL)
+    state.hash = parseHash(state.newURL.hash)
+  }, false)
+}
 
-  parseHash (hash) {
-    const parsed = {}
+function parseHash (hash) {
+  const parsed = {}
+  console.log(hash)
+  if (hash) {
     hash.slice(1).split('/').forEach(item => {
       const parts = item.split('=')
       parsed[parts[0]] = parts[1]
     })
-    return parsed
   }
-
-  get (id) {
-    return this.state.hash[id]
-  }
-
+  return parsed
 }
 
-export default Permalink
+export function get (id) {
+  return state.hash[id]
+}

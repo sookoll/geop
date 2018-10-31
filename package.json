@@ -54,6 +54,7 @@
     "jquery": "^3.3.1",
     "jsonpack": "^1.1.5",
     "lodash": "^4.17.11",
+    "mini-toastr": "^0.8.1",
     "ol": "^5.2.0",
     "ol-contextmenu": "^3.3.0",
     "proj4": "^2.5.0",

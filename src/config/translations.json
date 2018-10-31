@@ -1,0 +1,16 @@
+{
+  "en": {
+    "Zoom in": "Zoom in",
+    "Zoom out": "Zoom out",
+    "Query string empty, aborting!": "Query string empty, aborting!",
+    "No valid input coordinates, aborting!": "No valid input coordinates, aborting!",
+    "Unable to get routing result": "Unable to get routing result!"
+  },
+  "et": {
+    "Zoom in": "Suurenda",
+    "Zoom out": "Vähenda",
+    "Query string empty, aborting!": "Otsingutekst puudu, ei otsi!",
+    "No valid input coordinates, aborting!": "Sisendkoordinaadid ei vasta nõuetele, ei otsi!",
+    "Unable to get routing result": "Tulemus puudub!"
+  }
+}
