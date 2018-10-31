@@ -1,0 +1,61 @@
+#statusbar
+  top auto
+  bottom 0
+  min-height 20px
+  padding 4px 6px
+  color #eee
+  a
+    color #eee
+    &.btn
+      padding 0 6px
+  > *
+    line-height 22px
+  .info
+    color #eee
+    > div
+      margin-left -6px
+      margin-right -6px
+      max-height 150px
+      overflow-y auto
+      background rgba(0, 0, 0, .4)
+      > div
+        margin-bottom 20px
+      ol,
+      ul
+        padding 0
+      ul
+        list-style-type none
+  .attribution
+    color #777
+    text-decoration none
+    transition all 200ms
+    a
+      color #777
+      text-decoration none
+      transition all 200ms
+      :hover
+        color #aaa
+  .mouse-position a,
+  .geolocation a
+    margin-right 8px
+  a.btn-geolocation.active,
+  a.btn-fullscreen.active
+    color aqua
+  a.btn-geolocation.active.tracking i
+    -webkit-transform rotate(-45deg)
+    -moz-transform rotate(-45deg)
+    transform rotate(-45deg)
+  a.btn-fullscreen.disabled
+    color #777
+    pointer-events none
+  .scale-line .ol-scale-line
+    position relative
+    background transparent
+    bottom -3px
+    left 0
+    line-height 10px
+  .btn-compass i
+    font-size 1.2em
+    -webkit-transform rotate(-30deg)
+    -moz-transform rotate(-30deg)
+    transform rotate(-30deg)

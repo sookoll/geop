@@ -70,7 +70,6 @@
   line-height: 10px;
 }
 #statusbar .btn-compass i {
-  font-size: 1.2em;
   -webkit-transform: rotate(-30deg);
   -moz-transform: rotate(-30deg);
   transform: rotate(-30deg);

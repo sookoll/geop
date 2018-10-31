@@ -1,6 +1,7 @@
 import {getState} from 'Utilities/store'
 import {layers as layerConf} from 'Conf/settings'
 import Component from 'Geop/Component'
+import './LayerManager.styl'
 
 class LayerManager extends Component {
   constructor () {
@@ -27,15 +28,16 @@ class LayerManager extends Component {
 
   render () {
     return `
-      <div class="btn-group pull-right layerswitcher">
+      <div class="btn-group float-right layermanager">
         <button type="button"
           class="btn btn-secondary btn-sm dropdown-toggle"
           data-toggle="dropdown"
+          id="dLabel"
           aria-expanded="false">
-          <span class="display-name hidden-xs">${this.state.activeBaseLayer}</span>
+          <span class="display-name hidden-xs">${this.getLayerConf('baseLayers', this.state.activeBaseLayer).title}</span>
           <i class="fa fa-globe"></i>
         </button>
-        <ul class="dropdown-menu" role="menu">
+        <ul class="dropdown-menu" aria-labelledby="dLabel">
           ${this.state.baseLayers.getArray().map(layer => {
             const conf = this.getLayerConf('baseLayers', layer.get('id'))
             return `

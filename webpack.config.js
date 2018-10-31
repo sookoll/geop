@@ -41,6 +41,10 @@ module.exports = {
       {
         test: /\.css$/,
         use: ['style-loader', MiniCssExtractPlugin.loader, 'css-loader']
+      },
+      {
+        test: /\.(svg|woff|woff2|ttf|eot|otf)(\?.*)?$/,
+        use: ['file-loader'],
       }
     ]
   },

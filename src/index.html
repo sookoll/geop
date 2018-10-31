@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Geotuur v1.0.0</title>
+  <title>Geop v1.0.0</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#000000">
@@ -19,17 +19,17 @@
   </noscript>
   <div id="map"></div>
   <header id="toolbar" class="panel-bar">
-    <span class="hidden">
+    <span class="d-none">
       <a id="download-link" download="filename">download</a>
     </span>
   </header>
   <footer id="statusbar" class="panel-bar">
-    <div class="info small hidden">
-      <a href="#" class="pull-right btn info-toggle">
+    <div class="info small d-none">
+      <a href="#" class="float-right btn info-toggle">
         <i class="fa fa-close"></i>
       </a>
       <h4>
-        Geotuur
+        Geop
         <i class="text-muted small">v1.0.0</i>
         <span class="attribution small">
           <a href="http://maakaart.ee" >maakaart</a> |
@@ -65,26 +65,26 @@
         </div>
       </div>
     </div>
-    <a href="#" class="pull-left btn btn-geolocation">
+    <a href="#" class="float-left btn btn-geolocation">
       <i class="fa fa-location-arrow"></i>
     </a>
-    <a href="#" class="pull-left btn btn-compass">
+    <a href="#" class="float-left btn btn-compass">
       <i class="fa fa-compass"></i>
     </a>
-    <span class="mouse-position pull-left small hidden-xs">
-      <a href="#" class="btn lock pull-left"><i class="fa fa-unlock"></i></a>
+    <span class="mouse-position float-left small d-none d-sm-block">
+      <a href="#" class="btn lock float-left"><i class="fa fa-unlock"></i></a>
     </span>
-    <span class="geolocation pull-left small hidden">
-      <a href="#" class="btn unlock pull-left"><i class="fa fa-lock"></i></a>
-      <div class="pull-left"></div>
+    <span class="geolocation float-left small d-none">
+      <a href="#" class="btn unlock float-left"><i class="fa fa-lock"></i></a>
+      <div class="float-left"></div>
     </span>
-    <a href="#" class="pull-right btn btn-fullscreen disabled" title="Täisekraan">
+    <a href="#" class="float-right btn btn-fullscreen disabled" title="Täisekraan">
       <i class="fa fa-arrows-alt"></i>
     </a>
-    <a href="#" class="pull-right btn info-toggle">
+    <a href="#" class="float-right btn info-toggle">
       <i class="fa fa-question-circle"></i>
     </a>
-    <span class="pull-right scale-line"></span>
+    <span class="float-right scale-line"></span>
   </footer>
 </body>
 </html>
