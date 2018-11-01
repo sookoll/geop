@@ -66,9 +66,6 @@ class LayerManager extends Component {
 
   changeBaseLayer (name) {
     this.state.baseLayers.forEach(layer => {
-      if (layer.getLayers) {
-        console.log(layer.getLayers().forEach(l => l.getVisible()))
-      }
       layer.set('visible', (layer.get('id') === name))
     })
     this.state.activeBaseLayer = name

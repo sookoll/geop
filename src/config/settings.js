@@ -34,6 +34,13 @@ export const layers = {
       projection: 'EPSG:3857',
       crossOrigin: null
     },
+    test: {
+      type: 'XYZ',
+      title: 'Test',
+      projection: 'EPSG:3301',
+      url: 'http://tiles.maaamet.ee/tm/tms/1.0.0/kaart@LEST/{z}/{x}/{-y}.png',
+      crossOrigin: null
+    },
     ma_orto : {
       type: 'Group',
       title: 'Foto',

@@ -5,7 +5,7 @@ import {map as mapConf, layers as layerConf} from 'Conf/settings'
 import {getState, setState} from 'Utilities/store'
 import Map from 'ol/Map'
 import View from 'ol/View'
-import Collection from 'ol/Collection' 
+import Collection from 'ol/Collection'
 import {get as getProjection, fromLonLat} from 'ol/proj'
 import {register} from 'ol/proj/proj4'
 import proj4 from 'proj4'
@@ -113,7 +113,7 @@ class MapEngine extends Component {
           layers: arr,
           visible: visible
         })
-        layer.setLayers(new Collection(arr))
+        //layer.setLayers(new Collection(arr))
       } else {
         if (layers[name].type.slice(0, prefix.length) === prefix) {
           layer = new ImageLayer(layers[name])
