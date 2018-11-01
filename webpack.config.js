@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const WorkboxPlugin = require('workbox-webpack-plugin')
+const WebpackPwaManifest = require('webpack-pwa-manifest')
 
 module.exports = {
   optimization: {
@@ -67,6 +68,20 @@ module.exports = {
       path: path.join(__dirname, 'dist'),
       template: path.join(__dirname, 'src', 'index.html'),
       filename: 'index.html'
+    }),
+    new WebpackPwaManifest({
+      name: 'Geocaching Map Tool',
+      short_name: 'Geop',
+      description: 'Simple map tool for Geocaching',
+      display: 'standalone',
+      start_url: '/',
+      background_color: '#000000',
+      crossorigin: null, //can be null, use-credentials or anonymous
+      ios: true,
+      icons: [{
+        src: path.join(__dirname, 'src', 'logo.png'),
+        sizes: [96, 128, 192, 256, 384, 512] // multiple sizes
+      }]
     }),
     // leave it last!!
     new WorkboxPlugin.GenerateSW({

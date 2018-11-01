@@ -4,14 +4,15 @@ import {initLocale} from 'Utilities/translate'
 //import log from 'Utilities/log'
 //import {getState} from 'Utilities/store'
 import {activatePermalink} from 'Utilities/permalink'
+//import $ from 'jquery'
 import Component from 'Geop/Component'
 import MapEngine from 'Components/map/MapEngine'
-import LayerManager from 'Components/layer/LayerManager'
-import $ from 'jquery'
+import ToolBar from 'Components/toolbar/ToolBar'
+import './Geop.styl'
 
 class Geop extends Component {
-  constructor () {
-    super()
+  constructor (target) {
+    super(target)
     // set locale
     initLocale(appConf.locale, translations)
 
@@ -19,10 +20,18 @@ class Geop extends Component {
       activatePermalink()
     }
     this.components = {
-      map: new MapEngine(),
-      lyrmngr: new LayerManager()
+      map: new MapEngine(this.target),
+      toolbar: new ToolBar(this.target)
     }
-    $('#toolbar').append(this.components.lyrmngr.render())
+  }
+
+  render () {
+
+  }
+
+  init() {
+    this.render()
+    this.components.map.init()
   }
 
 }

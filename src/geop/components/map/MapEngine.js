@@ -5,9 +5,11 @@ import {map as mapConf, layers as layerConf} from 'Conf/settings'
 import {getState, setState} from 'Utilities/store'
 import Map from 'ol/Map'
 import View from 'ol/View'
+import Collection from 'ol/Collection' 
 import {get as getProjection, fromLonLat} from 'ol/proj'
 import {register} from 'ol/proj/proj4'
 import proj4 from 'proj4'
+import $ from 'jquery'
 import 'ol/ol.css'
 import './MapEngine.styl'
 
@@ -18,8 +20,9 @@ register(proj4)
 getProjection('EPSG:3301').setExtent([0, 0, 700000, 1300000])
 
 class MapEngine extends Component {
-  constructor () {
-    super()
+  constructor (target) {
+    super(target)
+    this.render()
     this.map = null
     this.layers = {
       base: new GroupLayer({
@@ -36,18 +39,26 @@ class MapEngine extends Component {
     }
     this.overlay = null
     this.shouldUpdate = true
-    this.init()
+    // permalink
+    const permalink = this.permalinkToViewConf(
+      this.$permalink ? this.$permalink.get('map') : null)
+    this.activeBaseLayer = permalink.baselayer
+    this.createBaseLayers(layerConf.baseLayers, this.activeBaseLayer)
     // set layer to store
     setState('map/baseLayers', this.layers.base.getLayers())
     setState('map/activeBaseLayer', this.activeBaseLayer)
   }
 
+  render () {
+    this.el = $(`<div id="${mapConf.el.slice(1)}"></div>`)
+    this.target.append(this.el)
+  }
+
   init () {
+    // permalink
     const permalink = this.permalinkToViewConf(
       this.$permalink ? this.$permalink.get('map') : null)
-    this.activeBaseLayer = permalink.baselayer
     this.map = this.createMap(permalink)
-    this.createBaseLayers(layerConf.baseLayers, this.activeBaseLayer)
   }
 
   permalinkToViewConf (permalink) {
@@ -102,6 +113,7 @@ class MapEngine extends Component {
           layers: arr,
           visible: visible
         })
+        layer.setLayers(new Collection(arr))
       } else {
         if (layers[name].type.slice(0, prefix.length) === prefix) {
           layer = new ImageLayer(layers[name])

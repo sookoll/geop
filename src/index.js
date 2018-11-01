@@ -3,9 +3,10 @@ import '@fortawesome/fontawesome-free/css/all.css'
 import './app.styl'
 import {initServiceWorker} from 'Utilities/util'
 import Geop from 'Geop/Geop'
+import $ from 'jquery'
 //TODO: put into statusbar
 import 'Components/statusbar/StatusBar.styl'
-import 'Components/toolbar/ToolBar.styl'
 
 initServiceWorker();
-(() => new Geop())()
+const app = new Geop($('#geop'))
+app.init()

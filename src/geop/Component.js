@@ -1,12 +1,16 @@
-document.componentRegistry = {}
-
 class Component {
-  constructor() {
-    this.$id = ++Object.keys(document.componentRegistry).length
-    document.componentRegistry[this.$id] = this
+  constructor(target) {
+    this.target = target
+    this.el = null
+    this.state = {}
+    this.components = {}
   }
   render () {
-    return ''
+
+  }
+  update (state = {}) {
+    this.state = Object.assign(this.state, state)
+    this.render()
   }
 }
 

@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Geop v1.0.0</title>
+  <title>Geop</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#000000">
-  <link rel="manifest" href="manifest.json">
   <link rel="shortcut icon" href="favicon.ico">
   <!-- Tell the browser it's a PWA -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -17,12 +16,8 @@
   <noscript>
     You need to enable JavaScript to run this app.
   </noscript>
-  <div id="map"></div>
-  <header id="toolbar" class="panel-bar">
-    <span class="d-none">
-      <a id="download-link" download="filename">download</a>
-    </span>
-  </header>
+  <div id="geop"></div>
+
   <footer id="statusbar" class="panel-bar">
     <div class="info small d-none">
       <a href="#" class="float-right btn info-toggle">
@@ -65,17 +60,21 @@
         </div>
       </div>
     </div>
-    <a href="#" class="float-left btn btn-geolocation">
+    <a href="#" class="float-left btn btn-geolocation disabled">
       <i class="fa fa-location-arrow"></i>
     </a>
     <a href="#" class="float-left btn btn-compass">
       <i class="fa fa-compass"></i>
     </a>
     <span class="mouse-position float-left small d-none d-sm-block">
-      <a href="#" class="btn lock float-left"><i class="fa fa-unlock"></i></a>
+      <a href="#" class="btn lock float-left">
+        <i class="fa fa-unlock"></i>
+      </a>
     </span>
     <span class="geolocation float-left small d-none">
-      <a href="#" class="btn unlock float-left"><i class="fa fa-lock"></i></a>
+      <a href="#" class="btn unlock float-left">
+        <i class="fa fa-lock"></i>
+      </a>
       <div class="float-left"></div>
     </span>
     <a href="#" class="float-right btn btn-fullscreen disabled" title="Täisekraan">
