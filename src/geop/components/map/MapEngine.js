@@ -43,11 +43,11 @@ class MapEngine extends Component {
     // permalink
     const permalink = this.permalinkToViewConf(
       this.$permalink ? this.$permalink.get('map') : null)
-    this.activeBaseLayer = permalink.baselayer
-    this.createBaseLayers(layerConf.baseLayers, this.activeBaseLayer)
+    this.createBaseLayers(layerConf.baseLayers, permalink.baselayer)
     // set layer to store
-    setState('map/baseLayers', this.layers.base.getLayers())
-    setState('map/activeBaseLayer', this.activeBaseLayer)
+    setState('map/layer/base', this.layers.base.getLayers())
+    setState('map/layer/overlays', this.layers.overlays.getLayers())
+    setState('map/layer/active', this.activeBaseLayer)
   }
 
   render () {
@@ -60,7 +60,9 @@ class MapEngine extends Component {
     const permalink = this.permalinkToViewConf(
       this.$permalink ? this.$permalink.get('map') : null)
     this.map = this.createMap(permalink)
-    this.map.getView().on('change:resolution', (e, v) => console.log(e, v))
+    this.map.getView().on('change:resolution', (e) => {
+      setState('map/view/resolution', this.map.getView().getResolution())
+    })
   }
 
   permalinkToViewConf (permalink) {
@@ -93,10 +95,10 @@ class MapEngine extends Component {
     })
   }
 
-  createBaseLayers (layers, activeBaseLayer) {
+  createBaseLayers (layers, activeBaseLayerName) {
     const prefix = 'Image'
     Object.keys(layers).forEach(name => {
-      const visible = (name === activeBaseLayer)
+      const visible = (name === activeBaseLayerName)
       let layer
       if (layers[name].type === 'Group') {
         const arr = layers[name].layers.map(conf => {
@@ -129,6 +131,9 @@ class MapEngine extends Component {
         layer.setOpacity(layers[name].opacity)
       }
       this.addBaseLayer(layer)
+      if (visible) {
+        this.activeBaseLayer = layer
+      }
     })
   }
 

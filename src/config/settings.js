@@ -6,7 +6,8 @@ export const app = {
   featureInfo: true,
   scaleLine: true,
   measureTool: true,
-  streetview_url: 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint='
+  streetview_url: 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=',
+  osm_ideditor: 'https://www.openstreetmap.org/edit?editor=id#background=custom:http://tiles.maaamet.ee/tm/tms/1.0.0/foto@GMC/{z}/{x}/{-y}.png&map='
 }
 export const geocache = {
   auth_url: 'http://geopeitus.ee',
