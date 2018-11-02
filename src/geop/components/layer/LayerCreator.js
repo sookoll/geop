@@ -25,10 +25,13 @@ export class ImageLayer extends Image {
     }
     super(options)
     if (opts.minResolution) {
-        this.setMinResolution(opts.minResolution)
+      this.setMinResolution(opts.minResolution)
     }
     if (opts.maxResolution) {
-        this.setMaxResolution(opts.maxResolution)
+      this.setMaxResolution(opts.maxResolution)
+    }
+    if (opts.opacity) {
+      this.setOpacity(opts.opacity)
     }
   }
 }
@@ -54,13 +57,16 @@ export class TileLayer extends Tile {
     }
     super(options)
     if (opts.id) {
-        this.set('id', opts.id)
+      this.set('id', opts.id)
     }
     if (opts.minResolution) {
-        this.setMinResolution(opts.minResolution)
+      this.setMinResolution(opts.minResolution)
     }
     if (opts.maxResolution) {
-        this.setMaxResolution(opts.maxResolution)
+      this.setMaxResolution(opts.maxResolution)
+    }
+    if (opts.opacity) {
+      this.setOpacity(opts.opacity)
     }
   }
 }

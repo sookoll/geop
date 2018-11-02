@@ -1,7 +1,8 @@
 /* eslint no-unused-vars: off */
 import Component from 'Geop/Component'
 import {GroupLayer, ImageLayer, TileLayer} from 'Components/layer/LayerCreator'
-import {map as mapConf, layers as layerConf} from 'Conf/settings'
+import {map as mapConf} from 'Conf/settings'
+import {layers as layerConf} from 'Conf/layers'
 import {getState, setState} from 'Utilities/store'
 import Map from 'ol/Map'
 import View from 'ol/View'
@@ -17,7 +18,7 @@ proj4.defs("EPSG:3301", "+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.
 proj4.defs("EPSG:32634", "+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs")
 proj4.defs("EPSG:32635", "+proj=utm +zone=35 +datum=WGS84 +units=m +no_defs")
 register(proj4)
-getProjection('EPSG:3301').setExtent([0, 0, 700000, 1300000])
+getProjection('EPSG:3301').setExtent([40500, 5993000, 1064500, 7017000])
 
 class MapEngine extends Component {
   constructor (target) {
@@ -59,6 +60,7 @@ class MapEngine extends Component {
     const permalink = this.permalinkToViewConf(
       this.$permalink ? this.$permalink.get('map') : null)
     this.map = this.createMap(permalink)
+    this.map.getView().on('change:resolution', (e, v) => console.log(e, v))
   }
 
   permalinkToViewConf (permalink) {
@@ -80,6 +82,7 @@ class MapEngine extends Component {
       controls: [],
       target: document.querySelector(mapConf.el),
       moveTolerance: 2,
+      pixelRatio: 2,
       view: new View({
         projection: mapConf.crs,
         center: fromLonLat(viewConf.center, mapConf.crs),
@@ -120,8 +123,10 @@ class MapEngine extends Component {
         } else {
           layer = new TileLayer(layers[name])
         }
-        layer.set('id', name)
-        layer.setVisible(visible)
+      }
+      layer.set('id', name)
+      if (layers[name].opacity) {
+        layer.setOpacity(layers[name].opacity)
       }
       this.addBaseLayer(layer)
     })

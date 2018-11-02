@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import 'bootstrap/js/dist/dropdown'
 import {getState, setState} from 'Utilities/store'
-import {layers as layerConf} from 'Conf/settings'
+import {layers as layerConf} from 'Conf/layers'
 import Component from 'Geop/Component'
 import './LayerManager.styl'
 
