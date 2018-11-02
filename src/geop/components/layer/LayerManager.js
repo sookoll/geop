@@ -4,6 +4,7 @@ import {getState, setState} from 'Utilities/store'
 import {layers as layerConf} from 'Conf/layers'
 import {t} from 'Utilities/translate'
 import Component from 'Geop/Component'
+import OSMEdit from 'Components/OSMEdit'
 import './LayerManager.styl'
 
 class LayerManager extends Component {
