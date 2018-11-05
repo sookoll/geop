@@ -60,8 +60,12 @@ class MapEngine extends Component {
     const permalink = this.permalinkToViewConf(
       this.$permalink ? this.$permalink.get('map') : null)
     this.map = this.createMap(permalink)
-    this.map.getView().on('change:resolution', (e) => {
-      setState('map/view/resolution', this.map.getView().getResolution())
+    this.map.on('moveend', (e) => {
+      const view = e.map.getView()
+      setState('map/view/resolution', view.getResolution())
+      setState('map/view/center', view.getCenter())
+      setState('map/view/zoom', view.getZoom())
+      setState('map/view/rotation', view.getRotation())
     })
   }
 

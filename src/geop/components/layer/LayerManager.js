@@ -4,7 +4,7 @@ import {getState, setState} from 'Utilities/store'
 import {layers as layerConf} from 'Conf/layers'
 import {t} from 'Utilities/translate'
 import Component from 'Geop/Component'
-import OSMEdit from 'Components/OSMEdit'
+import OSMEdit from 'Components/osmedit/OSMEdit'
 import './LayerManager.styl'
 
 class LayerManager extends Component {
@@ -13,7 +13,10 @@ class LayerManager extends Component {
     this.state = {
       activeBaseLayer: getState('map/layer/active'),
       baseLayers: getState('map/layer/base'),
-      overlays: getState('map/layer/overlays')
+      overlays: getState('map/layer/overlays'),
+      plugins: [
+        OSMEdit
+      ]
     }
     this.render()
   }
@@ -44,11 +47,11 @@ class LayerManager extends Component {
           <div class="dropdown-divider"></div>
           ${this.state.overlays.getLength() > 0 ?
             this.state.overlays.getArray().map(layer => {
-            return `
-              <a href="#" class="overlays dropdown-item ${this.layerVisible(layer) ? '' : 'disabled'}"
-                data-name="${layer.get('id')}">
-                ${t(layer.get('title'))}
-              </a>`
+              return `
+                <a href="#" class="overlays dropdown-item ${this.layerVisible(layer) ? '' : 'disabled'}"
+                  data-name="${layer.get('id')}">
+                  ${t(layer.get('title'))}
+                </a>`
           }).join('') :
           `<a class="dropdown-item disabled" href="#">${t('No overlays added')}</a>`}
         </div>
@@ -57,6 +60,8 @@ class LayerManager extends Component {
       this.el.remove()
     }
     this.target.append(html)
+    // renderPlugins
+    this.renderPlugins(this.target.find('#layermanager .dropdown-menu'))
     this.el = this.target.find('#layermanager')
     this.el.on('click', 'a.baselayer', e => {
       e.preventDefault()
@@ -86,6 +91,16 @@ class LayerManager extends Component {
     setState('map/layer/active', name)
     this.render()
     //this.updatePermalink();
+  }
+
+  renderPlugins (target) {
+    if (this.state.plugins.length > 0) {
+      target.append('<div class="dropdown-divider"></div>')
+      this.state.plugins.forEach((Plugin) => {
+        const plug = new Plugin(target)
+        plug.render()
+      })
+    }
   }
 
 }

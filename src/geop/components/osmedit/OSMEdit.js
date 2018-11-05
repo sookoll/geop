@@ -1,36 +1,23 @@
 import {app as appConf} from 'Conf/settings'
+import {getState} from 'Utilities/store'
+import {t} from 'Utilities/translate'
 import Component from 'Geop/Component'
+import {toLonLat} from 'ol/proj'
 import './OSMEdit.styl'
 
 class OSMEdit extends Component {
-  constructor (target) {
-    super(target)
-    // set locale
-    initLocale(appConf.locale, translations)
-
-    if ('onhashchange' in window) {
-      activatePermalink()
-    }
-    this.components = {
-      map: new MapEngine(this.target),
-      toolbar: new ToolBar(this.target)
-    }
-  }
-
   render () {
-    target.append('<a href="#" id="osm-edit"><i class="fa fa-pencil"></i></a>')
-    target.on('click', 'a#osm-edit', e => {
+    this.target.append(`
+      <a href="#" id="osm-edit" title="${t('Edit OSM here')}">
+        <i class="fa fa-edit"></i>
+      </a>`)
+    this.target.on('click', 'a#osm-edit', e => {
       e.preventDefault()
-      const center = mapmodule.transform('point', mapmodule.get('map').getView().getCenter(), 'EPSG:3857', 'EPSG:4326')
-      const zoom = mapmodule.get('map').getView().getZoom()
-      window.open(href + zoom + '/' + center[1] + '/' + center[0]);
-    });
+      const center = toLonLat(getState('map/view/center'))
+      const zoom = getState('map/view/zoom')
+      window.open(appConf.osm_ideditor_url + zoom + '/' + center[1] + '/' + center[0])
+    })
   }
-
-  init() {
-    this.render()
-  }
-
 }
 
 export default OSMEdit
