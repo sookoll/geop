@@ -16,6 +16,39 @@ const sources = {
   TileWMS
 }
 
+export function create (layerConf) {
+  const prefix = 'Image'
+  let layer
+  if (layerConf.type === 'Group') {
+    const arr = layerConf.layers.map(conf => {
+      // add projection to sublayer
+      if (!conf.projection) {
+        conf.projection = layerConf.projection
+      }
+      if (conf.type.slice(0, prefix.length) === prefix) {
+        return new ImageLayer(conf)
+      } else {
+        return new TileLayer(conf)
+      }
+    })
+    layer = new GroupLayer({
+      title: layerConf.title,
+      layers: arr
+    })
+  } else {
+    if (layerConf.type.slice(0, prefix.length) === prefix) {
+      layer = new ImageLayer(layerConf)
+    } else {
+      layer = new TileLayer(layerConf)
+    }
+  }
+  if (layerConf.opacity) {
+    layer.setOpacity(layerConf.opacity)
+  }
+  layer.setVisible(layerConf.visible)
+  return layer
+}
+
 export class GroupLayer extends Group {}
 export class ImageLayer extends Image {
   constructor (opts) {

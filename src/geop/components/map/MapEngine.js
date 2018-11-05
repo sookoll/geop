@@ -1,6 +1,6 @@
 /* eslint no-unused-vars: off */
 import Component from 'Geop/Component'
-import {GroupLayer, ImageLayer, TileLayer} from 'Components/layer/LayerCreator'
+import {create, GroupLayer, ImageLayer, TileLayer} from 'Components/layer/LayerCreator'
 import {map as mapConf} from 'Conf/settings'
 import {layers as layerConf} from 'Conf/layers'
 import {getState, setState} from 'Utilities/store'
@@ -44,6 +44,7 @@ class MapEngine extends Component {
     const permalink = this.permalinkToViewConf(
       this.$permalink ? this.$permalink.get('map') : null)
     this.createBaseLayers(layerConf.baseLayers, permalink.baselayer)
+    this.createOverlays(layerConf.overlays)
     // set layer to store
     setState('map/layer/base', this.layers.base.getLayers())
     setState('map/layer/overlays', this.layers.overlays.getLayers())
@@ -100,44 +101,22 @@ class MapEngine extends Component {
   }
 
   createBaseLayers (layers, activeBaseLayerName) {
-    const prefix = 'Image'
     Object.keys(layers).forEach(name => {
-      const visible = (name === activeBaseLayerName)
-      let layer
-      if (layers[name].type === 'Group') {
-        const arr = layers[name].layers.map(conf => {
-          // add projection to sublayer
-          if (!conf.projection) {
-            conf.projection = layers[name].projection
-          }
-          if (conf.type.slice(0, prefix.length) === prefix) {
-            return new ImageLayer(conf)
-          } else {
-            return new TileLayer(conf)
-          }
-        })
-        layer = new GroupLayer({
-          id: name,
-          title: layers[name].title,
-          layers: arr,
-          visible: visible
-        })
-        //layer.setLayers(new Collection(arr))
-      } else {
-        if (layers[name].type.slice(0, prefix.length) === prefix) {
-          layer = new ImageLayer(layers[name])
-        } else {
-          layer = new TileLayer(layers[name])
-        }
-      }
+      layers[name].visible = (name === activeBaseLayerName)
+      const layer = create(layers[name])
       layer.set('id', name)
-      if (layers[name].opacity) {
-        layer.setOpacity(layers[name].opacity)
-      }
       this.addBaseLayer(layer)
-      if (visible) {
+      if (layers[name].visible) {
         this.activeBaseLayer = layer
       }
+    })
+  }
+
+  createOverlays (layers) {
+    Object.keys(layers).forEach(name => {
+      const layer = create(layers[name])
+      layer.set('id', name)
+      this.addLayer(layer)
     })
   }
 

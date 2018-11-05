@@ -5,6 +5,7 @@ import {layers as layerConf} from 'Conf/layers'
 import {t} from 'Utilities/translate'
 import Component from 'Geop/Component'
 import OSMEdit from 'Components/osmedit/OSMEdit'
+import WMSLayer from './WMSLayer'
 import './LayerManager.styl'
 
 class LayerManager extends Component {
@@ -15,9 +16,12 @@ class LayerManager extends Component {
       baseLayers: getState('map/layer/base'),
       overlays: getState('map/layer/overlays'),
       plugins: [
-        OSMEdit
+        OSMEdit,
+        WMSLayer
       ]
     }
+    this.state.overlays.on('add', () => this.render())
+    this.state.overlays.on('remove', () => this.render())
     this.render()
   }
 
@@ -50,6 +54,7 @@ class LayerManager extends Component {
               return `
                 <a href="#" class="overlays dropdown-item ${this.layerVisible(layer) ? '' : 'disabled'}"
                   data-name="${layer.get('id')}">
+                  <i class="far ${layer.getVisible() ? 'fa-check-square' : 'fa-square'}"></i>
                   ${t(layer.get('title'))}
                 </a>`
           }).join('') :
@@ -63,9 +68,16 @@ class LayerManager extends Component {
     // renderPlugins
     this.renderPlugins(this.target.find('#layermanager .dropdown-menu'))
     this.el = this.target.find('#layermanager')
+    // events
     this.el.on('click', 'a.baselayer', e => {
       e.preventDefault()
       this.changeBaseLayer($(e.target).data('name'))
+    })
+    this.el.on('click', 'a.overlays', e => {
+      e.preventDefault()
+      e.stopPropagation()
+      this.toggleLayer($(e.target).data('name'))
+      $(e.target).find('i').toggleClass('fa-check-square fa-square')
     })
   }
 
@@ -83,21 +95,39 @@ class LayerManager extends Component {
     return true;
   }
 
-  changeBaseLayer (name) {
+  changeBaseLayer (id) {
     this.state.baseLayers.forEach(layer => {
-      layer.set('visible', (layer.get('id') === name))
+      if (layer.get('id') === id) {
+        layer.setVisible(true)
+        this.state.activeBaseLayer = layer
+      } else {
+        layer.setVisible(false)
+      }
     })
-    this.state.activeBaseLayer = name
-    setState('map/layer/active', name)
+    setState('map/layer/active', this.state.activeBaseLayer)
     this.render()
     //this.updatePermalink();
   }
 
+  toggleLayer (id) {
+    this.state.overlays.forEach(layer => {
+      if (layer.get('id') === id) {
+        layer.setVisible(!layer.getVisible())
+        return
+      }
+    })
+    //this.render()
+  }
+
   renderPlugins (target) {
     if (this.state.plugins.length > 0) {
-      target.append('<div class="dropdown-divider"></div>')
+      let dividerAdded = false
       this.state.plugins.forEach((Plugin) => {
         const plug = new Plugin(target)
+        if (plug.isRow && !dividerAdded) {
+          target.append('<div class="dropdown-divider"></div>')
+          dividerAdded = true
+        }
         plug.render()
       })
     }

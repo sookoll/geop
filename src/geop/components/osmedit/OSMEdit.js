@@ -6,6 +6,10 @@ import {toLonLat} from 'ol/proj'
 import './OSMEdit.styl'
 
 class OSMEdit extends Component {
+  constructor (target) {
+    super(target)
+    this.isRow = false
+  }
   render () {
     this.target.append(`
       <a href="#" id="osm-edit" title="${t('Edit OSM here')}">

@@ -95,5 +95,24 @@ export const layers = {
         crossOrigin: null
       }]
     }
+  },
+  overlays: {
+    kataster: {
+      type: 'TileWMS',
+      title: 'Kataster',
+      projection: 'EPSG:3301',
+      url: 'http://kaart.maaamet.ee/wms/alus',
+      params: {
+        LAYERS: 'TOPOYKSUS_6569,TOPOYKSUS_7793',
+        TILED: true,
+        FORMAT: 'image/png',
+        VERSION: '1.1.1'
+      },
+      maxResolution: 2,
+      tileSize: 1024,
+      gutter: 20,
+      crossOrigin: null,
+      visible: true
+    }
   }
 }
