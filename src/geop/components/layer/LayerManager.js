@@ -1,5 +1,4 @@
 import $ from 'jquery'
-import 'bootstrap/js/dist/dropdown'
 import {getState, setState} from 'Utilities/store'
 import {layers as layerConf} from 'Conf/layers'
 import {t} from 'Utilities/translate'
@@ -38,14 +37,14 @@ class LayerManager extends Component {
           </span>
           <i class="fa fa-globe"></i>
         </button>
-        <div class="dropdown-menu dropdown-menu-right">
+        <ul class="dropdown-menu dropdown-menu-right">
           ${this.state.baseLayers.getLength() > 0 ?
             this.state.baseLayers.getArray().map(layer => {
-              return `
+              return `<li>
                 <a href="#" class="baselayer dropdown-item ${this.layerVisible(layer) ? '' : 'disabled'}"
                   data-name="${layer.get('id')}">
                   ${t(layer.get('title'))}
-                </a>`
+                </a></li>`
           }).join('') :
           `<a class="dropdown-item disabled" href="#">${t('No baselyers added')}</a>`}
           <div class="dropdown-divider"></div>
@@ -59,7 +58,7 @@ class LayerManager extends Component {
                 </a>`
           }).join('') :
           `<a class="dropdown-item disabled" href="#">${t('No overlays added')}</a>`}
-        </div>
+        </ul>
       </div>`)
     if (this.el) {
       this.el.remove()

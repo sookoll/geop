@@ -6,17 +6,21 @@ class WMSLayer extends Component {
   constructor (target) {
     super(target)
     this.isRow = true
+    this.layer_conf = {
+        type: 'TileWMS',
+        url: null,
+        projection: 'EPSG:3301',
+        gutter: 20,
+        crossOrigin: null
+    }
+    this.layer_conf_params = {
+        LAYERS: null,
+        TILED: true,
+        FORMAT: 'image/png',
+        VERSION: '1.1.1'
+    }
   }
   render () {
-    this.target.append(`
-      <a href="#"
-        id="add-wms-layer"
-        class="dropdown-item"
-        data-toggle="modal"
-        data-target="#modal_wmslayer">
-        <i class="fa fa-plus"></i>
-        ${t('Add WMS layer')}
-      </a>`)
     $('body').append(`
       <div class="modal fade" id="modal_wmslayer" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
@@ -36,6 +40,15 @@ class WMSLayer extends Component {
           </div>
         </div>
       </div>`)
+    this.target.append(`
+      <a href="#"
+        id="add-wms-layer"
+        class="dropdown-item"
+        data-toggle="modal"
+        data-target="#modal_wmslayer">
+        <i class="fa fa-plus"></i>
+        ${t('Add WMS layer')}
+      </a>`)
   }
 }
 
