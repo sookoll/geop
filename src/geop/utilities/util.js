@@ -22,9 +22,22 @@ export function degToRad (deg) {
   return deg * Math.PI * 2 / 360;
 }
 
+// parse search
+function parseSearch (search) {
+  if (search && search.length > 1) {
+    try {
+      return JSON.parse('{"' + search.slice(1).replace(/&/g, '","').replace(/=/g,'":"') + '"}', function (key, value) {
+        return key === '' ? value : decodeURIComponent(value)
+      })
+    } catch (err) {
+      return null
+    }
+  }
+}
+
 // parse url
 export function parseURL (href) {
-  const match = href.match(/^(?:(https?:)\/\/)?(([^:/?#]*)(?::([0-9]+))?)([/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/);
+  const match = href.match(/^(?:(https?:)\/\/)?(([^:/?#]*)(?::([0-9]+))?)([/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/)
   return match && {
     href: href,
     protocol: match[1],
@@ -33,6 +46,32 @@ export function parseURL (href) {
     port: match[4],
     pathname: match[5],
     search: match[6],
-    hash: match[7]
+    hash: match[7],
+    query: parseSearch(match[6])
   }
+}
+
+export function validURL (href) {
+  const match = href.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/g)
+  return (match !== null)
+}
+
+export function constructURL (parsedURL) {
+  const querystring = Object.keys(parsedURL.query).map(item => {
+    return item + '=' + parsedURL.query
+  }).join('&')
+  return parsedURL.protocol + '//' + parsedURL.host + parsedURL.pathname + '?' + querystring;
+}
+
+export function uid () {
+  return Math.random().toString(36).substr(2, 10)
+}
+
+export function randomColor() {
+  const letters = '0123456789ABCDEF'
+  let color = '#'
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)]
+  }
+  return color
 }

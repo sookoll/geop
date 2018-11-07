@@ -1,20 +1,26 @@
 import Group from 'ol/layer/Group'
 import Image from 'ol/layer/Image'
 import Tile from 'ol/layer/Tile'
+import VectorLayer from 'ol/layer/Vector'
 import OSM from 'ol/source/OSM'
 import XYZ from 'ol/source/XYZ'
 import TileWMS from 'ol/source/TileWMS'
+import Vector from 'ol/source/Vector'
 import {get as getProjection} from 'ol/proj'
 import {getWidth} from 'ol/extent'
 import TileGrid from 'ol/tilegrid/TileGrid'
+import StyleBuilder from './StyleBuilder'
 import range from 'lodash/range'
 import {map as mapConf} from 'Conf/settings'
 
 const sources = {
   OSM,
   XYZ,
-  TileWMS
+  TileWMS,
+  Vector
 }
+
+const styleBuilder = new StyleBuilder()
 
 export function create (layerConf) {
   const prefix = 'Image'
@@ -92,6 +98,29 @@ export class TileLayer extends Tile {
     if (opts.id) {
       this.set('id', opts.id)
     }
+    if (opts.minResolution) {
+      this.setMinResolution(opts.minResolution)
+    }
+    if (opts.maxResolution) {
+      this.setMaxResolution(opts.maxResolution)
+    }
+    if (opts.opacity) {
+      this.setOpacity(opts.opacity)
+    }
+  }
+}
+export class FeatureLayer extends VectorLayer {
+  constructor (opts) {
+    const options = {
+      id: opts.id,
+      title: opts.title,
+      source: new Vector({
+        features: opts.features
+      }),
+      style: styleBuilder.create(opts.style)
+    }
+    super(options)
+
     if (opts.minResolution) {
       this.setMinResolution(opts.minResolution)
     }
