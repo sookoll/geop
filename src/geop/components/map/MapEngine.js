@@ -45,10 +45,12 @@ class MapEngine extends Component {
       this.$permalink ? this.$permalink.get('map') : null)
     this.createBaseLayers(layerConf.baseLayers, permalink.baselayer)
     this.createOverlays(layerConf.overlays)
-    // set layer to store
+    // set to store
     setState('map/layer/base', this.layers.base.getLayers())
     setState('map/layer/overlays', this.layers.overlays.getLayers())
     setState('map/layer/active', this.activeBaseLayer)
+    // que for map
+    setState('map/que', [])
   }
 
   render () {
@@ -61,12 +63,20 @@ class MapEngine extends Component {
     const permalink = this.permalinkToViewConf(
       this.$permalink ? this.$permalink.get('map') : null)
     this.map = this.createMap(permalink)
+    setState('map', this.map)
     this.map.on('moveend', (e) => {
       const view = e.map.getView()
       setState('map/view/resolution', view.getResolution())
       setState('map/view/center', view.getCenter())
       setState('map/view/zoom', view.getZoom())
       setState('map/view/rotation', view.getRotation())
+    })
+    // run que
+    const que = getState('map/que')
+    que.forEach(item => {
+      if (typeof item === 'function') {
+        item(this.map)
+      }
     })
   }
 

@@ -14,19 +14,19 @@ const defaults = {
 miniToastr.init()
 
 function success (msg, cb) {
-  miniToastr.success(msg, defaults.title.success, defaults.timeout, cb)
+  miniToastr.success(msg, undefined, defaults.timeout, cb)
 }
 
 function info (msg, cb) {
-  miniToastr.info(msg, defaults.title.info, defaults.timeout, cb)
+  miniToastr.info(msg, undefined, defaults.timeout, cb)
 }
 
 function warn (msg, cb) {
-  miniToastr.warn(msg, defaults.title.warn, defaults.timeout, cb)
+  miniToastr.warn(msg, undefined, defaults.timeout, cb)
 }
 
 function error (msg, cb) {
-  miniToastr.error(msg, defaults.title.error, defaults.timeout, cb)
+  miniToastr.error(msg, undefined, defaults.timeout, cb)
 }
 
 export default function log (type, msg, cb) {
@@ -37,7 +37,7 @@ export default function log (type, msg, cb) {
     case 'info':
       info(msg, cb)
       break
-    case 'warn':
+    case 'warning':
       warn(msg, cb)
       break
     case 'error':

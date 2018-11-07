@@ -1,13 +1,16 @@
 import {t} from 'Utilities/translate'
-import {uid, randomColor} from 'Utilities/util'
+import {uid, randomColor, hexToRgbA} from 'Utilities/util'
 import {getState} from 'Utilities/store'
 import log from 'Utilities/log'
 import Component from 'Geop/Component'
 import {FeatureLayer} from './LayerCreator'
 import GPXFormat from 'ol/format/GPX'
+import GeoJSONFormat from 'ol/format/GeoJSON'
+import KMLFormat from 'ol/format/KML'
+import DragAndDrop from 'ol/interaction/DragAndDrop'
 import $ from 'jquery'
 
-class WMSLayer extends Component {
+class FileLayer extends Component {
   constructor (target) {
     super(target)
     this.isRow = true
@@ -15,9 +18,13 @@ class WMSLayer extends Component {
       overlays: getState('map/layer/overlays')
     }
     this.fileTypes = {
-      gpx: new GPXFormat()
+      gpx: new GPXFormat(),
+      geojson: new GeoJSONFormat(),
+      kml: new KMLFormat()
     }
-
+    // alias for geojson
+    this.fileTypes.json = this.fileTypes.geojson
+    this.addDragNDrop()
   }
   render () {
     if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
@@ -46,39 +53,95 @@ class WMSLayer extends Component {
         if (ext in this.fileTypes) {
           const reader = new window.FileReader()
           reader.onload = (e) => {
-            const layer = this.createLayer(filename, e.target.result, this.fileTypes[ext])
+            const parser = this.fileTypes[ext]
+            const features = parser.readFeatures(e.target.result, {
+              dataProjection:'EPSG:4326',
+              featureProjection:'EPSG:3857'
+            })
+            const layer = this.createLayer(filename, {
+              features: features,
+              projection: 'EPSG:3857'
+            })
             if (layer) {
               this.state.overlays.push(layer)
             }
           }
           reader.readAsText(files[0])
+        } else {
+          log('error', t('Unsupported file type'))
         }
       }
     })
   }
 
-  createLayer (filename, content, parser) {
-    const features = parser.readFeatures(content, {
-      dataProjection:'EPSG:4326',
-      featureProjection:'EPSG:3857'
-    })
-    if (features.length > 0) {
-      const conf = {
-        id: uid(),
-        title: filename,
-        features: features,
-        style: {
+  createLayer (filename, conf) {
+    if (conf.features.length > 0) {
+      const color = randomColor()
+      conf.id = uid()
+      conf.title = filename
+      conf.style = {
+        stroke: {
+          color: color,
+          width: 2
+        },
+        fill: {
+          color: hexToRgbA(color, 0.5)
+        },
+        image: {
           stroke: {
-            color: randomColor(),
-            width: 2
+            color: color
+          },
+          fill: {
+            color: hexToRgbA(color, 0.3)
           }
         }
       }
       return new FeatureLayer(conf)
     } else {
-      log('warning', t('Empty file'))
+      log('error', t('Empty file'))
+    }
+  }
+
+  addDragNDrop () {
+    // add only once to map
+    const map = getState('map')
+    let added = false
+    if (map) {
+      const interactions = map.getInteractions()
+      interactions.forEach(i => {
+        if (i instanceof DragAndDrop) {
+          added = true
+          return
+        }
+      })
+    }
+    if (!added) {
+      const dragAndDropInteraction = new DragAndDrop({
+        formatConstructors: [
+          GPXFormat,
+          GeoJSONFormat,
+          KMLFormat
+        ]
+      })
+      dragAndDropInteraction.on('addfeatures', e => {
+        const layer = this.createLayer(e.file.name, {
+          features: e.features,
+          projection: e.projection
+        })
+        if (layer) {
+          this.state.overlays.push(layer)
+        }
+      })
+      if (map) {
+        map.addInteraction(dragAndDropInteraction)
+      } else {
+        const que = getState('map/que')
+        que.push(map => {
+          map.addInteraction(dragAndDropInteraction)
+        })
+      }
     }
   }
 }
 
-export default WMSLayer
+export default FileLayer

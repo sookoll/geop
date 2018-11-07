@@ -1,9 +1,17 @@
 module.exports = {
   parserOptions: {
-    parser: 'babel-eslint'
+    parser: 'babel-eslint',
+    ecmaVersion: 6,
+    sourceType: 'module',
+    ecmaFeatures: {
+      impliedStrict: true
+    }
   },
   extends: [
     'standard'
   ],
-  plugins: []
+  plugins: [],
+  rules: {
+    'space-infix-ops': 'error'
+  }
 }
