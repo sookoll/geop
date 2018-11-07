@@ -35,11 +35,11 @@ class WMSLayer extends Component {
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">${t('Add WMS layer')}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               </div>
               <div class="modal-body text-muted">
-                ${'Insert WMS v.1.1.1 URL with LAYERS and SRS parameters'}
+                ${t('Insert WMS v.1.1.1 URL with LAYERS and SRS parameters')}
                 <textarea class="form-control" rows="3"></textarea>
                 <div class="small examples">
                   <b>Näited:</b><br>

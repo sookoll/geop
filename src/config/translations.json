@@ -25,7 +25,7 @@
     "No overlays added": "Pole kaardikihte",
     "Edit OSM here": "Muuda OSMi",
     "Add WMS layer": "Lisa WMS",
-    "Add File layer": "Lisa faili",
+    "Add File layer": "Lisa fail",
     "Insert WMS v.1.1.1 URL with LAYERS and SRS parameters": "Sisesta siia kasti WMS (1.1.1) aadress koos LAYERS ja SRS parameetriga",
     "Missing LAYERS parameter": "WMS aadress peab sisaldama LAYERS parameetrit",
     "Missing SRS parameter": "WMS aadress peab sisaldama SRS parameetrit",
