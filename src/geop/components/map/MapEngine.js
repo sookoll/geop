@@ -29,6 +29,9 @@ class MapEngine extends Component {
       base: new GroupLayer({
         layers: []
       }),
+      layers: new GroupLayer({
+        layers: []
+      }),
       overlays: new GroupLayer({
         layers: []
       })
@@ -44,9 +47,10 @@ class MapEngine extends Component {
     const permalink = this.permalinkToViewConf(
       this.$permalink ? this.$permalink.get('map') : null)
     this.createBaseLayers(layerConf.baseLayers, permalink.baselayer)
-    this.createOverlays(layerConf.overlays)
+    this.createLayers(layerConf.layers)
     // set to store
     setState('map/layer/base', this.layers.base.getLayers())
+    setState('map/layer/layers', this.layers.layers.getLayers())
     setState('map/layer/overlays', this.layers.overlays.getLayers())
     setState('map/layer/active', this.activeBaseLayer)
     // que for map
@@ -92,10 +96,7 @@ class MapEngine extends Component {
 
   createMap (viewConf) {
     return new Map({
-      layers: [
-        this.layers.base,
-        this.layers.overlays
-      ],
+      layers: Object.keys(this.layers).map(i => this.layers[i]),
       controls: [],
       target: document.querySelector(mapConf.el),
       moveTolerance: 2,
@@ -122,7 +123,7 @@ class MapEngine extends Component {
     })
   }
 
-  createOverlays (layers) {
+  createLayers (layers) {
     Object.keys(layers).forEach(name => {
       const layer = create(layers[name])
       layer.set('id', name)
@@ -135,7 +136,7 @@ class MapEngine extends Component {
   }
 
   addLayer (layer) {
-    this.layers.overlays.getLayers().push(layer)
+    this.layers.layers.getLayers().push(layer)
   }
 
   // TODO: id filter

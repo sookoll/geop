@@ -24,7 +24,7 @@ class WMSLayer extends Component {
         VERSION: '1.1.1'
     }
     this.state = {
-      overlays: getState('map/layer/overlays')
+      layers: getState('map/layer/layers')
     }
   }
   render () {
@@ -58,7 +58,7 @@ class WMSLayer extends Component {
         console.log(e)
         const layer = this.createLayer(this.modal.find('textarea').val().trim())
         if (layer) {
-          this.state.overlays.push(layer)
+          this.state.layers.push(layer)
           this.modal.find('textarea').val('')
           this.modal.modal('hide')
         }

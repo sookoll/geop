@@ -13,7 +13,7 @@ class LayerManager extends Component {
     this.state = {
       activeBaseLayer: getState('map/layer/active'),
       baseLayers: getState('map/layer/base'),
-      overlays: getState('map/layer/overlays'),
+      layers: getState('map/layer/layers'),
       plugins: [
         OSMEdit,
         WMSLayer,
@@ -21,8 +21,8 @@ class LayerManager extends Component {
       ],
       open: false
     }
-    this.state.overlays.on('add', () => this.render())
-    this.state.overlays.on('remove', () => this.render())
+    this.state.layers.on('add', () => this.render())
+    this.state.layers.on('remove', () => this.render())
     this.render()
   }
 
@@ -52,12 +52,12 @@ class LayerManager extends Component {
                 </li>`
           }).join('') :
           `<li class="dropdown-item disabled">${t('No baselyers added')}</li>`}
-          ${this.state.overlays.getLength() > 0 ?
+          ${this.state.layers.getLength() > 0 ?
             `<li class="dropdown-divider"></li>` +
-            this.state.overlays.getArray().map(layer => {
+            this.state.layers.getArray().map(layer => {
               return `
                 <li>
-                  <a href="#" class="overlays dropdown-item ${this.layerVisible(layer) ? '' : 'disabled'}"
+                  <a href="#" class="layers dropdown-item ${this.layerVisible(layer) ? '' : 'disabled'}"
                     data-id="${layer.get('id')}">
                     <i class="far ${layer.getVisible() ? 'fa-check-square' : 'fa-square'}"></i>
                     ${t(layer.get('title'))}
@@ -87,10 +87,10 @@ class LayerManager extends Component {
         this.changeBaseLayer(id)
       }
     })
-    this.el.on('click', 'a.overlays', e => {
+    this.el.on('click', 'a.layers', e => {
       e.preventDefault()
       e.stopPropagation()
-      this.toggleLayer(this.state.overlays, $(e.currentTarget).data('id'))
+      this.toggleLayer(this.state.layers, $(e.currentTarget).data('id'))
     })
     this.el.on('click', 'a.remove-layer', e => {
       e.preventDefault()
@@ -139,10 +139,10 @@ class LayerManager extends Component {
   }
 
   removeLayer (id) {
-    this.state.overlays.forEach(layer => {
+    this.state.layers.forEach(layer => {
       if (layer.get('id') === id) {
         this.state.open = true
-        this.state.overlays.remove(layer)
+        this.state.layers.remove(layer)
         return
       }
     })

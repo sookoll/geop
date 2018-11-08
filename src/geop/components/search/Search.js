@@ -2,6 +2,8 @@ import {t} from 'Utilities/translate'
 import {getState} from 'Utilities/store'
 //import log from 'Utilities/log'
 import Component from 'Geop/Component'
+import Coordinate from './Coordinate'
+import {FeatureLayer} from 'Components/layer/LayerCreator'
 import $ from 'jquery'
 import './Search.styl'
 
@@ -9,10 +11,12 @@ class Search extends Component {
   constructor (target) {
     super(target)
     this.state = {
-      overlays: getState('map/layer/overlays'),
+      layers: getState('map/layer/overlays'),
       results: [],
-      open: false,
-      counter: 0
+      open: false
+    }
+    this.providers = {
+      coordinates: new Coordinate()
     }
     this.render()
   }
@@ -62,19 +66,21 @@ class Search extends Component {
   }
   renderResults () {
     this.resultsEl.html(this.state.results.map(result => {
-      return `
+      return result.id ? `
         <li>
           <a href="#" class="dropdown-item"
             data-id="${result.id}" data-type="${result.type}">
             <i class="fa fa-angle-right"></i>
             ${result.name}
           </a>
-        </li>`
+        </li>` :
+        `<li class="dropdown-header">${result.name}</li>`
       }).join(''))
     if (this.state.open) {
       this.el.find('.dropdown-toggle').dropdown('toggle')
       this.state.open = false
     }
+    this.handleFeatures()
   }
   clear () {
     Object.keys(this.providers).forEach(key => {
@@ -84,26 +90,72 @@ class Search extends Component {
     this.renderResults()
   }
   search (query) {
-    this.state.counter = 0
-    this.searchStart();
+    let counter = 0
+    this.searchStart()
     Object.keys(this.providers).forEach(key => {
+      counter++
       this.providers[key].find(query, (title, data) => {
-        
+        this.state.results = this.state.results.concat([{
+          name: title
+        }], data)
+        this.state.open = true
+        this.renderResults()
+        counter--
+        if (counter <= 0) {
+          this.searchEnd()
+        }
       })
-      this.state.counter++
     })
   }
   searchStart () {
     this.el.find('.dropdown-toggle i')
       .removeClass('fa-search')
       .addClass('fa-spinner fa-pulse')
-  },
+  }
 
   searchEnd () {
     this.el.find('.dropdown-toggle i')
       .removeClass('fa-spinner fa-pulse')
       .addClass('fa-search')
   }
+
+  handleFeatures () {
+    if (!this.state.layer) {
+      this.state.layer = this.createLayer()
+    }
+
+  }
+
+  createLayer (filename, conf) {
+    if (conf.features.length > 0) {
+      const color = randomColor()
+      conf.id = uid()
+      conf.title = filename
+      conf.style = {
+        stroke: {
+          color: color,
+          width: 2
+        },
+        fill: {
+          color: hexToRgbA(color, 0.5)
+        },
+        image: {
+          stroke: {
+            color: color
+          },
+          fill: {
+            color: hexToRgbA(color, 0.3)
+          }
+        }
+      }
+      return new FeatureLayer(conf)
+    } else {
+      log('error', t('Empty file'))
+    }
+  }
+
+
+
 }
 
 export default Search

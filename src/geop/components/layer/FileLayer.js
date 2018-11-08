@@ -15,7 +15,7 @@ class FileLayer extends Component {
     super(target)
     this.isRow = true
     this.state = {
-      overlays: getState('map/layer/overlays')
+      layers: getState('map/layer/layers')
     }
     this.fileTypes = {
       gpx: new GPXFormat(),
@@ -63,7 +63,7 @@ class FileLayer extends Component {
               projection: 'EPSG:3857'
             })
             if (layer) {
-              this.state.overlays.push(layer)
+              this.state.layers.push(layer)
             }
           }
           reader.readAsText(files[0])
@@ -129,7 +129,7 @@ class FileLayer extends Component {
           projection: e.projection
         })
         if (layer) {
-          this.state.overlays.push(layer)
+          this.state.layers.push(layer)
         }
       })
       if (map) {

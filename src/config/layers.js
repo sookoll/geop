@@ -96,5 +96,5 @@ export const layers = {
       }]
     }
   },
-  overlays: {}
+  layers: {}
 }
