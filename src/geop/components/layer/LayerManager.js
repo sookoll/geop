@@ -30,7 +30,7 @@ class LayerManager extends Component {
     const html = $(`
       <div class="btn-group float-right" id="layermanager">
         <button type="button"
-          class="btn btn-secondary toggle-btn"
+          class="btn btn-secondary toggle-btn dropdown-toggle no-caret"
           data-toggle="dropdown"
           aria-expanded="false">
           <span class="display-name hidden-xs">
@@ -79,13 +79,18 @@ class LayerManager extends Component {
     // events
     this.el.on('click', 'a.baselayer', e => {
       e.preventDefault()
-      this.changeBaseLayer($(e.currentTarget).data('id'))
+      e.stopPropagation()
+      const id = $(e.currentTarget).data('id')
+      if (id === this.state.activeBaseLayer.get('id')) {
+        this.toggleLayer(this.state.baseLayers, id)
+      } else {
+        this.changeBaseLayer(id)
+      }
     })
     this.el.on('click', 'a.overlays', e => {
       e.preventDefault()
       e.stopPropagation()
-      this.toggleLayer($(e.currentTarget).data('id'))
-      $(e.currentTarget).find('i').toggleClass('fa-check-square fa-square')
+      this.toggleLayer(this.state.overlays, $(e.currentTarget).data('id'))
     })
     this.el.on('click', 'a.remove-layer', e => {
       e.preventDefault()
@@ -118,16 +123,19 @@ class LayerManager extends Component {
       }
     })
     setState('map/layer/active', this.state.activeBaseLayer)
+    this.state.open = true
     this.render()
   }
 
-  toggleLayer (id) {
-    this.state.overlays.forEach(layer => {
+  toggleLayer (group, id) {
+    group.forEach(layer => {
       if (layer.get('id') === id) {
         layer.setVisible(!layer.getVisible())
         return
       }
     })
+    this.state.open = true
+    this.render()
   }
 
   removeLayer (id) {

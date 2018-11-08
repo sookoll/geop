@@ -1,5 +1,6 @@
 import Component from 'Geop/Component'
 import LayerManager from 'Components/layer/LayerManager'
+import Search from 'Components/search/Search'
 import $ from 'jquery'
 import './ToolBar.styl'
 
@@ -8,7 +9,8 @@ class ToolBar extends Component {
     super(target)
     this.render()
     this.components = {
-      lyrmngr: new LayerManager(this.el)
+      lyrmngr: new LayerManager(this.el),
+      search: new Search(this.el)
     }
   }
   render () {
