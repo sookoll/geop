@@ -1,9 +1,12 @@
+import {map as mapConf} from 'Conf/settings'
 import {t} from 'Utilities/translate'
 import {getState} from 'Utilities/store'
+import {uid, hexToRgbA} from 'Utilities/util'
 //import log from 'Utilities/log'
 import Component from 'Geop/Component'
 import Coordinate from './Coordinate'
 import {FeatureLayer} from 'Components/layer/LayerCreator'
+import GeoJSONFormat from 'ol/format/GeoJSON'
 import $ from 'jquery'
 import './Search.styl'
 
@@ -18,6 +21,9 @@ class Search extends Component {
     this.providers = {
       coordinates: new Coordinate()
     }
+    this.format = new GeoJSONFormat({
+      featureProjection: mapConf.projection
+    })
     this.render()
   }
   render () {
@@ -65,17 +71,23 @@ class Search extends Component {
       })
   }
   renderResults () {
-    this.resultsEl.html(this.state.results.map(result => {
-      return result.id ? `
+    let provider = null
+    const htmlArr = []
+    this.state.results.forEach(result => {
+      if (provider !== result.properties.provider) {
+        htmlArr.push(`<li class="dropdown-header">${t(result.properties.provider)}</li>`)
+        provider = result.properties.provider
+      }
+      htmlArr.push(`
         <li>
           <a href="#" class="dropdown-item"
-            data-id="${result.id}" data-type="${result.type}">
-            <i class="fa fa-angle-right"></i>
-            ${result.name}
+            data-id="${result.id}" data-provider="${provider}">
+            <i class="fa fa-map-marker-alt"></i>
+            ${result.properties.title}
           </a>
-        </li>` :
-        `<li class="dropdown-header">${result.name}</li>`
-      }).join(''))
+        </li>`)
+    })
+    this.resultsEl.html(htmlArr.join(''))
     if (this.state.open) {
       this.el.find('.dropdown-toggle').dropdown('toggle')
       this.state.open = false
@@ -94,10 +106,8 @@ class Search extends Component {
     this.searchStart()
     Object.keys(this.providers).forEach(key => {
       counter++
-      this.providers[key].find(query, (title, data) => {
-        this.state.results = this.state.results.concat([{
-          name: title
-        }], data)
+      this.providers[key].find(query, (title, results) => {
+        this.state.results = this.state.results.concat(results)
         this.state.open = true
         this.renderResults()
         counter--
@@ -122,16 +132,21 @@ class Search extends Component {
   handleFeatures () {
     if (!this.state.layer) {
       this.state.layer = this.createLayer()
+      this.state.layers.push(this.state.layer)
     }
-
+    this.state.layer.getSource().clear()
+    const features = this.state.results.map(item => {
+      return this.format.readFeature(item)
+    })
+    this.state.layer.getSource().addFeatures(features)
   }
 
-  createLayer (filename, conf) {
-    if (conf.features.length > 0) {
-      const color = randomColor()
-      conf.id = uid()
-      conf.title = filename
-      conf.style = {
+  createLayer () {
+    const color = '#000000'
+    const conf = {
+      id: uid(),
+      title: 'Search',
+      style: {
         stroke: {
           color: color,
           width: 2
@@ -148,10 +163,8 @@ class Search extends Component {
           }
         }
       }
-      return new FeatureLayer(conf)
-    } else {
-      log('error', t('Empty file'))
     }
+    return new FeatureLayer(conf)
   }
 
 

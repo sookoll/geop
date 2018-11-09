@@ -1,22 +1,17 @@
 import formats from 'Conf/coordinate'
-import {uid} from 'Utilities/util'
-import {t} from 'Utilities/translate'
-import {toLonLat} from 'ol/proj'
 import Provider from 'Geop/Provider'
 
 class Coordinate extends Provider {
   constructor () {
     super()
-    this.title = t('Coordinate')
+    this.title = 'Coordinate'
   }
   test (query) {
     for (let i = 0, len = formats.length; i < len; i++) {
       const matches = query.match(formats[i].regexp)
       if (matches && matches.length > 0) {
-        const coords = formats[i].get(matches)
         return {
-          x: coords[0],
-          y: coords[1],
+          coords: formats[i].get(matches),
           srid: formats[i].srid,
           srname: formats[i].srname
         }
@@ -27,17 +22,14 @@ class Coordinate extends Provider {
 
   find (query, cb) {
     // test coordinates
-    const coords = this.test(query)
-    if (coords && coords.srid && typeof cb === 'function') {
-      const results = [{
-        id: uid(),
-        type: 'coordinate',
-        name: `${coords.srname} ${query}`,
-        geometry: {
-          type: 'Point',
-          coordinates: toLonLat([coords.x, coords.y], coords.srid)
-        }
-      }]
+    const test = this.test(query)
+    if (test && test.srid && typeof cb === 'function') {
+      const results = [this.toGeoJSON({
+        provider: this.title,
+        title: `${test.srname} ${query}`,
+        srid: test.srid,
+        coords: test.coords
+      })]
       cb(this.title, results)
     }
   }

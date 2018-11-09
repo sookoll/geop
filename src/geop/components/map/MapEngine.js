@@ -1,12 +1,10 @@
-/* eslint no-unused-vars: off */
 import Component from 'Geop/Component'
-import {create, GroupLayer, ImageLayer, TileLayer} from 'Components/layer/LayerCreator'
+import {create, GroupLayer} from 'Components/layer/LayerCreator'
 import {map as mapConf} from 'Conf/settings'
 import {layers as layerConf} from 'Conf/layers'
 import {getState, setState} from 'Utilities/store'
 import Map from 'ol/Map'
 import View from 'ol/View'
-import Collection from 'ol/Collection'
 import {get as getProjection, fromLonLat} from 'ol/proj'
 import {register} from 'ol/proj/proj4'
 import proj4 from 'proj4'
@@ -23,7 +21,8 @@ getProjection('EPSG:3301').setExtent([40500, 5993000, 1064500, 7017000])
 class MapEngine extends Component {
   constructor (target) {
     super(target)
-    this.render()
+    this.el = $(`<div id="${mapConf.el.slice(1)}"></div>`)
+    this.create()
     this.map = null
     this.layers = {
       base: new GroupLayer({
@@ -55,11 +54,6 @@ class MapEngine extends Component {
     setState('map/layer/active', this.activeBaseLayer)
     // que for map
     setState('map/que', [])
-  }
-
-  render () {
-    this.el = $(`<div id="${mapConf.el.slice(1)}"></div>`)
-    this.target.append(this.el)
   }
 
   init () {
@@ -102,8 +96,8 @@ class MapEngine extends Component {
       moveTolerance: 2,
       pixelRatio: 2,
       view: new View({
-        projection: mapConf.crs,
-        center: fromLonLat(viewConf.center, mapConf.crs),
+        projection: mapConf.projection,
+        center: fromLonLat(viewConf.center, mapConf.projection),
         zoom: viewConf.zoom,
         maxZoom: mapConf.maxZoom,
         minZoom: mapConf.minZoom

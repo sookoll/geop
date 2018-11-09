@@ -7,21 +7,18 @@ import './ToolBar.styl'
 class ToolBar extends Component {
   constructor (target) {
     super(target)
-    this.render()
+    this.el = $(`<header id="toolbar" class="panel-bar"></header>`)
+    this.create()
     this.components = {
       lyrmngr: new LayerManager(this.el),
       search: new Search(this.el)
     }
   }
   render () {
-    const html = $(`
-      <header id="toolbar" class="panel-bar">
-        <span class="d-none">
-          <a id="download-link" download="filename">download</a>
-        </span>
-      </header>`)
-    this.target.append(html)
-    this.el = this.target.find('#toolbar')
+    this.el.html(`
+      <span class="d-none">
+        <a id="download-link" download="filename">download</a>
+      </span>`)
   }
 }
 
