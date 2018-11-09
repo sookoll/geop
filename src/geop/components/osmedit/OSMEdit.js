@@ -15,11 +15,9 @@ class OSMEdit extends Component {
       </a>
     `)
     this.isRow = false
-    this.create()
+    // create is called from parent
   }
-  render (target) {
-    this.target = target
-    this.target.append(this.el)
+  render () {
     this.el.on('click', e => {
       e.preventDefault()
       const center = toLonLat(getState('map/view/center'))

@@ -28,47 +28,10 @@ class FileLayer extends Component {
     this.state = {
       layers: getState('map/layer/layers')
     }
-    this.create()
     this.addDragNDrop()
+    // create is called from parent
   }
-  create () {
-    if (this.target && this.el) {
-      this.el.on('click', 'a#add-file-layer', e => {
-        e.preventDefault()
-        e.stopPropagation()
-        $(e.target).closest('li').find('input').trigger('click')
-      })
-      this.el.on('change', 'input#file-input', e => {
-        const files = e.target.files
-        if (files && files[0]) {
-          const filename = files[0].name
-          const ext = filename.split('.').pop().toLowerCase()
-          if (ext in this.fileTypes) {
-            const reader = new window.FileReader()
-            reader.onload = (e) => {
-              const parser = this.fileTypes[ext]
-              const features = parser.readFeatures(e.target.result, {
-                dataProjection:'EPSG:4326',
-                featureProjection:'EPSG:3857'
-              })
-              const layer = this.createLayer(filename, {
-                features: features,
-                projection: 'EPSG:3857'
-              })
-              if (layer) {
-                this.state.layers.push(layer)
-              }
-            }
-            reader.readAsText(files[0])
-          } else {
-            log('error', t('Unsupported file type'))
-          }
-        }
-      })
-    }
-  }
-  render (target) {
-    this.target = target
+  render () {
     this.el.html(`
       <a href="#"
         id="add-file-layer"
@@ -78,7 +41,38 @@ class FileLayer extends Component {
       </a>
       <input id="file-input" type="file" style="display:none;" />
     `)
-    this.target.append(this.el)
+    this.el.on('click', 'a#add-file-layer', e => {
+      e.preventDefault()
+      e.stopPropagation()
+      $(e.target).closest('li').find('input').trigger('click')
+    })
+    this.el.on('change', 'input#file-input', e => {
+      const files = e.target.files
+      if (files && files[0]) {
+        const filename = files[0].name
+        const ext = filename.split('.').pop().toLowerCase()
+        if (ext in this.fileTypes) {
+          const reader = new window.FileReader()
+          reader.onload = (e) => {
+            const parser = this.fileTypes[ext]
+            const features = parser.readFeatures(e.target.result, {
+              dataProjection:'EPSG:4326',
+              featureProjection:'EPSG:3857'
+            })
+            const layer = this.createLayer(filename, {
+              features: features,
+              projection: 'EPSG:3857'
+            })
+            if (layer) {
+              this.state.layers.push(layer)
+            }
+          }
+          reader.readAsText(files[0])
+        } else {
+          log('error', t('Unsupported file type'))
+        }
+      }
+    })
   }
 
   createLayer (filename, conf) {

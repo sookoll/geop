@@ -10,6 +10,7 @@ class WMSLayer extends Component {
   constructor (target) {
     super(target)
     this.el = $(`<li />`)
+    this.modal = null
     this.isRow = true
     this.layer_conf = {
         type: 'TileWMS',
@@ -27,10 +28,10 @@ class WMSLayer extends Component {
     this.state = {
       layers: getState('map/layer/layers')
     }
-    this.create()
+    // create is called from parent
   }
-  create () {
-    if (this.target && this.el) {
+  render () {
+    if (!this.modal || $('#modal_wmslayer').length === 0) {
       this.modal = $(`
         <div class="modal fade"
           id="modal_wmslayer"
@@ -59,11 +60,12 @@ class WMSLayer extends Component {
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary confirm">${'Add'}</button>
+                <button type="button" class="btn btn-secondary confirm">${t('Add')}</button>
               </div>
             </div>
           </div>
-        </div>`)
+        </div>
+      `)
       this.modal.on('click', 'button.confirm', e => {
         e.preventDefault()
         const layer = this.createLayer(this.modal.find('textarea').val().trim())
@@ -79,9 +81,6 @@ class WMSLayer extends Component {
       })
       $('body').append(this.modal)
     }
-  }
-  render (target) {
-    this.target = target
     this.el.html(`
       <a href="#"
         id="add-wms-layer"
@@ -92,7 +91,6 @@ class WMSLayer extends Component {
         ${t('Add WMS layer')}
       </a>
     `)
-    this.target.append(this.el)
   }
   createLayer (url) {
     const urlComponents = parseURL(url)

@@ -20,10 +20,11 @@ class LayerManager extends Component {
     this.state.layers.on('add', () => this.render())
     this.state.layers.on('remove', () => this.render())
     this.create()
+    // do not init here
     this.components = {
-      osm: new OSMEdit(this.el.find('.dropdown-menu')),
-      wms: new WMSLayer(this.el.find('.dropdown-menu')),
-      file: new FileLayer(this.el.find('.dropdown-menu'))
+      osm: OSMEdit,
+      wms: WMSLayer,
+      file: FileLayer
     }
     this.renderChildrens(this.el.find('.dropdown-menu'))
   }
@@ -149,17 +150,15 @@ class LayerManager extends Component {
   }
 
   renderChildrens (target) {
-    if (Object.keys(this.components).length > 0) {
-      let dividerAdded = false
-      Object.keys(this.components).forEach((i) => {
-        const plug = this.components[i]
-        if (plug.isRow && !dividerAdded) {
-          target.append('<div class="dropdown-divider"></div>')
-          dividerAdded = true
-        }
-        plug.render(target)
-      })
-    }
+    let dividerAdded = false
+    Object.keys(this.components).forEach((i) => {
+      const plug = new this.components[i](target)
+      if (plug && plug.isRow && !dividerAdded) {
+        target.append('<div class="dropdown-divider"></div>')
+        dividerAdded = true
+      }
+      plug.create()
+    })
   }
 
 }
