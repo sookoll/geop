@@ -13,21 +13,7 @@ import './Search.styl'
 class Search extends Component {
   constructor (target) {
     super(target)
-    this.state = {
-      layers: getState('map/layer/overlays'),
-      results: [],
-      open: false
-    }
-    this.providers = {
-      coordinates: new Coordinate()
-    }
-    this.format = new GeoJSONFormat({
-      featureProjection: mapConf.projection
-    })
-    this.render()
-  }
-  render () {
-    const html = $(`
+    this.el = $(`
       <div id="search" class="input-group float-right">
         <input type="text" class="form-control" placeholder="${t('Search')}">
         <div class="input-group-append fill-width">
@@ -40,37 +26,53 @@ class Search extends Component {
           </button>
           <ul class="dropdown-menu dropdown-menu-right scrollable-menu" role="menu"></ul>
         </span>
-      </div>`)
-    this.target.append(html)
-    this.el = this.target.find('#search')
-    this.resultsEl = this.el.find('ul')
-    this.el
-      .find('.dropdown-toggle')
-      .on('shown.bs.dropdown', () => {
-        this.state.open = true
-      })
-      .on('hidden.bs.dropdown', () => {
-        this.state.open = false
-      })
-      .on('click', e => {
-        const val = $(e.target).val().trim()
-        if (!this.state.results.length && val.length > 1) {
-          this.search(val)
-        }
-      })
-      this.el.find('input').on('keyup', e => {
-        // clear
-        if (this.state.results.length) {
-          this.clear()
-        }
-        const val = $(e.target).val().trim()
-        this.el.find('.dropdown-toggle').prop('disabled', (val.length < 1))
-        if (e.keyCode === 13 && val.length > 1) {
-          this.search(val)
-        }
-      })
+      </div>
+    `)
+    this.state = {
+      layers: getState('map/layer/overlays'),
+      results: [],
+      open: false,
+      query: null
+    }
+    this.providers = {
+      coordinates: new Coordinate()
+    }
+    this.format = new GeoJSONFormat({
+      featureProjection: mapConf.projection
+    })
+    this.create()
   }
-  renderResults () {
+  create () {
+    super.create()
+    if (this.target && this.el) {
+      this.resultsEl = this.el.find('ul')
+      this.el
+        .find('.dropdown-toggle')
+        .on('shown.bs.dropdown', () => {
+          this.state.open = true
+        })
+        .on('hidden.bs.dropdown', () => {
+          this.state.open = false
+        })
+        .on('click', e => {
+          const val = $(e.target).val().trim()
+          if (this.query !== val && val.length > 1) {
+            this.search(val)
+          }
+        })
+        this.el.find('input').on('keyup', e => {
+          const val = $(e.target).val().trim()
+          this.el.find('.dropdown-toggle').prop('disabled', (val.length < 1))
+          // clear
+          if (!val.length) {
+            this.clear()
+          } else if (e.keyCode === 13) {
+            this.search(val)
+          }
+        })
+    }
+  }
+  render () {
     let provider = null
     const htmlArr = []
     this.state.results.forEach(result => {
@@ -87,10 +89,12 @@ class Search extends Component {
           </a>
         </li>`)
     })
-    this.resultsEl.html(htmlArr.join(''))
-    if (this.state.open) {
-      this.el.find('.dropdown-toggle').dropdown('toggle')
-      this.state.open = false
+    if (this.resultsEl) {
+      this.resultsEl.html(htmlArr.join(''))
+      if (this.state.open) {
+        this.el.find('.dropdown-toggle').dropdown('toggle')
+        this.state.open = false
+      }
     }
     this.handleFeatures()
   }
@@ -99,9 +103,11 @@ class Search extends Component {
       this.providers[key].clear()
     })
     this.state.results = []
-    this.renderResults()
+    this.query = null
+    this.render()
   }
   search (query) {
+    this.query = query
     let counter = 0
     this.searchStart()
     Object.keys(this.providers).forEach(key => {
@@ -109,7 +115,7 @@ class Search extends Component {
       this.providers[key].find(query, (title, results) => {
         this.state.results = this.state.results.concat(results)
         this.state.open = true
-        this.renderResults()
+        this.render()
         counter--
         if (counter <= 0) {
           this.searchEnd()
