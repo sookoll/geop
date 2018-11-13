@@ -16,6 +16,7 @@ class Provider {
         type: 'Point',
         coordinates: toLonLat(data.coords, data.srid)
       },
+      bbox: data.bbox || null,
       properties: data
     }
   }

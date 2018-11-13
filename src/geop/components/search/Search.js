@@ -4,7 +4,9 @@ import {getState} from 'Utilities/store'
 import {uid, hexToRgbA} from 'Utilities/util'
 //import log from 'Utilities/log'
 import Component from 'Geop/Component'
-import Coordinate from './Coordinate'
+import CoordinateProvider from './Coordinate'
+import NominatimProvider from './Nominatim'
+import FeatureProvider from  './Feature'
 import {FeatureLayer} from 'Components/layer/LayerCreator'
 import GeoJSONFormat from 'ol/format/GeoJSON'
 import $ from 'jquery'
@@ -35,7 +37,9 @@ class Search extends Component {
       query: null
     }
     this.providers = {
-      coordinates: new Coordinate()
+      coordinates: new CoordinateProvider(),
+      features: new FeatureProvider(),
+      nominatim: new NominatimProvider()
     }
     this.format = new GeoJSONFormat({
       featureProjection: mapConf.projection
@@ -55,8 +59,9 @@ class Search extends Component {
           this.state.open = false
         })
         .on('click', e => {
-          const val = $(e.target).val().trim()
-          if (this.query !== val && val.length > 1) {
+          const val = this.el.find('input').val().trim()
+          if (this.query !== val) {
+            this.clear()
             this.search(val)
           }
         })
@@ -67,6 +72,8 @@ class Search extends Component {
           if (!val.length) {
             this.clear()
           } else if (e.keyCode === 13) {
+            this.clear()
+            this.state.open = true
             this.search(val)
           }
         })
@@ -89,6 +96,14 @@ class Search extends Component {
           </a>
         </li>`)
     })
+    if (!htmlArr.length) {
+      htmlArr.push(`
+        <li class="dropdown-item">
+          <i class="fa fa-frown"></i>
+          ${t('No result')}
+        </li>`)
+    }
+    this.el.find('.dropdown-toggle').dropdown('update')
     if (this.resultsEl) {
       this.resultsEl.html(htmlArr.join(''))
       if (this.state.open) {
@@ -112,15 +127,20 @@ class Search extends Component {
     this.searchStart()
     Object.keys(this.providers).forEach(key => {
       counter++
-      this.providers[key].find(query, (title, results) => {
-        this.state.results = this.state.results.concat(results)
-        this.state.open = true
-        this.render()
-        counter--
-        if (counter <= 0) {
-          this.searchEnd()
-        }
-      })
+      this.providers[key].find(query)
+        .then((results) => {
+          this.state.results = this.state.results.concat(results)
+        })
+        .catch(e => {
+          console.log(e)
+        })
+        .finally(() => {
+          counter--
+          if (counter <= 0) {
+            this.render()
+            this.searchEnd()
+          }
+        })
     })
   }
   searchStart () {

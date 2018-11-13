@@ -1,32 +1,24 @@
 import miniToastr from 'mini-toastr'
 
-const defaults = {
-  title: {
-    success: 'Success',
-    info: 'Info',
-    warn: 'Warning',
-    error: 'Error'
-  },
-  timeout: 5000
-}
-
 // init
-miniToastr.init()
+miniToastr.init({
+  timeout: 4000
+})
 
 function success (msg, cb) {
-  miniToastr.success(msg, undefined, defaults.timeout, cb)
+  miniToastr.success(msg, undefined, undefined, cb)
 }
 
 function info (msg, cb) {
-  miniToastr.info(msg, undefined, defaults.timeout, cb)
+  miniToastr.info(msg, undefined, undefined, cb)
 }
 
 function warn (msg, cb) {
-  miniToastr.warn(msg, undefined, defaults.timeout, cb)
+  miniToastr.warn(msg, undefined, undefined, cb)
 }
 
 function error (msg, cb) {
-  miniToastr.error(msg, undefined, defaults.timeout, cb)
+  miniToastr.error(msg, undefined, undefined, cb)
 }
 
 export default function log (type, msg, cb) {

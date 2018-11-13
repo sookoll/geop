@@ -1,5 +1,6 @@
 import formats from 'Conf/coordinate'
 import Provider from 'Geop/Provider'
+import {t} from 'Utilities/translate'
 
 class Coordinate extends Provider {
   constructor () {
@@ -20,18 +21,24 @@ class Coordinate extends Provider {
     return false
   }
 
-  find (query, cb) {
+  find (query) {
     // test coordinates
-    const test = this.test(query)
-    if (test && test.srid && typeof cb === 'function') {
-      const results = [this.toGeoJSON({
-        provider: this.title,
-        title: `${test.srname} ${query}`,
-        srid: test.srid,
-        coords: test.coords
-      })]
-      cb(this.title, results)
-    }
+    return new Promise((resolve, reject) => {
+      if (query.length < 1) {
+        throw new Error(t('Query string empty, aborting!'))
+      }
+      const test = this.test(query)
+      const results = []
+      if (test && test.srid) {
+        results.push(this.toGeoJSON({
+          provider: this.title,
+          title: `${test.srname} ${query}`,
+          srid: test.srid,
+          coords: test.coords
+        }))
+      }
+      resolve(results)
+    })
   }
 }
 
