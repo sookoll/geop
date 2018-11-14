@@ -6,7 +6,7 @@ import $ from 'jquery'
 class FullScreen extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`<div class="btn-group float-left" id="fullscreen"></div>`)
+    this.el = $(`<div class="btn-group float-right" id="fullscreen"></div>`)
     this.state = {
       active: false
     }
