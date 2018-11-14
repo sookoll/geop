@@ -2,6 +2,7 @@ import Component from 'Geop/Component'
 import LayerManager from 'Components/layer/LayerManager'
 import Search from 'Components/search/Search'
 import $ from 'jquery'
+import {app as appConf} from 'Conf/settings'
 import './ToolBar.styl'
 
 class ToolBar extends Component {
@@ -10,8 +11,8 @@ class ToolBar extends Component {
     this.el = $(`<header id="toolbar" class="panel-bar"></header>`)
     this.create()
     this.components = {
-      lyrmngr: new LayerManager(this.el),
-      search: new Search(this.el)
+      lyrmngr: appConf.layerManager && new LayerManager(this.el),
+      search: appConf.searchEnabled && new Search(this.el)
     }
   }
   render () {

@@ -1,11 +1,13 @@
 export const app = {
   locale: 'et',
-  geocodingEnabled: true,
+  layerManager: true,
+  searchEnabled: true,
   locateEnabled: true,
   mouseCoordinates: true,
   featureInfo: true,
   scaleLine: true,
   measureTool: true,
+  fullScreen: true,
   streetview_url: 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=',
   osm_ideditor_url: 'https://www.openstreetmap.org/edit?editor=id#background=custom:http://tiles.maaamet.ee/tm/tms/1.0.0/foto@GMC/{z}/{x}/{-y}.png&map=',
   nominatim_url: 'https://nominatim.openstreetmap.org'
