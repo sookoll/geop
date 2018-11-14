@@ -24,6 +24,8 @@ export function getState (item) {
     value = localStorage.getItem(item)
     if (value && item in state && state[item] !== value) {
       state[item] = value
+    } else if (value && !(item in state)) {
+      state[item] = value
     }
   }
   return state[item]

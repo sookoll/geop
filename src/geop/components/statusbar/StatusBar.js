@@ -1,5 +1,5 @@
 import Component from 'Geop/Component'
-import Settings from 'Components/settings/Settings'
+import Sidebar from 'Components/sidebar/Sidebar'
 import $ from 'jquery'
 import './StatusBar.styl'
 
@@ -9,7 +9,7 @@ class StatusBar extends Component {
     this.el = $(`<footer id="statusbar" class="panel-bar"></footer>`)
     this.create()
     this.components = {
-      settings: new Settings(this.el)
+      sidebar: new Sidebar(this.el)
     }
   }
 }

@@ -1,34 +1,32 @@
-#settings-sidebar
-  width: 0
+#sidebar
+  width: 350px
   height: 100vh
   position: fixed
   top: 0
   left: 0
+  margin-left: -350px
   z-index: 999
-  color white
-  background: #000
   transition: 0.5s
   overflow-x: hidden
   &.active
-    width: 350px
+    margin-left: 0
   .sidebar-header
     width 330px
     margin 10px
     button
       font-size 1.5em
-      color white
   .sidebar-content
     margin 0 10px 10px
     width 330px
 
-#settings-shadow
+#sidebar-shadow
   display: none
   position: fixed
   top: 0
   left: 0
   width: 100vw
   height: 100vh
-  background: rgba(0, 0, 0, 0.3)
+  background: rgba(0, 0, 0, 0.5)
   z-index: 998
   opacity: 0
   transition: all 0.5s ease-in-out
