@@ -7,6 +7,7 @@ class Info extends Component {
   constructor (target) {
     super(target)
     this.id = 'info-tab'
+    this.icon = 'fa fa-info-circle'
     this.el = $(`<div class="tab-pane fade ${this.id === appConf.sideBarTab ? 'show active' : ''}" id="${this.id}" role="tabpanel"></div>`)
     this.create()
   }

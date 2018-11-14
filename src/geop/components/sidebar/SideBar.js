@@ -74,6 +74,7 @@ class Sidebar extends Component {
             href="#${plug.id}"
             role="tab"
             aria-controls="${plug.id}">
+            ${plug.icon ? `<i class="${plug.icon}"></i>` : ''}
             ${t(i)}
           </a>
         </li>

@@ -1,3 +1,7 @@
+import NoSleep from 'nosleep.js'
+
+const noSleep = new NoSleep()
+
 export function initServiceWorker () {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -10,6 +14,19 @@ export function initServiceWorker () {
   } else {
     console.log('Service Worker is not supported by browser.')
   }
+}
+
+function enableNoSleep() {
+  noSleep.enable()
+  document.removeEventListener('click', enableNoSleep, false)
+}
+
+export function enableScreenLock () {
+  document.addEventListener('click', enableNoSleep, false)
+}
+
+export function disableScreenLock () {
+  noSleep.disable()
 }
 
 // convert radians to degrees

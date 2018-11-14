@@ -16,10 +16,10 @@ class MousePosition extends Component {
     this.state = {
       projection: 'EPSG:4326',
       control: null,
-      lock: true,
-      clickHandler: (e) => {
-        this.clicked(e)
-      }
+      lock: false
+    }
+    this.clickHandler = (e) => {
+      this.clicked(e)
     }
     this.create()
   }
@@ -59,10 +59,10 @@ class MousePosition extends Component {
     if (this.state.lock) {
       map.removeControl(this.state.control)
       this.el.find('.coords').show()
-      map.on('click', this.state.clickHandler)
+      map.on('click', this.clickHandler)
     } else {
       this.el.find('.coords').hide()
-      map.un('click', this.state.clickHandler)
+      map.un('click', this.clickHandler)
       map.addControl(this.state.control)
     }
   }

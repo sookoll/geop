@@ -58,6 +58,7 @@
     "lodash": "^4.17.11",
     "mgrs": "^1.0.0",
     "mini-toastr": "^0.8.1",
+    "nosleep.js": "^0.7.0",
     "ol": "^5.2.0",
     "ol-contextmenu": "^3.3.0",
     "popper.js": "^1.14.4",
