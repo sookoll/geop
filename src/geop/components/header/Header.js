@@ -3,12 +3,12 @@ import LayerManager from 'Components/layer/LayerManager'
 import Search from 'Components/search/Search'
 import $ from 'jquery'
 import {app as appConf} from 'Conf/settings'
-import './ToolBar.styl'
+import './Header.styl'
 
-class ToolBar extends Component {
+class Header extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`<header id="toolbar" class="panel-bar"></header>`)
+    this.el = $(`<header id="header" class="panel-bar"></header>`)
     this.create()
     this.components = {
       lyrmngr: appConf.layerManager && new LayerManager(this.el),
@@ -23,4 +23,4 @@ class ToolBar extends Component {
   }
 }
 
-export default ToolBar
+export default Header
