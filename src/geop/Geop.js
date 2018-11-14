@@ -12,9 +12,7 @@ class Geop extends Component {
   constructor (target) {
     super(target)
     // set locale
-    initLocale(appConf.locale, translations, true, value => {
-      console.log(value)
-    })
+    initLocale(appConf.locale, translations, true)
 
     if ('onhashchange' in window) {
       activatePermalink()

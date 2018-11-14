@@ -51,13 +51,14 @@ class Coordinate extends Provider {
 
   format (data) {
     return data.map(item => {
+      const bbox = item.boundingbox && item.boundingbox.map(c => Number(c))
       return this.toGeoJSON({
         provider: this.title,
         id: item.place_id,
         title: item.display_name,
         srid: 'EPSG:4326',
         coords: [Number(item.lon), Number(item.lat)],
-        bbox : item.boundingbox && item.boundingbox.map(c => Number(c))
+        bbox : [bbox[2], bbox[0], bbox[3], bbox[1]]
       })
     })
   }

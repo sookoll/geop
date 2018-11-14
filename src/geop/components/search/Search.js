@@ -9,6 +9,7 @@ import NominatimProvider from './Nominatim'
 import FeatureProvider from  './Feature'
 import {FeatureLayer} from 'Components/layer/LayerCreator'
 import GeoJSONFormat from 'ol/format/GeoJSON'
+import {fromLonLat, transformExtent} from 'ol/proj'
 import $ from 'jquery'
 import './Search.styl'
 
@@ -65,18 +66,41 @@ class Search extends Component {
             this.search(val)
           }
         })
-        this.el.find('input').on('keyup', e => {
-          const val = $(e.target).val().trim()
-          this.el.find('.dropdown-toggle').prop('disabled', (val.length < 1))
-          // clear
-          if (!val.length) {
-            this.clear()
-          } else if (e.keyCode === 13) {
-            this.clear()
-            this.state.open = true
-            this.search(val)
-          }
-        })
+      this.el.find('input').on('keyup', e => {
+        const val = $(e.target).val().trim()
+        this.el.find('.dropdown-toggle').prop('disabled', (val.length < 1))
+        // clear
+        if (!val.length) {
+          this.clear()
+        } else if (e.keyCode === 13) {
+          this.clear()
+          this.state.open = true
+          this.search(val)
+        }
+      })
+      this.resultsEl.on('click', 'a', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const map = getState('map')
+        const id = $(e.currentTarget).attr('data-id')
+        const item = this.state.results.filter(item => {
+          return id === item.id
+        })[0]
+        if (item.bbox) {
+          const bbox = transformExtent(item.bbox, 'EPSG:4326', mapConf.projection)
+          map.getView().fit(bbox, {
+            padding: [50, 50, 50, 50],
+            maxZoom: 17,
+            duration: 500
+          })
+        } else {
+          map.getView().animate({
+            center: fromLonLat(item.geometry.coordinates),
+            zoom: 15,
+            duration: 500
+          })
+        }
+      })
     }
   }
   render () {
