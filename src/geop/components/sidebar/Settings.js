@@ -26,7 +26,7 @@ class Settings extends Component {
         ${getLocales().map(locale => {
           return `
             <button type="button"
-              class="btn btn-outline-secondary set-locale-btn ${getLocale() === locale ? 'active' : ''}"
+              class="btn btn-outline-info set-locale-btn ${getLocale() === locale ? 'active' : ''}"
               data-locale="${locale}">
               ${locale}
             </button>`

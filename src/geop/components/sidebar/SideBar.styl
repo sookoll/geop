@@ -1,23 +1,20 @@
 #sidebar
-  width: 350px
+  width: 100vw
   height: 100vh
   position: fixed
   top: 0
   left: 0
-  margin-left: -350px
+  margin-left: -100vw
   z-index: 999
   transition: 0.5s
   overflow-x: hidden
   &.active
     margin-left: 0
-  .sidebar-header
-    width 330px
-    margin 10px
-    button
-      font-size 1.5em
-  .sidebar-content
-    margin 0 10px 10px
-    width 330px
+
+@media (min-width: 576px)
+  #sidebar
+    width: 350px
+    margin-left: -350px
 
 #sidebar-shadow
   display: none

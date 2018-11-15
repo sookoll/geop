@@ -13,7 +13,6 @@ class Info extends Component {
   }
   create () {
     if (this.target && this.el) {
-      console.log('info')
       this.target.append(this.el)
       this.render()
     }

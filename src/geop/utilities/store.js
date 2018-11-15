@@ -1,10 +1,10 @@
-//import Collection from 'ol/Collection'
 
 const state = {}
 const events = {}
 const localStorage = storageAvailable('localStorage') ? window.localStorage : false
 
 export function setState (item, value, permanent = false) {
+  console.log(item, value, state[item], events[item])
   if (state[item] !== value) {
     state[item] = value
     // local storage
@@ -13,6 +13,7 @@ export function setState (item, value, permanent = false) {
     }
     // events
     if (item in events) {
+      console.log(events[item])
       events[item].forEach(handler => handler(state[item]))
     }
   }
@@ -31,11 +32,11 @@ export function getState (item) {
   return state[item]
 }
 
-export function on (item, listener) {
-  if (!item in events) {
+export function onchange (item, listener) {
+  if (!(item in events)) {
     events[item] = []
   }
-  if (events[item] !== listener) {
+  if (events[item].indexOf(listener) === -1) {
     events[item].push(listener)
   }
 }
