@@ -49,6 +49,18 @@ class Settings extends Component {
           value="${getState('app/account') || ''}">
         <small class="form-text text-muted">${t('Enter geopeitus.ee username')}</small>
       </div>
+      ${appConf.debug ? `
+        <h5>${t('Debug')}</h5>
+        <div>
+          <button
+            id="download-log"
+            class="btn btn-danger">
+            <i class="fa fa-file-download"></i>
+            ${t('Download debug log')}
+          </a>
+          <input type="file" style="display:none;" />
+        </div>
+      ` : ''}
     `)
     // language change
     this.el.on('click', 'button.set-locale-btn', e => {

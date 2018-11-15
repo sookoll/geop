@@ -9,7 +9,7 @@ export const layers = {
     },
     ma_orto : {
       type: 'Group',
-      title: 'Foto',
+      title: 'Satellite',
       projection: 'EPSG:3301',
       layers: [{
         type: 'XYZ',
@@ -34,7 +34,7 @@ export const layers = {
     },
     ma_kaart: {
       type: 'Group',
-      title: 'Kaart',
+      title: 'Map',
       projection: 'EPSG:3301',
       layers: [{
         type: 'XYZ',
@@ -59,7 +59,7 @@ export const layers = {
     },
     ma_pkaart: {
       type: 'Group',
-      title: 'Põhikaart',
+      title: 'Topo',
       projection: 'EPSG:3301',
       layers: [{
         type: 'XYZ',

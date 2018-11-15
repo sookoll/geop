@@ -39,14 +39,14 @@ class FileLayer extends Component {
         <i class="fa fa-plus"></i>
         ${t('Add File layer')}
       </a>
-      <input id="file-input" type="file" style="display:none;" />
+      <input type="file" style="display:none;" />
     `)
     this.el.on('click', 'a#add-file-layer', e => {
       e.preventDefault()
       e.stopPropagation()
       $(e.target).closest('li').find('input').trigger('click')
     })
-    this.el.on('change', 'input#file-input', e => {
+    this.el.on('change', 'input', e => {
       const files = e.target.files
       if (files && files[0]) {
         const filename = files[0].name

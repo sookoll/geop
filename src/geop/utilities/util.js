@@ -16,6 +16,10 @@ export function initServiceWorker () {
   }
 }
 
+export function initDebug () {
+  // overwrite console.log
+}
+
 function enableNoSleep() {
   noSleep.enable()
   document.removeEventListener('click', enableNoSleep, false)

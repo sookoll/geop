@@ -1,5 +1,5 @@
 export const app = {
-  locale: 'et',
+  locale: 'et',// app locale
   layerManager: true,
   searchEnabled: true,
   locateEnabled: true,
@@ -9,10 +9,12 @@ export const app = {
   measureTool: true,
   fullScreen: true,
   mousePosition: true,
-  sideBarTab: 'info-tab',
+  geoLocation: true,
+  sideBarTab: 'info-tab',// active tab on sidebar
   streetview_url: 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=',
   osm_ideditor_url: 'https://www.openstreetmap.org/edit?editor=id#background=custom:http://tiles.maaamet.ee/tm/tms/1.0.0/foto@GMC/{z}/{x}/{-y}.png&map=',
-  nominatim_url: 'https://nominatim.openstreetmap.org'
+  nominatim_url: 'https://nominatim.openstreetmap.org',
+  debug: true// collect all console.logs into downloadable file
 }
 export const geocache = {
   auth_url: 'http://geopeitus.ee',
