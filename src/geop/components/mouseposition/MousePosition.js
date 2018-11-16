@@ -1,8 +1,9 @@
 import Component from 'Geop/Component'
 import {getState} from 'Utilities/store'
 import MousePositionControl from 'ol/control/MousePosition'
-import {format} from 'ol/coordinate'
-import {toLonLat} from 'ol/proj'
+import {format, toStringHDMS} from 'ol/coordinate'
+import mgrs from 'mgrs'
+import {transform} from 'ol/proj'
 import $ from 'jquery'
 import './MousePosition.styl'
 
@@ -12,9 +13,40 @@ class MousePosition extends Component {
     this.el = $(`
       <span id="mouse-position" class="mouse-position float-left"></span>
     `)
+    this.coordFormats = [
+      {
+        projection: 'EPSG:4326',
+        srname: 'WGS',
+        coordinateFormat: (coordinate) => {
+          return format(coordinate, 'WGS {y}, {x}', 4)
+        }
+      },
+      {
+        projection: 'EPSG:4326',
+        srname: 'WGS dms',
+        coordinateFormat: (coordinate) => {
+          return 'WGS ' + toStringHDMS(coordinate, 1)
+        }
+      },
+      {
+        projection: 'EPSG:3301',
+        srname: 'L-EST',
+        coordinateFormat: (coordinate) => {
+          return format(coordinate, 'L-EST {y}, {x}', 0)
+        }
+      },
+      {
+        projection: 'EPSG:4326',
+        srname: 'MGRS',
+        coordinateFormat: (coordinate) => {
+          return 'MGRS ' + mgrs.forward(coordinate)
+        }
+      }
+    ]
 
     this.state = {
-      projection: 'EPSG:4326',
+      format: 0,
+      projection: null,
       control: null,
       lock: false
     }
@@ -25,31 +57,54 @@ class MousePosition extends Component {
   }
   render () {
     this.el.html(`
-      <a href="#" class="btn lock float-left">
-        <i class="fa fa-${this.state.lock ? 'lock' : 'unlock'}"></i>
-      </a>
+      <div class="btn-group dropup float-left">
+        <button type="button" class="btn btn-secondary lock">
+          <i class="fa fa-${this.state.lock ? 'lock' : 'lock-open'}"></i>
+        </button>
+        <button type="button"
+          class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+          data-toggle="dropdown">
+        </button>
+        <div class="dropdown-menu">
+          ${this.coordFormats.map((format, i) => {
+            return `
+              <a class="dropdown-item" href="#" data-format="${i}">
+                <i class="far ${i === this.state.format ? 'fa-dot-circle' : 'fa-circle'}"></i>
+                ${format.srname}
+              </a>`
+          }).join('')}
+        </div>
+      </div>
       <div class="float-left coords"></div>
     `)
-    this.el.on('click', 'a.lock', e => {
-      e.preventDefault()
+    this.el.on('click', '.lock', e => {
       this.state.lock = !this.state.lock
       this.activate(getState('map'))
-      $(e.currentTarget).find('i').toggleClass('fa-lock fa-unlock')
+      $(e.currentTarget).find('i').toggleClass('fa-lock fa-lock-open')
+    })
+    this.el.on('click', 'a[data-format]', e => {
+      this.state.format = $(e.currentTarget).data('format')
+      this.state.control.setProjection(this.coordFormats[this.state.format].projection)
+      this.state.control.setCoordinateFormat(this.coordFormats[this.state.format].coordinateFormat)
+      this.el.find('a[data-format] i').removeClass('fa-dot-circle').addClass('fa-circle')
+      $(e.currentTarget).find('i').removeClass('fa-circle').addClass('fa-dot-circle')
     })
     if (!this.state.control) {
       this.state.control = new MousePositionControl({
-        coordinateFormat: coord => format(coord, '{y}, {x}', 5),
-        projection: this.state.projection,
+        coordinateFormat: this.coordFormats[this.state.format].coordinateFormat,
+        projection: this.coordFormats[this.state.format].projection,
         className: 'float-left coords',
         target: this.el[0],
         undefinedHTML: ''
       })
       const map = getState('map')
       if (map) {
+        this.state.projection = map.getView().getProjection().getCode()
         this.activate(map)
       } else {
         const que = getState('map/que')
         que.push(map => {
+          this.state.projection = map.getView().getProjection().getCode()
           this.activate(map)
         })
       }
@@ -67,8 +122,13 @@ class MousePosition extends Component {
     }
   }
   clicked (e) {
-    const coord = toLonLat(e.coordinate)
-    this.el.find('.coords').html(format(coord, '{y}, {x}', 5))
+    const coord = transform(
+      e.coordinate,
+      this.state.projection,
+      this.coordFormats[this.state.format].projection
+    )
+    this.el.find('.coords')
+      .html(this.coordFormats[this.state.format].coordinateFormat(coord))
   }
 }
 

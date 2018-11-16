@@ -12,7 +12,7 @@ class Sidebar extends Component {
     super(target)
     this.el = $(`<div class="btn-group float-left" id="sidebar-open"></div>`)
     this.shadow = $(`<div id="sidebar-shadow" class=""></div>`)
-    this.sidebar = $(`<nav id="sidebar" class="bg-light p-2"></nav>`)
+    this.sidebar = $(`<nav id="sidebar" class="bg-light p-3"></nav>`)
     this.create()
     this.components = {
       Info,

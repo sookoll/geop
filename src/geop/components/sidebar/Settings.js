@@ -26,7 +26,7 @@ class Settings extends Component {
         ${getLocales().map(locale => {
           return `
             <button type="button"
-              class="btn btn-outline-info set-locale-btn ${getLocale() === locale ? 'active' : ''}"
+              class="btn btn-outline-primary set-locale-btn ${getLocale() === locale ? 'active' : ''}"
               data-locale="${locale}">
               ${locale}
             </button>`
@@ -55,7 +55,7 @@ class Settings extends Component {
           <button
             id="download-log"
             class="btn btn-danger">
-            <i class="fa fa-file-download"></i>
+            <i class="fa fa-download"></i>
             ${t('Download debug log')}
           </a>
           <input type="file" style="display:none;" />

@@ -52,7 +52,6 @@
     "@fortawesome/fontawesome-free": "^5.4.2",
     "@mapbox/polyline": "^1.0.0",
     "bootstrap": "^4.1.3",
-    "handlebars": "^4.0.12",
     "jquery": "^3.3.1",
     "jsonpack": "^1.1.5",
     "lodash": "^4.17.11",

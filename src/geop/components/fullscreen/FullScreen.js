@@ -59,7 +59,7 @@ class FullScreen extends Component {
       this.state.active = true
       this.el.find('button').addClass('active')
     } else {
-      this.active = false
+      this.state.active = false
       this.el.find('button').removeClass('active')
     }
   }

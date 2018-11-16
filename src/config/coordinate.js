@@ -72,7 +72,7 @@ export default [
     */
     regexp: /^(6[3-6][0-9]{5}|6[3-6][0-9]{5}[,.]\d{0,9})[ ,;:]\s*([3-7][0-9]{5}|[3-7][0-9]{5}[,.]\d{0,9})\s*$/,
     srid: 'EPSG:3301',
-    srname: 'L-EST97',
+    srname: 'L-EST',
     get: function (matches) {
       return [Number(matches[2].replace(',', '.')), Number(matches[1].replace(',', '.'))]
     }
@@ -85,7 +85,7 @@ export default [
     */
     regexp: /^([3-7][0-9]{5}|[3-7][0-9]{5}[,.]\d{0,9})[ ,;:]\s*(6[3-6][0-9]{5}|6[3-6][0-9]{5}[,.]\d{0,9})\s*$/,
     srid: 'EPSG:3301',
-    srname: 'L-EST97',
+    srname: 'L-EST',
     get: function (matches) {
       return [Number(matches[1].replace(',', '.')), Number(matches[2].replace(',', '.'))]
     }
@@ -99,7 +99,7 @@ export default [
     */
     regexp: /^([-NS])?\s*([0-8]\d?|90)[ ’'°]+([0-9]{2})[ ’']+([0-9]{1,2}[,.]?\d{1,9})["]?[ ,;:]\s*([-EW])?\s*([0-1]\d{0,2}|\d{2})[ ’'°]+([0-9]{2})[ ’']+([0-9]{1,2}[,.]?\d{1,9})["]?\s*$/,
     srid: 'EPSG:4326',
-    srname: 'WGS84',
+    srname: 'WGS84 (dms)',
     get: function (matches) {
       var coords = [
         Number(matches[6]) + Number(matches[7]) / 60 + Number(matches[8].replace(',', '.')) / 60 / 60,
@@ -118,7 +118,7 @@ export default [
     */
     regexp: /^([-NS])?\s*([0-8]\d?|90)[ .’'°]+([0-9]{1,2}[,.]?\d{1,18})[’']?[ ,;:]\s*([-EW])?\s*([0-1]\d{0,2}|\d{2})[ ’'°]+([0-9]{1,2}[,.]?\d{1,18})[’']?\s*$/,
     srid: 'EPSG:4326',
-    srname: 'WGS84',
+    srname: 'WGS84 (dm)',
     get: function (matches) {
       var coords = [
         Number(matches[5]) + Number(matches[6].replace(',', '.')) / 60,
@@ -137,7 +137,7 @@ export default [
     */
     regexp: /^([-NS])?\s*([1-8]?\d(?:[,.]\d{1,18})?|90(?:\.0{1,18})?)[’'°]?[ ,;:]\s*([-EW])?\s*((?:1[0-7]|[1-9])?\d(?:[,.]\d{1,18})?|180(?:\.0{1,18})?)[’'°]?\s*$/,
     srid: 'EPSG:4326',
-    srname: 'WGS84',
+    srname: 'WGS84 (d)',
     get: function (matches) {
       var coords = [Number(matches[4].replace(',', '.')), Number(matches[2].replace(',', '.'))]
       coords[1] = (matches[1] === '-' || matches[1] === 'S') ? -coords[1] : coords[1]

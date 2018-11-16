@@ -148,12 +148,19 @@ class Search extends Component {
   search (query) {
     this.query = query
     let counter = 0
+    let stop = false
     this.searchStart()
-    Object.keys(this.providers).forEach(key => {
+    Object.keys(this.providers).some(key => {
       counter++
       this.providers[key].find(query)
         .then((results) => {
-          this.state.results = this.state.results.concat(results)
+          if (!stop) {
+            this.state.results = this.state.results.concat(results)
+          }
+          if (key === 'coordinates' && results.length) {
+            stop = true
+            counter = 1
+          }
         })
         .catch(e => {
           console.log(e)

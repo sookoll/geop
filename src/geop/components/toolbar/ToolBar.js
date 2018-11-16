@@ -1,6 +1,7 @@
 import {app as appConf} from 'Conf/settings'
 import Component from 'Geop/Component'
 import Zoom from './Zoom'
+import Compass from './Compass'
 import GeoLocation from 'Components/geolocation/GeoLocation'
 import $ from 'jquery'
 import './ToolBar.styl'
@@ -12,7 +13,8 @@ class ToolBar extends Component {
     this.create()
     this.components = {
       zoom: new Zoom(this.el),
-      geolocation: appConf.geoLocation && new GeoLocation(this.el)
+      geolocation: appConf.geoLocation && new GeoLocation(this.el),
+      compass: new Compass(this.el)
     }
   }
 }
