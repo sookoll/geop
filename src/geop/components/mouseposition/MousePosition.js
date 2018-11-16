@@ -1,5 +1,8 @@
 import Component from 'Geop/Component'
 import {getState} from 'Utilities/store'
+import log from 'Utilities/log'
+import {t} from 'Utilities/translate'
+import {copy} from 'Utilities/util'
 import MousePositionControl from 'ol/control/MousePosition'
 import {format, toStringHDMS} from 'ol/coordinate'
 import mgrs from 'mgrs'
@@ -18,28 +21,28 @@ class MousePosition extends Component {
         projection: 'EPSG:4326',
         srname: 'WGS',
         coordinateFormat: (coordinate) => {
-          return format(coordinate, 'WGS {y}, {x}', 4)
+          return format(coordinate, '{y}, {x}', 4)
         }
       },
       {
         projection: 'EPSG:4326',
         srname: 'WGS dms',
         coordinateFormat: (coordinate) => {
-          return 'WGS ' + toStringHDMS(coordinate, 1)
+          return toStringHDMS(coordinate, 1)
         }
       },
       {
         projection: 'EPSG:3301',
         srname: 'L-EST',
         coordinateFormat: (coordinate) => {
-          return format(coordinate, 'L-EST {y}, {x}', 0)
+          return format(coordinate, '{y}, {x}', 0)
         }
       },
       {
         projection: 'EPSG:4326',
         srname: 'MGRS',
         coordinateFormat: (coordinate) => {
-          return 'MGRS ' + mgrs.forward(coordinate)
+          return mgrs.forward(coordinate)
         }
       }
     ]
@@ -48,7 +51,8 @@ class MousePosition extends Component {
       format: 0,
       projection: null,
       control: null,
-      lock: false
+      lock: false,
+      lastCoord: null
     }
     this.clickHandler = (e) => {
       this.clicked(e)
@@ -75,12 +79,19 @@ class MousePosition extends Component {
           }).join('')}
         </div>
       </div>
-      <div class="float-left coords"></div>
+      <button type="button" class="btn btn-link copy float-left">
+        <i class="far fa-clone"></i>
+        <span>${this.coordFormats[this.state.format].srname}</span>
+      </button>
     `)
     this.el.on('click', '.lock', e => {
       this.state.lock = !this.state.lock
       this.activate(getState('map'))
       $(e.currentTarget).find('i').toggleClass('fa-lock fa-lock-open')
+    })
+    this.el.on('click', '.copy', e => {
+      const coordsEl = this.el.find('.coords')
+      this.copy(coordsEl[0])
     })
     this.el.on('click', 'a[data-format]', e => {
       this.state.format = $(e.currentTarget).data('format')
@@ -88,6 +99,7 @@ class MousePosition extends Component {
       this.state.control.setCoordinateFormat(this.coordFormats[this.state.format].coordinateFormat)
       this.el.find('a[data-format] i').removeClass('fa-dot-circle').addClass('fa-circle')
       $(e.currentTarget).find('i').removeClass('fa-circle').addClass('fa-dot-circle')
+      this.el.find('button.copy span').html(this.coordFormats[this.state.format].srname)
     })
     if (!this.state.control) {
       this.state.control = new MousePositionControl({
@@ -113,10 +125,10 @@ class MousePosition extends Component {
   activate (map) {
     if (this.state.lock) {
       map.removeControl(this.state.control)
-      this.el.find('.coords').show()
+      this.el.append('<div class="float-left coords"></div>')
       map.on('click', this.clickHandler)
     } else {
-      this.el.find('.coords').hide()
+      this.el.find('.coords').remove()
       map.un('click', this.clickHandler)
       map.addControl(this.state.control)
     }
@@ -129,6 +141,15 @@ class MousePosition extends Component {
     )
     this.el.find('.coords')
       .html(this.coordFormats[this.state.format].coordinateFormat(coord))
+  }
+  copy (el) {
+    copy(el)
+      .then(() => {
+        log('success', `${t('Coordinates')} ${el.innerText} ${t('copied to clipboard')}`)
+      })
+      .catch(() => {
+        log('error', t('Unable to copy to clipboard'))
+      })
   }
 }
 

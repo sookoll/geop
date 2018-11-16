@@ -4,7 +4,6 @@ const events = {}
 const localStorage = storageAvailable('localStorage') ? window.localStorage : false
 
 export function setState (item, value, permanent = false) {
-  console.log(item, value, state[item], events[item])
   if (state[item] !== value) {
     state[item] = value
     // local storage

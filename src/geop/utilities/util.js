@@ -1,6 +1,7 @@
 import NoSleep from 'nosleep.js'
 
 const noSleep = new NoSleep()
+const debugStore = []
 
 export function initServiceWorker () {
   if ('serviceWorker' in navigator) {
@@ -16,8 +17,54 @@ export function initServiceWorker () {
   }
 }
 
+export function copy (el) {
+  return new Promise((resolve, reject) => {
+    const range = document.createRange()
+    range.selectNode(el)
+    window.getSelection().addRange(range)
+    try {
+      const successful = document.execCommand('copy')
+      console.log(successful, range)
+      if (successful) {
+        resolve()
+      } else {
+        reject(Error(successful))
+      }
+    } catch (err) {
+      reject(err)
+    }
+    window.getSelection().removeAllRanges()
+  })
+}
+
 export function initDebug () {
-  // overwrite console.log
+  // overwrite console.log, info and error
+  ['log', 'error', 'info'].forEach(method => {
+    console[method + '_'] = console[method]
+    console[method] = function () {
+      const dt = new Date().toISOString()
+      let output = dt
+      for (let i = 0, len = arguments.length; i < len; i++) {
+        const arg = arguments[i]
+        output += ' ' + typeof arg
+        if (
+          typeof arg === "object" &&
+          typeof JSON === "object" &&
+          typeof JSON.stringify === "function"
+        ) {
+          output += ' ' + JSON.stringify(arg)
+        } else {
+          output += ' ' + arg
+        }
+      }
+      debugStore.push(output)
+      console[method + '_'].apply(undefined, arguments)
+    }
+  })
+}
+
+export function getDebugStore () {
+  return debugStore
 }
 
 function enableNoSleep() {

@@ -1,9 +1,10 @@
 import {app as appConf} from 'Conf/settings'
 import {getState, setState} from 'Utilities/store'
-import {enableScreenLock, disableScreenLock} from 'Utilities/util'
+import {enableScreenLock, disableScreenLock, getDebugStore} from 'Utilities/util'
 import {t, getLocale, getLocales, changeLocale} from 'Utilities/translate'
 import Component from 'Geop/Component'
 import $ from 'jquery'
+import saveAs from 'file-saver';
 
 class Settings extends Component {
   constructor (target) {
@@ -82,6 +83,12 @@ class Settings extends Component {
     // account name
     this.el.on('blur', '#settings-account', e => {
       setState('app/account', e.target.value, true)
+    })
+    // download debug log file
+    this.el.on('click', '#download-log', e => {
+      const logs = getDebugStore()
+      const blob = new window.Blob([logs.join('\n')], {type: "text/plain;charset=utf-8"})
+      saveAs(blob, appConf.debugFile);
     })
   }
 }
