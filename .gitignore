@@ -3,3 +3,4 @@ node_modules/
 .ide/
 .brackets.json
 .DS_Store
+npm-debug.log
