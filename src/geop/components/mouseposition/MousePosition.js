@@ -1,5 +1,5 @@
 import Component from 'Geop/Component'
-import {getState} from 'Utilities/store'
+import {getState, setState} from 'Utilities/store'
 import log from 'Utilities/log'
 import {t} from 'Utilities/translate'
 import {copy} from 'Utilities/util'
@@ -58,6 +58,22 @@ class MousePosition extends Component {
       this.clicked(e)
     }
     this.create()
+    // set contextmenu
+    let contextMenuItems = getState('map/contextmenu')
+    if (!contextMenuItems) {
+      setState('map/contextmenu', [])
+      contextMenuItems = getState('map/contextmenu')
+    }
+    contextMenuItems.push({
+      icon: 'far fa-clone',
+      content: coord => {
+        return this.format(coord)
+      },
+      onclick: (e, coord) => {
+        this.copy(e.currentTarget)
+      },
+      closeonclick: true
+    })
   }
   render () {
     this.el.html(`
@@ -134,13 +150,7 @@ class MousePosition extends Component {
     }
   }
   clicked (e) {
-    const coord = transform(
-      e.coordinate,
-      this.state.projection,
-      this.coordFormats[this.state.format].projection
-    )
-    this.el.find('.coords')
-      .html(this.coordFormats[this.state.format].coordinateFormat(coord))
+    this.el.find('.coords').html(this.format(e.coordinate))
   }
   copy (el) {
     copy(el)
@@ -150,6 +160,14 @@ class MousePosition extends Component {
       .catch(() => {
         log('error', t('Unable to copy to clipboard'))
       })
+  }
+  format (coordinate) {
+    const coord = transform(
+      coordinate,
+      this.state.projection,
+      this.coordFormats[this.state.format].projection
+    )
+    return this.coordFormats[this.state.format].coordinateFormat(coord)
   }
 }
 

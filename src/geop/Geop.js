@@ -8,6 +8,7 @@ import MapEngine from 'Components/map/MapEngine'
 import Header from 'Components/header/Header'
 import StatusBar from 'Components/statusbar/StatusBar'
 import ToolBar from 'Components/toolbar/ToolBar'
+import ContextMenu from 'Components/contextmenu/ContextMenu'
 import './Geop.styl'
 
 class Geop extends Component {
@@ -27,7 +28,8 @@ class Geop extends Component {
       map: new MapEngine(this.target),
       header: new Header(this.target),
       statusbar: new StatusBar(this.target),
-      toolbar: new ToolBar(this.target)
+      toolbar: new ToolBar(this.target),
+      contextmenu: new ContextMenu(this.target)
     }
   }
   init() {
