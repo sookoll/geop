@@ -17,14 +17,17 @@ export function initServiceWorker () {
   }
 }
 
-export function copy (el) {
+export function copy (str) {
   return new Promise((resolve, reject) => {
-    const range = document.createRange()
-    range.selectNode(el)
-    window.getSelection().addRange(range)
     try {
+      const el = document.createElement('textarea')
+      el.value = str
+      el.style.position = 'absolute'
+      el.style.left = '-9999px'
+      document.body.appendChild(el)
+      el.select()
       const successful = document.execCommand('copy')
-      console.log(successful, range)
+      document.body.removeChild(el)
       if (successful) {
         resolve()
       } else {
@@ -33,7 +36,6 @@ export function copy (el) {
     } catch (err) {
       reject(err)
     }
-    window.getSelection().removeAllRanges()
   })
 }
 

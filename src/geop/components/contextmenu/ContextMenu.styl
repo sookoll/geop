@@ -17,16 +17,14 @@ body .contextmenu
         border-top: none
       &:hover
         background-color: #eee
-      i.gp-icon
-        display: inline-block
-        font: normal normal normal 14px/1 FontAwesome
-        font-size: inherit
-        text-rendering: auto
-        -webkit-font-smoothing: antialiased
-        &.gp-icon-ruler::before
-          content: ''
-          /*background: url("../img/icon-ruler.ico") no-repeat center*/
-          display: block
-          background-size: 1em
-          width: 1em
-          height: 1em
+      .context-item-btn
+        position: absolute
+        top 0
+        right 0
+        padding: 0.5rem 0.75rem
+        border-radius: 0
+        border-left: 1px solid #ddd
+        color: inherit
+        background-color: #fff
+        &:hover
+          background-color: #eee

@@ -62,9 +62,8 @@ class ContextMenu extends Component {
   }
   getContent (coord) {
     const content = this.state.items.map((item, i) => {
-      const icon = `<i class="${item.icon || 'fa fa-chevron-circle-right'}"></i>`
       const cont = (typeof item.content === 'function') ? item.content(coord) : item.content
-      return `<li class="list-group-item item-${i}">${icon} ${cont}</li>`
+      return `<li class="list-group-item item-${i}">${cont}</li>`
     })
 
     return {
@@ -74,16 +73,26 @@ class ContextMenu extends Component {
         html: true,
         content: content.join(''),
         selector: '#contextmenu-map',
-        offset: (this.state.items.length - 1) * 20 + 'px 0',
+        offset: (this.state.items.length - 1) * 20 + 'px, 0',
         template: '<div class="contextmenu popover"><div class="arrow"></div><div class="popover-body"></div></div>'
       },
       'onShow': pop => {
         this.state.items.forEach((item, i) => {
-          if (typeof item.onclick === 'function') {
+          if (typeof item.onClick === 'function') {
             $(pop).on('click', '.item-' + i, e => {
               e.preventDefault()
-              item.onclick(e, coord)
-              if (item.closeonclick) {
+              item.onClick(e, coord)
+              if (item.closeOnClick) {
+                this.el.popover('dispose')
+              }
+            })
+          }
+          if (typeof item.onBtnClick === 'function') {
+            $(pop).on('click', `.item-${i} .context-item-btn`, e => {
+              e.preventDefault()
+              e.stopPropagation()
+              item.onBtnClick(e, coord)
+              if (item.closeOnClick) {
                 this.el.popover('dispose')
               }
             })

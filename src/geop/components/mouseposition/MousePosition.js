@@ -1,9 +1,11 @@
 import Component from 'Geop/Component'
+import {FeatureLayer} from 'Components/layer/LayerCreator'
 import {getState} from 'Utilities/store'
 import log from 'Utilities/log'
 import {t} from 'Utilities/translate'
-import {copy} from 'Utilities/util'
+import {copy, hexToRgbA, uid} from 'Utilities/util'
 import MousePositionControl from 'ol/control/MousePosition'
+import GeoJSONFormat from 'ol/format/GeoJSON'
 import {format, toStringHDMS} from 'ol/coordinate'
 import mgrs from 'mgrs'
 import {transform} from 'ol/proj'
@@ -52,7 +54,8 @@ class MousePosition extends Component {
       projection: null,
       control: null,
       lock: false,
-      lastCoord: null
+      lastCoord: null,
+      layers: getState('map/layer/overlays'),
     }
     this.clickHandler = (e) => {
       this.clicked(e)
@@ -61,24 +64,18 @@ class MousePosition extends Component {
     // set contextmenu
     const contextMenuItems = getState('map/contextmenu')
     contextMenuItems.push({
-      icon: 'far fa-clone',
       content: coord => {
-        return this.format(coord)
+        return `<i class="fa fa-map-marker-alt"></i>
+          ${this.format(coord)}
+          <button class="btn btn-link context-item-btn"><i class="far fa-clone"></i></button>`
       },
-      onclick: (e, coord) => {
-        this.copy(e.currentTarget)
-      },
-      closeonclick: true
-    })
-    contextMenuItems.push({
-      icon: 'fa fa-map-marker-alt',
-      content: coord => {
-        return t('Add to map')
-      },
-      onclick: (e, coord) => {
+      onClick: (e, coord) => {
         this.createMarker(coord)
       },
-      closeonclick: true
+      onBtnClick: (e, coord) => {
+        this.copy(this.format(coord))
+      },
+      closeOnClick: true
     })
   }
   render () {
@@ -112,8 +109,8 @@ class MousePosition extends Component {
       $(e.currentTarget).find('i').toggleClass('fa-lock fa-lock-open')
     })
     this.el.on('click', '.copy', e => {
-      const coordsEl = this.el.find('.coords')
-      this.copy(coordsEl[0])
+      const coords = this.el.find('.coords').html()
+      this.copy(coords)
     })
     this.el.on('click', 'a[data-format]', e => {
       this.state.format = $(e.currentTarget).data('format')
@@ -158,10 +155,10 @@ class MousePosition extends Component {
   clicked (e) {
     this.el.find('.coords').html(this.format(e.coordinate))
   }
-  copy (el) {
-    copy(el)
+  copy (content) {
+    copy(content)
       .then(() => {
-        log('success', `${t('Coordinates')} ${el.innerText} ${t('copied to clipboard')}`)
+        log('success', `${t('Coordinates')} ${content} ${t('copied to clipboard')}`)
       })
       .catch(() => {
         log('error', t('Unable to copy to clipboard'))
@@ -176,8 +173,43 @@ class MousePosition extends Component {
     return this.coordFormats[this.state.format].coordinateFormat(coord)
   }
   createMarker (coordinate) {
-    console.log(coordinate)
-
+    if (!this.state.layer) {
+      this.state.layer = this.createLayer()
+      this.state.layers.push(this.state.layer)
+    }
+    const feature = new GeoJSONFormat().readFeature({
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: coordinate
+      }
+    })
+    this.state.layer.getSource().addFeature(feature)
+  }
+  createLayer () {
+    const color = '#000000'
+    const conf = {
+      id: uid(),
+      title: 'MousePosition',
+      style: {
+        stroke: {
+          color: color,
+          width: 2
+        },
+        fill: {
+          color: hexToRgbA(color, 0.5)
+        },
+        image: {
+          stroke: {
+            color: color
+          },
+          fill: {
+            color: hexToRgbA(color, 0.3)
+          }
+        }
+      }
+    }
+    return new FeatureLayer(conf)
   }
 }
 
