@@ -26,10 +26,10 @@ class Geop extends Component {
     }
     this.components = {
       map: new MapEngine(this.target),
+      contextmenu: new ContextMenu(this.target),
       header: new Header(this.target),
       statusbar: new StatusBar(this.target),
-      toolbar: new ToolBar(this.target),
-      contextmenu: new ContextMenu(this.target)
+      toolbar: new ToolBar(this.target)
     }
   }
   init() {

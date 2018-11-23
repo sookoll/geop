@@ -66,6 +66,7 @@ class ContextMenu extends Component {
       const cont = (typeof item.content === 'function') ? item.content(coord) : item.content
       return `<li class="list-group-item item-${i}">${icon} ${cont}</li>`
     })
+
     return {
       definition: {
         placement: 'right',
@@ -73,6 +74,7 @@ class ContextMenu extends Component {
         html: true,
         content: content.join(''),
         selector: '#contextmenu-map',
+        offset: (this.state.items.length - 1) * 20 + 'px 0',
         template: '<div class="contextmenu popover"><div class="arrow"></div><div class="popover-body"></div></div>'
       },
       'onShow': pop => {
