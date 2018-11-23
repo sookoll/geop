@@ -38,7 +38,7 @@ class StyleBuilder {
             olStyle[key] = new Circle({
               fill: new Fill(style[key].fill),
               stroke: new Stroke(style[key].stroke),
-              radius: 5
+              radius: style[key].radius || 5
             })
             break
           case 'text':

@@ -55,7 +55,7 @@ class MousePosition extends Component {
       control: null,
       lock: false,
       lastCoord: null,
-      layers: getState('map/layer/overlays'),
+      layer: null
     }
     this.clickHandler = (e) => {
       this.clicked(e)
@@ -175,7 +175,7 @@ class MousePosition extends Component {
   createMarker (coordinate) {
     if (!this.state.layer) {
       this.state.layer = this.createLayer()
-      this.state.layers.push(this.state.layer)
+      getState('map/layer/overlays').push(this.state.layer)
     }
     const feature = new GeoJSONFormat().readFeature({
       type: 'Feature',
