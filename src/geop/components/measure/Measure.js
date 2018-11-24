@@ -12,6 +12,7 @@ import {toLonLat, fromLonLat} from 'ol/proj'
 import {never, always, doubleClick} from 'ol/events/condition'
 import {getLength, getArea} from 'ol/sphere'
 import $ from 'jquery'
+import './Measure.styl'
 
 const styleBuilder = new StyleBuilder()
 
@@ -19,11 +20,11 @@ class Measure extends Component {
   constructor (target) {
     super(target)
     this.el = $(`
-      <div class="alert alert-warning alert-dismissible measure" role="alert">
+      <div class="alert small alert-warning alert-dismissible measure" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <i class="fa fa-times"></i>
         </button>
-        <div class="small"></div>
+        <div class=""></div>
       </div>
     `)
     this.state = {
@@ -138,6 +139,9 @@ class Measure extends Component {
           stroke: {
             color: 'black',
             width: 1
+          },
+          fill: {
+            color: 'rgba(255, 255, 255, 0)'
           }
         },
         {
@@ -184,7 +188,7 @@ class Measure extends Component {
     }
     this.el.find('div').html(html)
     $('body').append(this.el)
-    if (this._measureType === 'circle') {
+    if (this.state.measureType === 'circle') {
       this.el.on('focus', 'input', e => {
         this.interaction.modify.setActive(false)
       })
@@ -271,7 +275,7 @@ class Measure extends Component {
       this.state.snapFeatures.getArray(),
       this.state.snapTolerance
     )
-    if (this._measureType === 'circle') {
+    if (this.state.measureType === 'circle') {
       const coord1 = coords[0]
       this.state.drawing.getGeometry().setCoordinates([coord1, coord2])
       this.el.find('input').prop('readonly', false)
@@ -334,7 +338,7 @@ class Measure extends Component {
     this.state.map.addInteraction(this.interaction.modify)
     this.interaction.snap = new Snap({features: this.state.snapFeatures})
     this.state.map.addInteraction(this.interaction.snap)
-    this._drawing.getGeometry().on('change', this.onmodify, this)
+    this.state.drawing.getGeometry().on('change', this.handlers.onmodify)
   }
   getSnappedCoordinate (needle, haystack, tolerance) {
     let coord = needle
