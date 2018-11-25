@@ -4,6 +4,7 @@ export const app = {
   searchEnabled: true,
   locateEnabled: true,
   mouseCoordinates: true,
+  tooltip: true,
   featureInfo: true,
   scaleLine: true,
   measureTool: true,

@@ -21,7 +21,6 @@ class ScaleLine extends Component {
       })
       const map = getState('map')
       if (map) {
-        console.log(map)
         map.addControl(this.state.control)
       } else {
         const que = getState('map/que')

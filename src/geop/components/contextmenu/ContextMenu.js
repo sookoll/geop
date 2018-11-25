@@ -46,7 +46,7 @@ class ContextMenu extends Component {
     map.getViewport().addEventListener('contextmenu', e => {
       e.preventDefault()
       let coords = map.getEventCoordinate(e)
-      var content;
+      let content
       const feature = map.forEachFeatureAtPixel(
         map.getEventPixel(e),
         (feature, layer) => [layer, feature]

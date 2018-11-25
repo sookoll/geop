@@ -41,7 +41,7 @@ export function copy (str) {
 
 export function initDebug () {
   // overwrite console.log, info and error
-  ['log', 'error', 'info'].forEach(method => {
+  ['debug', 'error', 'info'].forEach(method => {
     console[method + '_'] = console[method]
     console[method] = function () {
       const dt = new Date().toISOString()
