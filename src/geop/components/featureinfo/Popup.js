@@ -1,6 +1,7 @@
 import Component from 'Geop/Component'
 import {t} from 'Utilities/translate'
-import {getState} from 'Utilities/store'
+import {formatLength, formatArea} from 'Utilities/util'
+import {getState, setState} from 'Utilities/store'
 import Overlay from 'ol/Overlay'
 import $ from 'jquery'
 import './Popup.styl'
@@ -11,7 +12,11 @@ class Popup extends Component {
     this.el = $('<div id="popup-map"></div>')
     this.state = {
       overlay: null,
-      infoStore: []
+      infoStore: [],
+      geomTypes: {
+        linestrings: ['LineString', 'MultiLineString'],
+        polygons: ['Polygon', 'MultiPolygon']
+      }
     }
     this.handlers = {
       clicked: e => {
@@ -19,6 +24,7 @@ class Popup extends Component {
       }
     }
     this.create()
+    setState('components/featureInfo', this)
   }
   render () {
     this.state.overlay = new Overlay({
@@ -41,12 +47,12 @@ class Popup extends Component {
   }
   init (map) {
     map.addOverlay(this.state.overlay)
-    this.enableClick()
+    this.enable()
   }
-  enableClick () {
+  enable () {
     this.state.map.on('click', this.handlers.clicked)
   }
-  disableClick () {
+  disable () {
     this.state.map.un('click', this.handlers.clicked)
   }
   open (e) {
@@ -92,6 +98,12 @@ class Popup extends Component {
       }).map(key => {
         return `${key}: ${props[key]}`
       })
+      if (this.state.geomTypes.linestrings.indexOf(feature.getGeometry().getType()) > -1) {
+        content.push(`${t('Length')}: ${formatLength(feature.getGeometry())}`)
+      }
+      if (this.state.geomTypes.polygons.indexOf(feature.getGeometry().getType()) > -1) {
+        content.push(`${t('Area')}: ${formatArea(feature.getGeometry())}`)
+      }
       //TODO:
       //var in_collection = $.inArray(feature, this._app.geocache.get('geotrip').getArray());
       const title = `
@@ -112,7 +124,12 @@ class Popup extends Component {
           html: true,
           title: title,
           content: content.join('<br>'),
-          template: '<div class="popup popover"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>'
+          template: `
+            <div class="popup popover">
+              <div class="arrow"></div>
+              <h3 class="popover-header"></h3>
+              <div class="popover-body"></div>
+            </div>`
         },
         'onShow': (f, pop) => {
           $(pop).on('click', '.remove-marker', e => {

@@ -1,6 +1,6 @@
 import {getState} from 'Utilities/store'
 import {t} from 'Utilities/translate'
-import {uid, degToRad, radToDeg} from 'Utilities/util'
+import {uid, degToRad, radToDeg, formatLength, formatArea} from 'Utilities/util'
 import {FeatureLayer} from 'Components/layer/LayerCreator'
 import Component from 'Geop/Component'
 import StyleBuilder from 'Components/layer/StyleBuilder'
@@ -10,7 +10,7 @@ import {Modify, DoubleClickZoom, Snap} from 'ol/interaction'
 import Collection from 'ol/Collection'
 import {toLonLat, fromLonLat} from 'ol/proj'
 import {never, always, doubleClick} from 'ol/events/condition'
-import {getLength, getArea} from 'ol/sphere'
+import {getLength} from 'ol/sphere'
 import $ from 'jquery'
 import './Measure.styl'
 
@@ -121,8 +121,7 @@ class Measure extends Component {
     } else {
       this.state.source.addFeatures([this.state.drawing, this.state.sketch])
     }
-    // TODO
-    //this._mapmodule.get('featureInfo').disableClick();
+    getState('components/featureInfo') && getState('components/featureInfo').disable()
     this.enableClick()
     this.state.map.getInteractions().getArray().forEach(interaction => {
       if (interaction instanceof DoubleClickZoom) {
@@ -209,12 +208,12 @@ class Measure extends Component {
     if (this.state.measureType === 'circle') {
       this.updateCircleResults()
     } else {
-      const len = this.formatLength(this.state.drawing.getGeometry())
+      const len = formatLength(this.state.drawing.getGeometry())
       let html = `${t('Vahemaa')}: ${len}`
       const coords = this.state.drawing.getGeometry().getCoordinates()
       // if closed, calculate area
       if (coords[0][0] === coords[coords.length - 1][0] && coords[0][1] === coords[coords.length - 1][1]) {
-        const area = this.formatArea(new Polygon([coords]))
+        const area = formatArea(new Polygon([coords]))
         html += `<br>${t('Pindala')}: ${area}`
       } else {
         html += `<br>${t('Pindala')}: ${('lõpeta joone alguses')}`
@@ -245,8 +244,7 @@ class Measure extends Component {
     this.state.map.removeInteraction(this.interaction.snap)
     this.state.snapFeatures = null
     this.disableClick()
-    // TODO: featureinfo from getState
-    //this._mapmodule.get('featureInfo').enableClick();
+    getState('components/featureInfo') && getState('components/featureInfo').enable()
     this.state.drawing.getGeometry().setCoordinates([])
     this.state.sketch.getGeometry().setCoordinates([])
     if (this.state.measureType === 'circle') {
@@ -324,9 +322,8 @@ class Measure extends Component {
       const arr = coords.slice(0)
       arr.push(coord2)
       this.state.measureLine.setCoordinates(arr)
-      const len = this.formatLength(this.state.measureLine)
       this.el.find('div').html(`
-        Vahemaa: ${len}<br>
+        Vahemaa: ${formatLength(this.state.measureLine)}<br>
         Pindala: lõpeta joone alguses
       `)
     }
@@ -387,22 +384,6 @@ class Measure extends Component {
     const a = Math.abs(coord1[0]-coord2[0])
     const b = Math.abs(coord1[1]-coord2[1])
     return Math.sqrt(a * a + b * b)
-  }
-  formatLength (line) {
-    const length = getLength(line)
-    if (length > 10000) {
-      return `${(Math.round(length / 1000 * 100) / 100)} km`
-    } else {
-      return `${(Math.round(length * 100) / 100)} m`
-    }
-  }
-  formatArea (polygon) {
-    const area = getArea(polygon)
-    if (area > 1000000) {
-      return `${(Math.round(area / 1000000 * 100) / 100)} km<sup>2</sup>`
-    } else {
-      return `${(Math.round(area * 100) / 100)} m<sup>2</sup>`
-    }
   }
   getAllFeatures () {
     let fset = []

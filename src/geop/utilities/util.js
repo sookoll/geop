@@ -1,4 +1,5 @@
 import NoSleep from 'nosleep.js'
+import {getLength, getArea} from 'ol/sphere'
 
 const noSleep = new NoSleep()
 const debugStore = []
@@ -174,4 +175,22 @@ export function hexToRgbA (hex, a) {
     return 'rgba(' + [(c>>16)&255, (c>>8)&255, c&255].join(',') + ',' + a + ')'
   }
   throw new Error('Bad Hex')
+}
+
+export function formatLength (line) {
+  const length = getLength(line)
+  if (length > 10000) {
+    return `${(Math.round(length / 1000 * 100) / 100)} km`
+  } else {
+    return `${(Math.round(length * 100) / 100)} m`
+  }
+}
+
+export function formatArea (polygon) {
+  const area = getArea(polygon)
+  if (area > 1000000) {
+    return `${(Math.round(area / 1000000 * 100) / 100)} km<sup>2</sup>`
+  } else {
+    return `${(Math.round(area * 100) / 100)} m<sup>2</sup>`
+  }
 }
