@@ -1,4 +1,5 @@
 import Component from 'Geop/Component'
+import {t} from 'Utilities/translate'
 import {getState} from 'Utilities/store'
 import Overlay from 'ol/Overlay'
 import $ from 'jquery'
@@ -58,26 +59,27 @@ class Popup extends Component {
         }
       }
     )
-    this.el.popover('destroy')
+    this.el.popover('dispose')
     if (feature) {
       // if point, then geometry coords
       if (feature[1].getGeometry().getType() === 'Point') {
         coord = feature[1].getGeometry().getCoordinates()
       }
+      let popContent
       if (feature[0] && this.state.infoStore[feature[0].get('id')]) {
-          pop_content = this.state.infoStore[feature[0].get('id')](feature[1])
+          popContent = this.state.infoStore[feature[0].get('id')](feature[1])
       } else {
-          pop_content = this.getContent(feature[1], feature[0])
+          popContent = this.getContent(feature[1], feature[0])
       }
       this.state.overlay.setPosition(coord)
-      this.el.popover(pop_content.definition).popover('show')
+      this.el.popover(popContent.definition).popover('show')
       // when popover's content is shown
       this.el.on('shown.bs.popover', e => {
-        pop_content.onShow(feature, e)
+        popContent.onShow(feature, $(e.target).data('bs.popover').tip)
       })
       // when popover's content is hidden
       this.el.on('hidden.bs.popover', e => {
-        pop_content.onHide(e)
+        popContent.onHide(e)
       })
       this.el.popover('show')
     }
@@ -92,42 +94,47 @@ class Popup extends Component {
       })
       //TODO:
       //var in_collection = $.inArray(feature, this._app.geocache.get('geotrip').getArray());
-      var title = this._tmpl_featureinfo_title({
-        'type_class': 'fa fa-map-marker',
-        'text': 'Kaardiobjekt',
-        'trash': '<a href="#" class="remove-marker" title="Eemalda"><i class="fa fa-trash"></i></a>',
-        'icon': (in_collection > -1) ? 'fa-minus-square' : 'fa-thumb-tack'
-      });
-      var geotrip = t._app.geocache.get('geotrip');
+      const title = `
+        <i class="fa fa-map-marker-alt"></i>
+        ${t('Feature')}
+        <a href="#" class="cache-toggle" data-id="${feature.get('id')}" title="${t('Add to geotrip')}">
+          <i class="fa fa-thumbtack"></i>
+        </a>
+        <a href="#" class="remove-marker" title="Eemalda">
+          <i class="far fa-trash-alt"></i>
+        </a>`
+
+      //var geotrip = t._app.geocache.get('geotrip');
       return {
-        'definition' : {
-          'placement': 'top',
-          'animation': false,
-          'html': true,
-          'title': title,
-          'content': '<div class="small">' + content.join('<br>') + '</div>'
+        definition: {
+          placement: 'top',
+          animation: false,
+          html: true,
+          title: title,
+          content: content.join('<br>'),
+          template: '<div class="popup popover"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>'
         },
-        'onShow' : function (f, e) {
-          $(e.currentTarget.nextSibling).on('click', '.remove-marker', function (e) {
-            e.preventDefault();
+        'onShow': (f, pop) => {
+          $(pop).on('click', '.remove-marker', e => {
+            e.preventDefault()
             if (f[0]) {
-              f[0].getSource().removeFeature(f[1]);
-              geotrip.remove(f[1]);
-              t._popup.popover('destroy');
+              f[0].getSource().removeFeature(f[1])
+              //geotrip.remove(f[1]);
+              this.el.popover('dispose')
             }
-          });
-          $('a.cache-toggle').on('click', function (e) {
-            e.preventDefault();
-            $(this).find('i').toggleClass('fa-thumb-tack fa-minus-square');
-            if ($.inArray(f[1], geotrip.getArray()) > -1) {
+          })
+          $(pop).on('click', '.cache-toggle', e => {
+            e.preventDefault()
+            $(e.currentTarget).find('i').toggleClass('fa-thumbtack fa-minus-square')
+            /*if ($.inArray(f[1], geotrip.getArray()) > -1) {
               geotrip.remove(f[1]);
             } else {
               geotrip.push(f[1]);
-            }
-          });
+            }*/
+          })
         },
         'onHide' : function () {}
-      };
+      }
     }
   }
 }

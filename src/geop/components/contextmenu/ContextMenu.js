@@ -60,12 +60,23 @@ class ContextMenu extends Component {
       this.open(coords, content)
     })
   }
+  open (coord, popContent) {
+    this.el.popover('dispose')
+    this.state.overlay.setPosition(coord)
+    this.el.popover(popContent.definition)
+    // when popover's content is shown
+    this.el.on('shown.bs.popover', e => {
+      popContent.onShow($(e.target).data('bs.popover').tip)
+    })
+    // when popover's content is hidden
+    this.el.on('hidden.bs.popover', popContent.onHide)
+    this.el.popover('show')
+  }
   getContent (coord) {
     const content = this.state.items.map((item, i) => {
       const cont = (typeof item.content === 'function') ? item.content(coord) : item.content
       return `<li class="list-group-item item-${i}">${cont}</li>`
     })
-
     return {
       definition: {
         placement: 'right',
@@ -101,18 +112,6 @@ class ContextMenu extends Component {
       },
       'onHide' : () => {}
     }
-  }
-  open (coord, popContent) {
-    this.el.popover('dispose')
-    this.state.overlay.setPosition(coord)
-    this.el.popover(popContent.definition)
-    // when popover's content is shown
-    this.el.on('shown.bs.popover', e => {
-      popContent.onShow($(e.target).data('bs.popover').tip)
-    })
-    // when popover's content is hidden
-    this.el.on('hidden.bs.popover', popContent.onHide)
-    this.el.popover('show')
   }
 }
 
