@@ -4,7 +4,7 @@ import Overlay from 'ol/Overlay'
 import $ from 'jquery'
 import './Tooltip.styl'
 
-class ScaleLine extends Component {
+class Tooltip extends Component {
   constructor (target) {
     super(target)
     this.el = $('<div id="tooltip"></div>')
@@ -72,4 +72,4 @@ class ScaleLine extends Component {
   }
 }
 
-export default ScaleLine
+export default Tooltip

@@ -12,6 +12,7 @@ import ContextMenu from 'Components/contextmenu/ContextMenu'
 import StreetView from 'Components/streetview/StreetView'
 import Measure from 'Components/measure/Measure'
 import Tooltip from 'Components/featureinfo/Tooltip'
+import Popup from 'Components/featureinfo/Popup'
 import './Geop.styl'
 
 class Geop extends Component {
@@ -35,7 +36,8 @@ class Geop extends Component {
       toolbar: new ToolBar(this.target),
       streetview: appConf.streetview_url && new StreetView(this.target),
       measure: appConf.measureTool && new Measure(this.target),
-      tooltip: appConf.tooltip && new Tooltip(this.target)
+      tooltip: appConf.tooltip && new Tooltip(this.target),
+      popup: appConf.featureInfo && new Popup(this.target)
     }
   }
   init() {
