@@ -1,5 +1,8 @@
+import {getConf} from 'Utilities/session'
+
 class Component {
   constructor(target) {
+    this.$conf = getConf()
     // set target and element
     this.target = target
     this.el = null
@@ -20,7 +23,7 @@ class Component {
 
   }
   renderChildrens () {
-    
+
   }
 }
 

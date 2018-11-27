@@ -2,7 +2,6 @@ import Component from 'Geop/Component'
 import LayerManager from 'Components/layer/LayerManager'
 import Search from 'Components/search/Search'
 import $ from 'jquery'
-import {app as appConf} from 'Conf/settings'
 import './Header.styl'
 
 class Header extends Component {
@@ -11,8 +10,8 @@ class Header extends Component {
     this.el = $(`<header id="header" class="panel-bar"></header>`)
     this.create()
     this.components = {
-      lyrmngr: appConf.layerManager && new LayerManager(this.el),
-      search: appConf.searchEnabled && new Search(this.el)
+      lyrmngr: this.$conf.app.layerManager && new LayerManager(this.el),
+      search: this.$conf.app.searchEnabled && new Search(this.el)
     }
   }
   render () {

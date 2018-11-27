@@ -1,4 +1,4 @@
-import {app as appConf} from 'Conf/settings'
+import {apiUrls} from 'Conf/settings'
 import {getState} from 'Utilities/store'
 import {t} from 'Utilities/translate'
 import Component from 'Geop/Component'
@@ -22,7 +22,7 @@ class OSMEdit extends Component {
       e.preventDefault()
       const center = toLonLat(getState('map/view/center'))
       const zoom = getState('map/view/zoom')
-      window.open(appConf.osm_ideditor_url + zoom + '/' + center[1] + '/' + center[0])
+      window.open(apiUrls.osm_ideditor + zoom + '/' + center[1] + '/' + center[0])
     })
   }
 }

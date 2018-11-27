@@ -1,7 +1,5 @@
 import Component from 'Geop/Component'
 import {create, GroupLayer} from 'Components/layer/LayerCreator'
-import {map as mapConf} from 'Conf/settings'
-import {layers as layerConf} from 'Conf/layers'
 import {getState, setState} from 'Utilities/store'
 import Map from 'ol/Map'
 import View from 'ol/View'
@@ -21,7 +19,7 @@ getProjection('EPSG:3301').setExtent([40500, 5993000, 1064500, 7017000])
 class MapEngine extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`<div id="${mapConf.el.slice(1)}"></div>`)
+    this.el = $(`<div id="${this.$conf.map.el.slice(1)}"></div>`)
     this.create()
     this.map = null
     this.layers = {
@@ -45,8 +43,8 @@ class MapEngine extends Component {
     // permalink
     const permalink = this.permalinkToViewConf(
       this.$permalink ? this.$permalink.get('map') : null)
-    this.createBaseLayers(layerConf.baseLayers, permalink.baselayer)
-    this.createLayers(layerConf.layers)
+    this.createBaseLayers(this.$conf.map.layers.baseLayers, permalink.baselayer)
+    this.createLayers(this.$conf.map.layers.layers)
     // set to store
     setState('map/layer/base', this.layers.base.getLayers())
     setState('map/layer/layers', this.layers.layers.getLayers())
@@ -81,10 +79,10 @@ class MapEngine extends Component {
   permalinkToViewConf (permalink) {
     const parts = permalink ? permalink.split('-') : []
     return {
-      center: (parts[1] && parts[0]) ? [parts[1], parts[0]] : mapConf.center,
-      zoom: parts[2] || mapConf.zoom,
-      rotation: parts[3] || mapConf.rotation,
-      baselayer: parts[4] || mapConf.activeBaseLayer
+      center: (parts[1] && parts[0]) ? [parts[1], parts[0]] : this.$conf.map.center,
+      zoom: parts[2] || this.$conf.map.zoom,
+      rotation: parts[3] || this.$conf.map.rotation,
+      baselayer: parts[4] || this.$conf.map.activeBaseLayer
     }
   }
 
@@ -92,15 +90,15 @@ class MapEngine extends Component {
     return new Map({
       layers: Object.keys(this.layers).map(i => this.layers[i]),
       controls: [],
-      target: document.querySelector(mapConf.el),
+      target: document.querySelector(this.$conf.map.el),
       moveTolerance: 2,
       pixelRatio: 2,
       view: new View({
-        projection: mapConf.projection,
-        center: fromLonLat(viewConf.center, mapConf.projection),
+        projection: this.$conf.map.projection,
+        center: fromLonLat(viewConf.center, this.$conf.map.projection),
         zoom: viewConf.zoom,
-        maxZoom: mapConf.maxZoom,
-        minZoom: mapConf.minZoom
+        maxZoom: this.$conf.map.maxZoom,
+        minZoom: this.$conf.map.minZoom
       })
     })
   }

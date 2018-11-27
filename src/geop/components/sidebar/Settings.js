@@ -1,4 +1,3 @@
-import {app as appConf} from 'Conf/settings'
 import {getState, setState} from 'Utilities/store'
 import {enableScreenLock, disableScreenLock, getDebugStore} from 'Utilities/util'
 import {t, getLocale, getLocales, changeLocale} from 'Utilities/translate'
@@ -11,7 +10,7 @@ class Settings extends Component {
     super(target)
     this.id = 'settings-tab'
     this.icon = 'fa fa-cog'
-    this.el = $(`<div class="tab-pane fade ${this.id === appConf.sideBarTab ? 'show active' : ''}" id="${this.id}" role="tabpanel"></div>`)
+    this.el = $(`<div class="tab-pane fade ${this.id === this.$conf.app.sideBarTab ? 'show active' : ''}" id="${this.id}" role="tabpanel"></div>`)
     this.create()
   }
   create () {
@@ -50,7 +49,7 @@ class Settings extends Component {
           value="${getState('app/account') || ''}">
         <small class="form-text text-muted">${t('Enter geopeitus.ee username')}</small>
       </div>
-      ${appConf.debug ? `
+      ${this.$conf.app.debug ? `
         <h5>${t('Debug')}</h5>
         <div>
           <button
@@ -88,7 +87,7 @@ class Settings extends Component {
     this.el.on('click', '#download-log', e => {
       const logs = getDebugStore()
       const blob = new window.Blob([logs.join('\n')], {type: "text/plain;charset=utf-8"})
-      saveAs(blob, appConf.debugFile);
+      saveAs(blob, this.$conf.app.debugFile);
     })
   }
 }

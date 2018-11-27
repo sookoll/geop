@@ -1,4 +1,3 @@
-import {map as mapConf} from 'Conf/settings'
 import {t} from 'Utilities/translate'
 import {getState} from 'Utilities/store'
 import {uid, hexToRgbA} from 'Utilities/util'
@@ -43,7 +42,7 @@ class Search extends Component {
       nominatim: new NominatimProvider()
     }
     this.format = new GeoJSONFormat({
-      featureProjection: mapConf.projection
+      featureProjection: this.$conf.map.projection
     })
     this.create()
   }
@@ -87,7 +86,7 @@ class Search extends Component {
           return id === item.id
         })[0]
         if (item.bbox) {
-          const bbox = transformExtent(item.bbox, 'EPSG:4326', mapConf.projection)
+          const bbox = transformExtent(item.bbox, 'EPSG:4326', this.$conf.map.projection)
           map.getView().fit(bbox, {
             padding: [50, 50, 50, 50],
             maxZoom: 17,
@@ -197,7 +196,7 @@ class Search extends Component {
     })
     this.state.layer.getSource().addFeatures(features)
   }
-
+  
   createLayer () {
     const color = '#000000'
     const conf = {
@@ -223,9 +222,5 @@ class Search extends Component {
     }
     return new FeatureLayer(conf)
   }
-
-
-
 }
-
 export default Search

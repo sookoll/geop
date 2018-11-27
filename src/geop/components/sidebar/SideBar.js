@@ -1,5 +1,3 @@
-import {app as appConf} from 'Conf/settings'
-//import {getState} from 'Utilities/store'
 import {t} from 'Utilities/translate'
 import Component from 'Geop/Component'
 import Info from 'Components/sidebar/Info'
@@ -69,7 +67,7 @@ class Sidebar extends Component {
       const plug = new this.components[i](contentTarget)
       tabTarget.append(`
         <li class="nav-item">
-          <a class="nav-link ${appConf.sideBarTab === plug.id ? 'active' : ''}"
+          <a class="nav-link ${this.$conf.app.sideBarTab === plug.id ? 'active' : ''}"
             data-toggle="pill"
             href="#${plug.id}"
             role="tab"

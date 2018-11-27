@@ -1,4 +1,3 @@
-import {app as appConf} from 'Conf/settings'
 import Component from 'Geop/Component'
 import $ from 'jquery'
 import './Info.styl'
@@ -8,7 +7,13 @@ class Info extends Component {
     super(target)
     this.id = 'info-tab'
     this.icon = 'fa fa-info-circle'
-    this.el = $(`<div class="tab-pane fade ${this.id === appConf.sideBarTab ? 'show active' : ''}" id="${this.id}" role="tabpanel"></div>`)
+    this.el = $(`
+      <div
+        class="tab-pane fade ${this.id === this.$conf.app.sideBarTab ? 'show active' : ''}"
+        id="${this.id}"
+        role="tabpanel">
+      </div>
+    `)
     this.create()
   }
   create () {

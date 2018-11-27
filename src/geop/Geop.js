@@ -1,4 +1,3 @@
-import {app as appConf} from 'Conf/settings'
 import translations from 'Conf/translations'
 import {getState, onchange} from 'Utilities/store'
 import {initLocale} from 'Utilities/translate'
@@ -18,6 +17,7 @@ import './Geop.styl'
 class Geop extends Component {
   constructor (target) {
     super(target)
+    const appConf = this.$conf.app
     // set locale
     initLocale(getState('locale') || appConf.locale, translations, true)
     // listen locale change

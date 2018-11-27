@@ -1,4 +1,4 @@
-import {app as appConf} from 'Conf/settings'
+import {apiUrls} from 'Conf/settings'
 import Provider from 'Geop/Provider'
 import {t} from 'Utilities/translate'
 import $ from 'jquery'
@@ -31,7 +31,7 @@ class Coordinate extends Provider {
     this.xhr = $.ajax({
       type : 'GET',
       crossDomain : true,
-      url : appConf.nominatim_url + '/search/',
+      url : apiUrls.nominatim + '/search/',
       data: {
         q: query,
         countrycodes: 'ee',

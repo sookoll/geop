@@ -1,4 +1,4 @@
-import {app as appConf} from 'Conf/settings'
+import {apiUrls} from 'Conf/settings'
 import {getState} from 'Utilities/store'
 import {t} from 'Utilities/translate'
 import Component from 'Geop/Component'
@@ -14,7 +14,7 @@ class StreetView extends Component {
       content: `<i class="fa fa-street-view"></i> ${t('Street view')}`,
       onClick: (e, coord) => {
         const formatted = toLonLat(coord).reverse().join(',')
-        $('<a>').attr('href', appConf.streetview_url + formatted).attr('target', '_blank')[0].click()
+        $('<a>').attr('href', apiUrls.streetview + formatted).attr('target', '_blank')[0].click()
       }
     })
   }
