@@ -6,6 +6,7 @@ import {t} from 'Utilities/translate'
 import {copy, hexToRgbA, uid} from 'Utilities/util'
 import MousePositionControl from 'ol/control/MousePosition'
 import GeoJSONFormat from 'ol/format/GeoJSON'
+import Overlay from 'ol/Overlay'
 import {format, toStringHDMS} from 'ol/coordinate'
 import mgrs from 'mgrs'
 import {transform} from 'ol/proj'
@@ -18,6 +19,8 @@ class MousePosition extends Component {
     this.el = $(`
       <span id="mouse-position" class="mouse-position float-left"></span>
     `)
+    this.animationEl = $(`
+      <svg width="20" height="20"></svg>`)
     this.coordFormats = [
       {
         projection: 'EPSG:4326',
@@ -55,10 +58,19 @@ class MousePosition extends Component {
       control: null,
       lock: false,
       lastCoord: null,
-      layer: null
+      layer: null,
+      overlay: new Overlay({
+        element: this.animationEl[0],
+        positioning: 'center-center'
+      })
     }
-    this.clickHandler = (e) => {
-      this.clicked(e)
+    this.handlers = {
+      onclick: e => {
+        this.clicked(e)
+      },
+      animate: e => {
+        this.animate(e)
+      }
     }
     this.create()
     // set contextmenu
@@ -142,13 +154,16 @@ class MousePosition extends Component {
     }
   }
   activate (map) {
+    // activate animation
+    map.addOverlay(this.state.overlay)
+    map.on('click', this.handlers.animate)
     if (this.state.lock) {
       map.removeControl(this.state.control)
       this.el.append('<div class="float-left coords"></div>')
-      map.on('click', this.clickHandler)
+      map.on('click', this.handlers.onclick)
     } else {
       this.el.find('.coords').remove()
-      map.un('click', this.clickHandler)
+      map.un('click', this.handlers.onclick)
       map.addControl(this.state.control)
     }
   }
@@ -210,6 +225,15 @@ class MousePosition extends Component {
       }
     }
     return new FeatureLayer(conf)
+  }
+  animate (e) {
+    const coord = e.coordinate
+    this.state.overlay.setPosition(coord)
+    this.animationEl.html(`<circle id="map-click-animation" cx="10" cy="10" r="0" fill="#000" opacity="0.5"/>`)
+    setTimeout(() => {
+      this.state.overlay.setPosition(undefined)
+      this.animationEl.html('')
+    }, 500)
   }
 }
 

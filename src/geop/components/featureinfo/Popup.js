@@ -24,6 +24,7 @@ class Popup extends Component {
       }
     }
     this.create()
+    // store component so it can be disabled outside (by measure)
     setState('components/featureInfo', this)
   }
   render () {
@@ -50,10 +51,10 @@ class Popup extends Component {
     this.enable()
   }
   enable () {
-    this.state.map.on('click', this.handlers.clicked)
+    this.state.map.on('singleclick', this.handlers.clicked)
   }
   disable () {
-    this.state.map.un('click', this.handlers.clicked)
+    this.state.map.un('singleclick', this.handlers.clicked)
   }
   open (e) {
     let coord = e.coordinate

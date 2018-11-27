@@ -18,11 +18,6 @@ export const app = {
   debug: true,// collect all console.logs into downloadable file
   debugFile: 'geop_debug.txt'
 }
-export const geocache = {
-  auth_url: 'http://geopeitus.ee',
-  features_url: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&format=2',
-  cache_url: 'http://geopeitus.ee/aare/'
-}
 export const map = {
   el: '#map',
   center: [25.5, 58.5],
@@ -34,4 +29,9 @@ export const map = {
   minZoom: 0,
   maxZoom: 20,
   clustered: false
+}
+export const geocache = {
+  auth_url: 'http://geopeitus.ee',
+  features_url: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&format=2',
+  cache_url: 'http://geopeitus.ee/aare/'
 }
