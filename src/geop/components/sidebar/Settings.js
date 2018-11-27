@@ -1,4 +1,4 @@
-import {getState, setState} from 'Utilities/store'
+import {getState, setState, clearState} from 'Utilities/store'
 import {enableScreenLock, disableScreenLock, getDebugStore} from 'Utilities/util'
 import {t, getLocale, getLocales, changeLocale} from 'Utilities/translate'
 import Component from 'Geop/Component'
@@ -49,9 +49,18 @@ class Settings extends Component {
           value="${getState('app/account') || ''}">
         <small class="form-text text-muted">${t('Enter geopeitus.ee username')}</small>
       </div>
+      <h5>${t('Reset app')}</h5>
+      <div class="mb-3">
+        <button
+          id="settings-reset"
+          class="btn btn-warning">
+          <i class="fa fa-sync-alt"></i>
+          ${t('Reset')}
+        </a>
+      </div>
       ${this.$conf.app.debug ? `
         <h5>${t('Debug')}</h5>
-        <div>
+        <div class="mb-3">
           <button
             id="download-log"
             class="btn btn-danger">
@@ -67,6 +76,7 @@ class Settings extends Component {
       changeLocale($(e.currentTarget).data('locale'))
       this.el.find('button.set-locale-btn').removeClass('active')
       $(e.currentTarget).addClass('active')
+      window.location.reload()
     })
     // keep awake
     this.el.on('change', '#settings-awake', e => {
@@ -82,6 +92,11 @@ class Settings extends Component {
     // account name
     this.el.on('blur', '#settings-account', e => {
       setState('app/account', e.target.value, true)
+    })
+    // reset app
+    this.el.on('click', '#settings-reset', e => {
+      clearState()
+      window.location.reload()
     })
     // download debug log file
     this.el.on('click', '#download-log', e => {

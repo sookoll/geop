@@ -1,5 +1,4 @@
 import translations from 'Conf/translations'
-import {getState, onchange} from 'Utilities/store'
 import {initLocale} from 'Utilities/translate'
 import {activatePermalink} from 'Utilities/permalink'
 import Component from 'Geop/Component'
@@ -19,11 +18,7 @@ class Geop extends Component {
     super(target)
     const appConf = this.$conf.app
     // set locale
-    initLocale(getState('locale') || appConf.locale, translations, true)
-    // listen locale change
-    onchange('locale', (value) => {
-      window.location.reload()
-    })
+    initLocale(appConf.locale, translations)
 
     if ('onhashchange' in window) {
       activatePermalink()

@@ -1,9 +1,10 @@
 import Component from 'Geop/Component'
 import {create, GroupLayer} from 'Components/layer/LayerCreator'
 import {getState, setState} from 'Utilities/store'
+import {degToRad, radToDeg} from 'Utilities/util'
 import Map from 'ol/Map'
 import View from 'ol/View'
-import {get as getProjection, fromLonLat} from 'ol/proj'
+import {get as getProjection, fromLonLat, toLonLat} from 'ol/proj'
 import {register} from 'ol/proj/proj4'
 import proj4 from 'proj4'
 import $ from 'jquery'
@@ -49,7 +50,7 @@ class MapEngine extends Component {
     setState('map/layer/base', this.layers.base.getLayers())
     setState('map/layer/layers', this.layers.layers.getLayers())
     setState('map/layer/overlays', this.layers.overlays.getLayers())
-    setState('map/layer/active', this.activeBaseLayer)
+    setState('map/baseLayer', this.activeBaseLayer.get('id'), true)
     // que for map
     setState('map/que', [])
   }
@@ -62,10 +63,10 @@ class MapEngine extends Component {
     setState('map', this.map)
     this.map.on('moveend', (e) => {
       const view = e.map.getView()
-      setState('map/view/resolution', view.getResolution())
-      setState('map/view/center', view.getCenter())
-      setState('map/view/zoom', view.getZoom())
-      setState('map/view/rotation', view.getRotation())
+      setState('map/resolution', view.getResolution())
+      setState('map/center', toLonLat(view.getCenter()), true)
+      setState('map/zoom', view.getZoom(), true)
+      setState('map/rotation', radToDeg(view.getRotation()), true)
     })
     // run que
     const que = getState('map/que')
@@ -82,7 +83,7 @@ class MapEngine extends Component {
       center: (parts[1] && parts[0]) ? [parts[1], parts[0]] : this.$conf.map.center,
       zoom: parts[2] || this.$conf.map.zoom,
       rotation: parts[3] || this.$conf.map.rotation,
-      baselayer: parts[4] || this.$conf.map.activeBaseLayer
+      baselayer: parts[4] || this.$conf.map.baseLayer
     }
   }
 
@@ -97,19 +98,20 @@ class MapEngine extends Component {
         projection: this.$conf.map.projection,
         center: fromLonLat(viewConf.center, this.$conf.map.projection),
         zoom: viewConf.zoom,
+        rotation: degToRad(viewConf.rotation),
         maxZoom: this.$conf.map.maxZoom,
         minZoom: this.$conf.map.minZoom
       })
     })
   }
 
-  createBaseLayers (layers, activeBaseLayerName) {
-    Object.keys(layers).forEach(name => {
-      layers[name].visible = (name === activeBaseLayerName)
-      const layer = create(layers[name])
-      layer.set('id', name)
+  createBaseLayers (layers, activeBaseLayerId) {
+    Object.keys(layers).forEach(id => {
+      layers[id].visible = (id === activeBaseLayerId)
+      const layer = create(layers[id])
+      layer.set('id', id)
       this.addBaseLayer(layer)
-      if (layers[name].visible) {
+      if (layers[id].visible) {
         this.activeBaseLayer = layer
       }
     })

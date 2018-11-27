@@ -18,6 +18,7 @@ class Compass extends Component {
     const que = getState('map/que')
     que.push(map => {
       const view = map.getView()
+      this.rotateIcon(view)
       view.on('change:rotation', e => {
         this.rotateIcon(view)
       })

@@ -22,7 +22,7 @@ export const map = {
   rotation: 0,
   extent: [21, 57, 29, 60],
   projection: 'EPSG:3857',
-  activeBaseLayer: 'osm',
+  baseLayer: 'osm',
   minZoom: 0,
   maxZoom: 20,
   clustered: false

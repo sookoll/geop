@@ -8,11 +8,10 @@ export function setState (item, value, permanent = false) {
     state[item] = value
     // local storage
     if (permanent && localStorage) {
-      localStorage.setItem(item, value)
+      localStorage.setItem(item, JSON.stringify(value))
     }
     // events
     if (item in events) {
-      console.log(events[item])
       events[item].forEach(handler => handler(state[item]))
     }
   }
@@ -21,12 +20,16 @@ export function setState (item, value, permanent = false) {
 export function getState (item) {
   let value
   if (localStorage) {
-    value = localStorage.getItem(item)
-    if (value && item in state && state[item] !== value) {
-      state[item] = value
-    } else if (value && !(item in state)) {
-      state[item] = value
+    try {
+      value = JSON.parse(localStorage.getItem(item))
+    } catch (e) {
+      value = localStorage.getItem(item)
     }
+  }
+  if (value && item in state && state[item] !== value) {
+    state[item] = value
+  } else if (value && !(item in state)) {
+    state[item] = value
   }
   return state[item]
 }
@@ -40,6 +43,14 @@ export function onchange (item, listener) {
   }
 }
 
+export function clearState () {
+  //state = {}
+  //events = {}
+  if (localStorage) {
+    localStorage.clear()
+  }
+}
+
 function storageAvailable (type) {
   try {
     const storage = window[type]
@@ -47,8 +58,7 @@ function storageAvailable (type) {
     storage.setItem(x, x)
     storage.removeItem(x)
     return true
-  }
-  catch(e) {
+  } catch (e) {
     const storage = window[type]
     return e instanceof window.DOMException && (
       // everything except Firefox

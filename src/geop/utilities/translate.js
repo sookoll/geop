@@ -10,7 +10,7 @@ export function initLocale (locale, texts) {
     store.texts = texts
     store.locale = locale
   }
-  setState('locale', store.locale, true)
+  setState('app/locale', store.locale, true)
 }
 
 export function changeLocale (locale) {

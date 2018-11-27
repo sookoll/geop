@@ -12,11 +12,16 @@ class LayerManager extends Component {
     super(target)
     this.el = $(`<div class="btn-group float-right" id="layermanager"></div>`)
     this.state = {
-      activeBaseLayer: getState('map/layer/active'),
+      activeBaseLayer: null,
       baseLayers: getState('map/layer/base'),
       layers: getState('map/layer/layers'),
       open: false
     }
+    this.state.baseLayers.forEach(layer => {
+      if (layer.get('id') === getState('map/baseLayer')) {
+        this.state.activeBaseLayer = layer
+      }
+    })
     this.state.layers.on('add', () => this.render())
     this.state.layers.on('remove', () => this.render())
     this.create()
@@ -123,7 +128,7 @@ class LayerManager extends Component {
         layer.setVisible(false)
       }
     })
-    setState('map/layer/active', this.state.activeBaseLayer)
+    setState('map/baseLayer', this.state.activeBaseLayer.get('id'), true)
     this.state.open = true
     this.render()
   }
