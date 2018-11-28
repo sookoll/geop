@@ -69,7 +69,6 @@ export const layers = {
         crossOrigin: null
       }, {
         type: 'XYZ',
-        projection: 'EPSG:3301',
         url: 'https://tiles.maaamet.ee/tm/tms/1.0.0/reljeef@LEST/{z}/{x}/{-y}.png',
         minResolution: 7.1,
         crossOrigin: null,

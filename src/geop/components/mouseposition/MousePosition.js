@@ -17,7 +17,7 @@ class MousePosition extends Component {
   constructor (target) {
     super(target)
     this.el = $(`
-      <span id="mouse-position" class="mouse-position float-left"></span>
+      <span id="mouse-position" class="mouse-position float-left d-none d-sm-block"></span>
     `)
     this.animationEl = $(`
       <svg width="20" height="20"></svg>`)
@@ -156,7 +156,7 @@ class MousePosition extends Component {
   activate (map) {
     // activate animation
     map.addOverlay(this.state.overlay)
-    map.on('click', this.handlers.animate)
+    map.on('singleclick', this.handlers.animate)
     if (this.state.lock) {
       map.removeControl(this.state.control)
       this.el.append('<div class="float-left coords"></div>')
