@@ -162,7 +162,7 @@ class Search extends Component {
           }
         })
         .catch(e => {
-          console.log(e)
+          console.debug(e)
         })
         .finally(() => {
           counter--

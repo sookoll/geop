@@ -39,7 +39,6 @@ class ContextMenu extends Component {
     }
   }
   init (map) {
-    console.log(map)
     map.addOverlay(this.state.overlay)
     map.on('click', e => {
       this.el.popover('dispose')

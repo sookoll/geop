@@ -37,7 +37,6 @@ export function setState (item, value, permanent = false) {
   if (state[item] !== value) {
     state[item] = value
     // local storage
-    console.log(window.indexedDB, storeAvailable, item, value, permanent)
     if (permanent && storeAvailable) {
       set(item, value)
     }
