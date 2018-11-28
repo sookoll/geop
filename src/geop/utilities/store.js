@@ -1,14 +1,19 @@
+import { get, set, del, clear } from 'idb-keyval'
 
 const state = {}
 const events = {}
-const localStorage = storageAvailable('localStorage') ? window.localStorage : false
+let storeAvailable = false;
+(async () => {
+  storeAvailable = await test()
+  console.log('IndexedDB available: ' + storeAvailable)
+})()
 
 export function setState (item, value, permanent = false) {
   if (state[item] !== value) {
     state[item] = value
     // local storage
-    if (permanent && localStorage) {
-      localStorage.setItem(item, JSON.stringify(value))
+    if (permanent && storeAvailable) {
+      set(item, value)
     }
     // events
     if (item in events) {
@@ -17,15 +22,13 @@ export function setState (item, value, permanent = false) {
   }
 }
 
+async function getStorageItem (item) {
+  const result = await get(item)
+  return result
+}
+
 export function getState (item) {
-  let value
-  if (localStorage) {
-    try {
-      value = JSON.parse(localStorage.getItem(item))
-    } catch (e) {
-      value = localStorage.getItem(item)
-    }
-  }
+  const value = getStorageItem(item)
   if (value && item in state && state[item] !== value) {
     state[item] = value
   } else if (value && !(item in state)) {
@@ -44,33 +47,17 @@ export function onchange (item, listener) {
 }
 
 export function clearState () {
-  //state = {}
-  //events = {}
-  if (localStorage) {
-    localStorage.clear()
-  }
+  clear()
 }
 
-function storageAvailable (type) {
+async function test () {
   try {
-    const storage = window[type]
-    const x = '__storage_test__'
-    storage.setItem(x, x)
-    storage.removeItem(x)
-    return true
+    await set('hello', 'world')
+    const result = await get('hello')
+    console.log(result)
+    await del('hello')
+    return result === 'world'
   } catch (e) {
-    const storage = window[type]
-    return e instanceof window.DOMException && (
-      // everything except Firefox
-      e.code === 22 ||
-      // Firefox
-      e.code === 1014 ||
-      // test name field too, because code might not be present
-      // everything except Firefox
-      e.name === 'QuotaExceededError' ||
-      // Firefox
-      e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
-      // acknowledge QuotaExceededError only if there's something already stored
-      storage.length !== 0
-    }
+    return false
   }
+}
