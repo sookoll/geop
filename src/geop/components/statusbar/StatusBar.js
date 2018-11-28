@@ -1,3 +1,4 @@
+import { getState } from 'Utilities/store'
 import Component from 'Geop/Component'
 import SideBar from 'Components/sidebar/SideBar'
 import ScaleLine from 'Components/scaleline/ScaleLine'
@@ -13,9 +14,9 @@ class StatusBar extends Component {
     this.create()
     this.components = {
       sidebar: new SideBar(this.el),
-      fullscreen: this.$conf.app.fullScreen && new FullScreen(this.el),
-      scaleline: this.$conf.app.scaleLine && new ScaleLine(this.el),
-      mouseposition: this.$conf.app.mousePosition && new MousePosition(this.el)
+      fullscreen: getState('app/fullScreen') && new FullScreen(this.el),
+      scaleline: getState('app/scaleLine') && new ScaleLine(this.el),
+      mouseposition: getState('app/mousePosition') && new MousePosition(this.el)
     }
   }
 }

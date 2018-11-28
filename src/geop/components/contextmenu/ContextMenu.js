@@ -11,8 +11,8 @@ class ContextMenu extends Component {
     this.el = $('<div id="contextmenu-map"></div>')
     let items = getState('map/contextmenu')
     if (!items) {
-      setState('map/contextmenu', [])
-      items = getState('map/contextmenu')
+      items = []
+      setState('map/contextmenu', items)
     }
     this.state = {
       overlay: null,
@@ -39,6 +39,7 @@ class ContextMenu extends Component {
     }
   }
   init (map) {
+    console.log(map)
     map.addOverlay(this.state.overlay)
     map.on('click', e => {
       this.el.popover('dispose')

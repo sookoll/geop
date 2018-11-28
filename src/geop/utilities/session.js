@@ -1,20 +1,27 @@
-import {app as appConf, map as mapConf} from 'Conf/settings'
-import {layers as layersConf} from 'Conf/layers'
-import {getState} from './store'
 
-export function getConf () {
-  const appConfig = {}
-  Object.keys(appConf).forEach(async (item) => {
-    appConfig[item] = await getState('app/' + item) || appConf[item]
+import { app as appConf, map as mapConf } from 'Conf/settings'
+import { layers as layersConf } from 'Conf/layers'
+import { initState, clearState } from './store'
+
+/**
+ * Init conf - merge static conf with saved store
+ */
+export function initConf () {
+  return new Promise((resolve, reject) => {
+    const conf = {}
+    Object.keys(appConf).forEach(key => {
+      conf['app/' + key] = appConf[key]
+    })
+    Object.keys(mapConf).forEach(key => {
+      conf['map/' + key] = mapConf[key]
+    })
+    conf['map/layers'] = layersConf
+    initState(conf)
+      .then(resolve)
+      .catch(reject)
   })
-  console.log(Object.keys(appConfig))
-  const mapConfig = {}
-  Object.keys(mapConf).forEach(async (item) => {
-    mapConfig[item] = await getState('map/' + item) || mapConf[item]
-  })
-  mapConfig.layers = Object.assign({}, layersConf)
-  return {
-    app: appConfig,
-    map: mapConfig
-  }
+}
+
+export function clear () {
+  clearState()
 }

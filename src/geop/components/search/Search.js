@@ -1,14 +1,14 @@
-import {t} from 'Utilities/translate'
-import {getState} from 'Utilities/store'
-import {uid, hexToRgbA} from 'Utilities/util'
+import { t } from 'Utilities/translate'
+import { getState } from 'Utilities/store'
+import { uid, hexToRgbA } from 'Utilities/util'
 //import log from 'Utilities/log'
 import Component from 'Geop/Component'
 import CoordinateProvider from './Coordinate'
 import NominatimProvider from './Nominatim'
 import FeatureProvider from  './Feature'
-import {FeatureLayer} from 'Components/layer/LayerCreator'
+import { FeatureLayer } from 'Components/layer/LayerCreator'
 import GeoJSONFormat from 'ol/format/GeoJSON'
-import {fromLonLat, transformExtent} from 'ol/proj'
+import { fromLonLat, transformExtent } from 'ol/proj'
 import $ from 'jquery'
 import './Search.styl'
 
@@ -42,7 +42,7 @@ class Search extends Component {
       nominatim: new NominatimProvider()
     }
     this.format = new GeoJSONFormat({
-      featureProjection: this.$conf.map.projection
+      featureProjection: getState('map/projection')
     })
     this.create()
   }
@@ -86,7 +86,7 @@ class Search extends Component {
           return id === item.id
         })[0]
         if (item.bbox) {
-          const bbox = transformExtent(item.bbox, 'EPSG:4326', this.$conf.map.projection)
+          const bbox = transformExtent(item.bbox, 'EPSG:4326', getState('map/projection'))
           map.getView().fit(bbox, {
             padding: [50, 50, 50, 50],
             maxZoom: 17,
@@ -196,7 +196,7 @@ class Search extends Component {
     })
     this.state.layer.getSource().addFeatures(features)
   }
-  
+
   createLayer () {
     const color = '#000000'
     const conf = {

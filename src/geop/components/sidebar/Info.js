@@ -1,3 +1,4 @@
+import { getState } from 'Utilities/store'
 import Component from 'Geop/Component'
 import $ from 'jquery'
 import './Info.styl'
@@ -9,7 +10,7 @@ class Info extends Component {
     this.icon = 'fa fa-info-circle'
     this.el = $(`
       <div
-        class="tab-pane fade ${this.id === this.$conf.app.sideBarTab ? 'show active' : ''}"
+        class="tab-pane fade ${this.id === getState('app/sideBarTab') ? 'show active' : ''}"
         id="${this.id}"
         role="tabpanel">
       </div>

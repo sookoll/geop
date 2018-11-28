@@ -1,6 +1,8 @@
+import { getState } from 'Utilities/store'
+import { initLocale } from 'Utilities/translate'
+import { activatePermalink } from 'Utilities/permalink'
+import { initDebug } from 'Utilities/util'
 import translations from 'Conf/translations'
-import {initLocale} from 'Utilities/translate'
-import {activatePermalink} from 'Utilities/permalink'
 import Component from 'Geop/Component'
 import MapEngine from 'Components/map/MapEngine'
 import Header from 'Components/header/Header'
@@ -16,9 +18,12 @@ import './Geop.styl'
 class Geop extends Component {
   constructor (target) {
     super(target)
-    const appConf = this.$conf.app
+    // debug
+    if (getState('app/debug')) {
+      initDebug()
+    }
     // set locale
-    initLocale(appConf.locale, translations)
+    initLocale(getState('app/locale'), translations)
 
     if ('onhashchange' in window) {
       activatePermalink()
@@ -29,10 +34,10 @@ class Geop extends Component {
       header: new Header(this.target),
       statusbar: new StatusBar(this.target),
       toolbar: new ToolBar(this.target),
-      streetview: appConf.streetview_url && new StreetView(this.target),
-      measure: appConf.measureTool && new Measure(this.target),
-      tooltip: appConf.tooltip && new Tooltip(this.target),
-      popup: appConf.featureInfo && new Popup(this.target)
+      streetview: getState('app/streetView') && new StreetView(this.target),
+      measure: getState('app/measureTool') && new Measure(this.target),
+      tooltip: getState('app/tooltip') && new Tooltip(this.target),
+      popup: getState('app/featureInfo') && new Popup(this.target)
     }
   }
   init() {

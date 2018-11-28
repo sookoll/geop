@@ -7,6 +7,7 @@ export const app = {
   tooltip: true,
   featureInfo: true,
   scaleLine: true,
+  streetView: true,
   measureTool: true,
   fullScreen: true,
   mousePosition: true,

@@ -1,3 +1,4 @@
+import { getState } from 'Utilities/store'
 import Component from 'Geop/Component'
 import LayerManager from 'Components/layer/LayerManager'
 import Search from 'Components/search/Search'
@@ -10,8 +11,8 @@ class Header extends Component {
     this.el = $(`<header id="header" class="panel-bar"></header>`)
     this.create()
     this.components = {
-      lyrmngr: this.$conf.app.layerManager && new LayerManager(this.el),
-      search: this.$conf.app.searchEnabled && new Search(this.el)
+      lyrmngr: getState('app/layerManager') && new LayerManager(this.el),
+      search: getState('app/searchEnabled') && new Search(this.el)
     }
   }
   render () {

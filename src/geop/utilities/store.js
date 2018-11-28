@@ -1,17 +1,43 @@
-import { get, set, del, clear } from 'idb-keyval'
+import { get, set, keys, clear } from 'idb-keyval'
 
 const state = {}
 const events = {}
-let storeAvailable = false;
-(async () => {
-  storeAvailable = await test()
-  console.log('IndexedDB available: ' + storeAvailable)
-})()
+let storeAvailable = !!window.indexedDB;
+
+export function initState (conf) {
+  return new Promise((resolve, reject) => {
+    if (storeAvailable) {
+      try {
+        keys().then(async (keys) => {
+          const storageConf = {}
+          for (const key of keys) {
+            if (Object.keys(conf).indexOf(key) > -1) {
+              storageConf[key] = await get(key)
+            }
+          }
+          const stateConf = Object.assign(conf, storageConf)
+          Object.keys(stateConf).forEach(key => {
+            state[key] = stateConf[key]
+          })
+          resolve()
+        })
+      } catch (e) {
+        reject(e)
+      }
+    } else {
+      Object.keys(conf).forEach(key => {
+        state[key] = conf[key]
+      })
+      resolve()
+    }
+  })
+}
 
 export function setState (item, value, permanent = false) {
   if (state[item] !== value) {
     state[item] = value
     // local storage
+    console.log(window.indexedDB, storeAvailable, item, value, permanent)
     if (permanent && storeAvailable) {
       set(item, value)
     }
@@ -22,18 +48,7 @@ export function setState (item, value, permanent = false) {
   }
 }
 
-async function getStorageItem (item) {
-  const result = await get(item)
-  return result
-}
-
 export function getState (item) {
-  const value = getStorageItem(item)
-  if (value && item in state && state[item] !== value) {
-    state[item] = value
-  } else if (value && !(item in state)) {
-    state[item] = value
-  }
   return state[item]
 }
 
@@ -48,16 +63,4 @@ export function onchange (item, listener) {
 
 export function clearState () {
   clear()
-}
-
-async function test () {
-  try {
-    await set('hello', 'world')
-    const result = await get('hello')
-    console.log(result)
-    await del('hello')
-    return result === 'world'
-  } catch (e) {
-    return false
-  }
 }

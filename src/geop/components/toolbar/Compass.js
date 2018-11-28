@@ -1,6 +1,6 @@
+import { t } from 'Utilities/translate'
+import { getState } from 'Utilities/store'
 import Component from 'Geop/Component'
-import {t} from 'Utilities/translate'
-import {getState} from 'Utilities/store'
 import $ from 'jquery'
 import './Compass.styl'
 

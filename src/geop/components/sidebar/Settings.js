@@ -10,7 +10,7 @@ class Settings extends Component {
     super(target)
     this.id = 'settings-tab'
     this.icon = 'fa fa-cog'
-    this.el = $(`<div class="tab-pane fade ${this.id === this.$conf.app.sideBarTab ? 'show active' : ''}" id="${this.id}" role="tabpanel"></div>`)
+    this.el = $(`<div class="tab-pane fade ${this.id === getState('app/sideBarTab') ? 'show active' : ''}" id="${this.id}" role="tabpanel"></div>`)
     this.create()
   }
   create () {
@@ -58,7 +58,7 @@ class Settings extends Component {
           ${t('Reset')}
         </a>
       </div>
-      ${this.$conf.app.debug ? `
+      ${getState('app/debug') ? `
         <h5>${t('Debug')}</h5>
         <div class="mb-3">
           <button
@@ -102,7 +102,7 @@ class Settings extends Component {
     this.el.on('click', '#download-log', e => {
       const logs = getDebugStore()
       const blob = new window.Blob([logs.join('\n')], {type: "text/plain;charset=utf-8"})
-      saveAs(blob, this.$conf.app.debugFile);
+      saveAs(blob, getState('app/debugFile'))
     })
   }
 }

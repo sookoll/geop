@@ -1,6 +1,6 @@
+import { getState } from 'Utilities/store'
+import { t } from 'Utilities/translate'
 import Component from 'Geop/Component'
-import {getState} from 'Utilities/store'
-import {t} from 'Utilities/translate'
 import $ from 'jquery'
 
 class Zoom extends Component {
