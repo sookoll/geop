@@ -37,7 +37,6 @@ export function initState (conf) {
 }
 
 export function setState (item, value, permanent = false) {
-  console.log(state[item], value)
   if (state[item] !== value) {
     state[item] = value
     // local storage

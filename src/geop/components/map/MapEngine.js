@@ -47,7 +47,6 @@ class MapEngine extends Component {
     // permalink
     const permalink = this.permalinkToViewConf(
       this.$permalink ? this.$permalink.get('map') : null)
-    console.log(getState('map/layers'))
     this.createBaseLayers(getState('map/layers').baseLayers, permalink.baselayer)
     this.createLayers(getState('map/layers').layers)
     // set to store

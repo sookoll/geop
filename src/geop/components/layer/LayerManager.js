@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import { getState, setState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
+import log from 'Utilities/log'
 import Component from 'Geop/Component'
 import OSMEdit from 'Components/osmedit/OSMEdit'
 import WMSLayer from './WMSLayer'
@@ -44,7 +45,7 @@ class LayerManager extends Component {
     super.create()
     // events
     if (this.target && this.el) {
-      this.el.on('click', 'a.baselayer', e => {
+      this.el.on('click', '.baselayer', e => {
         e.preventDefault()
         e.stopPropagation()
         const id = $(e.currentTarget).data('id')
@@ -54,15 +55,20 @@ class LayerManager extends Component {
           this.changeBaseLayer(id)
         }
       })
-      this.el.on('click', 'a.layers', e => {
+      this.el.on('click', '.layer', e => {
         e.preventDefault()
         e.stopPropagation()
         this.toggleLayer(this.state.layers, $(e.currentTarget).data('id'))
       })
-      this.el.on('click', 'a.remove-layer', e => {
+      this.el.on('click', '.layer a.fit-layer', e => {
         e.preventDefault()
         e.stopPropagation()
-        this.removeLayer($(e.currentTarget).data('id'))
+        this.fitTo($(e.currentTarget).closest('.layer').data('id'))
+      })
+      this.el.on('click', '.layer a.remove-layer', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        this.removeLayer($(e.currentTarget).closest('.layer').data('id'))
       })
     }
   }
@@ -83,12 +89,11 @@ class LayerManager extends Component {
         ${this.state.baseLayers.getLength() > 0 ?
           this.state.baseLayers.getArray().map(layer => {
             return `
-              <li>
-                <a href="#" class="baselayer dropdown-item ${this.layerVisible(layer) ? '' : 'disabled'}"
-                  data-id="${layer.get('id')}">
-                  <i class="far ${layer.getVisible() ? 'fa-dot-circle' : 'fa-circle'}"></i>
-                  ${t(layer.get('title'))}
-                </a>
+              <li
+                class="dropdown-item baselayer ${this.layerVisible(layer) ? '' : 'disabled'}"
+                data-id="${layer.get('id')}">
+                <i class="far ${layer.getVisible() ? 'fa-dot-circle' : 'fa-circle'}"></i>
+                ${t(layer.get('title'))}
               </li>`
         }).join('') :
         `<li class="dropdown-item disabled">${t('No baselyers added')}</li>`}
@@ -96,15 +101,19 @@ class LayerManager extends Component {
           `<li class="dropdown-divider"></li>` +
           this.state.layers.getArray().map(layer => {
             return `
-              <li>
-                <a href="#" class="layers dropdown-item ${this.layerVisible(layer) ? '' : 'disabled'}"
-                  data-id="${layer.get('id')}">
-                  <i class="far ${layer.getVisible() ? 'fa-check-square' : 'fa-square'}"></i>
-                  ${t(layer.get('title'))}
-                </a>
-                <a href="#" class="remove-layer" data-id="${layer.get('id')}">
-                  <i class="fa fa-times"></i>
-                </a>
+              <li
+                class="dropdown-item layer ${this.layerVisible(layer) ? '' : 'disabled'}"
+                data-id="${layer.get('id')}">
+                <i class="far ${layer.getVisible() ? 'fa-check-square' : 'fa-square'}"></i>
+                ${t(layer.get('title'))}
+                <div class="layer-tools">
+                  <a href="#" class="fit-layer">
+                    <i class="fa fa-search-plus"></i>
+                  </a>
+                  <a href="#" class="remove-layer">
+                    <i class="fa fa-times"></i>
+                  </a>
+                </div>
               </li>`
             }).join('') : ''}
       </ul>`)
@@ -151,7 +160,6 @@ class LayerManager extends Component {
   }
 
   removeLayer (id) {
-    console.log(id, this.state.layers.getArray())
     this.state.layers.forEach(layer => {
       if (layer && layer.get('id') === id) {
         this.state.open = true
@@ -159,6 +167,26 @@ class LayerManager extends Component {
         return
       }
     })
+  }
+
+  fitTo (id) {
+    for (let layer of this.state.layers.getArray()) {
+      if (layer && layer.get('id') === id) {
+        this.state.open = true
+        const bbox = layer.getSource().getExtent ?
+          layer.getSource().getExtent() : layer.getExtent()
+        if (bbox) {
+          getState('map').getView().fit(bbox, {
+            padding: [50, 50, 50, 50],
+            maxZoom: 17,
+            duration: 500
+          })
+        } else {
+          log('error', `${t('Unable to find layer extent')}`)
+        }
+        break
+      }
+    }
   }
 
   renderChildrens (target) {
