@@ -174,17 +174,17 @@ class Measure extends Component {
     if (this.state.measureType === 'circle') {
       html += `
         <div class="form-inline">
-          <label for="angle">${t('Nurk')}: </label>
+          <label for="angle">${t('Angle')}: </label>
           <input type="text" name="angle" class="form-control input-sm" readonly> &deg;
         </div>
         <div class="form-inline">
-          <label for="radius">${t('Raadius')}: </label>
+          <label for="radius">${t('Radius')}: </label>
           <input type="text" name="radius" class="form-control input-sm" readonly> m
         </div>`
     } else {
       html += `
-        Vahemaa: lõpeta joone viimases punktis<br>
-        Pindala: lõpeta joone alguses`
+        ${t('Length')}: ${t('to finish, click on end')}<br>
+        ${t('Area')}: ${t('to finish, click on beginning')}`
     }
     this.el.find('div').html(html)
     $('body').append(this.el)
@@ -210,14 +210,14 @@ class Measure extends Component {
       this.updateCircleResults()
     } else {
       const len = formatLength(this.state.drawing.getGeometry())
-      let html = `${t('Vahemaa')}: ${len}`
+      let html = `${t('Length')}: ${len}`
       const coords = this.state.drawing.getGeometry().getCoordinates()
       // if closed, calculate area
       if (coords[0][0] === coords[coords.length - 1][0] && coords[0][1] === coords[coords.length - 1][1]) {
         const area = formatArea(new Polygon([coords]))
-        html += `<br>${t('Pindala')}: ${area}`
+        html += `<br>${t('Area')}: ${area}`
       } else {
-        html += `<br>${t('Pindala')}: ${('lõpeta joone alguses')}`
+        html += `<br>${t('Area')}: ${t('to finish, click on beginning')}`
       }
       this.el.find('div').html(html)
     }
@@ -324,8 +324,8 @@ class Measure extends Component {
       arr.push(coord2)
       this.state.measureLine.setCoordinates(arr)
       this.el.find('div').html(`
-        Vahemaa: ${formatLength(this.state.measureLine)}<br>
-        Pindala: lõpeta joone alguses
+        ${t('Length')}: ${formatLength(this.state.measureLine)}<br>
+        ${t('Area')}: ${t('to finish, click on beginning')}
       `)
     }
   }

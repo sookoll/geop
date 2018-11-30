@@ -6,6 +6,7 @@
   "scripts": {
     "build": "webpack --mode development",
     "build:prod": "webpack --mode production",
+    "build:translations": "python3 scripts/translations.py",
     "start": "webpack-dev-server --mode development --inline --hot --open",
     "start:prod": "python3 -m http.server 3000 --directory dist/",
     "deploy": "npm run build:prod && ./scripts/deploy.sh"
@@ -36,8 +37,10 @@
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
     "file-loader": "^2.0.0",
+    "find": "^0.2.9",
     "html-webpack-plugin": "^3.2.0",
     "mini-css-extract-plugin": "^0.4.4",
+    "q": "^1.5.1",
     "style-loader": "^0.23.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
