@@ -1,9 +1,9 @@
-import {t} from 'Utilities/translate'
-import {uid, randomColor, hexToRgbA} from 'Utilities/util'
-import {getState} from 'Utilities/store'
+import { t } from 'Utilities/translate'
+import { uid, randomColor, hexToRgbA } from 'Utilities/util'
+import { getState } from 'Utilities/store'
 import log from 'Utilities/log'
 import Component from 'Geop/Component'
-import {FeatureLayer} from './LayerCreator'
+import { createLayer, dataProjection } from './LayerCreator'
 import GPXFormat from 'ol/format/GPX'
 import GeoJSONFormat from 'ol/format/GeoJSON'
 import KMLFormat from 'ol/format/KML'
@@ -55,16 +55,13 @@ class FileLayer extends Component {
           const reader = new window.FileReader()
           reader.onload = (e) => {
             const parser = this.fileTypes[ext]
-            const features = parser.readFeatures(e.target.result, {
-              dataProjection:'EPSG:4326',
-              featureProjection:'EPSG:3857'
-            })
-            const layer = this.createLayer(filename, {
-              features: features,
-              projection: 'EPSG:3857'
-            })
+            const features = parser.readFeatures(e.target.result)
+            const conf = this.fileTypes.geojson.writeFeaturesObject(features)
+            conf.title = filename
+            const layer = this.createLayer(conf)
             if (layer) {
               this.state.layers.push(layer)
+              log('success', `${t('Added')} ${conf.features.length} ${t('features')}`)
             }
           }
           reader.readAsText(files[0])
@@ -74,12 +71,52 @@ class FileLayer extends Component {
       }
     })
   }
-
-  createLayer (filename, conf) {
+  addDragNDrop () {
+    // add only once to map
+    const map = getState('map')
+    let added = false
+    if (map) {
+      const interactions = map.getInteractions()
+      interactions.forEach(i => {
+        if (i instanceof DragAndDrop) {
+          added = true
+          return
+        }
+      })
+    }
+    if (!added) {
+      const dragAndDropInteraction = new DragAndDrop({
+        projection: dataProjection,
+        formatConstructors: [
+          GPXFormat,
+          GeoJSONFormat,
+          KMLFormat
+        ]
+      })
+      dragAndDropInteraction.on('addfeatures', e => {
+        console.log()
+        const conf = this.fileTypes.geojson.writeFeaturesObject(e.features)
+        conf.title = e.file.name
+        const layer = this.createLayer(conf)
+        if (layer) {
+          this.state.layers.push(layer)
+          log('success', `${t('Added')} ${conf.features.length} ${t('features')}`)
+        }
+      })
+      if (map) {
+        map.addInteraction(dragAndDropInteraction)
+      } else {
+        const que = getState('map/que')
+        que.push(map => {
+          map.addInteraction(dragAndDropInteraction)
+        })
+      }
+    }
+  }
+  createLayer (conf) {
     if (conf.features.length > 0) {
       const color = randomColor()
       conf.id = uid()
-      conf.title = filename
       conf.style = {
         stroke: {
           color: color,
@@ -97,50 +134,13 @@ class FileLayer extends Component {
           }
         }
       }
-      return new FeatureLayer(conf)
+      try {
+        return createLayer(conf)
+      } catch (e) {
+        log('error', t('Error creating layer') + e)
+      }
     } else {
       log('error', t('Empty file'))
-    }
-  }
-
-  addDragNDrop () {
-    // add only once to map
-    const map = getState('map')
-    let added = false
-    if (map) {
-      const interactions = map.getInteractions()
-      interactions.forEach(i => {
-        if (i instanceof DragAndDrop) {
-          added = true
-          return
-        }
-      })
-    }
-    if (!added) {
-      const dragAndDropInteraction = new DragAndDrop({
-        formatConstructors: [
-          GPXFormat,
-          GeoJSONFormat,
-          KMLFormat
-        ]
-      })
-      dragAndDropInteraction.on('addfeatures', e => {
-        const layer = this.createLayer(e.file.name, {
-          features: e.features,
-          projection: e.projection
-        })
-        if (layer) {
-          this.state.layers.push(layer)
-        }
-      })
-      if (map) {
-        map.addInteraction(dragAndDropInteraction)
-      } else {
-        const que = getState('map/que')
-        que.push(map => {
-          map.addInteraction(dragAndDropInteraction)
-        })
-      }
     }
   }
 }

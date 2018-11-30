@@ -1,16 +1,16 @@
-import {getState} from 'Utilities/store'
-import {t} from 'Utilities/translate'
-import {uid, degToRad, radToDeg, formatLength, formatArea} from 'Utilities/util'
-import {FeatureLayer} from 'Components/layer/LayerCreator'
+import { getState } from 'Utilities/store'
+import { t } from 'Utilities/translate'
+import { uid, degToRad, radToDeg, formatLength, formatArea } from 'Utilities/util'
+import { createLayer } from 'Components/layer/LayerCreator'
 import Component from 'Geop/Component'
 import StyleBuilder from 'Components/layer/StyleBuilder'
 import Feature from 'ol/Feature'
-import {MultiPoint, LineString, Polygon, Circle} from 'ol/geom'
-import {Modify, DoubleClickZoom, Snap} from 'ol/interaction'
+import { MultiPoint, LineString, Polygon, Circle } from 'ol/geom'
+import { Modify, DoubleClickZoom, Snap } from 'ol/interaction'
 import Collection from 'ol/Collection'
-import {toLonLat, fromLonLat} from 'ol/proj'
-import {never, always, doubleClick} from 'ol/events/condition'
-import {getLength} from 'ol/sphere'
+import { toLonLat, fromLonLat } from 'ol/proj'
+import { never, always, doubleClick } from 'ol/events/condition'
+import { getLength } from 'ol/sphere'
 import $ from 'jquery'
 import './Measure.styl'
 
@@ -131,6 +131,7 @@ class Measure extends Component {
   }
   createLayer () {
     const conf = {
+      type: 'FeatureCollection',
       id: uid(),
       title: 'Measure',
       style: [
@@ -163,7 +164,7 @@ class Measure extends Component {
         }
       ]
     }
-    return new FeatureLayer(conf)
+    return createLayer(conf)
   }
   render () {
     if (this.el) {
@@ -388,12 +389,12 @@ class Measure extends Component {
   getAllFeatures () {
     let fset = []
     getState('map/layer/layers').forEach(layer => {
-      if (layer instanceof FeatureLayer) {
+      if (layer.get('conf').type === 'FeatureCollection') {
         fset = fset.concat(layer.getSource().getFeatures())
       }
     })
     getState('map/layer/overlays').forEach(layer => {
-      if (layer instanceof FeatureLayer && layer.get('title') !== 'Measure') {
+      if (layer.get('conf').type === 'FeatureCollection' && layer.get('title') !== 'Measure') {
         fset = fset.concat(layer.getSource().getFeatures())
       }
     })

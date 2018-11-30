@@ -1,6 +1,6 @@
 import $ from 'jquery'
-import {getState, setState} from 'Utilities/store'
-import {t} from 'Utilities/translate'
+import { getState, setState } from 'Utilities/store'
+import { t } from 'Utilities/translate'
 import Component from 'Geop/Component'
 import OSMEdit from 'Components/osmedit/OSMEdit'
 import WMSLayer from './WMSLayer'
@@ -17,13 +17,19 @@ class LayerManager extends Component {
       layers: getState('map/layer/layers'),
       open: false
     }
+    this.handlers = {
+      onchange: () => {
+        this.render()
+        this.store()
+      }
+    }
     this.state.baseLayers.forEach(layer => {
       if (layer.get('id') === getState('map/baseLayer')) {
         this.state.activeBaseLayer = layer
       }
     })
-    this.state.layers.on('add', () => this.render())
-    this.state.layers.on('remove', () => this.render())
+    this.state.layers.on('add', this.handlers.onchange)
+    this.state.layers.on('remove', this.handlers.onchange)
     this.create()
     // do not init here
     this.components = {
@@ -145,8 +151,9 @@ class LayerManager extends Component {
   }
 
   removeLayer (id) {
+    console.log(id, this.state.layers.getArray())
     this.state.layers.forEach(layer => {
-      if (layer.get('id') === id) {
+      if (layer && layer.get('id') === id) {
         this.state.open = true
         this.state.layers.remove(layer)
         return
@@ -164,6 +171,14 @@ class LayerManager extends Component {
       }
       plug.create()
     })
+  }
+
+  store () {
+    const layerConfs = Object.assign({}, getState('map/layers'))
+    layerConfs.layers = this.state.layers.getArray().map(layer => {
+      return layer.get('conf')
+    })
+    setState('map/layers', layerConfs, true)
   }
 
 }

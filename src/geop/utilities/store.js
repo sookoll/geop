@@ -12,7 +12,10 @@ export function initState (conf) {
           const storageConf = {}
           for (const key of keys) {
             if (Object.keys(conf).indexOf(key) > -1) {
-              storageConf[key] = await get(key)
+              const val = await get(key)
+              if (typeof(val) !== 'undefined' && val !== null) {
+                storageConf[key] = val
+              }
             }
           }
           const stateConf = Object.assign(conf, storageConf)
@@ -34,15 +37,22 @@ export function initState (conf) {
 }
 
 export function setState (item, value, permanent = false) {
+  console.log(state[item], value)
   if (state[item] !== value) {
     state[item] = value
     // local storage
     if (permanent && storeAvailable) {
-      set(item, value)
-    }
-    // events
-    if (item in events) {
-      events[item].forEach(handler => handler(state[item]))
+      set(item, value).then(() => {
+        // events
+        if (item in events) {
+          events[item].forEach(handler => handler(state[item]))
+        }
+      })
+    } else {
+      // events
+      if (item in events) {
+        events[item].forEach(handler => handler(state[item]))
+      }
     }
   }
 }

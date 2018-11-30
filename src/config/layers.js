@@ -1,7 +1,7 @@
 export const layers = {
   baseLayers: {
     osm: {
-      type: 'OSM',
+      type: 'XYZ',
       title: 'OSM',
       url: 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       projection: 'EPSG:3857',
@@ -95,5 +95,5 @@ export const layers = {
       }]
     }
   },
-  layers: {}
+  layers: []
 }

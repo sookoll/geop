@@ -1,5 +1,5 @@
 import Component from 'Geop/Component'
-import { create, GroupLayer } from 'Components/layer/LayerCreator'
+import { createLayer } from 'Components/layer/LayerCreator'
 import { getState, setState } from 'Utilities/store'
 import { degToRad, radToDeg } from 'Utilities/util'
 import Map from 'ol/Map'
@@ -24,13 +24,16 @@ class MapEngine extends Component {
     this.create()
     this.map = null
     this.layers = {
-      base: new GroupLayer({
+      base: createLayer({
+        type: 'Group',
         layers: []
       }),
-      layers: new GroupLayer({
+      layers: createLayer({
+        type: 'Group',
         layers: []
       }),
-      overlays: new GroupLayer({
+      overlays: createLayer({
+        type: 'Group',
         layers: []
       })
     }
@@ -44,6 +47,7 @@ class MapEngine extends Component {
     // permalink
     const permalink = this.permalinkToViewConf(
       this.$permalink ? this.$permalink.get('map') : null)
+    console.log(getState('map/layers'))
     this.createBaseLayers(getState('map/layers').baseLayers, permalink.baselayer)
     this.createLayers(getState('map/layers').layers)
     // set to store
@@ -108,8 +112,8 @@ class MapEngine extends Component {
   createBaseLayers (layers, activeBaseLayerId) {
     Object.keys(layers).forEach(id => {
       layers[id].visible = (id === activeBaseLayerId)
-      const layer = create(layers[id])
-      layer.set('id', id)
+      layers[id].id = id
+      const layer = createLayer(layers[id])
       this.addBaseLayer(layer)
       if (layers[id].visible) {
         this.activeBaseLayer = layer
@@ -118,10 +122,8 @@ class MapEngine extends Component {
   }
 
   createLayers (layers) {
-    Object.keys(layers).forEach(name => {
-      const layer = create(layers[name])
-      layer.set('id', name)
-      this.addLayer(layer)
+    layers.forEach(layer => {
+      this.addLayer(createLayer(layer))
     })
   }
 

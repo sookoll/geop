@@ -146,7 +146,7 @@ export function validURL (href) {
 
 export function constructURL (parsedURL) {
   const querystring = Object.keys(parsedURL.query).map(item => {
-    return item + '=' + parsedURL.query
+    return item + '=' + parsedURL.query[item]
   }).join('&')
   return parsedURL.protocol + '//' + parsedURL.host + parsedURL.pathname + '?' + querystring;
 }

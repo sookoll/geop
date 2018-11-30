@@ -1,9 +1,9 @@
-import {t} from 'Utilities/translate'
-import {validURL, parseURL, constructURL, uid} from 'Utilities/util'
-import {getState} from 'Utilities/store'
+import { t } from 'Utilities/translate'
+import { validURL, parseURL, constructURL, uid } from 'Utilities/util'
+import { getState } from 'Utilities/store'
 import log from 'Utilities/log'
 import Component from 'Geop/Component'
-import {TileLayer} from './LayerCreator'
+import { createLayer } from './LayerCreator'
 import $ from 'jquery'
 
 class WMSLayer extends Component {
@@ -116,7 +116,7 @@ class WMSLayer extends Component {
       conf.url = constructURL(urlComponents)
       conf.id = uid()
       conf.title = urlComponents.query.title || conf.params.LAYERS
-      return new TileLayer(conf)
+      return createLayer(conf)
     } else {
       log('error', t('URL is not valid WMS resource!'))
     }

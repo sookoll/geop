@@ -1,15 +1,15 @@
 import Component from 'Geop/Component'
-import {FeatureLayer} from 'Components/layer/LayerCreator'
-import {getState} from 'Utilities/store'
+import { createLayer } from 'Components/layer/LayerCreator'
+import { getState } from 'Utilities/store'
 import log from 'Utilities/log'
-import {t} from 'Utilities/translate'
-import {copy, hexToRgbA, uid} from 'Utilities/util'
+import { t } from 'Utilities/translate'
+import { copy, hexToRgbA, uid } from 'Utilities/util'
 import MousePositionControl from 'ol/control/MousePosition'
 import GeoJSONFormat from 'ol/format/GeoJSON'
 import Overlay from 'ol/Overlay'
-import {format, toStringHDMS} from 'ol/coordinate'
+import { format, toStringHDMS } from 'ol/coordinate'
 import mgrs from 'mgrs'
-import {transform} from 'ol/proj'
+import { transform } from 'ol/proj'
 import $ from 'jquery'
 import './MousePosition.styl'
 
@@ -204,6 +204,7 @@ class MousePosition extends Component {
   createLayer () {
     const color = '#000000'
     const conf = {
+      type: 'FeatureCollection',
       id: uid(),
       title: 'MousePosition',
       style: {
@@ -224,7 +225,7 @@ class MousePosition extends Component {
         }
       }
     }
-    return new FeatureLayer(conf)
+    return createLayer(conf)
   }
   animate (e) {
     const coord = e.coordinate

@@ -1,4 +1,4 @@
-import {setState} from 'Utilities/store'
+import { setState } from 'Utilities/store'
 
 const store = {
   locale: null,

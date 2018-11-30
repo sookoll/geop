@@ -6,7 +6,7 @@ import Component from 'Geop/Component'
 import CoordinateProvider from './Coordinate'
 import NominatimProvider from './Nominatim'
 import FeatureProvider from  './Feature'
-import { FeatureLayer } from 'Components/layer/LayerCreator'
+import { createLayer } from 'Components/layer/LayerCreator'
 import GeoJSONFormat from 'ol/format/GeoJSON'
 import { fromLonLat, transformExtent } from 'ol/proj'
 import $ from 'jquery'
@@ -200,6 +200,7 @@ class Search extends Component {
   createLayer () {
     const color = '#000000'
     const conf = {
+      type: 'FeatureCollection',
       id: uid(),
       title: 'Search',
       style: {
@@ -220,7 +221,7 @@ class Search extends Component {
         }
       }
     }
-    return new FeatureLayer(conf)
+    return createLayer(conf)
   }
 }
 export default Search
