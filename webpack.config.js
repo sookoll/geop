@@ -96,7 +96,9 @@ module.exports = {
       // and not allow any straggling "old" SWs to hang around
       swDest: 'sw.js',
       clientsClaim: true,
-      skipWaiting: true
+      skipWaiting: true,
+      globDirectory: path.join(__dirname, 'dist'),
+      globPatterns: ['**/*.{html,js,css}'],
     })
   ],
   devServer: {

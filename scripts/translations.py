@@ -4,7 +4,7 @@ import re
 
 translationsFile = 'src/config/translations.json'
 searchPattern = 'src/**/*.js'
-regx = "(\${| )t\('([^')}]+)'\)}?"
+regx = "(\${|\s|\()t\('([^')}]+)'\)}?"
 defaultLang = 'en'
 
 def getFileMatches(pattern):
@@ -50,7 +50,6 @@ currentTranslationKeys = getCurrentTranslationKeys(currentTranslations)
 print('Read current translations strings.')
 # try to find from files (not search these with variables!!)
 filesMatches = getFileMatches(searchPattern)
-print(filesMatches)
 translationKeys = getUniqueMatches(filesMatches)
 print('Search translation strings from source code.')
 # get unique list of all translation keys

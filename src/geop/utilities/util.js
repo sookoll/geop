@@ -5,9 +5,9 @@ const noSleep = new NoSleep()
 const debugStore = []
 
 export function initServiceWorker () {
-  if ('serviceWorker' in navigator) {
+  /*if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').then(registration => {
+      navigator.serviceWorker.register('/sw.js').then(registration => {
         console.log('SW registered')
       }).catch(registrationError => {
         console.log('SW registration failed: ', registrationError)
@@ -15,7 +15,33 @@ export function initServiceWorker () {
     })
   } else {
     console.log('Service Worker is not supported by browser.')
+  }*/
+  // Check for Service Worker browser support
+  if ('serviceWorker' in navigator === false) {
+    console.log('Service worker is not supported');
+    return false;
   }
+  // Logic to load our produced `sw.js`
+  navigator.serviceWorker.register('/sw.js')
+    .then(function(registration) {
+      registration.onupdatefound = function() {
+        if (navigator.serviceWorker.controller) {
+          var installingWorker = registration.installing;
+          installingWorker.onstatechange = function() {
+            switch (installingWorker.state) {
+              case 'installed':
+                break;
+              case 'redundant':
+                throw new Error('The installing service worker became redundant.');
+              default:
+                // Ignore
+            }
+          };
+        }
+      };
+    }).catch(function(e) {
+      console.error('Error during service worker registration:', e);
+    });
 }
 
 export function copy (str) {
