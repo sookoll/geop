@@ -65,6 +65,9 @@ module.exports = {
     },
     extensions: ['*', '.js', '.json']
   },
+  devServer: {
+    port: 3000
+  },
   plugins: [
     new CleanWebpackPlugin(path.join(__dirname, 'dist'), {} ),
     new MiniCssExtractPlugin({
@@ -96,12 +99,7 @@ module.exports = {
       // and not allow any straggling "old" SWs to hang around
       swDest: 'sw.js',
       clientsClaim: true,
-      skipWaiting: true,
-      globDirectory: path.join(__dirname, 'dist'),
-      globPatterns: ['**/*.{html,js,css}'],
+      skipWaiting: true
     })
-  ],
-  devServer: {
-    port: 3000
-  }
+  ]
 }

@@ -1,4 +1,5 @@
 import NoSleep from 'nosleep.js'
+import randomColor from 'randomcolor'
 import {getLength, getArea} from 'ol/sphere'
 
 const noSleep = new NoSleep()
@@ -22,7 +23,7 @@ export function initServiceWorker () {
     return false;
   }
   // Logic to load our produced `sw.js`
-  navigator.serviceWorker.register('/sw.js')
+  navigator.serviceWorker.register('sw.js')
     .then(function(registration) {
       registration.onupdatefound = function() {
         if (navigator.serviceWorker.controller) {
@@ -181,13 +182,8 @@ export function uid () {
   return Math.random().toString(36).substr(2, 10)
 }
 
-export function randomColor() {
-  const letters = '0123456789ABCDEF'
-  let color = '#'
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)]
-  }
-  return color
+export function getRandomColor (conf) {
+  return randomColor(conf)
 }
 
 export function hexToRgbA (hex, a) {

@@ -3,7 +3,7 @@ import { t } from 'Utilities/translate'
 import { uid, degToRad, radToDeg, formatLength, formatArea } from 'Utilities/util'
 import { createLayer } from 'Components/layer/LayerCreator'
 import Component from 'Geop/Component'
-import StyleBuilder from 'Components/layer/StyleBuilder'
+import { createStyle } from 'Components/layer/StyleBuilder'
 import Feature from 'ol/Feature'
 import { MultiPoint, LineString, Polygon, Circle } from 'ol/geom'
 import { Modify, DoubleClickZoom, Snap } from 'ol/interaction'
@@ -13,8 +13,6 @@ import { never, always, doubleClick } from 'ol/events/condition'
 import { getLength } from 'ol/sphere'
 import $ from 'jquery'
 import './Measure.styl'
-
-const styleBuilder = new StyleBuilder()
 
 class Measure extends Component {
   constructor (target) {
@@ -58,7 +56,7 @@ class Measure extends Component {
         deleteCondition: e => {
           return doubleClick(e)
         },
-        style: styleBuilder.create({
+        style: createStyle({
           image: {
             radius: 5,
             stroke: {

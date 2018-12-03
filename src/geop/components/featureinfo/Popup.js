@@ -120,11 +120,13 @@ class Popup extends Component {
       //var geotrip = t._app.geocache.get('geotrip');
       return {
         definition: {
+          container: this.el[0],
           placement: 'top',
           animation: false,
           html: true,
           title: title,
           content: content.join('<br>'),
+          trigger: 'manual',
           template: `
             <div class="popup popover">
               <div class="arrow"></div>
@@ -133,6 +135,9 @@ class Popup extends Component {
             </div>`
         },
         'onShow': (f, pop) => {
+          $(pop).on('contextmenu', e => {
+            e.stopPropagation()
+          })
           $(pop).on('click', '.remove-marker', e => {
             e.preventDefault()
             if (f[0]) {

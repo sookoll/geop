@@ -67,6 +67,7 @@
     "ol-contextmenu": "^3.3.0",
     "popper.js": "^1.14.4",
     "proj4": "^2.5.0",
+    "randomcolor": "^0.5.3",
     "sortablejs": "^1.7.0"
   }
 }

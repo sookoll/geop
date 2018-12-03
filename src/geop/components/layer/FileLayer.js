@@ -1,5 +1,5 @@
 import { t } from 'Utilities/translate'
-import { uid, randomColor, hexToRgbA } from 'Utilities/util'
+import { uid, getRandomColor, hexToRgbA } from 'Utilities/util'
 import { getState } from 'Utilities/store'
 import log from 'Utilities/log'
 import Component from 'Geop/Component'
@@ -115,7 +115,9 @@ class FileLayer extends Component {
   }
   createLayer (conf) {
     if (conf.features.length > 0) {
-      const color = randomColor()
+      const color = getRandomColor({
+        luminosity: 'dark'
+      })
       conf.id = uid()
       conf.style = {
         stroke: {

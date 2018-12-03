@@ -7,6 +7,13 @@ export const layers = {
       projection: 'EPSG:3857',
       crossOrigin: null
     },
+    okaart: {
+      type: 'XYZ',
+      title: 'O-kaart',
+      url: 'https://okaart.osport.ee/{z}/{x}/{y}.png',
+      projection: 'EPSG:3857',
+      crossOrigin: null
+    },
     ma_orto : {
       type: 'Group',
       title: 'Satellite',

@@ -10,7 +10,7 @@ import GeoJSONFormat from 'ol/format/GeoJSON'
 import { get as getProjection } from 'ol/proj'
 import { getWidth } from 'ol/extent'
 import TileGrid from 'ol/tilegrid/TileGrid'
-import StyleBuilder from './StyleBuilder'
+import { createStyle } from './StyleBuilder'
 import range from 'lodash/range'
 import { getState } from 'Utilities/store'
 import { map as mapConf } from 'Conf/settings'
@@ -24,8 +24,6 @@ const sources = {
   ImageWMS,
   Vector
 }
-
-const styleBuilder = new StyleBuilder()
 
 class GroupLayer extends LayerGroup {}
 class ImageLayer extends LayerImage {
@@ -69,7 +67,7 @@ class FeatureLayer extends LayerVector {
       source: new Vector({
         features
       }),
-      style: styleBuilder.create(opts.style)
+      style: createStyle(opts.style)
     }
     super(options)
   }
