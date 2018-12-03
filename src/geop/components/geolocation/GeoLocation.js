@@ -57,9 +57,6 @@ class GeoLocation extends Component {
       },
       disableTracking: (e) => {
         this.disableTracking()
-      },
-      updateView: (e) => {
-        this.updateView()
       }
     }
     if (this.test()) {
@@ -115,16 +112,21 @@ class GeoLocation extends Component {
     } else if (this.state.status[this.state.active] === 'tracking') {
       view.un('change:rotation', this.handlers.rotate)
       this.rotateMarker(0)
+      const coords = this.state.track.getCoordinates()
+      if (coords.length) {
+        this.updateView(
+          [coords[coords.length - 1][0], coords[coords.length - 1][1]],
+          coords[coords.length - 1][2]
+        )
+      }
       map.on('pointerdrag', this.handlers.disableTracking)
-      map.on('postcompose', this.handlers.updateView)
-      map.render()
     }
   }
   disable () {
     const map = getState('map')
     this.state.locator.setTracking(false)
     this.state.position.setPosition(null)
-    this.state.accuracy.setGeometry(null)
+    this.state.accuracy.getGeometry().setCoordinates([])
     if (this.state.track.getCoordinates().length > 0) {
       this.state.layer.getSource().addFeature(
         new Feature(this.state.track.clone())
@@ -182,7 +184,11 @@ class GeoLocation extends Component {
     if (speed === 0 && coords.length > 0) {
       heading = coords[coords.length - 1][2]
     }
-    this.addPosition(position, heading, Date.now(), speed, radius)
+    console.debug(`positionChanged: ${position[0]} ${position[1]} ${radius} ${speed} ${heading}`)
+    if (position && !isNaN(position[0]) && !isNaN(position[1]) && typeof heading !== 'undefined') {
+      this.addPosition(position, heading, Date.now(), speed, radius)
+      this.updateView(position, heading)
+    }
   }
   addPosition (position, heading, m, speed, radius) {
     const view = getState('map').getView()
@@ -190,14 +196,6 @@ class GeoLocation extends Component {
     this.state.position.setPosition([position[0], position[1]])
     this.state.accuracy.getGeometry().setCoordinates([position[0], position[1]])
     this.state.accuracy.set('radius', radius)
-    // if not tracking
-    if (this.state.track.getCoordinates().length === 1) {
-      view.animate({
-        zoom: this.state.zoom,
-        center: [position[0], position[1]],
-        duration: 500
-      })
-    }
     if (speed) {
       this.markerEl
         .removeClass('fa-stop-circle')
@@ -214,6 +212,7 @@ class GeoLocation extends Component {
     }
   }
   rotateMarker (angle) {
+    angle += degToRad(-90)
     this.markerEl.css({
       '-webkit-transform': 'rotate(' + angle + 'rad)',
       '-moz-transform': 'rotate(' + angle + 'rad)',
@@ -231,14 +230,17 @@ class GeoLocation extends Component {
       position[1] + Math.cos(rotation) * size[1] * resolution * 1 / 4
     ]
   }
-  updateView () {
+  updateView (position, heading) {
     const view = getState('map').getView()
     const coords = this.state.track.getCoordinates()
-    const c = coords[coords.length - 1]
-    if (c && c[0] && c[1]) {
-      console.debug('updateView: ' + JSON.stringify(c))
-      view.setCenter(this.getCenterWithHeading(c, -c[2], view.getResolution()))
-      view.setRotation(-c[2])
+    // if not tracking
+    if (coords.length === 1) {
+      view.setCenter(position)
+      view.setZoom(this.state.zoom)
+    }
+    if (this.state.status[this.state.active] === 'tracking') {
+      view.setCenter(this.getCenterWithHeading(position, -heading, view.getResolution()))
+      view.setRotation(-heading)
     }
   }
 }
