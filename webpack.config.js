@@ -1,4 +1,5 @@
 const path = require('path')
+const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
@@ -27,17 +28,12 @@ module.exports = {
       },
       {
         test: /\.m?js$/,
-        exclude: /(node_modules|bower_components)/,
+        exclude: /node_modules\/(?!(ol)\/)/,
         use: {
           loader: 'babel-loader',
           options: {
             presets: [
-              [
-                '@babel/preset-env',
-                {
-                  useBuiltIns: 'usage'
-                }
-              ]
+              ['@babel/preset-env', { useBuiltIns: 'usage' }]
             ]
           }
         }
@@ -52,7 +48,12 @@ module.exports = {
       },
       {
         test: /\.(svg|woff|woff2|ttf|eot|otf)(\?.*)?$/,
-        use: ['file-loader'],
+        use: [{
+          loader: 'file-loader',
+          options: {
+            outputPath: 'assets/'
+          }
+        }]
       }
     ]
   },
@@ -69,9 +70,10 @@ module.exports = {
     port: 3000
   },
   plugins: [
+    new webpack.HotModuleReplacementPlugin(),
     new CleanWebpackPlugin(path.join(__dirname, 'dist'), {} ),
     new MiniCssExtractPlugin({
-      filename: 'style.css',
+      filename: '[name].css',
     }),
     new HtmlWebpackPlugin({
       hash: true,
@@ -90,6 +92,7 @@ module.exports = {
       ios: true,
       icons: [{
         src: path.join(__dirname, 'src', 'logo.png'),
+        destination: 'assets/',
         sizes: [96, 128, 192, 256, 384, 512] // multiple sizes
       }]
     }),
