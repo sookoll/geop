@@ -179,10 +179,11 @@ class GeoLocation extends Component {
     const radius = this.state.locator.getAccuracy()
     const speed = this.state.locator.getSpeed() || 0
     const coords = this.state.track.getCoordinates()
-    let heading = this.state.locator.getHeading() || 0
+    const last = coords[coords.length - 1]
+    let heading = this.state.locator.getHeading()
     // if no movement, then heading is previous heading
-    if (speed === 0 && coords.length > 0) {
-      heading = coords[coords.length - 1][2]
+    if (typeof heading === 'undefined' && last) {
+      heading = typeof last[2] !== 'undefined' ? last[2] : 0
     }
     console.debug(`positionChanged: ${position[0]} ${position[1]} ${radius} ${speed} ${heading}`)
     if (position && !isNaN(position[0]) && !isNaN(position[1]) && typeof heading !== 'undefined') {
