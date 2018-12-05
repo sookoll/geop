@@ -36,7 +36,8 @@ class Zoom extends Component {
   zoomTo (view, zoom) {
     view.animate({
       zoom: zoom,
-      duration: 250
+      duration: 250,
+      anchor: getState('map/anchor') && getState('map/anchor').getCoordinates()
     })
   }
 }
