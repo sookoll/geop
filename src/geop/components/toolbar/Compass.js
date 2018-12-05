@@ -30,7 +30,8 @@ class Compass extends Component {
       const view = getState('map').getView()
       view.animate({
         rotation: 0,
-        duration: 250
+        duration: 250,
+        anchor: getState('map/anchor') && getState('map/anchor').getCoordinates()
       })
     })
   }

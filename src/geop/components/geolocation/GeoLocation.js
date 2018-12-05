@@ -122,6 +122,8 @@ class GeoLocation extends Component {
     this.state.position.getGeometry().setCoordinates([])
     this.state.track.getGeometry().setCoordinates([])
     this.state.layer.setMap(null)
+    this.state.lastPosition = null
+    this.state.lastHeading = null
     this.state.active = this.state.status.indexOf('')
   }
   disableTracking () {
@@ -199,7 +201,7 @@ class GeoLocation extends Component {
         view.setCenter(this.getCenterWithHeading(this.state.lastPosition, -this.state.lastHeading, view.getResolution()))
         view.setRotation(-this.state.lastHeading)
       } else if (this.state.lastPosition) {
-        view.setCenter(this.getCenterWithHeading(this.state.lastPosition, 0, view.getResolution()))
+        view.setCenter(this.getCenterWithHeading(this.state.lastPosition, view.getRotation(), view.getResolution()))
       } else {
         view.setRotation(-this.state.lastHeading)
       }
