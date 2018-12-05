@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const WorkboxPlugin = require('workbox-webpack-plugin')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
 module.exports = {
   optimization: {
@@ -14,7 +15,6 @@ module.exports = {
       chunks: 'all'
     }
   },
-  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -69,6 +69,7 @@ module.exports = {
   devServer: {
     port: 3000
   },
+  devtool: 'source-map',
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new CleanWebpackPlugin(path.join(__dirname, 'dist'), {} ),

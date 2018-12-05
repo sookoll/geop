@@ -57,7 +57,7 @@ class Measure extends Component {
           return doubleClick(e)
         },
         style: createStyle({
-          image: {
+          circle: {
             radius: 5,
             stroke: {
               color: 'black',
@@ -143,7 +143,7 @@ class Measure extends Component {
           }
         },
         {
-          image: {
+          circle: {
             radius: 4,
             stroke: {
               color: 'black',

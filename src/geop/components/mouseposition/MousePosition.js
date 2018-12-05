@@ -215,7 +215,7 @@ class MousePosition extends Component {
         fill: {
           color: hexToRgbA(color, 0.5)
         },
-        image: {
+        circle: {
           stroke: {
             color: color
           },

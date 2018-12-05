@@ -13,7 +13,7 @@ export const app = {
   mousePosition: true,
   geoLocation: true,
   sideBarTab: 'info-tab',// active tab on sidebar
-  debug: true,// collect all console debug, info and error into downloadable file
+  debug: false,// collect all console debug, info and error into downloadable file
   debugFile: 'geop_debug.log'
 }
 export const map = {

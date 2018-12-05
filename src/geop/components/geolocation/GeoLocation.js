@@ -1,17 +1,16 @@
 import Component from 'Geop/Component'
 import { getState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
-import { degToRad } from 'Utilities/util'
+//import { degToRad } from 'Utilities/util'
 import log from 'Utilities/log'
 import {createLayer } from 'Components/layer/LayerCreator'
 import { createStyle } from 'Components/layer/StyleBuilder'
-import Overlay from 'ol/Overlay'
 import Point from 'ol/geom/Point'
-import Circle from 'ol/geom/Circle'
+//import Circle from 'ol/geom/Circle'
 import LineString from 'ol/geom/LineString'
 import Feature from 'ol/Feature'
 import Geolocation from 'ol/Geolocation'
-import { toLonLat } from 'ol/proj'
+//import { toLonLat } from 'ol/proj'
 import $ from 'jquery'
 import './GeoLocation.styl'
 
@@ -23,19 +22,12 @@ class GeoLocation extends Component {
         <i class="fa fa-location-arrow"></i>
       </button>
     `)
-    this.markerEl = $('<i id="geolocation_marker" class="far fa-stop-circle" />')
     this.state = {
       active: 0,
       status: ['', 'active', 'tracking'],
-      position: new Overlay({
-        positioning: 'center-center',
-        element: this.markerEl[0],
-        stopEvent: false,
-        offset: [0, 0]
-      }),
-      track: new LineString([], ('XYZM')),
-      accuracy: new Feature({
-        id: 'accuracy',
+      track: new Feature(new LineString([])),
+      position: new Feature({
+        id: 'position',
         radius: 0,
         geometry: new Point([])
       }),
@@ -51,11 +43,11 @@ class GeoLocation extends Component {
       })
     }
     this.handlers = {
-      rotate: (e) => {
+      rotate: e => {
         const angle = getState('map').getView().getRotation()
         this.rotateMarker(angle)
       },
-      disableTracking: (e) => {
+      disableTracking: e => {
         this.disableTracking()
       }
     }
@@ -82,17 +74,18 @@ class GeoLocation extends Component {
     return !!navigator.geolocation
   }
   init () {
-    this.state.accuracy.setStyle(createStyle({
-      fill: {
-        color: 'rgba(51, 153, 204, 0.15)'
-      }
-    }))
     this.state.layer.getSource().addFeatures([
-      this.state.accuracy,
-      new Feature(this.state.track)
+      this.state.track,
+      this.state.position
     ])
-    this.state.locator.on('change', e => {
+    this.state.locator.on('change:position', e => {
       this.positionChanged(e)
+    })
+    this.state.locator.on('change:heading', e => {
+      this.headingChanged(e)
+    })
+    this.state.locator.on('change:accuracy', e => {
+      this.accuracyChanged(e)
     })
     this.state.locator.on('error', e => {
       console.error('geolocation error', e)
@@ -103,16 +96,12 @@ class GeoLocation extends Component {
   }
   enable () {
     const map = getState('map')
-    const view = map.getView()
     if (this.state.status[this.state.active] === 'active') {
       getState('map/layer/overlays').push(this.state.layer)
-      map.addOverlay(this.state.position)
       this.state.locator.setTracking(true)
-      view.on('change:rotation', this.handlers.rotate)
     } else if (this.state.status[this.state.active] === 'tracking') {
-      view.un('change:rotation', this.handlers.rotate)
       this.rotateMarker(0)
-      const coords = this.state.track.getCoordinates()
+      const coords = this.state.track.getGeometry().getCoordinates()
       if (coords.length) {
         this.updateView(
           [coords[coords.length - 1][0], coords[coords.length - 1][1]],
@@ -120,106 +109,44 @@ class GeoLocation extends Component {
         )
       }
       map.on('pointerdrag', this.handlers.disableTracking)
+      map.on('postcompose', this.updateView)
     }
   }
   disable () {
-    const map = getState('map')
+    this.disableTracking()
     this.state.locator.setTracking(false)
-    this.state.position.setPosition(null)
-    this.state.accuracy.getGeometry().setCoordinates([])
-    if (this.state.track.getCoordinates().length > 0) {
-      this.state.layer.getSource().addFeature(
-        new Feature(this.state.track.clone())
-      )
-    }
-    this.state.track.setCoordinates([])
-    map.getView().setRotation(0)
-    map.removeOverlay(this.state.position)
+    this.state.position.getGeometry().setCoordinates([])
+    this.state.track.getGeometry().setCoordinates([])
     getState('map/layer/overlays').remove(this.state.layer)
-    map.un('postcompose', this.handlers.updateView)
-    map.un('pointerdrag', this.handlers.disableTracking)
-    this.rotateMarker(0)
-    this.state.active = 0
+    this.state.active = this.state.status.indexOf('')
   }
   disableTracking () {
     const map = getState('map')
-    map.un('postcompose', this.handlers.updateView)
     map.un('pointerdrag', this.handlers.disableTracking)
-    map.getView().on('change:rotation', this.handlers.rotate)
+    map.un('postcompose', this.updateView)
     this.el.removeClass(this.state.status[this.state.active])
     this.state.active = this.state.status.indexOf('active')
   }
-  createLayer () {
-    return createLayer({
-      type: 'FeatureCollection',
-      title: 'Track',
-      style: {
-        stroke: {
-          color: 'rgba(255, 0, 0, 0.5)',
-          width: 3,
-          lineDash: [5, 5]
-        },
-        fill: {
-          color: 'rgba(255, 0, 0, 0.1)'
-        },
-        geometry: feature => {
-          if (feature.get('id') === 'accuracy') {
-            const coordinates = feature.getGeometry().getCoordinates()
-            const lonlat = toLonLat(coordinates)
-            const scaleF = 1 / Math.cos(degToRad(lonlat[1]))
-            return new Circle(coordinates, (feature.get('radius') * scaleF))
-          }
-          return feature.getGeometry()
-        }
-      }
-    })
-  }
   positionChanged (e) {
-    const position = this.state.locator.getPosition()
+    const coordinate = this.state.locator.getPosition()
+    if (coordinate) {
+      this.state.position.getGeometry().setCoordinates(coordinate)
+      this.state.track.getGeometry().appendCoordinate(coordinate)
+    }
+  }
+  headingChanged (e) {
+    const heading = this.state.locator.getHeading()
+    if (typeof heading !== 'undefined') {
+      this.state.position.set('heading', heading)
+    }
+  }
+  accuracyChanged (e) {
     const radius = this.state.locator.getAccuracy()
-    const speed = this.state.locator.getSpeed() || 0
-    const coords = this.state.track.getCoordinates()
-    const last = coords[coords.length - 1]
-    let heading = this.state.locator.getHeading()
-    // if no movement, then heading is previous heading
-    if (typeof heading === 'undefined' && last) {
-      heading = typeof last[2] !== 'undefined' ? last[2] : 0
-    }
-    console.debug(`positionChanged: ${position[0]} ${position[1]} ${radius} ${speed} ${heading}`)
-    if (position && !isNaN(position[0]) && !isNaN(position[1]) && typeof heading !== 'undefined') {
-      this.addPosition(position, heading, Date.now(), speed, radius)
-      this.updateView(position, heading)
+    if (typeof radius !== 'undefined') {
+      this.state.position.set('radius', radius)
     }
   }
-  addPosition (position, heading, m, speed, radius) {
-    const view = getState('map').getView()
-    this.state.track.appendCoordinate([position[0], position[1], heading, m])
-    this.state.position.setPosition([position[0], position[1]])
-    this.state.accuracy.getGeometry().setCoordinates([position[0], position[1]])
-    this.state.accuracy.set('radius', radius)
-    if (speed) {
-      this.markerEl
-        .removeClass('fa-stop-circle')
-        .addClass('fa-play-circle')
-      // if not tracking, then rotate icon
-      if (this.state.status[this.state.active] === 'active') {
-        const angle = view.getRotation() + heading
-        this.rotateMarker(angle)
-      }
-    } else {
-      this.markerEl
-        .removeClass('fa-play-circle')
-        .addClass('fa-stop-circle')
-    }
-  }
-  rotateMarker (angle) {
-    angle += degToRad(-90)
-    this.markerEl.css({
-      '-webkit-transform': 'rotate(' + angle + 'rad)',
-      '-moz-transform': 'rotate(' + angle + 'rad)',
-      'transform': 'rotate(' + angle + 'rad)'
-    })
-  }
+
   /**
    * recenters the view by putting the given coordinates
    * at 3/4 from the top or the screen
@@ -232,7 +159,7 @@ class GeoLocation extends Component {
     ]
   }
   updateView (position, heading) {
-    const view = getState('map').getView()
+    /*const view = getState('map').getView()
     const coords = this.state.track.getCoordinates()
     // if not tracking
     if (coords.length === 1) {
@@ -242,7 +169,57 @@ class GeoLocation extends Component {
     if (this.state.status[this.state.active] === 'tracking') {
       view.setCenter(this.getCenterWithHeading(position, -heading, view.getResolution()))
       view.setRotation(-heading)
-    }
+    }*/
+  }
+  createLayer () {
+    const positionStyle = createStyle({
+      icon: {
+        rotateWithView: true,
+        src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAyCAMAAABvV9spAAAABGdBTUEAALGPC/xhBQAAACBjSFJN AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABUFBMVEUAAABpaWkAAAAAAAAA AAAAAAAAAABpaWkAAAAAAAAAAAAAAAAAAAA1NTUAAAAAAAAAAAAAAAAAAAAPDw+4uLje3t709PQP Dw8AAAAAAAAAAAAAAAAAAAAAAAB8fHzv7+98fHwAAAAAAAAAAADAwMD+/v4AAAAAAAAAAACJiYkA AAAmJiby8vLLy8vl5eUAAAD29vZWVlYAAAA5OTn+/v4AAADz8/MAAAAAAADh4eEAAAAAAAC7u7sA AADo6OgAAABbW1v6+voAAAAAAACdnZ339/c9PT3d3d0AAAAAAAAAAACRkZHHx8fh4eH09PQAAAAA AAAAAAAAAAD////6/f7g8Plqt+A0ndUHh8uZzuoNis0AhMqSyujb7vgKicxhs94pmNPy+fwChcr5 /P42ntV0vOLv9/sbkdC43fAEhsvN5/UsmdP5/P2i0uxsuOA5n9bwio4hAAAAU3RSTlMAIx0gEhQT JgIGMzpBTS0mAxYqQpTE6D8pGwQOGC5h3F0kDw2K+yUKI10fNeCTwxnrQRo6/iziFSe6ESF/K8gI RvIFC2XqO7MBBx5dk7ziEBcoCTVzjyoAAAABYktHRFN6Zx0GAAAACXBIWXMAAAFiAAABYgFfJ9BT AAAAB3RJTUUH4gwECRg4eAJxNwAAAYNJREFUOMvt0ls3AlEUwPFNEzO6mIkyU7nUSIN0pUE0zKCL W7VDhO6Rku//5iQ0H8BalrX8H85Z+/dwHvY6AP/9TGPjBsponJgcTjTQzOCeMpnNFovZZJ0eTAwN LGHONjNrdyA67LNzvECYBSe43PMLi4hYLJJjccnjBYIguvhlH15d35RKN9dX6FteMZJ3/EZp1Ye3 d+WP7m7Rt7pG+cElrAfwvvzdPQbWBRdQ0gY+PI748QE3JAo4PoiVsq4KBnkOQtYwVvVcxbA1BEIE a3U912sYESAa22yU9FxqbMai4N6KY1PPTYxvuUHe3sGWnlu4sy3DbmIP208jfWrjXmIXxNB+Ep87 X9p5xuR+SASFMhwc4kt3qN0XPDwwUAqomiwdHWPvtf/21n/t4fGRJGsq2bfISScp/Cx1InEi2Xea zYhylj89O7+4OD875bOymGHTQJzRLnNZT95my3uyuUuNGejAVUXzUjLHyZRXU9ShEqdZJ6MU/P6C wjhZOv3bv/Bv9Q7DpHOEPfXX5AAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOC0xMi0wNFQxNjoyNDo1 Ni0wNzowMAoLzxUAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTgtMTItMDRUMTY6MjQ6NTYtMDc6MDB7 VnepAAAAAElFTkSuQmCC'
+      }
+    })
+    const trackingStyle = createStyle({
+      icon: {
+        rotateWithView: false,
+        src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAyCAMAAABvV9spAAAABGdBTUEAALGPC/xhBQAAACBjSFJN AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABxVBMVEUAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADn5+fn5+cAAAAAAACioqIAAAAAAAAAAAAAAADt7u7m 8vkAAAAAAAAAAACxsbEAAAAcHBzz9PXT6vUAAAAAAADFxcUAAAAAAAAAAABGRkb4+fq63vEAAAAA AADX19f+//90dHT8/f3J5PMAAAAAAADo6Ojs7e2qqqr8/f3JyclRUVEAAADw8PLq6+tpaWkAAAAA AAAAAADx8fLMzMy9vb0AAAAAAAAAAAA1NTW6urrLy8sAAAAAAAAAAAAAAAAPDw+4uLje3t709PQA AAAAAAB8fHzv7+8AAADAwMD+/v4AAACJiYkAAAAmJiby8vLLy8sAAADl5eX29vZWVlYAAAA5OTn+ /v7z8/Ph4eG7u7sAAADo6OhbW1v6+vqdnZ339/c9PT3d3d2RkZHHx8fh4eH09PQAAAAAAAD///9h s94ChcpGptkAhMovm9Sf0essmdN8wOTA4PL6/f7g8Plqt+A0ndUHh8uZzuoNis2Syujb7vgKicwp mNPy+fz5/P42ntV0vOLv9/sbkdC43fAEhsvN5/X5/P2i0uxsuOA5n9YUwW0GAAAAdXRSTlMAAQID BAYICgsRFAwdop8TIF0HDxws1v0FFyd8Hzfp/RgplQkSIUL1/g0qqv5N/P4VJLzgV/ulW0XBzlxA Pj3EdHg5P0FNd3AOGSYzQpTE6B4uYdwtivsjXRs14JMWw+tBGjr+4rp/K8hG8mXqO7Ndk7ziEChI 22u6AAAAAWJLR0R1qGqY+wAAAAlwSFlzAAABYgAAAWIBXyfQUwAAAAd0SU1FB+IMBAUxJCFfS/cA AAJeSURBVDjL7ZPXUxpRFIfv7rIFMBFFdBc1srKoi22xx5ZEMQErsbCiYu+9HRDF2Huvf292QYTk Le/5Hu6d+ebMuWfO/C5CETAMJzQaAscwlAhGkBRNUySB/WUZrU6nZf7wGE7qdUkfPibp9CQe95iG TjakAKQYkmkNFm+RakwzpWdkpJvSjKnvbXCW4cyZEAhAppljWDxWTGmzsj/lBIM5n7KztNRbOc7q LXwubIVCW5DLW/TRcoywCra8/IKQQkF+nk2wquUYzooWe2HRtqq3iwrtFpFVhox0Li7ZCe+Wlu6G d0qKo92VmSVHGfwCKC8H5SpzSOrsyoNcBUBlVXVNTXVVJUAFpz6q6s9QW1ff0NjYUF9XC1+imhS5 r9+amp3Olhans7np+w9OWQwiSJe7ta29o7MLoKuzo72t1eIiCaSxCp6f3T0AsLenHD3dvR7BqkGk 6Ob7vLB/cHh0dHiwD94+3i2SiNbJ/V44PglFODkGb7+so5HLNzAIp6F3TmFwwOdCgjwEZ+dxfX4G Q7KA/PwwBEIJBGCY9yN37whcJOoLGOl1I98oXAYTdfASRn1obHzi6ihRH11NjI8hi2kSrhP1NUya LEgyT8FNor6BKbOEtLZpuL2L27tbmLZpkeiemYX7h5h9uIfZGbeIKMEwNw+P4agNP8L8nEGgEMtI 8sIiPD2/vL6+PD/B4oIsMayyb9EvLy3DG8tLsl9U9q0EUJQ8/Mrq2vr62uoK75HESAzVbG9wHsem 3b7p8HAbsYxjBEsxRkHy+yXByFBsLLLqvyEpK01bKVL9P+g//8Bv4afHimhpWRsAAAAldEVYdGRh dGU6Y3JlYXRlADIwMTgtMTItMDRUMTI6NDk6MzYtMDc6MDARlu33AAAAJXRFWHRkYXRlOm1vZGlm eQAyMDE4LTEyLTA0VDEyOjQ5OjM2LTA3OjAwYMtVSwAAAABJRU5ErkJggg=='
+      }
+    }, true)
+    const trackStyle = createStyle({
+      stroke: {
+        color: 'rgba(255, 0, 0, 0.5)',
+        width: 3,
+        lineDash: [5, 5]
+      }
+    }, true)
+    const accuracyStyle = createStyle({
+      circle: {
+        fill: {
+          color: 'rgba(255, 0, 0, 0.1)'
+        },
+        radius: 500
+      }
+    }, true)
+    return createLayer({
+      type: 'FeatureCollection',
+      title: 'Geolocation',
+      style: feature => {
+        const styles = [trackStyle]
+        if (feature.get('id') === 'position') {
+          if (feature.get('radius') > 10 && feature.get('radius') < 5000) {
+            console.log(feature.get('radius'))
+            accuracyStyle.getImage().setRadius(feature.get('radius'))
+            styles.push(accuracyStyle)
+          }
+          if (this.state.status[this.state.active] === 'tracking') {
+            styles.push(trackingStyle)
+          } else {
+            positionStyle.getImage().setRotation(feature.get('heading'))
+            styles.push(positionStyle)
+          }
+        }
+        return styles
+      }
+    })
   }
 }
 

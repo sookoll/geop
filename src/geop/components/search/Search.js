@@ -211,13 +211,14 @@ class Search extends Component {
         fill: {
           color: hexToRgbA(color, 0.5)
         },
-        image: {
+        circle: {
           stroke: {
             color: color
           },
           fill: {
             color: hexToRgbA(color, 0.3)
-          }
+          },
+          radius: 5
         }
       }
     }
