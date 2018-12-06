@@ -12,6 +12,7 @@ class Filter extends Component {
         class="tab-pane fade"
         id="${this.id}"
         role="tabpanel">
+        
       </div>
     `)
     this.create()

@@ -137,6 +137,10 @@ export function degToRad (deg) {
   return deg * Math.PI * 2 / 360;
 }
 
+export function scaleFactor (lonlat) {
+  return (1 / Math.cos(degToRad(lonlat[1])))
+}
+
 // parse search
 function parseSearch (search) {
   if (search && search.length > 1) {

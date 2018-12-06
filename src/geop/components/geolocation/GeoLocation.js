@@ -1,7 +1,7 @@
 import Component from 'Geop/Component'
 import { getState, setState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
-import { degToRad } from 'Utilities/util'
+import { scaleFactor } from 'Utilities/util'
 import log from 'Utilities/log'
 import { createLayer } from 'Components/layer/LayerCreator'
 import { createStyle } from 'Components/layer/StyleBuilder'
@@ -235,8 +235,7 @@ class GeoLocation extends Component {
         if (feature.get('id') === 'position') {
           const coordinates = feature.getGeometry().getCoordinates()
           const lonlat = toLonLat(coordinates)
-          const scaleF = 1 / Math.cos(degToRad(lonlat[1]))
-          return new Circle(coordinates, (feature.get('radius') * scaleF))
+          return new Circle(coordinates, (feature.get('radius') * scaleFactor(lonlat)))
         }
       }
     }, true)

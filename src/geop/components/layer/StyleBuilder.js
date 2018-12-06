@@ -47,6 +47,12 @@ function buildOLStyle (style, skipDefault) {
           olStyle['image'] = new Icon(style[key])
           break
         case 'text':
+          if (style[key].fill) {
+            style[key].fill = new Fill(style[key].fill)
+          }
+          if (style[key].stroke) {
+            style[key].stroke = new Stroke(style[key].stroke)
+          }
           olStyle[key] = new Text(style[key])
           break
         // zIndex, geometry

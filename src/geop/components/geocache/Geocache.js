@@ -1,9 +1,15 @@
+import { geocache as cacheConf } from 'Conf/settings'
 import { t } from 'Utilities/translate'
+import { uid, scaleFactor } from 'Utilities/util'
+import { getState } from 'Utilities/store'
+import { toLonLat } from 'ol/proj'
 import Component from 'Geop/Component'
 import Sidebar from 'Components/sidebar/Sidebar'
 import GeocacheLoader from './GeocacheLoader'
 import Filter from './Filter'
 import Geotrip from './Geotrip'
+import { createStyle } from 'Components/layer/StyleBuilder'
+import Circle from 'ol/geom/Circle'
 import './Geocache.styl'
 import $ from 'jquery'
 
@@ -21,7 +27,17 @@ class Geocache extends Component {
       </div>
     `)
     this.state = {
-      layers: []
+      layers: [],
+      styleCache: {},
+      styleConfig: cacheConf.styles,
+      radiusStyle: cacheConf.radiusStyle
+    }
+    // radiusStyle geometry function
+    this.state.styleConfig.radiusStyle.geometry = feature => {
+      const coordinates = feature.getGeometry().getCoordinates()
+      const lonlat = toLonLat(coordinates)
+      const scaleF = scaleFactor(lonlat)
+      return new Circle(coordinates, (cacheConf.radiusStyle.radius * scaleF))
     }
     this.create()
     this.sidebar = new Sidebar({
@@ -41,54 +57,83 @@ class Geocache extends Component {
     const layers = getState('map/layer/layers')
     layers.forEach(layer => {
       if(this.checkLayer(layer)) {
-        layer.setStyle = this.styleGeocache
-        this.state.layers.push(layer)
+        this.registerLayer(layer)
       }
     })
-    layers.on('add', layer => {
-      if(this.checkLayer(layer)) {
-        layer.setStyle = this.styleGeocache
-        this.state.layers.push(layer)
+    layers.on('add', e => {
+      if(this.checkLayer(e.element)) {
+        this.registerLayer(e.element)
       }
     })
-    layers.on('remove', layer => {
-      if(this.checkLayer(layer)) {
-        this.state.layers = this.state.layers.filter(item => item !== layer)
+    layers.on('remove', e => {
+      if(this.checkLayer(e.element)) {
+        this.state.layers = this.state.layers.filter(item => item !== e.element)
       }
     })
   }
   checkLayer (layer) {
-    const features = layer.getSource().getFeatures ? layer.getSource().getFeatures() : false
+    const features = layer.getSource().getFeatures ?
+      layer.getSource().getFeatures() : false
     if (features && features[0]) {
-      return (features[0].get('type') && features[0].get('fstatus'))
+      return (features[0].get('fstatus') &&
+        Object.keys(this.state.styleConfig.text)
+          .indexOf(features[0].get('type')) > -1
+      )
     }
     return false
   }
+  registerLayer (layer) {
+    const today = new Date()
+    layer.getSource().forEachFeature(feature => {
+      // set new_cache prop
+      const fstatus = feature.get('fstatus')
+      const date = new Date(feature.get('date_hidden'))
+      const testDate = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate() + cacheConf.newCacheDays
+      )
+      const newCache = (fstatus === '0' && testDate > today) ? 'yes' : 'no'
+      if (!feature.get('newCache')) {
+        feature.set('newCache', newCache)
+      }
+      if (!feature.getId()) {
+        feature.setId(uid())
+      }
+    })
+    layer.setStyle((feature, resolution) => this.styleGeocache(feature, resolution))
+    this.state.layers.push(layer)
+  }
   styleGeocache (feature, resolution) {
-    var type = feature.get('type'),
-        fstatus = feature.get('fstatus'),
-        new_cache = feature.get('new_cache'),
-        hash = type + fstatus + new_cache,
-        definition;
-    if (!_this._styleCache[hash]) {
-        definition = $.extend(
-            {},
-            _this._styleConfig.base,
-            _this._styleConfig.text[type],
-            _this._styleConfig.color[fstatus],
-            _this._styleConfig.new_cache[new_cache] || {}
-        );
-        _this._styleCache[hash] = new ol.style.Style({
-            text: new ol.style.Text(definition)
-        });
+    const type = feature.get('type')
+    const fstatus = feature.get('fstatus')
+    const newCache = feature.get('newCache')
+    const hash = type + fstatus + newCache
+    if (!this.state.styleCache[hash]) {
+      const definition = Object.assign(
+        {},
+        this.state.styleConfig.base,
+        this.state.styleConfig.text[type],
+        this.state.styleConfig.color[fstatus],
+        this.state.styleConfig.newCache[newCache] || {}
+      );
+      this.state.styleCache[hash] = createStyle({
+          text: definition
+      }, true)
     }
-    if (_this._layer.get('radiusStyle').visible && resolution <= _this._layer.get('radiusStyle').maxResolution) {
+    if (this.state.radiusStyle.visible && resolution <= this.state.radiusStyle.maxResolution) {
+      if (!this.state.styleCache.radiusStyle) {
+        this.state.styleCache.radiusStyle = createStyle(
+          this.state.styleConfig.radiusStyle
+        )
+      }
       return [
-        _this._styleCache[hash],
-        _this._styleConfig.radiusStyle
-      ];
+        this.state.styleCache[hash],
+        this.state.styleCache.radiusStyle
+      ]
     }
-    return [_this._styleCache[hash]];
+    console.log(this.state.styleCache)
+    return [this.state.styleCache[hash]]
   }
 }
 
