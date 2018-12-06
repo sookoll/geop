@@ -79,7 +79,7 @@ class LayerManager extends Component {
         class="btn btn-secondary toggle-btn dropdown-toggle no-caret"
         data-toggle="dropdown"
         aria-expanded="false">
-        <span class="display-name d-none d-sm-block">
+        <span class="display-name d-none d-sm-inline-block">
           ${this.state.activeBaseLayer ?
             t(this.state.activeBaseLayer.get('title')) : t('Layers')}
         </span>

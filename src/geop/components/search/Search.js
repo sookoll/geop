@@ -16,18 +16,25 @@ class Search extends Component {
   constructor (target) {
     super(target)
     this.el = $(`
-      <div id="search" class="input-group float-right">
-        <input type="text" class="form-control" placeholder="${t('Search')}">
-        <div class="input-group-append fill-width">
-          <button class="btn btn-secondary dropdown-toggle no-caret"
-            type="button"
-            data-toggle="dropdown"
-            aria-expanded="true"
-            disabled>
-            <i class="fa fa-search"></i>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-right scrollable-menu" role="menu"></ul>
-        </span>
+      <div id="search" class="float-right">
+        <button class="btn btn-secondary d-inline-block d-sm-none toggle">
+          <i class="fa fa-search"></i>
+        </button>
+        <div class="d-none d-sm-block">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="${t('Search')}">
+            <div class="input-group-append fill-width">
+              <button class="btn btn-secondary dropdown-toggle no-caret"
+                type="button"
+                data-toggle="dropdown"
+                aria-expanded="true"
+                disabled>
+                <i class="fa fa-search"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-right scrollable-menu" role="menu"></ul>
+            </span>
+          </div>
+        </div>
       </div>
     `)
     this.state = {
@@ -50,6 +57,10 @@ class Search extends Component {
     super.create()
     if (this.target && this.el) {
       this.resultsEl = this.el.find('ul')
+      this.el.on('click', '.toggle', e => {
+        this.el.find('>.toggle').toggleClass('d-none d-inline-block')
+        this.el.find('>div').toggleClass('d-none')
+      })
       this.el
         .find('.dropdown-toggle')
         .on('shown.bs.dropdown', () => {
@@ -76,6 +87,10 @@ class Search extends Component {
           this.state.open = true
           this.search(val)
         }
+      })
+      this.resultsEl.on('click', '.clear', e => {
+        this.clear()
+        this.el.find('input').val('').trigger('keyup')
       })
       this.resultsEl.on('click', 'a', e => {
         e.preventDefault()
@@ -126,6 +141,15 @@ class Search extends Component {
           ${t('No result')}
         </li>`)
     }
+    htmlArr.push(`
+      <div class="tools text-right">
+        <button class="btn btn-link clear">
+          <i class="fa fa-backspace"></i>
+        </button>
+        <button class="btn btn-link toggle d-inline-block d-sm-none">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>`)
     this.el.find('.dropdown-toggle').dropdown('update')
     if (this.resultsEl) {
       this.resultsEl.html(htmlArr.join(''))

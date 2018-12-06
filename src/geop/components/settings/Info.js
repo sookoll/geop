@@ -10,18 +10,12 @@ class Info extends Component {
     this.icon = 'fa fa-info-circle'
     this.el = $(`
       <div
-        class="tab-pane fade ${this.id === getState('app/sideBarTab') ? 'show active' : ''}"
+        class="tab-pane fade ${this.id === getState('app/settingsTabOpen') ? 'show active' : ''}"
         id="${this.id}"
         role="tabpanel">
       </div>
     `)
     this.create()
-  }
-  create () {
-    if (this.target && this.el) {
-      this.target.append(this.el)
-      this.render()
-    }
   }
   render () {
     this.el.html(`

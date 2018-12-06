@@ -12,7 +12,7 @@ export const app = {
   fullScreen: true,
   mousePosition: true,
   geoLocation: true,
-  sideBarTab: 'info-tab',// active tab on sidebar
+  settingsTabOpen: 'info-tab',// active tab on sidebar
   debug: true,// collect all console debug, info and error into downloadable file
   debugFile: 'geop_debug.log'
 }
@@ -30,6 +30,7 @@ export const map = {
 }
 export const geocache = {
   auth_url: 'http://geopeitus.ee',
+  download_url: 'http://www.geopeitus.ee/?p=300',
   features_url: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&format=2',
   cache_url: 'http://geopeitus.ee/aare/'
 }

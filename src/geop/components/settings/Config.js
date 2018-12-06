@@ -5,7 +5,7 @@ import Component from 'Geop/Component'
 import $ from 'jquery'
 import saveAs from 'file-saver';
 
-class Settings extends Component {
+class Config extends Component {
   constructor (target) {
     super(target)
     this.id = 'settings-tab'
@@ -107,4 +107,4 @@ class Settings extends Component {
   }
 }
 
-export default Settings
+export default Config

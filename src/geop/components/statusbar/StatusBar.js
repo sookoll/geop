@@ -1,6 +1,6 @@
 import { getState } from 'Utilities/store'
 import Component from 'Geop/Component'
-import SideBar from 'Components/sidebar/SideBar'
+import SettingsBar from 'Components/settings/SettingsBar'
 import ScaleLine from 'Components/scaleline/ScaleLine'
 import FullScreen from 'Components/fullscreen/FullScreen'
 import MousePosition from 'Components/mouseposition/MousePosition'
@@ -13,7 +13,7 @@ class StatusBar extends Component {
     this.el = $(`<footer id="statusbar" class="panel-bar"></footer>`)
     this.create()
     this.components = {
-      sidebar: new SideBar(this.el),
+      settings: new SettingsBar(this.el),
       fullscreen: getState('app/fullScreen') && new FullScreen(this.el),
       scaleline: getState('app/scaleLine') && new ScaleLine(this.el),
       mouseposition: getState('app/mousePosition') && new MousePosition(this.el)
