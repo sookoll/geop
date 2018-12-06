@@ -2,6 +2,8 @@ import { geocache as cacheConf } from 'Conf/settings'
 import { t } from 'Utilities/translate'
 import log from 'Utilities/log'
 import { getState } from 'Utilities/store'
+import { uid, hexToRgbA } from 'Utilities/util'
+import { createLayer } from 'Components/layer/LayerCreator'
 import Component from 'Geop/Component'
 import $ from 'jquery'
 
@@ -27,11 +29,11 @@ class GeocacheLoader extends Component {
           <span class="badge badge-pill badge-info">1</span>
           ${t('Go to')}
           <a href="${cacheConf.auth_url}" target="geopeitus">geopeitus.ee</a>
-          ${t('and log in')}
+          ${t('and log in')},
         </li>
         <li class="list-group-item">
           <span class="badge badge-pill badge-info">2</span>
-          ${t('Download GPX from')}
+          ${t('download GPX from')}
           <a href="${cacheConf.download_url}" target="geopeitus">here</a>
           ${t('and drop it on map or import file from layers menu')}
         </li>
@@ -39,7 +41,7 @@ class GeocacheLoader extends Component {
           <span class="badge badge-pill badge-info">3</span>
           ${t('or open')}
           <a href="${cacheConf.features_url}" target="geopeitus">link</a>
-          ${t('and copy page content to textbox')}
+          ${t('and copy page content to textbox below')}
         </li>
       </ul>
       <div class="mb-3">
@@ -51,10 +53,21 @@ class GeocacheLoader extends Component {
         ${t('Add geocaches to map')}
       </button>
     `)
+    this.el.find('textarea').on('input', e => {
+      const val = this.el.find('textarea').val().trim()
+      this.el.find('button.confirm').prop('disabled', val.length === 0)
+    })
+    this.el.find('textarea').on('keyup', e => {
+      if (e.keyCode === 13) {
+        const txt = this.el.find('textarea')
+        this.addCaches(txt.val().trim())
+        txt.val('').trigger('input')
+      }
+    })
     this.el.on('click', 'button.confirm', e => {
       const txt = this.el.find('textarea')
       this.addCaches(txt.val().trim())
-      txt.val('')
+      txt.val('').trigger('input')
     })
   }
   addCaches (content) {
@@ -62,6 +75,9 @@ class GeocacheLoader extends Component {
     content = this.fixme(content)
     try {
       json = JSON.parse(content)
+      if (json.type !== 'FeatureCollection' || !json.features) {
+        throw new Error('Not valid GeoJSON')
+      }
     } catch (err) {
       log('error', t('Not valid GeoJSON'))
     }
@@ -74,6 +90,34 @@ class GeocacheLoader extends Component {
   fixme (content) {
     // FIXME: temporary hack to fix known json false
     return content.replace('"NAVY"', 'NAVY')
+  }
+  createLayer (geojson) {
+    const color = '#000000'
+    const conf = {
+      type: 'FeatureCollection',
+      id: uid(),
+      title: 'Geocaches',
+      features: geojson.features,
+      style: {
+        stroke: {
+          color: color,
+          width: 2
+        },
+        fill: {
+          color: hexToRgbA(color, 0.5)
+        },
+        circle: {
+          stroke: {
+            color: color
+          },
+          fill: {
+            color: hexToRgbA(color, 0.3)
+          },
+          radius: 5
+        }
+      }
+    }
+    return createLayer(conf)
   }
 }
 
