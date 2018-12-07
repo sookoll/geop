@@ -10,6 +10,9 @@ import Filter from './Filter'
 import Geotrip from './Geotrip'
 import { createStyle } from 'Components/layer/StyleBuilder'
 import Circle from 'ol/geom/Circle'
+import geopeitusJSON from './GeopeitusJSON'
+import geocacheGPX from './GeocacheGPX'
+//import geocacheGPX from './GeocacheGPX'
 import './Geocache.styl'
 import $ from 'jquery'
 
@@ -75,31 +78,24 @@ class Geocache extends Component {
     const features = layer.getSource().getFeatures ?
       layer.getSource().getFeatures() : false
     if (features && features[0]) {
-      return (features[0].get('fstatus') &&
-        Object.keys(this.state.styleConfig.text)
-          .indexOf(features[0].get('type')) > -1
-      )
+      const isGeopeitusJSON = geopeitusJSON.test(features[0])
+      const isCacheGPX = geocacheGPX.test(features[0])
+      if (isCacheGPX) {
+        layer.set('_formatParser', geocacheGPX)
+      } else if (isGeopeitusJSON) {
+        layer.set('_formatParser', geopeitusJSON)
+      }
+      return (isGeopeitusJSON || isCacheGPX)
     }
     return false
   }
   registerLayer (layer) {
-    const today = new Date()
-    layer.getSource().forEachFeature(feature => {
-      // set new_cache prop
-      const fstatus = feature.get('fstatus')
-      const date = new Date(feature.get('date_hidden'))
-      const testDate = new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate() + cacheConf.newCacheDays
-      )
-      const newCache = (fstatus === '0' && testDate > today) ? 'yes' : 'no'
-      if (!feature.get('newCache')) {
-        feature.set('newCache', newCache)
-      }
-      if (!feature.getId()) {
-        feature.setId(uid())
-      }
+    layer.get('_formatParser').formatFeatures({
+      features: layer.getSource().getFeatures(),
+      newCacheDays: cacheConf.newCacheDays,
+      mapping: cacheConf.mapping,
+      user: getState('app/account'),
+      uid: uid
     })
     layer.setStyle((feature, resolution) => this.styleGeocache(feature, resolution))
     this.state.layers.push(layer)
@@ -109,6 +105,10 @@ class Geocache extends Component {
     const fstatus = feature.get('fstatus')
     const newCache = feature.get('newCache')
     const hash = type + fstatus + newCache
+    const isWaypoint = type.substring(0, 8) !== 'Geocache'
+    if (isWaypoint && resolution > this.state.radiusStyle.maxResolution) {
+      return null
+    }
     if (!this.state.styleCache[hash]) {
       const definition = Object.assign(
         {},
@@ -118,7 +118,8 @@ class Geocache extends Component {
         this.state.styleConfig.newCache[newCache] || {}
       );
       this.state.styleCache[hash] = createStyle({
-          text: definition
+          text: definition,
+          zIndex: isWaypoint ? 1 : 2
       }, true)
     }
     if (this.state.radiusStyle.visible && resolution <= this.state.radiusStyle.maxResolution) {
@@ -132,7 +133,6 @@ class Geocache extends Component {
         this.state.styleCache.radiusStyle
       ]
     }
-    console.log(this.state.styleCache)
     return [this.state.styleCache[hash]]
   }
 }

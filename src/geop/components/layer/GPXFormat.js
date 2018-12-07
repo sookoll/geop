@@ -9,6 +9,7 @@ import {includes} from 'ol/array'
 import {makeStructureNS, makeObjectPropertySetter, parseNode, pushParseAndPop,
   makeArrayPusher} from 'ol/xml'
 import {readString, readDecimal, readNonNegativeInteger, readDateTime} from 'ol/format/xsd'
+import xml2js from 'Utilities/xml2'
 
 /**
  * @const
@@ -65,8 +66,7 @@ const WPT_PARSERS = makeStructureNS(
     'pdop': makeObjectPropertySetter(readDecimal),
     'ageofdgpsdata': makeObjectPropertySetter(readDecimal),
     'dgpsid': makeObjectPropertySetter(readNonNegativeInteger),
-    'extensions': parseExtensions,
-    'groundspeak:cache': parseGroundSpeak
+    'extensions': parseExtensions
   }
 )
 /**
@@ -150,30 +150,12 @@ export default class GPXFormat extends GPX {
         node, [this.getReadOptions(node, opts)])
       if (features) {
         this.handleReadExtensions_(features)
-        this.handleReadGroundspeak_(features)
         return features
       } else {
         return []
       }
     }
     return []
-  }
-  /**
-   * @param {Array<Feature>} features List of features.
-   * @private
-   */
-  handleReadGroundspeak_(features) {
-    if (!features) {
-      features = []
-    }
-    for (let i = 0, ii = features.length; i < ii; ++i) {
-      const feature = features[i]
-      if (this.readExtensions_) {
-        const extensionsNode = feature.get('extensionsNode_') || null;
-        this.readExtensions_(feature, extensionsNode);
-      }
-      feature.set('extensionsNode_', undefined);
-    }
   }
 }
 /**
@@ -197,15 +179,6 @@ function parseExtensions(node, objectStack) {
   values['extensionsNode_'] = node
 }
 /**
- * @param {Node} node Node.
- * @param {Array<*>} objectStack Object stack.
- */
-function parseGroundSpeak(node, objectStack) {
-  const values = /** @type {Object} */ (objectStack[objectStack.length - 1])
-  values['groundspeakNode_'] = node
-  console.log(values)
-}
-/**
  * @param {Element} node Node.
  * @param {Array<*>} objectStack Object stack.
  * @return {Feature|undefined} Waypoint.
@@ -213,7 +186,6 @@ function parseGroundSpeak(node, objectStack) {
 function readWpt(node, objectStack) {
   const options = /** @type {import("./Feature.js").ReadOptions} */ (objectStack[0])
   const values = pushParseAndPop({}, WPT_PARSERS, node, objectStack)
-  console.log(values)
   if (!values) {
     return undefined
   }
@@ -224,6 +196,7 @@ function readWpt(node, objectStack) {
   transformWithOptions(geometry, false, options)
   const feature = new Feature(geometry)
   feature.setProperties(values)
+  feature.set('wpt', xml2js(node))
   return feature
 }
 /**

@@ -11,11 +11,9 @@ export function initState (conf) {
         keys().then(async (keys) => {
           const storageConf = {}
           for (const key of keys) {
-            if (Object.keys(conf).indexOf(key) > -1) {
-              const val = await get(key)
-              if (typeof(val) !== 'undefined' && val !== null) {
-                storageConf[key] = val
-              }
+            const val = await get(key)
+            if (typeof(val) !== 'undefined' && val !== null) {
+              storageConf[key] = val
             }
           }
           const stateConf = Object.assign(conf, storageConf)
