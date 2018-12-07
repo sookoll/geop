@@ -39,11 +39,17 @@ export const geocache = {
     radius: 160
   },
   newCacheDays: 30,
+  waypointMaxResolution: 10,
   mapping: {
-    fstatus: {
-      '0': 'Geocache',
-      '1': 'Geocache Found',
-      '2': 'Geocache Owner'
+    fstatusJSON: {
+      '0': 'Not Found',
+      '1': 'Found',
+      '2': 'Owner'
+    },
+    fstatusGPX: {
+      'Geocache': 'Not Found',
+      'Geocache Found': 'Found',
+      'Geocache Owner': 'Owner'
     },
     type: {
       'Tavaline aare': 'Geocache|Traditional Cache',
@@ -55,11 +61,19 @@ export const geocache = {
       'Mõistatusaare': 'Geocache|Unknown Cache',
       'Kirjakastiaare': 'Geocache|Letterbox Hybrid',
       'KusMaLäen': 'Geocache|Whereigo Cache'
+    },
+    container: {
+      'mikro': 'Micro',
+      'väike': 'Small',
+      'normaalne': 'Regular',
+      'suur': 'Large',
+      'muu': 'Unknown'
     }
   },
   styles: {
     base: {
-      text: '\uf041',
+      text: '\uf3c5',
+      class: 'fas fa-map-marker-alt',
       font: '900 16px "Font Awesome 5 Free"',
       textBaseline: 'middle',
       fill: {
@@ -104,7 +118,7 @@ export const geocache = {
       'Geocache|Unknown Cache': {
         'text': '\uf059',
         'class': 'fa fa-question-circle',
-        'font': '900 12px "Font Awesome 5 Free"'
+        'font': '900 13px "Font Awesome 5 Free"'
       },
       'Geocache|Letterbox Hybrid': {
         'text': '\uf0e0',
@@ -131,6 +145,16 @@ export const geocache = {
         'class': 'fas fa-plus-circle',
         'font': '900 12px "Font Awesome 5 Free"'
       },
+      'Waypoint|Physical Stage': {
+        'text': '\uf055',
+        'class': 'fas fa-plus-circle',
+        'font': '900 12px "Font Awesome 5 Free"'
+      },
+      'Waypoint|Virtual Stage': {
+        'text': '\uf055',
+        'class': 'fas fa-plus-circle',
+        'font': '900 12px "Font Awesome 5 Free"'
+      },
       'Waypoint|Final Location': {
         'text': '\uf057',
         'class': 'far fa-times-circle',
@@ -143,17 +167,17 @@ export const geocache = {
       }
     },
     color: {// leidmata - 0, leitud - 1, minu - 2
-      'Geocache': {
+      'Not Found': {
         fill: {
-          color: 'black'
+          color: '#444'
         }
       },
-      'Geocache Found': {
+      'Found': {
         fill: {
           color: '#4c9900'
         }
       },
-      'Geocache Owner': {
+      'Owner': {
         fill: {
           color: 'red'
         }

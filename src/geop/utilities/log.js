@@ -1,8 +1,10 @@
 import miniToastr from 'mini-toastr'
 
+const timeout = 4000
+
 // init
 miniToastr.init({
-  timeout: 4000
+  timeout
 })
 
 function success (msg, cb) {
@@ -24,16 +26,19 @@ function error (msg, cb) {
 export default function log (type, msg, cb) {
   switch (type) {
     case 'success':
-      success(msg, cb)
+      success(msg)
       break
     case 'info':
-      info(msg, cb)
+      info(msg)
       break
     case 'warning':
-      warn(msg, cb)
+      warn(msg)
       break
     case 'error':
-      error(msg, cb)
+      error(msg)
       break
+  }
+  if (typeof cb === 'function') {
+    setTimeout(cb, timeout)
   }
 }

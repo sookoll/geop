@@ -1,5 +1,6 @@
 import Component from 'Geop/Component'
 import {getState} from 'Utilities/store'
+import { t } from 'Utilities/translate'
 import Overlay from 'ol/Overlay'
 import $ from 'jquery'
 import './Tooltip.styl'
@@ -20,7 +21,8 @@ class Tooltip extends Component {
       element: this.el[0],
       autoPan: false,
       positioning: 'center-center',
-      offset: [0, -14]
+      offset: [0, -14],
+      stopEvent: false
     })
     const map = getState('map')
     if (map) {
@@ -64,7 +66,7 @@ class Tooltip extends Component {
       if (feature.getGeometry().getType() === 'Point') {
           coord = feature.getGeometry().getCoordinates()
       }
-      this.el.html(feature.get('name') || feature.get('title'))
+      this.el.html(t(feature.get('name') || feature.get('title')))
       this.state.overlay.setPosition(coord)
       this.state.currentFeature = feature
     }

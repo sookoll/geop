@@ -58,7 +58,7 @@ class Popup extends Component {
   }
   open (e) {
     let coord = e.coordinate
-    const feature = this.state.map.forEachFeatureAtPixel(
+    const hit = this.state.map.forEachFeatureAtPixel(
       e.pixel,
       (feature, layer) => {
         if (layer) {
@@ -67,22 +67,22 @@ class Popup extends Component {
       }
     )
     this.el.popover('dispose')
-    if (feature) {
+    if (hit) {
       // if point, then geometry coords
-      if (feature[1].getGeometry().getType() === 'Point') {
-        coord = feature[1].getGeometry().getCoordinates()
+      if (hit[1].getGeometry().getType() === 'Point') {
+        coord = hit[1].getGeometry().getCoordinates()
       }
       let popContent
-      if (feature[0] && this.state.infoStore[feature[0].get('id')]) {
-          popContent = this.state.infoStore[feature[0].get('id')](feature[1])
+      if (hit[0] && this.state.infoStore[hit[0].get('id')]) {
+          popContent = this.state.infoStore[hit[0].get('id')](hit[1])
       } else {
-          popContent = this.getContent(feature[1], feature[0])
+          popContent = this.getContent(hit[1], hit[0])
       }
       this.state.overlay.setPosition(coord)
       this.el.popover(popContent.definition).popover('show')
       // when popover's content is shown
       this.el.on('shown.bs.popover', e => {
-        popContent.onShow(feature, $(e.target).data('bs.popover').tip)
+        popContent.onShow(hit, $(e.target).data('bs.popover').tip)
       })
       // when popover's content is hidden
       this.el.on('hidden.bs.popover', e => {
@@ -92,40 +92,48 @@ class Popup extends Component {
     }
   }
   getContent (feature, layer) {
-    if (feature) {
+    if (feature && layer) {
       const props = feature.getProperties()
-      const content = Object.keys(props).filter(key => {
-        return (typeof props[key] === 'string' || typeof props[key] === 'number')
-      }).map(key => {
-        return `${key}: ${props[key]}`
-      })
-      if (this.state.geomTypes.linestrings.indexOf(feature.getGeometry().getType()) > -1) {
-        content.push(`${t('Length')}: ${formatLength(feature.getGeometry())}`)
-      }
-      if (this.state.geomTypes.polygons.indexOf(feature.getGeometry().getType()) > -1) {
-        content.push(`${t('Area')}: ${formatArea(feature.getGeometry())}`)
-      }
+      let title, content
       //TODO:
       //var in_collection = $.inArray(feature, this._app.geocache.get('geotrip').getArray());
-      const title = `
-        <i class="fa fa-map-marker-alt"></i>
-        ${t('Feature')}
-        <a href="#" class="cache-toggle" data-id="${feature.get('id')}" title="${t('Add to geotrip')}">
-          <i class="fa fa-thumbtack"></i>
-        </a>
-        <a href="#" class="remove-marker" title="Eemalda">
-          <i class="far fa-trash-alt"></i>
-        </a>`
+      if (layer.get('_featureInfo')) {
+        const info = layer.get('_featureInfo')
+        title = typeof info.title === 'function' ? info.title(feature) : info.title
+        content = typeof info.content === 'function' ? info.content(feature) : info.content
+      } else {
+        title = `
+          <i class="fa fa-map-marker-alt"></i>
+          ${t('Feature')}
+          <a href="#" class="cache-toggle" data-id="${feature.get('id')}" title="${t('Add to geotrip')}">
+            <i class="fa fa-thumbtack"></i>
+          </a>
+          <a href="#" class="remove-marker" title="Eemalda">
+            <i class="far fa-trash-alt"></i>
+          </a>`
+        content = Object.keys(props).filter(key => {
+          return (typeof props[key] === 'string' || typeof props[key] === 'number')
+        }).map(key => {
+          return `${key}: ${props[key]}`
+        })
+        if (this.state.geomTypes.linestrings.indexOf(feature.getGeometry().getType()) > -1) {
+          content.push(`${t('Length')}: ${formatLength(feature.getGeometry())}`)
+        }
+        if (this.state.geomTypes.polygons.indexOf(feature.getGeometry().getType()) > -1) {
+          content.push(`${t('Area')}: ${formatArea(feature.getGeometry())}`)
+        }
+        content = content.join('<br>')
+      }
 
       //var geotrip = t._app.geocache.get('geotrip');
       return {
         definition: {
-          container: this.el[0],
+          container: this.el,
           placement: 'top',
           animation: false,
           html: true,
           title: title,
-          content: content.join('<br>'),
+          content: content,
           trigger: 'manual',
           template: `
             <div class="popup popover">

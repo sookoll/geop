@@ -6,17 +6,6 @@ const noSleep = new NoSleep()
 const debugStore = []
 
 export function initServiceWorker () {
-  /*if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js').then(registration => {
-        console.log('SW registered')
-      }).catch(registrationError => {
-        console.log('SW registration failed: ', registrationError)
-      })
-    })
-  } else {
-    console.log('Service Worker is not supported by browser.')
-  }*/
   // Check for Service Worker browser support
   if ('serviceWorker' in navigator === false) {
     console.log('Service worker is not supported');
@@ -219,4 +208,13 @@ export function formatArea (polygon) {
   } else {
     return `${(Math.round(area * 100) / 100)} m<sup>2</sup>`
   }
+}
+
+export function formatTime (time) {
+  const d = new Date(time)
+  let month = (1 + d.getMonth()).toString()
+  month = month.length > 1 ? month : '0' + month
+  let day = d.getDate().toString()
+  day = day.length > 1 ? day : '0' + day
+  return d.getFullYear() + '.' + month + '.' + day
 }

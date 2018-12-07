@@ -9,13 +9,26 @@ export default {
   formatFeatures: opts => {
     const today = new Date()
     opts.features.forEach(feature => {
+      // id
+      // type
+      feature.set('type', opts.mapping.type[feature.get('type')] || feature.get('type'))
       // fstatus
-      feature.set('fstatus', opts.mapping.fstatus[feature.get('fstatus')])
+      feature.set('fstatus', opts.mapping.fstatusJSON[feature.get('fstatus')] || feature.get('fstatus'))
+      // status ? currently not available
       // time
       feature.set('time', feature.get('date_hidden'))
       feature.unset('date_hidden')
-      // type
-      feature.set('type', opts.mapping.type[feature.get('type')])
+      // name
+      // url
+      feature.set('url', opts.url + feature.get('id'))
+      // owner
+      feature.set('owner', feature.get('user_id'))
+      feature.unset('user_id')
+      // container
+      feature.set('container', opts.mapping.container[feature.get('size')] || feature.get('size'))
+      feature.unset('size')
+      // difficulty
+      // terrain
       // new cache
       const date = new Date(feature.get('date_hidden'))
       const testDate = new Date(

@@ -1,6 +1,7 @@
 import {getState, setState, clearState} from 'Utilities/store'
 import {enableScreenLock, disableScreenLock, getDebugStore} from 'Utilities/util'
 import {t, getLocale, getLocales, changeLocale} from 'Utilities/translate'
+import log from 'Utilities/log'
 import Component from 'Geop/Component'
 import $ from 'jquery'
 import saveAs from 'file-saver';
@@ -47,7 +48,9 @@ class Config extends Component {
           id="settings-account"
           placeholder="${t('Username')}"
           value="${getState('app/account') || ''}">
-        <small class="form-text text-muted">${t('Enter geopeitus.ee username')}</small>
+        <small class="form-text text-muted">
+          ${t('Enter geopeitus.ee or geocaching.com username')}.
+        </small>
       </div>
       <h5>${t('Reset app')}</h5>
       <div class="mb-3">
@@ -76,7 +79,9 @@ class Config extends Component {
       changeLocale($(e.currentTarget).data('locale'))
       this.el.find('button.set-locale-btn').removeClass('active')
       $(e.currentTarget).addClass('active')
-      window.location.reload()
+      log('warning', t('Language changed, page will reload!'), () => {
+        window.location.reload()
+      })
     })
     // keep awake
     this.el.on('change', '#settings-awake', e => {
@@ -92,11 +97,16 @@ class Config extends Component {
     // account name
     this.el.on('blur', '#settings-account', e => {
       setState('app/account', e.target.value, true)
+      log('warning', t('Account changed, page will reload!'), () => {
+        window.location.reload()
+      })
     })
     // reset app
     this.el.on('click', '#settings-reset', e => {
       clearState()
-      window.location.reload()
+      log('warning', t('App resetted, page will reload!'), () => {
+        window.location.reload()
+      })
     })
     // download debug log file
     this.el.on('click', '#download-log', e => {
