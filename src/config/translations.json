@@ -45,7 +45,7 @@
     "Large": "Large",
     "Layers": "Layers",
     "Length": "Length",
-    "Load geocaches": "Load geocaches",
+    "GeocacheLoader": "Load geocaches",
     "Map": "Map",
     "Measure": "Measure",
     "Micro": "Micro",
@@ -94,7 +94,13 @@
     "Waypoint|Trailhead": "Trailhead",
     "Waypoint|Virtual Stage": "Virtual Stage",
     "Zoom in": "Zoom in",
-    "Zoom out": "Zoom out"
+    "Zoom out": "Zoom out",
+    "here": "here",
+    "gpx_active": "Active caches",
+    "gpx_all": "All caches (active, archived, unavailable)",
+    "Show 160m radius": "Show 160m radius",
+    "New Cache": "New Cache",
+    "Geotrip": "Geotrip"
   },
   "et": {
     "Account": "Konto",
@@ -123,7 +129,7 @@
     "Enter geopeitus.ee or geocaching.com username": "Sisesta geopeitus.ee või geocaching.com kasutajanimi",
     "Error creating layer": "Kihi loomine ebaõnnestus",
     "Feature": "Objekt",
-    "features": "objektid",
+    "features": "objekti",
     "Found": "Leitud",
     "Geocache|Event Cache": "Sündmusaare",
     "Geocache|Letterbox Hybrid": "Kirjakastiaare",
@@ -142,7 +148,7 @@
     "Large": "Suur",
     "Layers": "Kihid",
     "Length": "Vahemaa",
-    "Load geocaches": "Lae aarded",
+    "GeocacheLoader": "Lae aarded",
     "Map": "Kaart",
     "Measure": "Mõõda",
     "Micro": "Mikro",
@@ -191,6 +197,12 @@
     "Waypoint|Trailhead": "Matkaraja algus",
     "Waypoint|Virtual Stage": "Virtuaalne vahepunkt",
     "Zoom in": "Suurenda",
-    "Zoom out": "Vähenda"
+    "Zoom out": "Vähenda",
+    "here": "siit",
+    "gpx_active": "Aktiivsed aarded",
+    "gpx_all": "Kõik aarded (aktiivsed, arhiveeritud, ajutiselt kättesaamatud)",
+    "Show 160m radius": "Näita 160m raadiuseid",
+    "New Cache": "Uued aarded",
+    "Geotrip": "Geotuur"
   }
 }

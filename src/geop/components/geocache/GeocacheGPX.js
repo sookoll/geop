@@ -18,8 +18,9 @@ export default {
           }
         })
         // id
-        // type
         feature.set('id', cacheData['@attributes'].id)
+        // type
+        feature.set('isCache', feature.get('type').substring(0, 8) === 'Geocache')
         // fstatus
         let fstatus = feature.get('sym')
         if (opts.user && opts.user === cacheData.owner) {
@@ -28,8 +29,11 @@ export default {
         feature.set('fstatus', opts.mapping.fstatusGPX[fstatus] || fstatus)
         feature.unset('sym')
         // status
-        feature.set('unavailable', cacheData['@attributes'].available === 'False' ? '1' : '0')
-        feature.set('archived', cacheData['@attributes'].archived === 'True' ? '1' : '0')
+        let status = cacheData['@attributes'].available === 'True' ? 'Available' : 'Unavailable'
+        if (cacheData['@attributes'].archived === 'True') {
+          status = 'Archived'
+        }
+        feature.set('status', status)
         // time
         feature.set('time', wpt.time['#text'])
         // name
@@ -51,10 +55,8 @@ export default {
           date.getMonth(),
           date.getDate() + opts.newCacheDays
         )
-        const newCache = (feature.get('fstatus') === 'Geocache' && testDate > today) ? 'yes' : 'no'
-        if (!feature.get('newCache')) {
-          feature.set('newCache', newCache)
-        }
+        const newCache = (feature.get('fstatus') === 'Not Found' && testDate > today) ? 'New Cache' : null
+        feature.set('newCache', newCache)
       } else {
         // assume waypoint
         // name

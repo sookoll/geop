@@ -18,9 +18,8 @@ class Sidebar extends Component {
       active: opts.activeComponent
     }
     this.trigger = opts.trigger
-    this.components = opts.components
     this.create()
-    this.renderChildrens(this.el.find(' > ul'), this.el.find('> div'))
+    this.components = this.renderComponents(this.el.find(' > ul'), this.el.find('> div'), opts.components, opts.props)
   }
   create () {
     if (this.target && this.el) {
@@ -58,10 +57,11 @@ class Sidebar extends Component {
     this.el.removeClass('active')
     this.shadow.removeClass('active')
   }
-  renderChildrens (tabTarget, contentTarget) {
-    Object.keys(this.components).forEach((i) => {
-      const plug = new this.components[i](contentTarget)
-      tabTarget.append(`
+  renderComponents (tabTarget, contentTarget, components, props) {
+    const instances = {}
+    Object.keys(components).forEach((i) => {
+      const plug = new components[i](contentTarget, props)
+      const tab = $(`
         <li class="nav-item">
           <a class="nav-link ${this.state.active === plug.id ? 'active' : ''}"
             data-toggle="pill"
@@ -69,11 +69,15 @@ class Sidebar extends Component {
             role="tab"
             aria-controls="${plug.id}">
             ${plug.icon ? `<i class="${plug.icon}"></i>` : ''}
-            ${t(i)}
+            <span>${t(i)}</span>
           </a>
         </li>
       `)
+      plug.set('tab', tab)
+      tabTarget.append(tab)
+      instances[i] = plug
     })
+    return instances
   }
 }
 

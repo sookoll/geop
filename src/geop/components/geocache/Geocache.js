@@ -34,7 +34,6 @@ class Geocache extends Component {
       layers: new Collection(),
       styleCache: {},
       styleConfig: cacheConf.styles,
-      radiusStyle: cacheConf.radiusStyle,
       geotrip: new Collection(),
       currentUser: getState('app/account')
     }
@@ -47,12 +46,16 @@ class Geocache extends Component {
     const listenLayers = e => {
       let featureCount = 0
       this.state.layers.forEach(layer => {
-        featureCount += layer.getSource().getFeatures().filter(l => l.get('type').substring(0, 8) === 'Geocache').length
+        featureCount += layer.getSource().getFeatures().filter(f => {
+          return (f.get('isCache') && !f.get('hidden'))
+        }).length
       })
       this.el.find('button > span').html(featureCount || t('Caches'))
+      this.sidebar.getComponent('Filter').get('tab').find('span').html(featureCount || t('Filter'))
     }
     this.state.layers.on('add', listenLayers)
     this.state.layers.on('remove', listenLayers)
+    onchange('geocache/filter', listenLayers)
     // radiusStyle geometry function
     this.state.styleConfig.radiusStyle.geometry = feature => {
       const coordinates = feature.getGeometry().getCoordinates()
@@ -70,7 +73,10 @@ class Geocache extends Component {
         Geotrip
       },
       activeComponent: 'tab-loader',
-      shadow: false
+      shadow: false,
+      props: {
+        collection: this.state.layers
+      }
     })
     this.layersPick()
   }
@@ -124,12 +130,11 @@ class Geocache extends Component {
     layer.set('_featureInfo', {
       title: f => {
         const inTrip = this.state.geotrip.getArray().indexOf(f) > -1
-        const isCache = f.get('type').substring(0, 8) === 'Geocache'
         const styleType = this.state.styleConfig.text[f.get('type')]
-        if (isCache) {
+        if (f.get('isCache')) {
           return `
-            <i class="${styleType ? styleType.class : this.state.styleConfig.base.class} ${f.get('unavailable') === '1' ? 'unavailable' : ''}"></i>
-            <a href="${f.get('url')}" target="_blank" class="${f.get('archived') === '1' ? 'archived' : ''}">${t(f.get('name'))}</a>
+            <i class="${styleType ? styleType.class : this.state.styleConfig.base.class} ${f.get('status') !== 'Available' ? 'unavailable' : ''}"></i>
+            <a href="${f.get('url')}" target="_blank" class="${f.get('status') === 'Archived' ? 'archived' : ''}">${t(f.get('name'))}</a>
             <a href="#" class="cache-toggle" data-id="${f.getId()}" title="${t('Add to geotrip')}">
               <i class="fas ${inTrip ? 'fa-minus-square' : 'fa-thumbtack'}"></i>
             </a>`
@@ -143,9 +148,8 @@ class Geocache extends Component {
         }
       },
       content: f => {
-        const isCache = f.get('type').substring(0, 8) === 'Geocache'
         const styleType = this.state.styleConfig.text[f.get('type')]
-        if (isCache) {
+        if (f.get('isCache')) {
           return `
             <p class="text-muted metadata">
               <i class="fas fa-clock"></i> ${formatTime(f.get('time'))}<br/>
@@ -174,10 +178,12 @@ class Geocache extends Component {
     const type = feature.get('type')
     const fstatus = feature.get('fstatus')
     const newCache = feature.get('newCache')
-    const isWaypoint = type.substring(0, 8) !== 'Geocache'
-    const isUnavailable = feature.get('unavailable')
-    const hash = type + fstatus + newCache + isUnavailable
-    if (isWaypoint && resolution > cacheConf.waypointMaxResolution) {
+    const status = feature.get('status')
+    const hash = type + fstatus + newCache + status
+    if (!feature.get('isCache') && resolution > cacheConf.waypointMaxResolution) {
+      return null
+    }
+    if (feature.get('hidden')) {
       return null
     }
     if (!this.state.styleCache[hash]) {
@@ -190,19 +196,20 @@ class Geocache extends Component {
       );
       // deep copy for remove references
       const def = JSON.parse(JSON.stringify(definition))
-      if (isUnavailable === '1') {
+      if (status !== 'Available') {
         def.fill.color = hexToRgbA(def.fill.color, 0.5)
         def.stroke.color = hexToRgbA(def.stroke.color, 0.7)
       }
       this.state.styleCache[hash] = createStyle({
-          text: def,
-          zIndex: isWaypoint ? 1 : 2
+        text: def,
+        zIndex: feature.get('isCache') ? 2 : 1
       }, true)
     }
-    if (this.state.radiusStyle.visible && resolution <= this.state.radiusStyle.maxResolution) {
+    if (feature.get('isCache') && feature.get('radiusVisible') && resolution <= cacheConf.radiusStyle.maxResolution) {
       if (!this.state.styleCache.radiusStyle) {
         this.state.styleCache.radiusStyle = createStyle(
-          this.state.styleConfig.radiusStyle
+          this.state.styleConfig.radiusStyle,
+          true
         )
       }
       return [

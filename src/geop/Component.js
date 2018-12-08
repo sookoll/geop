@@ -22,6 +22,18 @@ class Component {
   renderChildrens () {
 
   }
+  getComponent (key) {
+    return this.components[key]
+  }
+  getEl () {
+    return this.el
+  }
+  set (name, value) {
+    this.state[name] = value
+  }
+  get (name) {
+    return this.state[name]
+  }
 }
 
 export default Component

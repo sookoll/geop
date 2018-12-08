@@ -30,11 +30,16 @@ export const map = {
 }
 export const geocache = {
   auth_url: 'http://geopeitus.ee',
-  download_url: 'http://www.geopeitus.ee/index.php?p=300',
-  features_url: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&format=2',
+  download_url: {
+    page: 'http://www.geopeitus.ee/index.php?p=300',
+    geojson: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&format=2',
+    gpx: {
+      gpx_active: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&gname=1&format=1',
+      gpx_all: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&status[]=2&status[]=3&gname=1&format=1'
+    }
+  },
   cache_url: 'http://geopeitus.ee/aare/',
   radiusStyle: {
-    visible: false,
     maxResolution: 30,
     radius: 160
   },
@@ -69,6 +74,12 @@ export const geocache = {
       'suur': 'Large',
       'muu': 'Unknown'
     }
+  },
+  filter: {
+    fstatus: 'fstatusGPX',
+    type: 'type',
+    status: ['Available', 'Unavailable', 'Archived'],
+    newCache: ['New Cache']
   },
   styles: {
     base: {
@@ -184,7 +195,7 @@ export const geocache = {
       }
     },
     newCache: {
-      yes: {
+      'New Cache': {
         stroke: {
           color: '#ffff00',
           width: 4

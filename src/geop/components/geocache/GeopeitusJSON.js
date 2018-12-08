@@ -12,6 +12,7 @@ export default {
       // id
       // type
       feature.set('type', opts.mapping.type[feature.get('type')] || feature.get('type'))
+      feature.set('isCache', feature.get('type').substring(0, 8) === 'Geocache')
       // fstatus
       feature.set('fstatus', opts.mapping.fstatusJSON[feature.get('fstatus')] || feature.get('fstatus'))
       // status ? currently not available
@@ -36,7 +37,7 @@ export default {
         date.getMonth(),
         date.getDate() + opts.newCacheDays
       )
-      const newCache = (feature.get('fstatus') === 'Geocache' && testDate > today) ? 'yes' : 'no'
+      const newCache = (feature.get('fstatus') === 'Not Found' && testDate > today) ? 'New Cache' : null
       if (!feature.get('newCache')) {
         feature.set('newCache', newCache)
       }
