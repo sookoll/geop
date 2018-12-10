@@ -10,15 +10,16 @@ class Filter extends Component {
     super(target)
     this.id = 'tab-filter'
     this.icon = 'fa fa-filter'
+    this.btnTextVisible = true
     this.el = $(`
       <div
         class="tab-pane fade"
         id="${this.id}"
         role="tabpanel">
-
       </div>
     `)
     this.state = {
+      tab: null,
       conf: this.createConf(),
       layers: props.collection,
       filter: {}
@@ -33,7 +34,10 @@ class Filter extends Component {
       <ul class="list-group mb-3">
       ${Object.keys(this.state.filter).length ?
         this.renderFilter(this.state.filter) :
-        `<li class="list-group-item">${t('Add caches to map')}</li>`}
+        `<li class="list-group-item">
+          <i class="fas fa-plus"></i>
+          ${t('Add caches to map')}
+        </li>`}
       </ul>
     `)
     this.el.find('input[data-filter]').on('change', e => {
@@ -55,7 +59,7 @@ class Filter extends Component {
     return `
       <li class="list-group-item">
         <label>
-            <input type="checkbox" name="radiusStyle" value="0"> ${t('Show 160m radius')}
+          <input type="checkbox" name="radiusStyle" value="0"> ${t('Show 160m radius')}
         </label>
       </li>
       ${Object.keys(filter).map(group => {

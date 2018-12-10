@@ -8,6 +8,7 @@ export default {
     opts.features.forEach(feature => {
       const wpt = feature.get('wpt')
       feature.unset('wpt')
+      feature.unset('extensionsNode_')
       if (wpt['groundspeak:cache']) {
         const cacheData = {}
         Object.keys(wpt['groundspeak:cache']).forEach(i => {
@@ -64,7 +65,6 @@ export default {
         // url
         feature.set('url', wpt.url['#text'])
       }
-      // id
       if (!feature.getId()) {
         feature.setId(opts.uid())
       }

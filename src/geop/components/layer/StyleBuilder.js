@@ -38,8 +38,8 @@ function buildOLStyle (style, skipDefault) {
         case 'image':
         case 'circle':
           olStyle['image'] = new Circle({
-            fill: new Fill(style[key].fill),
-            stroke: new Stroke(style[key].stroke),
+            fill: style[key].fill && new Fill(style[key].fill),
+            stroke: style[key].stroke && new Stroke(style[key].stroke),
             radius: style[key].radius || 5
           })
           break

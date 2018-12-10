@@ -1,7 +1,7 @@
 import { geocache as cacheConf } from 'Conf/settings'
 import { t } from 'Utilities/translate'
 import { uid, scaleFactor, formatTime, hexToRgbA } from 'Utilities/util'
-import { getState, onchange } from 'Utilities/store'
+import { getState, setState, onchange } from 'Utilities/store'
 import { toLonLat } from 'ol/proj'
 import Component from 'Geop/Component'
 import Sidebar from 'Components/sidebar/Sidebar'
@@ -26,7 +26,7 @@ class Geocache extends Component {
           class="btn btn-secondary"
           title="${t('Caches')}">
           <i class="fa fa-cube"></i>
-          <span class="d-none d-sm-inline-block">${t('Caches')}</span>
+          <span>${t('Caches')}</span>
         </button>
       </div>
     `)
@@ -34,15 +34,8 @@ class Geocache extends Component {
       layers: new Collection(),
       styleCache: {},
       styleConfig: cacheConf.styles,
-      geotrip: new Collection(),
       currentUser: getState('app/account')
     }
-    onchange('app/account', account => {
-      this.state.currentUser = account
-      this.state.layers.forEach(layer => {
-        layer.getSource().refresh()
-      })
-    })
     const listenLayers = e => {
       let featureCount = 0
       this.state.layers.forEach(layer => {
@@ -103,9 +96,9 @@ class Geocache extends Component {
       const isGeopeitusJSON = geopeitusJSON.test(features[0])
       const isCacheGPX = geocacheGPX.test(features[0])
       if (isCacheGPX) {
-        layer.set('_formatParser', geocacheGPX)
+        layer.set('_cacheFormatParser', geocacheGPX)
       } else if (isGeopeitusJSON) {
-        layer.set('_formatParser', geopeitusJSON)
+        layer.set('_cacheFormatParser', geopeitusJSON)
       }
       return (isGeopeitusJSON || isCacheGPX)
     }
@@ -117,7 +110,7 @@ class Geocache extends Component {
       'Found': 'far fa-check-square',
       'Owner': 'fas fa-user'
     }
-    layer.get('_formatParser').formatFeatures({
+    layer.get('_cacheFormatParser').formatFeatures({
       features: layer.getSource().getFeatures(),
       newCacheDays: cacheConf.newCacheDays,
       mapping: cacheConf.mapping,
@@ -129,7 +122,8 @@ class Geocache extends Component {
     layer.setStyle((feature, resolution) => this.styleGeocache(feature, resolution))
     layer.set('_featureInfo', {
       title: f => {
-        const inTrip = this.state.geotrip.getArray().indexOf(f) > -1
+        const geotrip = getState('geocache/trip')
+        const inTrip = geotrip && geotrip.getArray().indexOf(f) > -1
         const styleType = this.state.styleConfig.text[f.get('type')]
         if (f.get('isCache')) {
           return `
@@ -173,13 +167,16 @@ class Geocache extends Component {
       }
     })
     this.state.layers.push(layer)
+    // run for onchange events
+    setState('geocache/loadend', this.state.layers.getLength())
   }
   styleGeocache (feature, resolution) {
     const type = feature.get('type')
     const fstatus = feature.get('fstatus')
     const newCache = feature.get('newCache')
     const status = feature.get('status')
-    const hash = type + fstatus + newCache + status
+    const overviewStyle = resolution > cacheConf.overviewMinResolution
+    const hash = type + fstatus + newCache + status + overviewStyle
     if (!feature.get('isCache') && resolution > cacheConf.waypointMaxResolution) {
       return null
     }
@@ -187,18 +184,30 @@ class Geocache extends Component {
       return null
     }
     if (!this.state.styleCache[hash]) {
-      const definition = Object.assign(
-        {},
-        this.state.styleConfig.base,
-        this.state.styleConfig.text[type],
-        this.state.styleConfig.color[fstatus],
-        this.state.styleConfig.newCache[newCache] || {}
-      );
+      const definition = !overviewStyle ?
+        Object.assign(
+          {},
+          this.state.styleConfig.base,
+          this.state.styleConfig.text[type],
+          this.state.styleConfig.color[fstatus],
+          this.state.styleConfig.newCache[newCache] || {}
+        ) :
+        Object.assign(
+          {},
+          this.state.styleConfig.base,
+          this.state.styleConfig.overview,
+          this.state.styleConfig.color[fstatus],
+          this.state.styleConfig.newCache[newCache] || {}
+        )
       // deep copy for remove references
       const def = JSON.parse(JSON.stringify(definition))
       if (status !== 'Available') {
-        def.fill.color = hexToRgbA(def.fill.color, 0.5)
-        def.stroke.color = hexToRgbA(def.stroke.color, 0.7)
+        if (def.fill) {
+          def.fill.color = hexToRgbA(def.fill.color, 0.5)
+        }
+        if (def.stroke) {
+          def.stroke.color = hexToRgbA(def.stroke.color, 0.7)
+        }
       }
       this.state.styleCache[hash] = createStyle({
         text: def,

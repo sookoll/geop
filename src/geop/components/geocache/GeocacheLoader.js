@@ -98,6 +98,9 @@ class GeocacheLoader extends Component {
   }
   createLayer (geojson) {
     const color = '#000000'
+    geojson.features && geojson.features.forEach(f => {
+      f.id = uid()
+    })
     const conf = {
       type: 'FeatureCollection',
       id: uid(),

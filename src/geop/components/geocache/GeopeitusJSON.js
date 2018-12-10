@@ -16,6 +16,7 @@ export default {
       // fstatus
       feature.set('fstatus', opts.mapping.fstatusJSON[feature.get('fstatus')] || feature.get('fstatus'))
       // status ? currently not available
+      feature.set('status', 'Available')
       // time
       feature.set('time', feature.get('date_hidden'))
       feature.unset('date_hidden')

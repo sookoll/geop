@@ -17,12 +17,6 @@ class Header extends Component {
       search: getState('app/searchEnabled') && new Search(this.el)
     }
   }
-  render () {
-    this.el.html(`
-      <span class="d-none">
-        <a id="download-link" download="filename">download</a>
-      </span>`)
-  }
 }
 
 export default Header

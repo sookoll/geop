@@ -100,7 +100,10 @@
     "gpx_all": "All caches (active, archived, unavailable)",
     "Show 160m radius": "Show 160m radius",
     "New Cache": "New Cache",
-    "Geotrip": "Geotrip"
+    "Geotrip": "Geotrip",
+    "Available": "Available",
+    "Archived": "Archived",
+    "Unavailable": "Unavailable"
   },
   "et": {
     "Account": "Konto",
@@ -203,6 +206,9 @@
     "gpx_all": "Kõik aarded (aktiivsed, arhiveeritud, ajutiselt kättesaamatud)",
     "Show 160m radius": "Näita 160m raadiuseid",
     "New Cache": "Uued aarded",
-    "Geotrip": "Geotuur"
+    "Geotrip": "Geotuur",
+    "Available": "Aktiivsed",
+    "Archived": "Arhiveeritud",
+    "Unavailable": "Ajutiselt kättesaamatud"
   }
 }

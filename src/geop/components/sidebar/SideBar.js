@@ -69,7 +69,7 @@ class Sidebar extends Component {
             role="tab"
             aria-controls="${plug.id}">
             ${plug.icon ? `<i class="${plug.icon}"></i>` : ''}
-            <span>${t(i)}</span>
+            <span class="${plug.btnTextVisible ? '' : 'd-none d-sm-inline-block'}">${t(i)}</span>
           </a>
         </li>
       `)

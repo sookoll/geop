@@ -45,6 +45,8 @@ export const geocache = {
   },
   newCacheDays: 30,
   waypointMaxResolution: 10,
+  overviewMinResolution: 300,
+  exportFileName: 'geop.gpx',
   mapping: {
     fstatusJSON: {
       '0': 'Not Found',
@@ -95,86 +97,95 @@ export const geocache = {
         width: 4
       }
     },
+    overview: {
+      text: '\uf111',
+      class: 'fa fa-circle',
+      font: '900 8px "Font Awesome 5 Free"',
+      stroke: {
+        color: '#fff',
+        width: 2
+      }
+    },
     text: {
       'Geocache|Traditional Cache': {
-        'text': '\uf1b2',
-        'class': 'fa fa-cube',
-        'font': '900 13px "Font Awesome 5 Free"'
+        text: '\uf1b2',
+        class: 'fa fa-cube',
+        font: '900 13px "Font Awesome 5 Free"'
       },
       'Geocache|Multi-cache': {
-        'text': '\uf1b3',
-        'class': 'fa fa-cubes',
-        'font': '900 16px "Font Awesome 5 Free"'
+        text: '\uf1b3',
+        class: 'fa fa-cubes',
+        font: '900 16px "Font Awesome 5 Free"'
       },
       'Geocache|Webcam Cache': {
-        'text': '\uf030',
-        'class': 'fa fa-camera',
-        'font': '900 12px "Font Awesome 5 Free"'
+        text: '\uf030',
+        class: 'fa fa-camera',
+        font: '900 12px "Font Awesome 5 Free"'
       },
       'Geocache|Virtual Cache': {
-        'text': '\uf1eb',
-        'class': 'fa fa-wifi',
-        'font': '900 12px "Font Awesome 5 Free"'
+        text: '\uf1eb',
+        class: 'fa fa-wifi',
+        font: '900 12px "Font Awesome 5 Free"'
       },
       'Geocache|Event Cache': {
-        'text': '\uf274',
-        'class': 'fa fa-calendar-check-o',
-        'font': '900 12px "Font Awesome 5 Free"'
+        text: '\uf274',
+        class: 'fa fa-calendar-check-o',
+        font: '900 12px "Font Awesome 5 Free"'
       },
       'Geocache|Locationless Cache': {
-        'text': '\uf021',
-        'class': 'fa fa-refresh',
-        'font': '900 12px "Font Awesome 5 Free"'
+        text: '\uf021',
+        class: 'fa fa-refresh',
+        font: '900 12px "Font Awesome 5 Free"'
       },
       'Geocache|Unknown Cache': {
-        'text': '\uf059',
-        'class': 'fa fa-question-circle',
-        'font': '900 13px "Font Awesome 5 Free"'
+        text: '\uf059',
+        class: 'fa fa-question-circle',
+        font: '900 13px "Font Awesome 5 Free"'
       },
       'Geocache|Letterbox Hybrid': {
-        'text': '\uf0e0',
-        'class': 'fa fa-envelope',
-        'font': '900 12px "Font Awesome 5 Free"'
+        text: '\uf0e0',
+        class: 'fa fa-envelope',
+        font: '900 12px "Font Awesome 5 Free"'
       },
       'Geocache|Whereigo Cache': {
-        'text': '\uf0a9',
-        'class': 'fa fa-arrow-circle-right',
-        'font': '900 12px "Font Awesome 5 Free"'
+        text: '\uf0a9',
+        class: 'fa fa-arrow-circle-right',
+        font: '900 12px "Font Awesome 5 Free"'
       },
       'Waypoint|Parking Area': {
-        'text': '\uf540',
-        'class': 'fas fa-parking',
-        'font': '900 12px "Font Awesome 5 Free"'
+        text: '\uf540',
+        class: 'fas fa-parking',
+        font: '900 12px "Font Awesome 5 Free"'
       },
       'Waypoint|Reference Point': {
-        'text': '\uf358',
-        'class': 'far fa-arrow-alt-circle-down',
-        'font': '900 12px "Font Awesome 5 Free"'
+        text: '\uf358',
+        class: 'far fa-arrow-alt-circle-down',
+        font: '900 12px "Font Awesome 5 Free"'
       },
       'Waypoint|Stages of a Multicache': {
-        'text': '\uf055',
-        'class': 'fas fa-plus-circle',
-        'font': '900 12px "Font Awesome 5 Free"'
+        text: '\uf055',
+        class: 'fas fa-plus-circle',
+        font: '900 12px "Font Awesome 5 Free"'
       },
       'Waypoint|Physical Stage': {
-        'text': '\uf055',
-        'class': 'fas fa-plus-circle',
-        'font': '900 12px "Font Awesome 5 Free"'
+        text: '\uf055',
+        class: 'fas fa-plus-circle',
+        font: '900 12px "Font Awesome 5 Free"'
       },
       'Waypoint|Virtual Stage': {
-        'text': '\uf055',
-        'class': 'fas fa-plus-circle',
-        'font': '900 12px "Font Awesome 5 Free"'
+        text: '\uf055',
+        class: 'fas fa-plus-circle',
+        font: '900 12px "Font Awesome 5 Free"'
       },
       'Waypoint|Final Location': {
-        'text': '\uf057',
-        'class': 'far fa-times-circle',
-        'font': '900 12px "Font Awesome 5 Free"'
+        text: '\uf057',
+        class: 'far fa-times-circle',
+        font: '900 12px "Font Awesome 5 Free"'
       },
       'Waypoint|Trailhead': {
-        'text': '\uf6ec',
-        'class': 'far fa-hiking',
-        'font': '900 12px "Font Awesome 5 Free"'
+        text: '\uf6ec',
+        class: 'far fa-hiking',
+        font: '900 12px "Font Awesome 5 Free"'
       }
     },
     color: {// leidmata - 0, leitud - 1, minu - 2

@@ -94,7 +94,6 @@ class FileLayer extends Component {
         ]
       })
       dragAndDropInteraction.on('addfeatures', e => {
-        console.log()
         const conf = this.fileTypes.geojson.writeFeaturesObject(e.features)
         conf.title = e.file.name
         const layer = this.createLayer(conf)
@@ -119,6 +118,9 @@ class FileLayer extends Component {
         luminosity: 'dark'
       })
       conf.id = uid()
+      conf.features && conf.features.forEach(f => {
+        f.id = uid()
+      })
       conf.style = {
         stroke: {
           color: color,

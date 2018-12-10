@@ -1,6 +1,8 @@
 import NoSleep from 'nosleep.js'
 import randomColor from 'randomcolor'
-import {getLength, getArea} from 'ol/sphere'
+import { getLength, getArea} from 'ol/sphere'
+import GPX from 'ol/format/GPX'
+import { b64encode } from './b64encode'
 
 const noSleep = new NoSleep()
 const debugStore = []
@@ -54,6 +56,21 @@ export function copy (str) {
       reject(err)
     }
   })
+}
+
+export function gpxExport (fn, fset) {
+  const string = new GPX().writeFeatures(fset)
+  const base64 = b64encode('<?xml version="1.0" encoding="utf-8"?>' + string)
+  file(fn, 'data:text/gpx+xml;base64,' + base64)
+}
+function file (fn, data) {
+  const e = document.createEvent('MouseEvent')
+  const a = document.createElement('a')
+  e.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+  a.setAttribute('href', data)
+  a.setAttribute('download', fn)
+  a.dispatchEvent(e)
+  return false
 }
 
 export function initDebug () {
@@ -217,4 +234,57 @@ export function formatTime (time) {
   let day = d.getDate().toString()
   day = day.length > 1 ? day : '0' + day
   return d.getFullYear() + '.' + month + '.' + day
+}
+
+// LZW-compress a string
+export function compress (s) {
+  var dict = {};
+  var data = (s + "").split("");
+  var out = [];
+  var currChar;
+  var phrase = data[0];
+  var code = 256;
+  for (var i=1; i<data.length; i++) {
+    currChar=data[i];
+    if (dict['_' + phrase + currChar] != null) {
+      phrase += currChar;
+    }
+    else {
+      out.push(phrase.length > 1 ? dict['_'+phrase] : phrase.charCodeAt(0));
+      dict['_' + phrase + currChar] = code;
+      code++;
+      phrase=currChar;
+    }
+  }
+  out.push(phrase.length > 1 ? dict['_'+phrase] : phrase.charCodeAt(0));
+  for (i=0; i<out.length; i++) {
+    out[i] = String.fromCharCode(out[i]);
+  }
+  return out.join("");
+}
+
+// Decompress an LZW-encoded string
+export function decompress (s) {
+  var dict = {};
+  var data = (s + "").split("");
+  var currChar = data[0];
+  var oldPhrase = currChar;
+  var out = [currChar];
+  var code = 256;
+  var phrase;
+  for (var i=1; i<data.length; i++) {
+    var currCode = data[i].charCodeAt(0);
+    if (currCode < 256) {
+      phrase = data[i];
+    }
+    else {
+      phrase = dict['_'+currCode] ? dict['_'+currCode] : (oldPhrase + currChar);
+    }
+    out.push(phrase);
+    currChar = phrase.charAt(0);
+    dict['_'+code] = oldPhrase + currChar;
+    code++;
+    oldPhrase = phrase;
+  }
+  return out.join("");
 }

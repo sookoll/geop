@@ -94,9 +94,8 @@ class Popup extends Component {
   getContent (feature, layer) {
     if (feature && layer) {
       const props = feature.getProperties()
+      const geotrip = getState('geocache/trip')
       let title, content
-      //TODO:
-      //var in_collection = $.inArray(feature, this._app.geocache.get('geotrip').getArray());
       if (layer.get('_featureInfo')) {
         const info = layer.get('_featureInfo')
         title = typeof info.title === 'function' ? info.title(feature) : info.title
@@ -106,7 +105,7 @@ class Popup extends Component {
           <i class="fa fa-map-marker-alt"></i>
           ${t('Feature')}
           <a href="#" class="cache-toggle" data-id="${feature.get('id')}" title="${t('Add to geotrip')}">
-            <i class="fa fa-thumbtack"></i>
+            <i class="fas ${(geotrip && geotrip.getArray().indexOf(feature) > -1) ? 'fa-minus-square' : 'fa-thumbtack'}"></i>
           </a>
           <a href="#" class="remove-marker" title="Eemalda">
             <i class="far fa-trash-alt"></i>
@@ -124,8 +123,6 @@ class Popup extends Component {
         }
         content = content.join('<br>')
       }
-
-      //var geotrip = t._app.geocache.get('geotrip');
       return {
         definition: {
           container: this.el,
@@ -143,6 +140,7 @@ class Popup extends Component {
             </div>`
         },
         'onShow': (f, pop) => {
+          const geotrip = getState('geocache/trip')
           $(pop).on('contextmenu', e => {
             e.stopPropagation()
           })
@@ -150,18 +148,22 @@ class Popup extends Component {
             e.preventDefault()
             if (f[0]) {
               f[0].getSource().removeFeature(f[1])
-              //geotrip.remove(f[1]);
+              if (geotrip) {
+                geotrip.remove(f[1])
+              }
               this.el.popover('dispose')
             }
           })
           $(pop).on('click', '.cache-toggle', e => {
             e.preventDefault()
             $(e.currentTarget).find('i').toggleClass('fa-thumbtack fa-minus-square')
-            /*if ($.inArray(f[1], geotrip.getArray()) > -1) {
-              geotrip.remove(f[1]);
-            } else {
-              geotrip.push(f[1]);
-            }*/
+            if (geotrip) {
+              if (geotrip.getArray().indexOf(f[1]) > -1) {
+                geotrip.remove(f[1])
+              } else {
+                geotrip.push(f[1])
+              }
+            }
           })
         },
         'onHide' : function () {}
