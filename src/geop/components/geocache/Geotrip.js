@@ -1,15 +1,15 @@
-import { geocache as cacheConf } from 'Conf/settings'
+import { geocache as cacheConf, apiUrls } from 'Conf/settings'
 import { t } from 'Utilities/translate'
+import log from 'Utilities/log'
 import { getState, setState, onchange } from 'Utilities/store'
-import { gpxExport, compress, decompress } from 'Utilities/util'
+import { getSessionState } from 'Utilities/session'
+import { gpxExport, uid } from 'Utilities/util'
 import Component from 'Geop/Component'
 import Collection from 'ol/Collection'
 import { createLayer } from 'Components/layer/LayerCreator'
 import Sortable from 'sortablejs'
 import LineString from 'ol/geom/LineString'
 import Feature from 'ol/Feature'
-import GeoJSONFormat from 'ol/format/GeoJSON'
-import polyline from '@mapbox/polyline'
 import $ from 'jquery'
 import './Geotrip.styl'
 
@@ -199,37 +199,21 @@ class Geotrip extends Component {
     gpxExport(cacheConf.exportFileName, features)
   }
   share () {
-    const features = this.state.collection.getArray().map(f => {
-      const props = f.getProperties()
-      const filtered = Object.keys(props)
-        .filter(key => key !== f.getGeometryName())
-        .reduce((obj, key) => {
-          obj[key] = props[key]
-          return obj
-        }, {})
-      return JSON.stringify(filtered)
-    })
-    const gjson = new GeoJSONFormat().writeGeometryObject(this.state.route.getGeometry(), {
-      featureProjection: getState('map/projection'),
-      dataProjection: 'EPSG:4326'
-    })
-    gjson.coordinates.forEach(coord => {
-      console.log(coord)
-      coord.slice(0, 2)
-      console.log(coord)
-    })
-    const poly = polyline.fromGeoJSON(gjson)
-    features.push(poly)
-    const string = features.join('\n')
-    const compressed = compress(string)
-    console.log(string)
-    console.log(compressed)
-    console.log(string.length, compressed.length)
-    const dec = decompress(compressed)
-    console.log(dec)
-    console.log(polyline.toGeoJSON(dec[dec.length - 1]))
-    console.log(polyline.toGeoJSON(poly))
-    console.log(gjson)
+    //https://dev.to/bauripalash/building-a-simple-url-shortener-with-just-html-and-javascript-16o4
+    getSessionState()
+      .then(appState => {
+        const data = Object.assign({}, ...Object.keys(appState).map(k => ({[k.replace(/\//g, '_')]: appState[k]})))
+        this.saveState(data)
+          .then(bookmark => {
+            console.log(bookmark)
+          })
+          .catch(e => {
+            log('error', t(e))
+          })
+      })
+      .catch(e => {
+        log('error', t(e))
+      })
   }
   createLayer () {
     return createLayer({
@@ -247,6 +231,38 @@ class Geotrip extends Component {
         }
       }]
     })
+  }
+  saveState (data) {
+    return new Promise((resolve, reject) => {
+      if (this.xhr && typeof this.xhr.abort === 'function') {
+        this.xhr.abort()
+      }
+      const hash = uid()
+      this.xhr = $.ajax({
+        type : 'POST',
+        crossDomain : true,
+        url : apiUrls.jsonstore + '/' + hash,
+        data: JSON.stringify(data),
+        dataType: 'json',
+        contentType: 'application/json; charset=utf-8',
+        context: this
+      })
+      .done(data => {
+        if (data && data.ok) {
+          resolve(hash)
+        } else {
+          reject(new Error('Unable to save data'))
+        }
+      })
+      .fail(request => {
+        if (request.statusText === 'abort') {
+          resolve(null)
+        } else {
+          reject(new Error('Unable to save data'))
+        }
+      })
+    })
+
   }
 }
 

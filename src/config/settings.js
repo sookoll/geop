@@ -29,16 +29,16 @@ export const map = {
   clustered: false
 }
 export const geocache = {
-  auth_url: 'http://geopeitus.ee',
-  download_url: {
+  authUrl: 'http://geopeitus.ee',
+  downloadUrl: {
     page: 'http://www.geopeitus.ee/index.php?p=300',
     geojson: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&format=2',
     gpx: {
-      gpx_active: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&gname=1&format=1',
-      gpx_all: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&status[]=2&status[]=3&gname=1&format=1'
+      gpxActive: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&gname=1&format=1',
+      gpxAll: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&status[]=2&status[]=3&gname=1&format=1'
     }
   },
-  cache_url: 'http://geopeitus.ee/aare/',
+  cacheUrl: 'http://geopeitus.ee/aare/',
   radiusStyle: {
     maxResolution: 30,
     radius: 160
@@ -222,6 +222,7 @@ export const geocache = {
 }
 export const apiUrls = {
   streetview: 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=',
-  osm_ideditor: 'https://www.openstreetmap.org/edit?editor=id#background=custom:http://tiles.maaamet.ee/tm/tms/1.0.0/foto@GMC/{z}/{x}/{-y}.png&map=',
+  ideditor: 'https://www.openstreetmap.org/edit?editor=id#background=custom:http://tiles.maaamet.ee/tm/tms/1.0.0/foto@GMC/{z}/{x}/{-y}.png&map=',
   nominatim: 'https://nominatim.openstreetmap.org',
+  jsonstore: 'https://www.jsonstore.io/4d04eefd7ed4c19866cefcf038d0bebe95786bf33f0e60fdfbd8a554e6ae2670'
 }

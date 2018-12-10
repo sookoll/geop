@@ -14,7 +14,7 @@ import { createStyle } from './StyleBuilder'
 import range from 'lodash/range'
 import { getState } from 'Utilities/store'
 import { map as mapConf } from 'Conf/settings'
-import { uid } from 'Utilities/util'
+import { uid, deepCopy } from 'Utilities/util'
 
 export const dataProjection = 'EPSG:4326'
 
@@ -51,7 +51,7 @@ class TileLayer extends LayerTile {
       })
     }
     const options = {
-      source: new sources[opts.type](Object.assign(opts, sourceOpts))
+      source: new sources[opts.type](Object.assign({}, opts, sourceOpts))
     }
     super(options)
   }
@@ -78,11 +78,12 @@ export function createLayer (layerConf) {
   switch (layerConf.type) {
     case 'Group':
       const arr = layerConf.layers.map(conf => {
+        const inputConf = deepCopy(conf)
         // add projection to sublayer
-        if (!conf.projection) {
-          conf.projection = layerConf.projection
+        if (!inputConf.projection) {
+          inputConf.projection = layerConf.projection
         }
-        return createLayer(conf)
+        return createLayer(inputConf)
       })
       // group should be visible, if not specified
       if (typeof layerConf.visible === 'undefined') {
@@ -94,13 +95,13 @@ export function createLayer (layerConf) {
       break
     case 'XYZ':
     case 'TileWMS':
-      layer = new TileLayer(layerConf)
+      layer = new TileLayer(deepCopy(layerConf))
       break
     case 'ImageWMS':
-      layer = new ImageLayer(layerConf)
+      layer = new ImageLayer(deepCopy(layerConf))
       break
     case 'FeatureCollection':
-      layer = new FeatureLayer(layerConf)
+      layer = new FeatureLayer(deepCopy(layerConf))
       break
   }
   return set(layer, layerConf)

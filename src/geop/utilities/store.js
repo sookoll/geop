@@ -1,4 +1,5 @@
 import { get, set, keys, clear } from 'idb-keyval'
+import { deepCopy } from './util'
 
 const state = {}
 const events = {}
@@ -16,7 +17,7 @@ export function initState (conf) {
               storageConf[key] = val
             }
           }
-          const stateConf = Object.assign(conf, storageConf)
+          const stateConf = deepCopy(Object.assign({}, conf, storageConf))
           Object.keys(stateConf).forEach(key => {
             state[key] = stateConf[key]
           })
@@ -69,4 +70,27 @@ export function onchange (item, listener) {
 
 export function clearState () {
   clear()
+}
+
+export function exportState () {
+  return new Promise((resolve, reject) => {
+    if (storeAvailable) {
+      try {
+        keys().then(async (keys) => {
+          const storageConf = {}
+          for (const key of keys) {
+            const val = await get(key)
+            if (typeof(val) !== 'undefined' && val !== null) {
+              storageConf[key] = val
+            }
+          }
+          resolve(deepCopy(Object.assign({}, storageConf)))
+        })
+      } catch (e) {
+        reject(e)
+      }
+    } else {
+      reject(new Error('Unable to export state'))
+    }
+  })
 }

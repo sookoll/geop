@@ -288,3 +288,7 @@ export function decompress (s) {
   }
   return out.join("");
 }
+
+export function deepCopy (json) {
+  return JSON.parse(JSON.stringify(json))
+}

@@ -27,25 +27,25 @@ class GeocacheLoader extends Component {
         <li class="list-group-item">
           <span class="badge badge-pill badge-primary">1</span>
           ${t('Go to')}
-          <a href="${cacheConf.auth_url}" target="geopeitus">geopeitus.ee</a>
+          <a href="${cacheConf.authUrl}" target="geopeitus">geopeitus.ee</a>
           ${t('and log in')},
         </li>
         <li class="list-group-item">
           <span class="badge badge-pill badge-primary">2</span>
           ${t('download GPX from')}
-          <a href="${cacheConf.download_url.page}" target="geopeitus">${t('here')}</a>
+          <a href="${cacheConf.downloadUrl.page}" target="geopeitus">${t('here')}</a>
           ${t('and drop it on map or import file from layers menu')}
           <div class="alert alert-light" role="alert">
             ${t('Quick links')}<br/>
-            ${Object.keys(cacheConf.download_url.gpx).map(key => {
-              return `<a href="${cacheConf.download_url.gpx[key]}" target="geopeitus">${t(key)}</a>`
+            ${Object.keys(cacheConf.downloadUrl.gpx).map(key => {
+              return `<a href="${cacheConf.downloadUrl.gpx[key]}" target="geopeitus">${t(key)}</a>`
             }).join('<br/>')}
           </div>
         </li>
         <li class="list-group-item">
           <span class="badge badge-pill badge-primary">3</span>
           ${t('or open')}
-          <a href="${cacheConf.download_url.geojson}" target="geopeitus">link</a>
+          <a href="${cacheConf.downloadUrl.geojson}" target="geopeitus">link</a>
           ${t('and copy page content to textbox below')}
         </li>
       </ul>

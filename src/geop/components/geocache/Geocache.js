@@ -1,6 +1,6 @@
 import { geocache as cacheConf } from 'Conf/settings'
 import { t } from 'Utilities/translate'
-import { uid, scaleFactor, formatTime, hexToRgbA } from 'Utilities/util'
+import { uid, scaleFactor, formatTime, hexToRgbA, deepCopy } from 'Utilities/util'
 import { getState, setState, onchange } from 'Utilities/store'
 import { toLonLat } from 'ol/proj'
 import Component from 'Geop/Component'
@@ -116,7 +116,7 @@ class Geocache extends Component {
       mapping: cacheConf.mapping,
       user: this.state.currentUser,
       uid: uid,
-      url: cacheConf.cache_url,
+      url: cacheConf.cacheUrl,
       date: formatTime
     })
     layer.setStyle((feature, resolution) => this.styleGeocache(feature, resolution))
@@ -200,7 +200,7 @@ class Geocache extends Component {
           this.state.styleConfig.newCache[newCache] || {}
         )
       // deep copy for remove references
-      const def = JSON.parse(JSON.stringify(definition))
+      const def = deepCopy(definition)
       if (status !== 'Available') {
         if (def.fill) {
           def.fill.color = hexToRgbA(def.fill.color, 0.5)

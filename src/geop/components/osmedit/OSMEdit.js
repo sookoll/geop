@@ -22,7 +22,7 @@ class OSMEdit extends Component {
       e.preventDefault()
       const center = toLonLat(getState('map/view/center'))
       const zoom = getState('map/view/zoom')
-      window.open(apiUrls.osm_ideditor + zoom + '/' + center[1] + '/' + center[0])
+      window.open(apiUrls.ideditor + zoom + '/' + center[1] + '/' + center[0])
     })
   }
 }

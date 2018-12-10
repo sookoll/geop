@@ -1,7 +1,7 @@
 
 import { app as appConf, map as mapConf } from 'Conf/settings'
 import { layers as layersConf } from 'Conf/layers'
-import { initState, clearState } from './store'
+import { initState, clearState, exportState } from './store'
 
 /**
  * Init conf - merge static conf with saved store
@@ -24,4 +24,12 @@ export function initConf () {
 
 export function clear () {
   clearState()
+}
+
+export function getSessionState () {
+  return new Promise((resolve, reject) => {
+    exportState()
+      .then(resolve)
+      .catch(reject)
+  })
 }
