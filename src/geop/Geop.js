@@ -1,6 +1,5 @@
 import { getState } from 'Utilities/store'
 import { initLocale } from 'Utilities/translate'
-import { activatePermalink } from 'Utilities/permalink'
 import { initDebug } from 'Utilities/util'
 import translations from 'Conf/translations'
 import Component from 'Geop/Component'
@@ -24,12 +23,6 @@ class Geop extends Component {
     }
     // set locale
     initLocale(getState('app/locale'), translations)
-
-    // permalink
-    if (getState('app/shareState') && 'onhashchange' in window) {
-      activatePermalink()
-
-    }
 
     this.components = {
       map: new MapEngine(this.target),

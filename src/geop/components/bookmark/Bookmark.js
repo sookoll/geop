@@ -7,6 +7,7 @@ import { copy, uid } from 'Utilities/util'
 import { get as getPermalink } from 'Utilities/permalink'
 import log from 'Utilities/log'
 import $ from 'jquery'
+import './Bookmark.styl'
 
 class Bookmark extends Component {
   constructor (target) {
@@ -16,7 +17,7 @@ class Bookmark extends Component {
     `)
     this.state = {
       bookmarks: getState('app/bookmarks') || [],
-      bookmark: getPermalink()
+      bookmark: getPermalink('hash')
     }
     this.modal = $(`
       <div class="modal fade"
@@ -38,8 +39,10 @@ class Bookmark extends Component {
                 <div class="input-group-append">
                   <button class="btn btn-secondary copy" type="button">
                     <i class="far fa-clone"></i>
-                    ${t('Copy')}
                   </button>
+                  <a class="btn btn-secondary go" href="#" target="_blank">
+                    <i class="fas fa-link"></i>
+                  </a>
                 </div>
               </div>
               <div class="mb-5 text-center display-4">
@@ -62,10 +65,18 @@ class Bookmark extends Component {
       e.preventDefault()
       this.share()
     })
+    this.el.on('click', 'li', e => {
+      e.preventDefault()
+      this.openModal($(e.currentTarget).data('id'))
+    })
+    this.el.on('click', 'li .tools a.remove', e => {
+      e.preventDefault()
+      e.stopPropagation()
+      this.delete($(e.currentTarget).closest('li').data('id'))
+    })
     this.modal.on('click', 'button.copy', e => {
       this.copy($(e.target).closest('.modal').find('input').val())
     })
-    console.log(this.state.permalink)
   }
   render () {
     this.el.html(`
@@ -81,34 +92,33 @@ class Bookmark extends Component {
         <div class="dropdown-menu dropdown-menu-right">
           ${this.state.bookmarks.map((bookmark) => {
             return `
-              <a class="dropdown-item" href="${window.location.origin}/#${bookmark}">
-                <i class="fas fa-star"></i>
-                ${bookmark}
-                <button type="button" class="close">
+            <li
+              class="dropdown-item"
+              data-id="${bookmark}">
+              <i class="fas fa-star"></i>
+              ${bookmark}
+              <div class="tools">
+                <a href="#" class="remove">
                   <i class="fa fa-times"></i>
-                </button>
-              </a>`
+                </a>
+              </div>
+            </li>`
           }).join('')}
         </div>
       </div>
     `)
   }
+  //https://dev.to/bauripalash/building-a-simple-url-shortener-with-just-html-and-javascript-16o4
   share () {
-    //https://dev.to/bauripalash/building-a-simple-url-shortener-with-just-html-and-javascript-16o4
     getSessionState()
       .then(appState => {
-        const data = Object.assign({}, ...Object.keys(appState).map(k => ({[k.replace(/\//g, '_')]: appState[k]})))
-        if ('app_bookmarks' in data) {
-          delete data.app_bookmarks
-        }
-        this.saveState(data)
+        const data = formatState('up', appState)
+        setBookmarkState(data)
           .then(bookmark => {
             this.state.bookmarks.push(bookmark)
             setState('app/bookmarks', this.state.bookmarks, true)
             this.render()
-            this.modal.find('input').val(window.location.origin + '/#' + bookmark)
-            this.modal.find('img').attr('src', apiUrls.qrcode + encodeURI(window.location.origin + '/#' + bookmark))
-            this.modal.modal()
+            this.openModal(bookmark)
           })
           .catch(e => {
             log('error', t(e))
@@ -117,39 +127,6 @@ class Bookmark extends Component {
       .catch(e => {
         log('error', t(e))
       })
-  }
-  saveState (data) {
-    return new Promise((resolve, reject) => {
-      if (this.xhr && typeof this.xhr.abort === 'function') {
-        this.xhr.abort()
-      }
-      const hash = uid()
-      resolve(hash)
-      this.xhr = $.ajax({
-        type : 'POST',
-        crossDomain : true,
-        url : apiUrls.jsonstore + '/' + hash,
-        data: JSON.stringify(data),
-        dataType: 'json',
-        contentType: 'application/json; charset=utf-8',
-        context: this
-      })
-      .done(data => {
-        if (data && data.ok) {
-          resolve(hash)
-        } else {
-          reject(new Error('Unable to save data'))
-        }
-      })
-      .fail(request => {
-        if (request.statusText === 'abort') {
-          resolve(null)
-        } else {
-          reject(new Error('Unable to save data'))
-        }
-      })
-    })
-
   }
   copy (content) {
     copy(content)
@@ -160,6 +137,136 @@ class Bookmark extends Component {
         log('error', t('Unable to copy to clipboard'))
       })
   }
+  delete (bookmark) {
+    deleteBookmarkState(bookmark)
+      .then(() => {
+        this.state.bookmarks = this.state.bookmarks.filter(item => item !== bookmark)
+        setState('app/bookmarks', this.state.bookmarks, true)
+        this.render()
+      })
+      .catch(e => {
+        log('error', t(e))
+      })
+  }
+  bookmarkUrl (hash) {
+    return window.location.origin + '/#hash=' + hash
+  }
+  openModal (bookmark) {
+    this.modal.find('input').val(this.bookmarkUrl(bookmark))
+    this.modal.find('a.go').attr('href', this.bookmarkUrl(bookmark))
+    this.modal.find('img').attr('src', apiUrls.qrcode + encodeURI(this.bookmarkUrl(bookmark)))
+    this.modal.modal()
+  }
+}
+
+let xhr = null
+
+function formatState (type = 'down', data = {}, hash = null) {
+  let state = {}
+  if (type === 'up') {
+    state = Object.assign({}, ...Object.keys(data).map(k => ({[k.replace(/\//g, '_')]: data[k]})))
+    if ('app_bookmarks' in state) {
+      delete state.app_bookmarks
+    }
+    if ('app_bookmark_loaded' in state) {
+      delete state.app_bookmark_loaded
+    }
+  } else {
+    state = Object.assign({}, ...Object.keys(data).map(k => ({[k.replace(/_/g, '/')]: data[k]})))
+    if (hash) {
+      state['app/bookmark/loaded'] = hash
+    }
+  }
+  return state
+}
+
+function setBookmarkState (data) {
+  return new Promise((resolve, reject) => {
+    if (xhr && typeof xhr.abort === 'function') {
+      xhr.abort()
+    }
+    const hash = uid()
+    xhr = $.ajax({
+      type : 'POST',
+      crossDomain : true,
+      url : apiUrls.jsonstore + '/' + hash,
+      data: JSON.stringify(data),
+      dataType: 'json',
+      contentType: 'application/json; charset=utf-8'
+    })
+    .done(data => {
+      if (data && data.ok) {
+        resolve(hash)
+      } else {
+        reject(new Error('Unable to save bookmark'))
+      }
+    })
+    .fail(request => {
+      if (request.statusText === 'abort') {
+        resolve(null)
+      } else {
+        reject(new Error('Unable to save bookmark'))
+      }
+    })
+  })
+}
+
+export function getBookmarkState (hash) {
+  return new Promise((resolve, reject) => {
+    if (xhr && typeof xhr.abort === 'function') {
+      xhr.abort()
+    }
+    xhr = $.ajax({
+      type : 'GET',
+      crossDomain : true,
+      url : apiUrls.jsonstore + '/' + hash,
+      dataType: 'json',
+      contentType: 'application/json; charset=utf-8'
+    })
+    .done(data => {
+      if (data && data.ok && data.result) {
+        resolve(formatState('down', data.result, hash))
+      } else {
+        reject(new Error('Unable to load bookmark'))
+      }
+    })
+    .fail(request => {
+      if (request.statusText === 'abort') {
+        resolve(null)
+      } else {
+        reject(new Error('Unable to load bookmark'))
+      }
+    })
+  })
+}
+
+function deleteBookmarkState (hash) {
+  return new Promise((resolve, reject) => {
+    if (xhr && typeof xhr.abort === 'function') {
+      xhr.abort()
+    }
+    xhr = $.ajax({
+      type : 'DELETE',
+      crossDomain : true,
+      url : apiUrls.jsonstore + '/' + hash,
+      dataType: 'json',
+      contentType: 'application/json; charset=utf-8'
+    })
+    .done(data => {
+      if (data && data.ok) {
+        resolve()
+      } else {
+        reject(new Error('Unable to delete bookmark'))
+      }
+    })
+    .fail(request => {
+      if (request.statusText === 'abort') {
+        resolve(null)
+      } else {
+        reject(new Error('Unable to delete bookmark'))
+      }
+    })
+  })
 }
 
 export default Bookmark

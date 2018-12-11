@@ -1,4 +1,5 @@
 import { initConf } from 'Utilities/session'
+import { activatePermalink } from 'Utilities/permalink'
 import 'bootstrap/dist/css/bootstrap.css'
 import '@fortawesome/fontawesome-free/css/all.css'
 import './app.styl'
@@ -13,6 +14,11 @@ import Geop from 'Geop/Geop'
 import $ from 'jquery'
 
 initServiceWorker()
+
+// permalink
+if ('onhashchange' in window) {
+  activatePermalink()
+}
 
 initConf().then(conf => {
   const app = new Geop($('#geop'))
