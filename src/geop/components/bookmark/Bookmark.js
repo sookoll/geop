@@ -153,7 +153,7 @@ class Bookmark extends Component {
       })
   }
   bookmarkUrl (hash) {
-    return window.location.origin + '/#hash=' + hash
+    return window.location.origin + window.location.pathname + '#hash=' + hash
   }
   openModal (bookmark) {
     this.modal.find('input').val(this.bookmarkUrl(bookmark))
