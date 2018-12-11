@@ -3,7 +3,6 @@ export default {
     return (feature.get('wpt') && feature.get('wpt')['groundspeak:cache'])
   },
   formatFeatures: opts => {
-
     const today = new Date()
     opts.features.forEach(feature => {
       const wpt = feature.get('wpt')
@@ -12,14 +11,13 @@ export default {
       if (wpt['groundspeak:cache']) {
         const cacheData = {}
         Object.keys(wpt['groundspeak:cache']).forEach(i => {
-          if (i === '@attributes') {
-            cacheData[i] = wpt['groundspeak:cache'][i]
-          } else if (i !== '#text') {
-            cacheData[i.replace('groundspeak:', '')] = wpt['groundspeak:cache'][i]['#text']
+          if (i !== '_text') {
+            cacheData[i.replace('groundspeak:', '')] = wpt['groundspeak:cache'][i]['_text'] ?
+              wpt['groundspeak:cache'][i]['_text'] : wpt['groundspeak:cache'][i]
           }
         })
         // id
-        feature.set('id', cacheData['@attributes'].id)
+        feature.set('id', cacheData['@id'])
         // type
         feature.set('isCache', feature.get('type').substring(0, 8) === 'Geocache')
         // fstatus
@@ -30,17 +28,17 @@ export default {
         feature.set('fstatus', opts.mapping.fstatusGPX[fstatus] || fstatus)
         feature.unset('sym')
         // status
-        let status = cacheData['@attributes'].available === 'True' ? 'Available' : 'Unavailable'
-        if (cacheData['@attributes'].archived === 'True') {
+        let status = cacheData['@available'] === 'True' ? 'Available' : 'Unavailable'
+        if (cacheData['@archived'] === 'True') {
           status = 'Archived'
         }
         feature.set('status', status)
         // time
-        feature.set('time', wpt.time['#text'])
+        feature.set('time', wpt.time['_text'])
         // name
         feature.set('name', cacheData.name)
         // url
-        feature.set('url', wpt.url['#text'])
+        feature.set('url', wpt.url['_text'])
         // owner
         feature.set('owner', cacheData.owner)
         // container
@@ -63,7 +61,7 @@ export default {
         // name
         feature.set('name', feature.get('type'))
         // url
-        feature.set('url', wpt.url['#text'])
+        feature.set('url', wpt.url['_text'])
       }
       if (!feature.getId()) {
         feature.setId(opts.uid())

@@ -196,8 +196,7 @@ function readWpt(node, objectStack) {
   transformWithOptions(geometry, false, options)
   const feature = new Feature(geometry)
   feature.setProperties(values)
-  //feature.set('wpt', xml2js(node))
-  console.log(xml2js(node))
+  feature.set('wpt', xml2js(node))
   return feature
 }
 /**

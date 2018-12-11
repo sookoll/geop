@@ -12,6 +12,7 @@ export const app = {
   fullScreen: true,
   mousePosition: true,
   geoLocation: true,
+  shareState: true,
   settingsTabOpen: 'info-tab',// active tab on sidebar
   debug: true,// collect all console debug, info and error into downloadable file
   debugFile: 'geop_debug.log'
@@ -224,5 +225,6 @@ export const apiUrls = {
   streetview: 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=',
   ideditor: 'https://www.openstreetmap.org/edit?editor=id#background=custom:http://tiles.maaamet.ee/tm/tms/1.0.0/foto@GMC/{z}/{x}/{-y}.png&map=',
   nominatim: 'https://nominatim.openstreetmap.org',
-  jsonstore: 'https://www.jsonstore.io/4d04eefd7ed4c19866cefcf038d0bebe95786bf33f0e60fdfbd8a554e6ae2670'
+  jsonstore: 'https://www.jsonstore.io/4d04eefd7ed4c19866cefcf038d0bebe95786bf33f0e60fdfbd8a554e6ae2670',
+  qrcode: 'http://api.qrserver.com/v1/create-qr-code/?size=150x150&data='
 }

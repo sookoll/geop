@@ -25,9 +25,12 @@ class Geop extends Component {
     // set locale
     initLocale(getState('app/locale'), translations)
 
-    if ('onhashchange' in window) {
+    // permalink
+    if (getState('app/shareState') && 'onhashchange' in window) {
       activatePermalink()
+
     }
+
     this.components = {
       map: new MapEngine(this.target),
       contextmenu: new ContextMenu(this.target),

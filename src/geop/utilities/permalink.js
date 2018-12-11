@@ -16,7 +16,6 @@ export function activatePermalink () {
 
 function parseHash (hash) {
   const parsed = {}
-  console.log(hash)
   if (hash) {
     hash.slice(1).split('/').forEach(item => {
       const parts = item.split('=')
@@ -27,5 +26,5 @@ function parseHash (hash) {
 }
 
 export function get (id) {
-  return state.hash[id]
+  return id ? state.hash[id] : state.hash
 }

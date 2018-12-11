@@ -1,9 +1,7 @@
-import { geocache as cacheConf, apiUrls } from 'Conf/settings'
+import { geocache as cacheConf } from 'Conf/settings'
 import { t } from 'Utilities/translate'
-import log from 'Utilities/log'
 import { getState, setState, onchange } from 'Utilities/store'
-import { getSessionState } from 'Utilities/session'
-import { gpxExport, uid } from 'Utilities/util'
+import { gpxExport } from 'Utilities/util'
 import Component from 'Geop/Component'
 import Collection from 'ol/Collection'
 import { createLayer } from 'Components/layer/LayerCreator'
@@ -69,9 +67,6 @@ class Geotrip extends Component {
       </ul>
       ${this.state.collection.getLength() ?
         `<div class="btn-group float-right" role="group">
-          <button type="button" class="btn btn-secondary share" title="${t('Share trip')}">
-            <i class="fas fa-share-alt"></i>
-          </button>
           <a role="button" class="btn btn-secondary export" title="${t('Download')}">
             <i class="fas fa-download"></i> GPX
           </a>
@@ -198,23 +193,6 @@ class Geotrip extends Component {
     }
     gpxExport(cacheConf.exportFileName, features)
   }
-  share () {
-    //https://dev.to/bauripalash/building-a-simple-url-shortener-with-just-html-and-javascript-16o4
-    getSessionState()
-      .then(appState => {
-        const data = Object.assign({}, ...Object.keys(appState).map(k => ({[k.replace(/\//g, '_')]: appState[k]})))
-        this.saveState(data)
-          .then(bookmark => {
-            console.log(bookmark)
-          })
-          .catch(e => {
-            log('error', t(e))
-          })
-      })
-      .catch(e => {
-        log('error', t(e))
-      })
-  }
   createLayer () {
     return createLayer({
       type: 'FeatureCollection',
@@ -231,38 +209,6 @@ class Geotrip extends Component {
         }
       }]
     })
-  }
-  saveState (data) {
-    return new Promise((resolve, reject) => {
-      if (this.xhr && typeof this.xhr.abort === 'function') {
-        this.xhr.abort()
-      }
-      const hash = uid()
-      this.xhr = $.ajax({
-        type : 'POST',
-        crossDomain : true,
-        url : apiUrls.jsonstore + '/' + hash,
-        data: JSON.stringify(data),
-        dataType: 'json',
-        contentType: 'application/json; charset=utf-8',
-        context: this
-      })
-      .done(data => {
-        if (data && data.ok) {
-          resolve(hash)
-        } else {
-          reject(new Error('Unable to save data'))
-        }
-      })
-      .fail(request => {
-        if (request.statusText === 'abort') {
-          resolve(null)
-        } else {
-          reject(new Error('Unable to save data'))
-        }
-      })
-    })
-
   }
 }
 

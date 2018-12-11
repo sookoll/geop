@@ -1,7 +1,6 @@
 import Component from 'Geop/Component'
 import {t} from 'Utilities/translate'
 import $ from 'jquery'
-//import './FullScreen.styl'
 
 class FullScreen extends Component {
   constructor (target) {
