@@ -5,6 +5,7 @@ const state = {
   newURL: null,
   hash: null
 }
+const events = []
 
 export function activatePermalink () {
   // current state
@@ -15,6 +16,9 @@ export function activatePermalink () {
     state.oldURL = state.newURL
     state.newURL = parseURL(event.newURL)
     state.hash = parseHash(state.newURL.hash)
+    events.forEach(fn => {
+      fn(state.hash)
+    })
   }, false)
 }
 
@@ -31,4 +35,8 @@ function parseHash (hash) {
 
 export function get (id) {
   return id ? state.hash[id] : state.hash
+}
+
+export function onchange (cb) {
+  events.push(cb)
 }

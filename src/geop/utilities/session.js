@@ -23,11 +23,14 @@ export function initConf () {
       })
       conf['map/layers'] = layersConf
       const state = Object.assign({}, conf, storageState, bookmarkState)
+      // disable bookmarks if not supported
+      if (!'onhashchange' in window) {
+        state['app/shareState'] = false
+      }
       // set state
       Object.keys(state).forEach(key => {
         setState(key, state[key])
       })
-      console.log(bookmarkState)
       resolve(state)
     } catch (e) {
       reject(e)

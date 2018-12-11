@@ -4,7 +4,7 @@ import { getSessionState } from 'Utilities/session'
 import { getState, setState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
 import { copy, uid } from 'Utilities/util'
-import { get as getPermalink } from 'Utilities/permalink'
+import { get as getPermalink, onchange as onPermalinkChange } from 'Utilities/permalink'
 import log from 'Utilities/log'
 import $ from 'jquery'
 import './Bookmark.styl'
@@ -77,6 +77,9 @@ class Bookmark extends Component {
     this.modal.on('click', 'button.copy', e => {
       this.copy($(e.target).closest('.modal').find('input').val())
     })
+    onPermalinkChange(permalink => {
+      console.log('changed', permalink)
+    })
   }
   render () {
     this.el.html(`
@@ -143,6 +146,7 @@ class Bookmark extends Component {
         this.state.bookmarks = this.state.bookmarks.filter(item => item !== bookmark)
         setState('app/bookmarks', this.state.bookmarks, true)
         this.render()
+        log('success', `${t('Bookmark deleted!')}`)
       })
       .catch(e => {
         log('error', t(e))
