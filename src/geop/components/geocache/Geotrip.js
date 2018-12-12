@@ -6,8 +6,11 @@ import Component from 'Geop/Component'
 import Collection from 'ol/Collection'
 import { createLayer } from 'Components/layer/LayerCreator'
 import Sortable from 'sortablejs'
+import Point from 'ol/geom/Point'
 import LineString from 'ol/geom/LineString'
 import Feature from 'ol/Feature'
+import { getLength } from 'ol/sphere'
+import lineSliceAlong from '@turf/line-slice-along'
 import $ from 'jquery'
 import './Geotrip.styl'
 
@@ -28,8 +31,7 @@ class Geotrip extends Component {
       tab: null,
       routeLayer: null,
       layers: getState('map/layer/layers'),
-      collection: new Collection(),
-      route: new Feature(new LineString([]))
+      collection: new Collection()
     }
     setState('geocache/trip', this.state.collection)
     this.state.layers.on('remove', e => {
@@ -80,13 +82,23 @@ class Geotrip extends Component {
       // route
       if (!this.state.routeLayer) {
         this.state.routeLayer = this.createLayer()
-        this.state.routeLayer.getSource().addFeature(this.state.route)
         this.state.routeLayer.setMap(getState('map'))
       }
-      const coords = this.state.collection.getArray().map(f => {
-        return f.getGeometry().getCoordinates()
-      })
-      this.state.route.getGeometry().setCoordinates(coords)
+      this.state.routeLayer.getSource().clear()
+      const fset = this.state.collection.getArray().map(f => f.getGeometry().getCoordinates())
+      const coords = []
+      if (fset.length > 1) {
+        for (let i = 0, len = fset.length; i < len; i++) {
+          if (i !== len - 1) {
+            coords[i] = [fset[i], fset[i + 1]]
+          } else {
+            coords[i - 1][1] = fset[i]
+          }
+        }
+        coords.forEach(coord => {
+          this.state.routeLayer.getSource().addFeature(new Feature(new LineString(coord)))
+        })
+      }
       // sortable
       Sortable.create(this.el.find('ul')[0], {
         draggable: 'li.sort-item',
@@ -162,7 +174,7 @@ class Geotrip extends Component {
     }
   }
   clearTrip () {
-    this.state.route.getGeometry().setCoordinates([])
+    this.state.routeLayer && this.state.routeLayer.getSource().clear()
     this.state.collection.clear()
   }
   remove (id) {
@@ -188,27 +200,75 @@ class Geotrip extends Component {
       return clone
     })
     if (features.length > 1) {
-      const clone = this.state.route.clone()
-      clone.getGeometry().transform(getState('map/projection'), 'EPSG:4326')
-      features.push(clone)
+      let coords = []
+      this.state.routeLayer.getSource().getFeatures().forEach(f => {
+        const clone = f.clone()
+        coords = coords.concat(clone.getGeometry().getCoordinates())
+      })
+      features.push(new Feature(new LineString(coords).transform(getState('map/projection'), 'EPSG:4326')))
     }
     gpxExport(cacheConf.exportFileName, features)
   }
   createLayer () {
+    const view = getState('map').getView()
+    const proj = getState('map/projection')
     return createLayer({
       type: 'FeatureCollection',
       title: 'Route',
-      style: [{
-        stroke: {
-          color: 'rgba(255, 255, 255, 0.6)',
-          width: 7
+      updateWhileAnimating: true,
+      updateWhileInteracting: true,
+      style: (feature, resolution, factory) => {
+        const geom = feature.getGeometry()
+        const distance = (8 * view.getResolution()) / 1000
+        const length = getLength(geom) / 1000
+        const clone = geom.clone().transform(proj, 'EPSG:4326')
+        if (length - (2 * distance) > distance) {
+          const trimLine = lineSliceAlong({
+            type: 'LineString',
+            coordinates: clone.getCoordinates()
+          }, distance, length - distance)
+          clone.setCoordinates(trimLine.geometry.coordinates)
+          clone.transform('EPSG:4326', proj)
+          const coords = clone.getCoordinates()
+          const dx = coords[coords.length - 1][0] - coords[coords.length - 2][0]
+          const dy = coords[coords.length - 1][1] - coords[coords.length - 2][1]
+          const rotation = Math.atan2(dy, dx)
+          return [
+            factory({
+              stroke: {
+                color: 'white',
+                width: 5
+              },
+              geometry: clone
+            }),
+            factory({
+              stroke: {
+                color: 'rgba(0, 0, 0, 0.6)',
+                width: 3
+              },
+              geometry: clone
+            }),
+            factory({
+              shape: {
+                fill: {
+                  color: 'rgba(0, 0, 0, 0.6)'
+                },
+                stroke: {
+                  color: 'white',
+                  width: 1
+                },
+                points: 3,
+                radius: 8,
+                rotateWithView: true,
+                rotation: -rotation,
+                angle: 33
+              },
+              geometry: new Point(clone.getLastCoordinate())
+            })
+          ]
         }
-      }, {
-        stroke: {
-          color: 'rgba(0, 0, 0, 0.3)',
-          width: 5
-        }
-      }]
+        return null
+      }
     })
   }
 }

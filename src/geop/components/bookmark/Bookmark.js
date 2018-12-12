@@ -12,6 +12,19 @@ import JSONP from 'jsonpack'
 import QRious from 'qrious'
 import './Bookmark.styl'
 
+/**
+ * handle jsonstore.io
+ * Get all: https://www.jsonstore.io/4d04eefd7ed4c19866cefcf038d0bebe95786bf33f0e60fdfbd8a554e6ae2670/
+ * Delete all: copy these to console and run
+ * fetch('https://www.jsonstore.io/4d04eefd7ed4c19866cefcf038d0bebe95786bf33f0e60fdfbd8a554e6ae2670/')
+ *   .then(function(response){return response.json() })
+ *   .then(function(data) { window.jsonstoredata = data });
+ * Object.keys(jsonstoredata.result).forEach(key => {
+ *   fetch('https://www.jsonstore.io/4d04eefd7ed4c19866cefcf038d0bebe95786bf33f0e60fdfbd8a554e6ae2670/', {
+ *     method: 'DELETE'
+ *   })
+ * })
+ */
 class Bookmark extends Component {
   constructor (target) {
     super(target)

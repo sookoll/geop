@@ -4,6 +4,7 @@ import Circle from 'ol/style/Circle'
 import Icon from 'ol/style/Icon'
 import Text from 'ol/style/Text'
 import Style from 'ol/style/Style'
+import RegularShape from 'ol/style/RegularShape'
 
 function getDefaultStyle () {
   const style = {
@@ -23,9 +24,8 @@ function getDefaultStyle () {
   return style
 }
 
-function buildOLStyle (style, skipDefault) {
-  const defaultStyle = getDefaultStyle()
-  const olStyle = {}
+function buildOLStyle (style) {
+  let olStyle = {}
   if (style) {
     Object.keys(style).forEach((key) => {
       switch (key) {
@@ -42,6 +42,15 @@ function buildOLStyle (style, skipDefault) {
             stroke: style[key].stroke && new Stroke(style[key].stroke),
             radius: style[key].radius || 5
           })
+          break
+        case 'shape':
+          if (style[key].fill) {
+            style[key].fill = new Fill(style[key].fill)
+          }
+          if (style[key].stroke) {
+            style[key].stroke = new Stroke(style[key].stroke)
+          }
+          olStyle['image'] = new RegularShape(style[key])
           break
         case 'icon':
           olStyle['image'] = new Icon(style[key])
@@ -60,20 +69,22 @@ function buildOLStyle (style, skipDefault) {
           olStyle[key] = style[key]
       }
     }, this)
+  } else {
+    olStyle = getDefaultStyle()
   }
-  return new Style(skipDefault ? olStyle: Object.assign(defaultStyle, olStyle))
+  return new Style(olStyle)
 }
 
-export function createStyle (conf, skipDefault) {
+export function createStyle (conf) {
   if (typeof conf === 'function') {
-    return (feature) => {
-      return conf(feature, buildOLStyle)
+    return (feature, resolution) => {
+      return conf(feature, resolution, buildOLStyle)
     }
   } else if (Array.isArray(conf)) {
     return conf.map((style) => {
-      return buildOLStyle(style, skipDefault)
+      return buildOLStyle(style)
     })
   } else {
-    return buildOLStyle(conf, skipDefault)
+    return buildOLStyle(conf)
   }
 }

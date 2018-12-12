@@ -67,7 +67,9 @@ class FeatureLayer extends LayerVector {
       source: new Vector({
         features
       }),
-      style: createStyle(opts.style)
+      style: createStyle(opts.style),
+      updateWhileAnimating: opts.updateWhileAnimating,
+      updateWhileInteracting: opts.updateWhileInteracting
     }
     super(options)
   }
@@ -100,8 +102,8 @@ export function createLayer (layerConf) {
     case 'ImageWMS':
       layer = new ImageLayer(deepCopy(layerConf))
       break
-    case 'FeatureCollection':
-      layer = new FeatureLayer(deepCopy(layerConf))
+    case 'FeatureCollection':// can not use deepcopy, it remove style function
+      layer = new FeatureLayer(layerConf)
       break
   }
   return set(layer, layerConf)
