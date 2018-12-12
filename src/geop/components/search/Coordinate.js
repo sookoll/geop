@@ -49,7 +49,7 @@ class Coordinate extends Provider {
     return data.map(item => {
       return this.toGeoJSON({
         provider: this.title,
-        title: `${item.srname} ${this.query}`,
+        name: `${item.srname} ${this.query}`,
         srid: item.srid,
         coords: item.coords
       })

@@ -4,6 +4,7 @@ import { getState, setState } from 'Utilities/store'
 import { degToRad, radToDeg } from 'Utilities/util'
 import Map from 'ol/Map'
 import View from 'ol/View'
+import GeoJSONFormat from 'ol/format/GeoJSON'
 import { get as getProjection, fromLonLat, toLonLat } from 'ol/proj'
 import { register } from 'ol/proj/proj4'
 import proj4 from 'proj4'
@@ -47,8 +48,9 @@ class MapEngine extends Component {
     // permalink
     const permalink = this.permalinkToViewConf(
       this.$permalink ? this.$permalink.get('map') : null)
-    this.createBaseLayers(getState('map/layers').baseLayers, permalink.baselayer)
-    this.createLayers(getState('map/layers').layers)
+    this.createBaseLayers(getState('layer/baseLayers'), permalink.baselayer)
+    this.createLayers(getState('layer/layers'))
+    //this.createOverlays(getState('layer/overlays'))
     // set to store
     setState('map/layer/base', this.layers.base.getLayers())
     setState('map/layer/layers', this.layers.layers.getLayers())
@@ -56,6 +58,20 @@ class MapEngine extends Component {
     setState('map/baseLayer', this.activeBaseLayer.get('id'), true)
     // que for map
     setState('map/que', [])
+    // listen layers change
+    this.layers.layers.getLayers().on('add', () => {
+      this.storeLayers()
+    })
+    this.layers.layers.getLayers().on('remove', () => {
+      this.storeLayers()
+    })
+    // listen overlays change
+    /*this.layers.overlays.getLayers().on('add', () => {
+      this.storeOverlays()
+    })
+    this.layers.overlays.getLayers().on('remove', () => {
+      this.storeOverlays()
+    })*/
   }
 
   init () {
@@ -126,6 +142,12 @@ class MapEngine extends Component {
     })
   }
 
+  createOverlays (layers) {
+    layers.forEach(layer => {
+      this.addOverlay(createLayer(layer))
+    })
+  }
+
   addBaseLayer (layer) {
     this.layers.base.getLayers().push(layer)
   }
@@ -134,11 +156,39 @@ class MapEngine extends Component {
     this.layers.layers.getLayers().push(layer)
   }
 
+  addOverlay (layer) {
+    this.layers.overlays.getLayers().push(layer)
+  }
+
   // TODO: id filter
   getLayer (group, id = null) {
     if (group in this.layers) {
       return this.layers[group]
     }
+  }
+
+  storeLayers () {
+    const layerConfs = this.layers.layers.getLayers().getArray().map(layer => {
+      return layer.get('conf')
+    })
+    console.log(layerConfs)
+    setState('layer/layers', layerConfs, true)
+  }
+
+  storeOverlays () {
+    const layerConfs = this.layers.overlays.getLayers().getArray().map(layer => {
+      const conf = layer.get('conf')
+      const fset = layer.getSource().getFeatures()
+      if (fset && fset.length) {
+        conf.features = (new GeoJSONFormat()).writeFeatureObject(fset, {
+          featureProjection: getState('map/projection'),
+          dataProjection: 'EPSG:4326'
+        })
+      }
+      return conf
+    })
+    console.log(layerConfs)
+    setState('layer/overlays', layerConfs, true)
   }
 
 }

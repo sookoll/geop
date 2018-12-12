@@ -6,7 +6,9 @@ import { t } from 'Utilities/translate'
 import { copy, uid } from 'Utilities/util'
 import { get as getPermalink, onchange as onPermalinkChange } from 'Utilities/permalink'
 import log from 'Utilities/log'
+//import GeoJSONFormat from 'ol/format/GeoJSON'
 import $ from 'jquery'
+import JSONP from 'jsonpack'
 import './Bookmark.styl'
 
 class Bookmark extends Component {
@@ -17,7 +19,7 @@ class Bookmark extends Component {
     `)
     this.state = {
       bookmarks: getState('app/bookmarks') || [],
-      bookmark: getPermalink('hash')
+      bookmark: getPermalink('p')
     }
     this.modal = $(`
       <div class="modal fade"
@@ -115,8 +117,7 @@ class Bookmark extends Component {
   share () {
     getSessionState()
       .then(appState => {
-        const data = formatState('up', appState)
-        setBookmarkState(data)
+        setBookmarkState(appState)
           .then(bookmark => {
             this.state.bookmarks.push(bookmark)
             setState('app/bookmarks', this.state.bookmarks, true)
@@ -153,7 +154,7 @@ class Bookmark extends Component {
       })
   }
   bookmarkUrl (hash) {
-    return window.location.origin + window.location.pathname + '#hash=' + hash
+    return window.location.origin + window.location.pathname + '#p=' + hash
   }
   openModal (bookmark) {
     this.modal.find('input').val(this.bookmarkUrl(bookmark))
@@ -167,19 +168,24 @@ let xhr = null
 
 function formatState (type = 'down', data = {}, hash = null) {
   let state = {}
-  if (type === 'up') {
-    state = Object.assign({}, ...Object.keys(data).map(k => ({[k.replace(/\//g, '_')]: data[k]})))
-    if ('app_bookmarks' in state) {
-      delete state.app_bookmarks
-    }
-    if ('app_bookmark_loaded' in state) {
-      delete state.app_bookmark_loaded
-    }
-  } else {
-    state = Object.assign({}, ...Object.keys(data).map(k => ({[k.replace(/_/g, '/')]: data[k]})))
-    if (hash) {
-      state['app/bookmark/loaded'] = hash
-    }
+  switch (type) {
+    case 'up':
+      state = Object.assign({}, ...Object.keys(data).map(k => ({[k.replace(/\//g, '_')]: data[k]})))
+      if ('app_bookmarks' in state) {
+        delete state.app_bookmarks
+      }
+      if ('app_bookmark_loaded' in state) {
+        delete state.app_bookmark_loaded
+      }
+      break
+    case 'down':
+      state = Object.assign({}, ...Object.keys(data).map(k => ({[k.replace(/_/g, '/')]: data[k]})))
+      if (hash) {
+        state['app/bookmark/loaded'] = hash
+      }
+      break
+    default:
+      state = data
   }
   return state
 }
@@ -190,11 +196,14 @@ function setBookmarkState (data) {
       xhr.abort()
     }
     const hash = uid()
+
     xhr = $.ajax({
       type : 'POST',
       crossDomain : true,
       url : apiUrls.jsonstore + '/' + hash,
-      data: JSON.stringify(data),
+      data: JSON.stringify({
+        state: JSON.stringify(JSONP.pack(formatState('up', data)))
+      }),
       dataType: 'json',
       contentType: 'application/json; charset=utf-8'
     })
@@ -228,8 +237,9 @@ export function getBookmarkState (hash) {
       contentType: 'application/json; charset=utf-8'
     })
     .done(data => {
-      if (data && data.ok && data.result) {
-        resolve(formatState('down', data.result, hash))
+      if (data && data.ok && data.result && data.result.state) {
+        const state = formatState('down', JSONP.unpack(data.result.state), hash)
+        resolve(state)
       } else {
         reject(new Error('Unable to load bookmark'))
       }

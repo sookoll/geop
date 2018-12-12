@@ -52,7 +52,6 @@ class Feature extends Provider {
   format (feature) {
     const jsonFeature = this.geojson.writeFeatureObject(feature)
     jsonFeature.properties.provider = this.title
-    jsonFeature.properties.title = jsonFeature.properties.name
     return jsonFeature
   }
 }

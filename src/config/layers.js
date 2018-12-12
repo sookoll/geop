@@ -102,5 +102,6 @@ export const layers = {
       }]
     }
   },
-  layers: []
+  layers: [],
+  overlays: []
 }

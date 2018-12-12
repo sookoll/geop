@@ -10,7 +10,7 @@ import { getBookmarkState } from 'Components/bookmark/Bookmark'
 export function initConf () {
   return new Promise(async (resolve, reject) => {
     const conf = {}
-    const permalink = getPermalink('hash')
+    const permalink = getPermalink('p')
     try {
       const storageState = await getAppState()
       const bookmarkState = permalink && permalink !== storageState['app/bookmark/loaded'] ?
@@ -21,7 +21,9 @@ export function initConf () {
       Object.keys(mapConf).forEach(key => {
         conf['map/' + key] = mapConf[key]
       })
-      conf['map/layers'] = layersConf
+      Object.keys(layersConf).forEach(key => {
+        conf['layer/' + key] = layersConf[key]
+      })
       const state = Object.assign({}, conf, storageState, bookmarkState)
       // disable bookmarks if not supported
       if (!'onhashchange' in window) {

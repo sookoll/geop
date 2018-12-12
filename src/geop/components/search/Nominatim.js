@@ -55,7 +55,7 @@ class Coordinate extends Provider {
       return this.toGeoJSON({
         provider: this.title,
         id: item.place_id,
-        title: item.display_name,
+        name: item.display_name,
         srid: 'EPSG:4326',
         coords: [Number(item.lon), Number(item.lat)],
         bbox : [bbox[2], bbox[0], bbox[3], bbox[1]]

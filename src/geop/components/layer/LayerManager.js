@@ -21,7 +21,6 @@ class LayerManager extends Component {
     this.handlers = {
       onchange: () => {
         this.render()
-        this.store()
       }
     }
     this.state.baseLayers.forEach(layer => {
@@ -199,14 +198,6 @@ class LayerManager extends Component {
       }
       plug.create()
     })
-  }
-
-  store () {
-    const layerConfs = Object.assign({}, getState('map/layers'))
-    layerConfs.layers = this.state.layers.getArray().map(layer => {
-      return layer.get('conf')
-    })
-    setState('map/layers', layerConfs, true)
   }
 
 }

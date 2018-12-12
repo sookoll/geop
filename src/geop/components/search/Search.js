@@ -38,7 +38,6 @@ class Search extends Component {
       </div>
     `)
     this.state = {
-      layers: getState('map/layer/overlays'),
       results: [],
       open: false,
       query: null
@@ -130,7 +129,7 @@ class Search extends Component {
           <a href="#" class="dropdown-item"
             data-id="${result.id}" data-provider="${provider}">
             <i class="fa fa-map-marker-alt"></i>
-            ${result.properties.title}
+            ${result.properties.name}
           </a>
         </li>`)
     })
@@ -210,23 +209,19 @@ class Search extends Component {
   }
 
   handleFeatures () {
-    if (!this.state.layer) {
-      this.state.layer = this.createLayer()
-      this.state.layers.push(this.state.layer)
+    if (this.state.results && this.state.results.length) {
+      const layer = this.createLayer(this.query, this.state.results)
+      getState('map/layer/layers').push(layer)
     }
-    this.state.layer.getSource().clear()
-    const features = this.state.results.map(item => {
-      return this.format.readFeature(item)
-    })
-    this.state.layer.getSource().addFeatures(features)
   }
 
-  createLayer () {
+  createLayer (title, features) {
     const color = '#000000'
     const conf = {
       type: 'FeatureCollection',
       id: uid(),
-      title: 'Search',
+      title: `${t('Search')}: ${title}`,
+      features: features,
       style: {
         stroke: {
           color: color,
