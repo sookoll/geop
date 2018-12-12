@@ -171,7 +171,6 @@ class MapEngine extends Component {
     const layerConfs = this.layers.layers.getLayers().getArray().map(layer => {
       return layer.get('conf')
     })
-    console.log(layerConfs)
     setState('layer/layers', layerConfs, true)
   }
 

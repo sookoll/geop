@@ -37,6 +37,10 @@ export function get (id) {
   return id ? state.hash[id] : state.hash
 }
 
+export function set (data, title, value) {
+  window.history.replaceState(data, title, value)
+}
+
 export function onchange (cb) {
   events.push(cb)
 }

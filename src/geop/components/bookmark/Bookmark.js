@@ -3,12 +3,13 @@ import { apiUrls } from 'Conf/settings'
 import { getSessionState } from 'Utilities/session'
 import { getState, setState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
-import { copy, uid } from 'Utilities/util'
+import { copy, uid, deepCopy } from 'Utilities/util'
 import { get as getPermalink, onchange as onPermalinkChange } from 'Utilities/permalink'
 import log from 'Utilities/log'
 //import GeoJSONFormat from 'ol/format/GeoJSON'
 import $ from 'jquery'
 import JSONP from 'jsonpack'
+import QRious from 'qrious'
 import './Bookmark.styl'
 
 class Bookmark extends Component {
@@ -51,10 +52,7 @@ class Bookmark extends Component {
                 ${t('or')}
               </div>
               <div class="mb-5 text-center">
-                <img
-                  class="rounded mx-auto d-block img-thumbnail"
-                  src=""
-                  alt="qr code" />
+                <canvas class="rounded mx-auto d-block img-thumbnail"></canvas>
               </div>
             </div>
           </div>
@@ -159,7 +157,11 @@ class Bookmark extends Component {
   openModal (bookmark) {
     this.modal.find('input').val(this.bookmarkUrl(bookmark))
     this.modal.find('a.go').attr('href', this.bookmarkUrl(bookmark))
-    this.modal.find('img').attr('src', apiUrls.qrcode + encodeURI(this.bookmarkUrl(bookmark)))
+    const qr = new QRious({
+      element: this.modal.find('canvas')[0],
+      size: 200
+    })
+    qr.value = this.bookmarkUrl(bookmark)
     this.modal.modal()
   }
 }
@@ -170,16 +172,29 @@ function formatState (type = 'down', data = {}, hash = null) {
   let state = {}
   switch (type) {
     case 'up':
-      state = Object.assign({}, ...Object.keys(data).map(k => ({[k.replace(/\//g, '_')]: data[k]})))
+      state = deepCopy(
+        Object.assign(
+          {}, ...Object.keys(data).map(k => ({[k.replace(/\//g, '_')]: data[k]}))
+        )
+      )
       if ('app_bookmarks' in state) {
         delete state.app_bookmarks
       }
       if ('app_bookmark_loaded' in state) {
         delete state.app_bookmark_loaded
       }
+      if (getState('app/shareOnlyTripFeatures') && 'layer_layers' in state && 'geocache_trip_ids' in state) {
+        state.layer_layers.forEach(layer => {
+          layer.features = layer.features.filter(f => state.geocache_trip_ids.indexOf(f.id) > -1)
+        })
+      }
       break
     case 'down':
-      state = Object.assign({}, ...Object.keys(data).map(k => ({[k.replace(/_/g, '/')]: data[k]})))
+      state = deepCopy(
+        Object.assign(
+          {}, ...Object.keys(data).map(k => ({[k.replace(/_/g, '/')]: data[k]}))
+        )
+      )
       if (hash) {
         state['app/bookmark/loaded'] = hash
       }

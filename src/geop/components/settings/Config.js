@@ -1,6 +1,7 @@
 import {getState, setState, clearState} from 'Utilities/store'
 import {enableScreenLock, disableScreenLock, getDebugStore} from 'Utilities/util'
 import {t, getLocale, getLocales, changeLocale} from 'Utilities/translate'
+import { set as setPermalink } from 'Utilities/permalink'
 import log from 'Utilities/log'
 import Component from 'Geop/Component'
 import $ from 'jquery'
@@ -23,7 +24,7 @@ class Config extends Component {
   render () {
     this.el.html(`
       <h5>${t('Language')}</h5>
-      <div class="btn-group mb-3" role="group">
+      <div class="btn-group" role="group">
         ${getLocales().map(locale => {
           return `
             <button type="button"
@@ -33,27 +34,50 @@ class Config extends Component {
             </button>`
         }).join('')}
       </div>
+      <small class="form-text text-muted mb-3">
+        ${t('Change language. App will reload after change!')}
+      </small>
       <h5>${t('Keep awake')}</h5>
-      <div class="btn-group-toggle mb-3" data-toggle="buttons">
+      <div class="btn-group-toggle" data-toggle="buttons">
         <label class="btn btn-outline-secondary">
           <input type="checkbox" id="settings-awake" autocomplete="off">
           <i class="fa fa-mobile-alt"></i>
           <span>${t('Off')}</span>
         </label>
       </div>
+      <small class="form-text text-muted mb-3">
+        ${t('Keep screen on. Use with caution, might train device battery!')}
+      </small>
       <h5>${t('Account')}</h5>
-      <div class="form-group mb-3">
+      <div class="form-group">
         <input type="text"
           class="form-control"
           id="settings-account"
           placeholder="${t('Username')}"
           value="${getState('app/account') || ''}">
-        <small class="form-text text-muted">
-          ${t('Enter geopeitus.ee or geocaching.com username')}.
-        </small>
       </div>
+      <small class="form-text text-muted mb-3">
+        ${t('Enter geopeitus.ee or geocaching.com username. App will reload after change!')}
+      </small>
+      <h5>${t('Share only geotrip features')}</h5>
+      <div class="btn-group" role="group">
+        <button type="button"
+          class="btn btn-outline-primary set-share-btn ${getState('app/shareOnlyTripFeatures') ? 'active' : ''}"
+          data-share="on">
+          ${t('On')}
+        </button>
+        <button type="button"
+          class="btn btn-outline-primary set-share-btn ${getState('app/shareOnlyTripFeatures') ? '' : 'active'}"
+          data-share="off">
+          ${t('Off')}
+        </button>
+      </div>
+      <small class="form-text text-muted mb-3">
+        ${t('Share only features added to geotrip.')}<br/>
+        ${t('NB! Turning this off and sharing bookmark will store possibly big amount of data in service. It might fail. Use with caution!')}
+      </small>
       <h5>${t('Reset app')}</h5>
-      <div class="mb-3">
+      <div>
         <button
           id="settings-reset"
           class="btn btn-warning">
@@ -61,17 +85,20 @@ class Config extends Component {
           ${t('Reset')}
         </a>
       </div>
+      <small class="form-text text-muted mb-3">
+        ${t('Reset app to default. App will reload!')}
+      </small>
       ${getState('app/debug') ? `
-        <h5>${t('Debug')}</h5>
-        <div class="mb-3">
-          <button
-            id="download-log"
-            class="btn btn-danger">
-            <i class="fa fa-download"></i>
-            ${t('Download debug log')}
-          </a>
-          <input type="file" style="display:none;" />
-        </div>
+      <h5>${t('Debug')}</h5>
+      <div class="mb-3">
+        <button
+          id="download-log"
+          class="btn btn-danger">
+          <i class="fa fa-download"></i>
+          ${t('Download debug log')}
+        </a>
+        <input type="file" style="display:none;" />
+      </div>
       ` : ''}
     `)
     // language change
@@ -101,10 +128,17 @@ class Config extends Component {
         window.location.reload()
       })
     })
+    // share change
+    this.el.on('click', 'button.set-share-btn', e => {
+      setState('app/shareOnlyTripFeatures', $(e.currentTarget).data('share') === 'on' ? true : false, true)
+      this.el.find('button.set-share-btn').removeClass('active')
+      $(e.currentTarget).addClass('active')
+    })
     // reset app
     this.el.on('click', '#settings-reset', e => {
       clearState()
       log('warning', t('App resetted, page will reload!'), () => {
+        setPermalink(null, null, ' ')
         window.location.reload()
       })
     })

@@ -29,21 +29,19 @@ export function getAppState () {
 }
 
 export function setState (item, value, permanent = false) {
-  if (state[item] !== value) {
-    state[item] = value
-    // local storage
-    if (permanent && storeAvailable) {
-      set(item, value).then(() => {
-        // events
-        if (item in events) {
-          events[item].forEach(handler => handler(state[item]))
-        }
-      })
-    } else {
+  state[item] = value
+  // local storage
+  if (permanent && storeAvailable) {
+    set(item, value).then(() => {
       // events
       if (item in events) {
         events[item].forEach(handler => handler(state[item]))
       }
+    })
+  } else {
+    // events
+    if (item in events) {
+      events[item].forEach(handler => handler(state[item]))
     }
   }
 }

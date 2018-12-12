@@ -69,6 +69,7 @@
     "ol-contextmenu": "^3.3.0",
     "popper.js": "^1.14.6",
     "proj4": "^2.5.0",
+    "qrious": "^4.0.2",
     "randomcolor": "^0.5.3",
     "sortablejs": "^1.7.0",
     "uglifyjs-webpack-plugin": "^2.0.1"

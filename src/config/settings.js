@@ -13,6 +13,7 @@ export const app = {
   mousePosition: true,
   geoLocation: true,
   shareState: true,
+  shareOnlyTripFeatures: true,// keep only features on trip
   settingsTabOpen: 'info-tab',// active tab on sidebar
   debug: true,// collect all console debug, info and error into downloadable file
   debugFile: 'geop_debug.log'

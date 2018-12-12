@@ -177,10 +177,10 @@ class Geocache extends Component {
     const status = feature.get('status')
     const overviewStyle = resolution > cacheConf.overviewMinResolution
     const hash = type + fstatus + newCache + status + overviewStyle
-    if (!feature.get('isCache') && resolution > cacheConf.waypointMaxResolution) {
+    if (!feature.get('_inGeotrip') && !feature.get('isCache') && resolution > cacheConf.waypointMaxResolution) {
       return null
     }
-    if (feature.get('hidden')) {
+    if (!feature.get('_inGeotrip') && feature.get('hidden')) {
       return null
     }
     if (!this.state.styleCache[hash]) {

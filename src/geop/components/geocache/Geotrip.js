@@ -1,6 +1,6 @@
 import { geocache as cacheConf } from 'Conf/settings'
 import { t } from 'Utilities/translate'
-import { getState, setState, onchange } from 'Utilities/store'
+import { getState, setState } from 'Utilities/store'
 import { gpxExport } from 'Utilities/util'
 import Component from 'Geop/Component'
 import Collection from 'ol/Collection'
@@ -27,7 +27,7 @@ class Geotrip extends Component {
     this.state = {
       tab: null,
       routeLayer: null,
-      layers: props.collection,
+      layers: getState('map/layer/layers'),
       collection: new Collection(),
       route: new Feature(new LineString([]))
     }
@@ -36,24 +36,24 @@ class Geotrip extends Component {
       this.loadState()
     })
     this.state.collection.on('add', e => {
+      e.element.set('_inGeotrip', true)
       this.render()
     })
     this.state.collection.on('remove', e => {
+      e.element.set('_inGeotrip', false)
       this.render()
     })
     this.create()
     this.initEvents()
-    onchange('geocache/loadend', (count) => {
-      const map = getState('map')
-      if (map) {
+    const map = getState('map')
+    if (map) {
+      this.loadState()
+    } else {
+      const que = getState('map/que')
+      que.push(map => {
         this.loadState()
-      } else {
-        const que = getState('map/que')
-        que.push(map => {
-          this.loadState()
-        })
-      }
-    })
+      })
+    }
   }
   render () {
     this.el.html(`
@@ -101,13 +101,14 @@ class Geotrip extends Component {
   }
   renderTrip (collection) {
     return collection.getArray().map((f, i) => {
-      return `<li class="list-group-item sort-item" data-id="${f.getId()}">
-        <span class="badge badge-pill badge-primary">${i+1}</span>
-        <a href="#">${f.get('name')}</a>
-        <button type="button" class="close">
-          <i class="fa fa-times"></i>
-        </button>
-      </li>`
+      return `
+        <li class="list-group-item sort-item" data-id="${f.getId()}">
+          <button type="button" class="close">
+            <i class="fa fa-times"></i>
+          </button>
+          <span class="badge badge-pill badge-primary">${i+1}</span>
+          <a href="#">${t(f.get('name'))}</a>
+        </li>`
     }).join('')
   }
   initEvents () {

@@ -94,6 +94,7 @@ class FileLayer extends Component {
         ]
       })
       dragAndDropInteraction.on('addfeatures', e => {
+        console.log('added')
         const conf = this.fileTypes.geojson.writeFeaturesObject(e.features)
         conf.title = e.file.name
         const layer = this.createLayer(conf)
