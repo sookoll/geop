@@ -38,8 +38,13 @@ class Geotrip extends Component {
       this.loadState()
     })
     this.state.collection.on('add', e => {
-      e.element.set('_inGeotrip', true)
-      this.render()
+      // allow only points
+      if (e.element.getGeometry() instanceof Point) {
+        e.element.set('_inGeotrip', true)
+        this.render()
+      } else {
+        this.state.collection.remove(e.element)
+      }
     })
     this.state.collection.on('remove', e => {
       e.element.set('_inGeotrip', false)

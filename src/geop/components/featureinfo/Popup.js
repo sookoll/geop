@@ -3,6 +3,7 @@ import {t} from 'Utilities/translate'
 import {formatLength, formatArea} from 'Utilities/util'
 import {getState, setState} from 'Utilities/store'
 import Overlay from 'ol/Overlay'
+import Point from 'ol/geom/Point'
 import $ from 'jquery'
 import './Popup.styl'
 
@@ -104,12 +105,14 @@ class Popup extends Component {
         title = `
           <i class="fa fa-map-marker-alt"></i>
           ${t('Feature')}
-          <a href="#" class="cache-toggle" data-id="${feature.get('id')}" title="${t('Add to geotrip')}">
-            <i class="fas ${(geotrip && geotrip.getArray().indexOf(feature) > -1) ? 'fa-minus-square' : 'fa-thumbtack'}"></i>
-          </a>
-          <a href="#" class="remove-marker" title="Eemalda">
+          <a href="#" class="tools remove-marker float-right" title="Eemalda">
             <i class="far fa-trash-alt"></i>
-          </a>`
+          </a>
+          ${feature.getGeometry() instanceof Point ? `
+            <a href="#" class="tools cache-toggle float-right" data-id="${feature.get('id')}" title="${t('Add to geotrip')}">
+              <i class="fas ${(geotrip && geotrip.getArray().indexOf(feature) > -1) ? 'fa-minus-square' : 'fa-thumbtack'}"></i>
+            </a>
+          ` : ''}`
         content = Object.keys(props).filter(key => {
           return (typeof props[key] === 'string' || typeof props[key] === 'number')
         }).map(key => {
