@@ -129,7 +129,7 @@ class Geocache extends Component {
           return `
             <i class="${styleType ? styleType.class : this.state.styleConfig.base.class} ${f.get('status') !== 'Available' ? 'unavailable' : ''}"></i>
             <a href="${f.get('url')}" target="_blank" class="${f.get('status') === 'Archived' ? 'archived' : ''}">${t(f.get('name'))}</a>
-            <a href="#" class="cache-toggle" data-id="${f.getId()}" title="${t('Add to geotrip')}">
+            <a href="#" class="tools cache-toggle float-right" data-id="${f.getId()}" title="${t('Add to geotrip')}">
               <i class="fas ${inTrip ? 'fa-minus-square' : 'fa-thumbtack'}"></i>
             </a>`
         } else {

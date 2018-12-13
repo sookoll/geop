@@ -60,17 +60,17 @@ class LayerManager extends Component {
       this.el.on('click', '.layer', e => {
         e.preventDefault()
         e.stopPropagation()
-        this.toggleLayer(this.state.layers, $(e.currentTarget).data('id'))
+        this.toggleLayer($(e.currentTarget).data('group'), $(e.currentTarget).data('id'))
       })
       this.el.on('click', '.layer a.fit-layer', e => {
         e.preventDefault()
         e.stopPropagation()
-        this.fitTo($(e.currentTarget).closest('.layer').data('id'))
+        this.fitTo($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'))
       })
       this.el.on('click', '.layer a.remove-layer', e => {
         e.preventDefault()
         e.stopPropagation()
-        this.removeLayer($(e.currentTarget).closest('.layer').data('id'))
+        this.removeLayer($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'))
       })
     }
   }
@@ -155,8 +155,8 @@ class LayerManager extends Component {
     this.render()
   }
 
-  toggleLayer (group, id) {
-    group.forEach(layer => {
+  toggleLayer (groupId, id) {
+    this.state[groupId].forEach(layer => {
       if (layer.get('id') === id) {
         layer.setVisible(!layer.getVisible())
         return
@@ -166,18 +166,18 @@ class LayerManager extends Component {
     this.render()
   }
 
-  removeLayer (id) {
-    this.state.layers.forEach(layer => {
+  removeLayer (groupId, id) {
+    this.state[groupId].forEach(layer => {
       if (layer && layer.get('id') === id) {
         this.state.open = true
-        this.state.layers.remove(layer)
+        this.state[groupId].remove(layer)
         return
       }
     })
   }
 
-  fitTo (id) {
-    for (let layer of this.state.layers.getArray()) {
+  fitTo (groupId, id) {
+    for (let layer of this.state[groupId].getArray()) {
       if (layer && layer.get('id') === id) {
         this.state.open = true
         const bbox = layer.getSource().getExtent ?
