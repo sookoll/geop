@@ -189,11 +189,22 @@ class MousePosition extends Component {
   }
   createMarker (coordinate) {
     if (!this.state.layer) {
-      this.state.layer = this.createLayer()
-      getState('map/layer/overlays').push(this.state.layer)
+      const layerId = getState('layer/mousePositionId')
+      if (layerId) {
+        const layer = getState('map/layer/overlays').getArray().filter(l => l.get('id') === layerId)
+        if (layer && layer[0]) {
+          this.state.layer = layer[0]
+        }
+      }
+      if (!this.state.layer) {
+        this.state.layer = this.createLayer()
+        getState('map/layer/overlays').push(this.state.layer)
+      }
+      setState('layer/mousePositionId', this.state.layer.get('id'), true)
     }
     const feature = new GeoJSONFormat().readFeature({
       type: 'Feature',
+      id: uid(),
       properties: {
         name: this.format(coordinate)
       },

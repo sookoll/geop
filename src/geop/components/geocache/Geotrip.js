@@ -34,7 +34,10 @@ class Geotrip extends Component {
       collection: new Collection()
     }
     setState('geocache/trip', this.state.collection)
-    this.state.layers.on('remove', e => {
+    getState('map/layer/layers').on('remove', e => {
+      this.loadState()
+    })
+    getState('map/layer/overlays').on('remove', e => {
       this.loadState()
     })
     this.state.collection.on('add', e => {
@@ -169,7 +172,14 @@ class Geotrip extends Component {
     const ids = getState('geocache/trip/ids')
     this.clearTrip()
     if (ids) {
-      this.state.layers.forEach(l => {
+      getState('map/layer/layers').forEach(l => {
+        l.getSource().forEachFeature(f => {
+          if (ids.indexOf(f.getId()) > -1) {
+            this.state.collection.insertAt(ids.indexOf(f.getId()), f)
+          }
+        })
+      })
+      getState('map/layer/overlays').forEach(l => {
         l.getSource().forEachFeature(f => {
           if (ids.indexOf(f.getId()) > -1) {
             this.state.collection.insertAt(ids.indexOf(f.getId()), f)

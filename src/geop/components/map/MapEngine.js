@@ -38,6 +38,9 @@ class MapEngine extends Component {
         layers: []
       })
     }
+    this.format = {
+      geojson: new GeoJSONFormat()
+    }
     this.activeBaseLayer = null
     this.geoLocation = null
     this.controls = {
@@ -181,7 +184,7 @@ class MapEngine extends Component {
     const layerConfs = this.layers[group].getLayers().getArray().map(layer => {
       const conf = layer.get('conf')
       if (conf.type === 'FeatureCollection') {// TODO!
-        const collection = new GeoJSONFormat().writeFeaturesObject({
+        const collection = this.format.geojson.writeFeaturesObject(layer.getSource().getFeatures(), {
           featureProjection: getState('map/projection'),
           dataProjection: 'EPSG:4326'
         })
