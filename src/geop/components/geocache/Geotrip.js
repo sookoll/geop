@@ -224,14 +224,14 @@ class Geotrip extends Component {
       updateWhileInteracting: true,
       style: (feature, resolution, factory) => {
         const geom = feature.getGeometry()
-        const distance = (8 * view.getResolution()) / 1000
+        const distance = (6 * view.getResolution()) / 1000
         const length = getLength(geom) / 1000
         const clone = geom.clone().transform(proj, 'EPSG:4326')
         if (length - (2 * distance) > distance) {
           const trimLine = lineSliceAlong({
             type: 'LineString',
             coordinates: clone.getCoordinates()
-          }, distance, length - distance)
+          }, distance, length - (distance * 1.5))
           clone.setCoordinates(trimLine.geometry.coordinates)
           clone.transform('EPSG:4326', proj)
           const coords = clone.getCoordinates()

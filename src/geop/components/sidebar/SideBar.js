@@ -1,5 +1,6 @@
 import { t } from 'Utilities/translate'
 import Component from 'Geop/Component'
+import { uid } from 'Utilities/util'
 import $ from 'jquery'
 import './SideBar.styl'
 
@@ -9,8 +10,9 @@ class Sidebar extends Component {
       opts.target = $('body')
     }
     super(opts.target)
-    this.el = $(`<nav id="sidebar" class="bg-light p-3"></nav>`)
-    this.shadow = $(`<div id="sidebar-shadow" class=""></div>`)
+    this.id = 'sidebar-' + uid()
+    this.el = $(`<nav id="${this.id}" class="sidebar bg-light p-3"></nav>`)
+    this.shadow = $(`<div id="${this.id}-shadow" class="sidebar-shadow"></div>`)
     this.state = {
       trigger: opts.trigger,
       position: opts.position,

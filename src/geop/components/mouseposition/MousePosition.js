@@ -1,6 +1,6 @@
 import Component from 'Geop/Component'
 import { createLayer } from 'Components/layer/LayerCreator'
-import { getState } from 'Utilities/store'
+import { getState, setState } from 'Utilities/store'
 import log from 'Utilities/log'
 import { t } from 'Utilities/translate'
 import { copy, hexToRgbA, uid } from 'Utilities/util'
@@ -194,19 +194,23 @@ class MousePosition extends Component {
     }
     const feature = new GeoJSONFormat().readFeature({
       type: 'Feature',
+      properties: {
+        name: this.format(coordinate)
+      },
       geometry: {
         type: 'Point',
         coordinates: coordinate
       }
     })
     this.state.layer.getSource().addFeature(feature)
+    setState('layerchange', this.state.layer.get('id'))
   }
   createLayer () {
     const color = '#000000'
     const conf = {
       type: 'FeatureCollection',
       id: uid(),
-      title: 'MousePosition',
+      title: 'Features',
       style: {
         stroke: {
           color: color,

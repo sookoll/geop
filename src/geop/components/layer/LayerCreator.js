@@ -24,6 +24,9 @@ const sources = {
   ImageWMS,
   Vector
 }
+const formats = {
+  geojson: new GeoJSONFormat()
+}
 
 class GroupLayer extends LayerGroup {}
 class ImageLayer extends LayerImage {
@@ -59,7 +62,7 @@ class TileLayer extends LayerTile {
 class FeatureLayer extends LayerVector {
   constructor (opts) {
     const features = opts.features ?
-      new GeoJSONFormat().readFeatures(opts, {
+      formats.geojson.readFeatures(opts, {
         dataProjection: dataProjection,
         featureProjection: getState('map/projection')
       }) : []

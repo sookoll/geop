@@ -103,7 +103,7 @@ class Measure extends Component {
     if (!this.state.layer) {
       this.state.layer = this.createLayer()
       this.state.source = this.state.layer.getSource()
-      getState('map/layer/overlays').push(this.state.layer)
+      this.state.layer.setMap(this.state.map)
     }
     this.reset()
     this.state.measureType = type

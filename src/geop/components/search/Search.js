@@ -211,7 +211,7 @@ class Search extends Component {
   handleFeatures () {
     if (this.state.results && this.state.results.length) {
       const layer = this.createLayer(this.query, this.state.results)
-      getState('map/layer/layers').push(layer)
+      getState('map/layer/overlays').push(layer)
     }
   }
 

@@ -16,6 +16,7 @@ class LayerManager extends Component {
       activeBaseLayer: null,
       baseLayers: getState('map/layer/base'),
       layers: getState('map/layer/layers'),
+      overlays: getState('map/layer/overlays'),
       open: false
     }
     this.handlers = {
@@ -30,6 +31,8 @@ class LayerManager extends Component {
     })
     this.state.layers.on('add', this.handlers.onchange)
     this.state.layers.on('remove', this.handlers.onchange)
+    this.state.overlays.on('add', this.handlers.onchange)
+    this.state.overlays.on('remove', this.handlers.onchange)
     this.create()
     // do not init here
     this.components = {
@@ -96,31 +99,36 @@ class LayerManager extends Component {
               </li>`
         }).join('') :
         `<li class="dropdown-item disabled">${t('No baselyers added')}</li>`}
-        ${this.state.layers.getLength() > 0 ?
-          `<li class="dropdown-divider"></li>` +
-          this.state.layers.getArray().map(layer => {
-            return `
-              <li
-                class="dropdown-item layer ${this.layerVisible(layer) ? '' : 'disabled'}"
-                data-id="${layer.get('id')}">
-                <i class="far ${layer.getVisible() ? 'fa-check-square' : 'fa-square'}"></i>
-                ${t(layer.get('title'))}
-                <div class="layer-tools">
-                  <a href="#" class="fit-layer">
-                    <i class="fa fa-search-plus"></i>
-                  </a>
-                  <a href="#" class="remove-layer">
-                    <i class="fa fa-times"></i>
-                  </a>
-                </div>
-              </li>`
-            }).join('') : ''}
+        ${this.renderLayerGroup('overlays', this.state.overlays)}
+        ${this.renderLayerGroup('layers', this.state.layers)}
       </ul>`)
     this.renderChildrens(this.el.find('.dropdown-menu'))
     if (this.state.open) {
       this.el.find('button.toggle-btn').dropdown('toggle')
       this.state.open = false
     }
+  }
+
+  renderLayerGroup (groupId, group) {
+    return group.getLength() > 0 ?
+      `<li class="dropdown-divider"></li>` +
+      group.getArray().map(layer => {
+        return `
+          <li
+            class="dropdown-item layer ${this.layerVisible(layer) ? '' : 'disabled'}"
+            data-group="${groupId}" data-id="${layer.get('id')}">
+            <i class="far ${layer.getVisible() ? 'fa-check-square' : 'fa-square'}"></i>
+            ${t(layer.get('title'))}
+            <div class="layer-tools">
+              <a href="#" class="fit-layer">
+                <i class="fa fa-search-plus"></i>
+              </a>
+              <a href="#" class="remove-layer">
+                <i class="fa fa-times"></i>
+              </a>
+            </div>
+          </li>`
+        }).join('') : ''
   }
 
   layerVisible (layer) {

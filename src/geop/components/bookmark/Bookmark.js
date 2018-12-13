@@ -199,8 +199,11 @@ function formatState (type = 'down', data = {}, hash = null) {
       if ('app_bookmark_loaded' in state) {
         delete state.app_bookmark_loaded
       }
-      if (getState('app/shareOnlyTripFeatures') && 'layer_layers' in state && 'geocache_trip_ids' in state) {
-        state.layer_layers.forEach(layer => {
+      if (getState('app/shareOnlyTripFeatures') && 'geocache_trip_ids' in state) {
+        state.layer_layers && state.layer_layers.forEach(layer => {
+          layer.features = layer.features.filter(f => state.geocache_trip_ids.indexOf(f.id) > -1)
+        })
+        state.layer_overlays && state.layer_overlays.forEach(layer => {
           layer.features = layer.features.filter(f => state.geocache_trip_ids.indexOf(f.id) > -1)
         })
       }
