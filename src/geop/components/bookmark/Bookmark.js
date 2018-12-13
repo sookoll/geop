@@ -92,6 +92,9 @@ class Bookmark extends Component {
     })
     onPermalinkChange(permalink => {
       console.log('changed', permalink)
+      if (this.state.bookmark !== permalink.p) {
+        window.location.reload()
+      }
     })
   }
   render () {
