@@ -181,7 +181,11 @@ class MapEngine extends Component {
     const layerConfs = this.layers[group].getLayers().getArray().map(layer => {
       const conf = layer.get('conf')
       if (conf.type === 'FeatureCollection') {// TODO!
-        const features = new GeoJSONFormat().writeFeaturesObject()
+        const collection = new GeoJSONFormat().writeFeaturesObject({
+          featureProjection: getState('map/projection'),
+          dataProjection: 'EPSG:4326'
+        })
+        conf.features = collection.features
       }
       return layer.get('conf')
     })
