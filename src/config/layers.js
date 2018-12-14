@@ -14,7 +14,7 @@ export const layers = {
       projection: 'EPSG:3857',
       crossOrigin: null
     },
-    ma_orto : {
+    maorto : {
       type: 'Group',
       title: 'Satellite',
       projection: 'EPSG:3301',
@@ -39,7 +39,7 @@ export const layers = {
         crossOrigin: null
       }]
     },
-    ma_kaart: {
+    makaart: {
       type: 'Group',
       title: 'Map',
       projection: 'EPSG:3301',
@@ -64,7 +64,7 @@ export const layers = {
         crossOrigin: null
       }]
     },
-    ma_pkaart: {
+    mapkaart: {
       type: 'Group',
       title: 'Topo',
       projection: 'EPSG:3301',

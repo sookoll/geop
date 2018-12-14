@@ -155,38 +155,43 @@ class Geotrip extends Component {
       this.share()
     })
   }
+  reorderCollection (collection, order) {
+    for (let i = 0, len = order.length; i < len; i++) {
+      const feature = collection.getArray().filter(f => f.getId() === order[i])
+      if (feature && feature[0]) {
+        collection.remove(feature[0])
+        collection.insertAt(i, feature[0])
+      }
+    }
+  }
   reorderTrip () {
     const order = []
     this.el.find('li.sort-item').each((i, li) => {
       order.push($(li).data('id'))
     })
-    for (let i = 0, len = order.length; i < len; i++) {
-      const feature = this.state.collection.getArray().filter(f => f.getId() === order[i])
-      if (feature && feature[0]) {
-        this.state.collection.remove(feature[0])
-        this.state.collection.insertAt(i, feature[0])
-      }
-    }
+    this.reorderCollection(this.state.collection, order)
   }
   loadState () {
     const ids = getState('geocache/trip/ids')
     this.clearTrip()
     if (ids) {
-      getState('map/layer/layers').forEach(l => {
-        l.getSource().forEachFeature(f => {
-          if (ids.indexOf(f.getId()) > -1) {
-            this.state.collection.insertAt(ids.indexOf(f.getId()), f)
-          }
-        })
-      })
-      getState('map/layer/overlays').forEach(l => {
-        l.getSource().forEachFeature(f => {
-          if (ids.indexOf(f.getId()) > -1) {
-            this.state.collection.insertAt(ids.indexOf(f.getId()), f)
-          }
-        })
-      })
+      this.getTripFeaturesFromGroup(getState('map/layer/layers'), ids, this.state.collection)
+      this.getTripFeaturesFromGroup(getState('map/layer/overlays'), ids, this.state.collection)
+      this.reorderCollection(this.state.collection, ids)
     }
+  }
+  getTripFeaturesFromGroup (group, test, target) {
+    group.getArray()
+      .filter(l => {
+        return (l.get('conf') && l.get('conf').type === 'FeatureCollection')
+      })
+      .forEach(l => {
+        l.getSource().forEachFeature(f => {
+          if (test.indexOf(f.getId()) > -1) {
+            target.push(f)
+          }
+        })
+      })
   }
   clearTrip () {
     this.state.routeLayer && this.state.routeLayer.getSource().clear()

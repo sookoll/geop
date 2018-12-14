@@ -13,14 +13,33 @@ import { initServiceWorker } from 'Utilities/util'
 import Geop from 'Geop/Geop'
 import $ from 'jquery'
 
-initServiceWorker()
+let app = null
+const el = $('#geop')
 
-// permalink
-if ('onhashchange' in window) {
-  activatePermalink()
+function createApp () {
+  initConf().then(conf => {
+    const app = new Geop(el)
+    app.render()
+  })
 }
 
-initConf().then(conf => {
-  const app = new Geop($('#geop'))
-  app.init()
-})
+export function reloadApp () {
+  if (app) {
+    app.destroy()
+    app = null
+    el.html('')
+  }
+  //createApp()
+  window.location.reload()
+}
+
+(function () {
+  // service worker
+  initServiceWorker()
+  // permalink
+  if ('onhashchange' in window) {
+    activatePermalink()
+  }
+  // run app
+  createApp()
+})()

@@ -10,7 +10,7 @@ class WMSLayer extends Component {
   constructor (target) {
     super(target)
     this.el = $(`<li />`)
-    this.modal = null
+    this.modal = $('#modal_wmslayer')
     this.isRow = true
     this.layer_conf = {
         type: 'TileWMS',
@@ -31,7 +31,7 @@ class WMSLayer extends Component {
     // create is called from parent
   }
   render () {
-    if (!this.modal || $('#modal_wmslayer').length === 0) {
+    if (!this.modal || this.modal.length === 0) {
       this.modal = $(`
         <div class="modal fade"
           id="modal_wmslayer"
@@ -120,6 +120,12 @@ class WMSLayer extends Component {
     } else {
       log('error', t('URL is not valid WMS resource!'))
     }
+  }
+  destroy () {
+    this.modal.modal('dispose')
+    this.modal.remove()
+    this.modal = null
+    super.destroy()
   }
 }
 

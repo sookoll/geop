@@ -11,6 +11,7 @@ class SettingsBar extends Component {
     this.el = $(`<div class="btn-group float-left" id="sidebar-open"></div>`)
     this.create()
     this.sidebar = new Sidebar({
+      target: $('#geop'),
       trigger: this.el.find('button'),
       position: 'left',
       components: {

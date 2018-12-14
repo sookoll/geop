@@ -2,6 +2,11 @@ import Component from 'Geop/Component'
 import { createLayer } from 'Components/layer/LayerCreator'
 import { getState, setState, onchange } from 'Utilities/store'
 import { degToRad, radToDeg } from 'Utilities/util'
+import {
+  get as getPermalink,
+  set as setPermalink,
+  onchange as onPermalinkChange
+} from 'Utilities/permalink'
 import Map from 'ol/Map'
 import View from 'ol/View'
 import GeoJSONFormat from 'ol/format/GeoJSON'
@@ -49,9 +54,8 @@ class MapEngine extends Component {
     this.overlay = null
     this.shouldUpdate = true
     // permalink
-    const permalink = this.permalinkToViewConf(
-      this.$permalink ? this.$permalink.get('map') : null)
-    this.createBaseLayers(getState('layer/baseLayers'), permalink.baselayer)
+    const permalink = this.permalinkToViewConf(getPermalink('m'))
+    this.createBaseLayers(getState('layer/baseLayers'), permalink ? permalink.baselayer : null)
     this.createLayers(getState('layer/layers'))
     this.createOverlays(getState('layer/overlays'))
     // set to store
@@ -79,12 +83,25 @@ class MapEngine extends Component {
     onchange('layerchange', layerId => {
       this.updateStore(layerId)
     })
+    // listen permalink change
+    onPermalinkChange(permalink => {
+      if (permalink.m) {
+        const viewConf = this.permalinkToViewConf(permalink.m)
+        if (viewConf) {
+          this.map.getView().animate({
+            center: fromLonLat(viewConf.center, getState('map/projection')),
+            zoom: viewConf.zoom,
+            rotation: degToRad(viewConf.rotation),
+            duration: 500
+          })
+        }
+      }
+    })
   }
 
   init () {
     // permalink
-    const permalink = this.permalinkToViewConf(
-      this.$permalink ? this.$permalink.get('map') : null)
+    const permalink = this.permalinkToViewConf(getPermalink('m'))
     this.map = this.createMap(permalink)
     setState('map', this.map)
     this.map.on('moveend', (e) => {
@@ -93,6 +110,14 @@ class MapEngine extends Component {
       setState('map/center', toLonLat(view.getCenter()), true)
       setState('map/zoom', view.getZoom(), true)
       setState('map/rotation', radToDeg(view.getRotation()), true)
+      setPermalink({
+        m: this.viewConfToPermalink({
+          center: toLonLat(view.getCenter()),
+          zoom: view.getZoom(),
+          rotation: radToDeg(view.getRotation()),
+          baseLayer: getState('map/baseLayer')
+        })
+      })
     })
     // run que
     const que = getState('map/que')
@@ -106,11 +131,21 @@ class MapEngine extends Component {
   permalinkToViewConf (permalink) {
     const parts = permalink ? permalink.split('-') : []
     return {
-      center: (parts[1] && parts[0]) ? [parts[1], parts[0]] : getState('map/center'),
-      zoom: parts[2] || getState('map/zoom'),
-      rotation: parts[3] || getState('map/rotation'),
+      center: (!isNaN(parts[1]) && !isNaN(parts[0])) ? [Number(parts[1]), Number(parts[0])] : getState('map/center'),
+      zoom: !isNaN(parts[2]) ? Number(parts[2]) : getState('map/zoom'),
+      rotation: !isNaN(parts[3]) ? Number(parts[3]) : getState('map/rotation'),
       baselayer: parts[4] || getState('map/baseLayer')
     }
+  }
+
+  viewConfToPermalink (data) {
+    return [
+      data.center[1],
+      data.center[0],
+      data.zoom,
+      data.rotation,
+      data.baseLayer
+    ].join('-')
   }
 
   createMap (viewConf) {
@@ -142,31 +177,25 @@ class MapEngine extends Component {
       }
     })
   }
-
   createLayers (layers) {
     layers.forEach(layer => {
       this.addLayer(createLayer(layer))
     })
   }
-
   createOverlays (layers) {
     layers.forEach(layer => {
       this.addOverlay(createLayer(layer))
     })
   }
-
   addBaseLayer (layer) {
     this.layers.base.getLayers().push(layer)
   }
-
   addLayer (layer) {
     this.layers.layers.getLayers().push(layer)
   }
-
   addOverlay (layer) {
     this.layers.overlays.getLayers().push(layer)
   }
-
   getLayer (group, id = null) {
     if (group in this.layers) {
       if (!id) {
@@ -179,34 +208,33 @@ class MapEngine extends Component {
       }
     }
   }
-
   storeLayers (group) {
     const layerConfs = this.layers[group].getLayers().getArray().map(layer => {
+      return layer.get('conf')
+    })
+    setState('layer/' + group, layerConfs, true)
+  }
+  updateStore (layerId) {
+    let layer = this.getLayer('overlays', layerId)
+    if (layer) {
       const conf = layer.get('conf')
-      if (conf.type === 'FeatureCollection') {// TODO!
+      if (conf.type === 'FeatureCollection') {
         const collection = this.format.geojson.writeFeaturesObject(layer.getSource().getFeatures(), {
           featureProjection: getState('map/projection'),
           dataProjection: 'EPSG:4326'
         })
         conf.features = collection.features
+        layer.set('conf', conf)
       }
-      return layer.get('conf')
-    })
-    setState('layer/' + group, layerConfs, true)
-  }
-
-  updateStore (layerId) {
-    let layer = this.getLayer('overlays', layerId)
-    if (layer) {
       this.storeLayers('overlays')
       return
     }
-    layer = this.getLayer('layers', layerId)
-    if (layer) {
-      this.storeLayers('layers')
-    }
   }
-
+  destroy () {
+    this.map.setTarget(null)
+    this.map = null
+    super.destroy()
+  }
 }
 
 export default MapEngine

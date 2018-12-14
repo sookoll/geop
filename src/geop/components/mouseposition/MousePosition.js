@@ -54,7 +54,6 @@ class MousePosition extends Component {
 
     this.state = {
       format: 0,
-      projection: null,
       control: null,
       lock: false,
       lastCoord: null,
@@ -142,12 +141,10 @@ class MousePosition extends Component {
       })
       const map = getState('map')
       if (map) {
-        this.state.projection = map.getView().getProjection().getCode()
         this.activate(map)
       } else {
         const que = getState('map/que')
         que.push(map => {
-          this.state.projection = map.getView().getProjection().getCode()
           this.activate(map)
         })
       }
@@ -182,7 +179,7 @@ class MousePosition extends Component {
   format (coordinate) {
     const coord = transform(
       coordinate,
-      this.state.projection,
+      getState('map/projection'),
       this.coordFormats[this.state.format].projection
     )
     return this.coordFormats[this.state.format].coordinateFormat(coord)

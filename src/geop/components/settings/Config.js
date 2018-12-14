@@ -3,6 +3,7 @@ import {enableScreenLock, disableScreenLock, getDebugStore} from 'Utilities/util
 import {t, getLocale, getLocales, changeLocale} from 'Utilities/translate'
 import { set as setPermalink } from 'Utilities/permalink'
 import log from 'Utilities/log'
+import { reloadApp } from 'Root'
 import Component from 'Geop/Component'
 import $ from 'jquery'
 import saveAs from 'file-saver';
@@ -107,7 +108,7 @@ class Config extends Component {
       this.el.find('button.set-locale-btn').removeClass('active')
       $(e.currentTarget).addClass('active')
       log('warning', t('Language changed, page will reload!'), () => {
-        window.location.reload()
+        reloadApp()
       })
     })
     // keep awake
@@ -125,7 +126,7 @@ class Config extends Component {
     this.el.on('blur', '#settings-account', e => {
       setState('app/account', e.target.value, true)
       log('warning', t('Account changed, page will reload!'), () => {
-        window.location.reload()
+        reloadApp()
       })
     })
     // share change
@@ -138,8 +139,8 @@ class Config extends Component {
     this.el.on('click', '#settings-reset', e => {
       clearState()
       log('warning', t('App resetted, page will reload!'), () => {
-        setPermalink(null, null, ' ')
-        window.location.reload()
+        setPermalink(null)
+        reloadApp()
       })
     })
     // download debug log file

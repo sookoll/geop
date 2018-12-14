@@ -6,7 +6,7 @@ import { t } from 'Utilities/translate'
 import { copy, uid, deepCopy } from 'Utilities/util'
 import { get as getPermalink, onchange as onPermalinkChange } from 'Utilities/permalink'
 import log from 'Utilities/log'
-//import GeoJSONFormat from 'ol/format/GeoJSON'
+import { reloadApp } from 'Root'
 import $ from 'jquery'
 import JSONP from 'jsonpack'
 import QRious from 'qrious'
@@ -31,49 +31,13 @@ class Bookmark extends Component {
     this.el = $(`
       <div class="btn-group float-right" id="bookmark"></div>
     `)
+    this.modal = $('#modal_bookmark')
     this.state = {
       bookmarks: getState('app/bookmarks') || [],
       bookmark: getPermalink('p')
     }
-    this.modal = $(`
-      <div class="modal fade"
-        id="modal_bookmark">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title">${t('Share bookmark')}</h4>
-              <button type="button"
-                class="close"
-                data-dismiss="modal"
-                aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body text-muted">
-              <div class="input-group mb-5">
-                <input type="text" class="form-control" name="bookmark" readonly>
-                <div class="input-group-append">
-                  <button class="btn btn-secondary copy" type="button">
-                    <i class="far fa-clone"></i>
-                  </button>
-                  <a class="btn btn-secondary go" href="#" target="_blank">
-                    <i class="fas fa-link"></i>
-                  </a>
-                </div>
-              </div>
-              <div class="mb-5 text-center display-4">
-                ${t('or')}
-              </div>
-              <div class="mb-5 text-center">
-                <canvas class="rounded mx-auto d-block img-thumbnail"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    `)
+
     this.create()
-    $('body').append(this.modal)
     this.el.on('click', 'button.share', e => {
       e.preventDefault()
       this.share()
@@ -91,13 +55,52 @@ class Bookmark extends Component {
       this.copy($(e.target).closest('.modal').find('input').val())
     })
     onPermalinkChange(permalink => {
-      console.log('changed', permalink)
       if (this.state.bookmark !== permalink.p) {
-        window.location.reload()
+        reloadApp()
       }
     })
   }
   render () {
+    if (!this.modal || this.modal.length === 0) {
+      this.modal = $(`
+        <div class="modal fade"
+          id="modal_bookmark">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">${t('Share bookmark')}</h4>
+                <button type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body text-muted">
+                <div class="input-group mb-5">
+                  <input type="text" class="form-control" name="bookmark" readonly>
+                  <div class="input-group-append">
+                    <button class="btn btn-secondary copy" type="button">
+                      <i class="far fa-clone"></i>
+                    </button>
+                    <a class="btn btn-secondary go" href="#" target="_blank">
+                      <i class="fas fa-link"></i>
+                    </a>
+                  </div>
+                </div>
+                <div class="mb-5 text-center display-4">
+                  ${t('or')}
+                </div>
+                <div class="mb-5 text-center">
+                  <canvas class="rounded mx-auto d-block img-thumbnail"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `)
+      $('body').append(this.modal)
+    }
     this.el.html(`
       <div class="btn-group dropup">
         <button type="button" class="btn btn-secondary share" title="${t('Share')}">
@@ -179,6 +182,12 @@ class Bookmark extends Component {
     })
     qr.value = this.bookmarkUrl(bookmark)
     this.modal.modal()
+  }
+  destroy () {
+    this.modal.modal('dispose')
+    this.modal.remove()
+    this.modal = null
+    super.destroy()
   }
 }
 

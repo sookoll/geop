@@ -19,7 +19,7 @@ class Component {
   render () {
 
   }
-  renderChildrens () {
+  renderComponents () {
 
   }
   getComponent (key) {
@@ -33,6 +33,11 @@ class Component {
   }
   get (name) {
     return this.state[name]
+  }
+  destroy () {
+    Object.keys(this.components).forEach(c => this.components[c].destroy())
+    this.components = {}
+    this.el.remove()
   }
 }
 

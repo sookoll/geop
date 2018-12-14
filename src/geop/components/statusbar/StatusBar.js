@@ -14,7 +14,7 @@ class StatusBar extends Component {
     this.el = $(`<footer id="statusbar" class="panel-bar"></footer>`)
     this.create()
     this.components = {
-      settings: new SettingsBar(this.el),
+      settings: getState('app/settings') && new SettingsBar(this.el),
       fullscreen: getState('app/fullScreen') && new FullScreen(this.el),
       bookmark: getState('app/shareState') && new Bookmark(this.el),
       scaleline: getState('app/scaleLine') && new ScaleLine(this.el),

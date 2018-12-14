@@ -58,6 +58,7 @@ class Geocache extends Component {
     }
     this.create()
     this.sidebar = new Sidebar({
+      target: $('#geop'),
       trigger: this.el.find('button'),
       position: 'left',
       components: {

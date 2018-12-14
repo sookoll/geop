@@ -62,7 +62,8 @@ module.exports = {
       Utilities: path.join(__dirname, 'src', 'geop', 'utilities'),
       Components: path.join(__dirname, 'src', 'geop', 'components'),
       Geop: path.join(__dirname, 'src', 'geop'),
-      Conf: path.join(__dirname, 'src', 'config')
+      Conf: path.join(__dirname, 'src', 'config'),
+      Root: path.join(__dirname, 'src')
     },
     extensions: ['*', '.js', '.json']
   },

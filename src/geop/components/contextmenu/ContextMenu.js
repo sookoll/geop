@@ -24,7 +24,7 @@ class ContextMenu extends Component {
     this.state.overlay = new Overlay({
       element: this.el[0],
       autoPan: true,
-      autoPanMargin: 50,
+      autoPanMargin: 150,
       positioning: 'center-center',
       offset: [0, 0]
     })
@@ -79,15 +79,22 @@ class ContextMenu extends Component {
     })
     return {
       definition: {
+        container: this.el,
         placement: 'right',
         animation: false,
         html: true,
         content: content.join(''),
-        selector: '#contextmenu-map',
         offset: (this.state.items.length - 1) * 20 + 'px, 0',
-        template: '<div class="contextmenu popover"><div class="arrow"></div><div class="popover-body"></div></div>'
+        template: `
+          <div class="contextmenu popover">
+            <div class="arrow"></div>
+            <div class="popover-body"></div>
+          </div>`
       },
       'onShow': pop => {
+        $(pop).on('contextmenu', e => {
+          e.stopPropagation()
+        })
         this.state.items.forEach((item, i) => {
           if (typeof item.onClick === 'function') {
             $(pop).on('click', '.item-' + i, e => {

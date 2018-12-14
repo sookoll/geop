@@ -2,10 +2,12 @@ import $ from 'jquery'
 import { getState, setState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
 import log from 'Utilities/log'
+import { set as setPermalink, onchange as onPermalinkChange } from 'Utilities/permalink'
 import Component from 'Geop/Component'
 import OSMEdit from 'Components/osmedit/OSMEdit'
 import WMSLayer from './WMSLayer'
 import FileLayer from './FileLayer'
+import UrlLayer from './UrlLayer'
 import './LayerManager.styl'
 
 class LayerManager extends Component {
@@ -40,7 +42,18 @@ class LayerManager extends Component {
       wms: WMSLayer,
       file: FileLayer
     }
-    this.renderChildrens(this.el.find('.dropdown-menu'))
+    this.renderComponents(this.el.find('.dropdown-menu'))
+    // register layer from url
+    this.urlLayer = new UrlLayer()
+    // listen permalink change
+    onPermalinkChange(permalink => {
+      if (permalink.m) {
+        const baseLayerId = this.permalinkToViewConf(permalink.m)
+        if (baseLayerId) {
+          this.changeBaseLayer(baseLayerId)
+        }
+      }
+    })
   }
 
   create () {
@@ -52,9 +65,18 @@ class LayerManager extends Component {
         e.stopPropagation()
         const id = $(e.currentTarget).data('id')
         if (id === this.state.activeBaseLayer.get('id')) {
-          this.toggleLayer(this.state.baseLayers, id)
+          this.toggleLayer('baseLayers', id)
         } else {
-          this.changeBaseLayer(id)
+          if (this.changeBaseLayer(id)) {
+            setPermalink({
+              m: this.viewConfToPermalink({
+                center: getState('map/center'),
+                zoom: getState('map/zoom'),
+                rotation: getState('map/rotation'),
+                baseLayer: id
+              })
+            })
+          }
         }
       })
       this.el.on('click', '.layer', e => {
@@ -102,7 +124,7 @@ class LayerManager extends Component {
         ${this.renderLayerGroup('overlays', this.state.overlays)}
         ${this.renderLayerGroup('layers', this.state.layers)}
       </ul>`)
-    this.renderChildrens(this.el.find('.dropdown-menu'))
+    this.renderComponents(this.el.find('.dropdown-menu'))
     if (this.state.open) {
       this.el.find('button.toggle-btn').dropdown('toggle')
       this.state.open = false
@@ -131,6 +153,21 @@ class LayerManager extends Component {
         }).join('') : ''
   }
 
+  permalinkToViewConf (permalink) {
+    const parts = permalink ? permalink.split('-') : []
+    return parts[4]
+  }
+
+  viewConfToPermalink (data) {
+    return [
+      data.center[1],
+      data.center[0],
+      data.zoom,
+      data.rotation,
+      data.baseLayer
+    ].join('-')
+  }
+
   layerVisible (layer) {
     if (layer.minResolution && this._map.getView().getResolution() < layer.minResolution) {
       return false;
@@ -142,17 +179,19 @@ class LayerManager extends Component {
   }
 
   changeBaseLayer (id) {
-    this.state.baseLayers.forEach(layer => {
-      if (layer.get('id') === id) {
-        layer.setVisible(true)
-        this.state.activeBaseLayer = layer
-      } else {
+    const layers = this.state.baseLayers.getArray().filter(l => l.get('id') === id)
+    if (layers.length === 1) {
+      this.state.baseLayers.forEach(layer => {
         layer.setVisible(false)
-      }
-    })
-    setState('map/baseLayer', this.state.activeBaseLayer.get('id'), true)
-    this.state.open = true
-    this.render()
+      })
+      layers[0].setVisible(true)
+      this.state.activeBaseLayer = layers[0]
+      setState('map/baseLayer', id, true)
+      //this.state.open = true
+      this.render()
+      return true
+    }
+    return false
   }
 
   toggleLayer (groupId, id) {
@@ -196,7 +235,7 @@ class LayerManager extends Component {
     }
   }
 
-  renderChildrens (target) {
+  renderComponents (target) {
     let dividerAdded = false
     Object.keys(this.components).forEach((i) => {
       const plug = new this.components[i](target)

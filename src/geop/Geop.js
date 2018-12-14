@@ -15,15 +15,14 @@ import Popup from 'Components/featureinfo/Popup'
 import './Geop.styl'
 
 class Geop extends Component {
-  constructor (target) {
-    super(target)
+  render () {
     // debug
     if (getState('app/debug')) {
       initDebug()
     }
     // set locale
     initLocale(getState('app/locale'), translations)
-
+    // components
     this.components = {
       map: new MapEngine(this.target),
       contextmenu: new ContextMenu(this.target),
@@ -35,11 +34,8 @@ class Geop extends Component {
       tooltip: getState('app/tooltip') && new Tooltip(this.target),
       popup: getState('app/featureInfo') && new Popup(this.target)
     }
-  }
-  init() {
     this.components.map.init()
   }
-
 }
 
 export default Geop

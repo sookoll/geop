@@ -134,7 +134,6 @@ class Popup extends Component {
           html: true,
           title: title,
           content: content,
-          trigger: 'manual',
           template: `
             <div class="popup popover">
               <div class="arrow"></div>
