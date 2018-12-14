@@ -34,7 +34,7 @@ class Bookmark extends Component {
     this.modal = $('#modal_bookmark')
     this.state = {
       bookmarks: getState('app/bookmarks') || [],
-      bookmark: getPermalink('p')
+      bookmark: getPermalink('b')
     }
 
     this.create()
@@ -55,7 +55,7 @@ class Bookmark extends Component {
       this.copy($(e.target).closest('.modal').find('input').val())
     })
     onPermalinkChange(permalink => {
-      if (this.state.bookmark !== permalink.p) {
+      if (this.state.bookmark !== permalink.b) {
         reloadApp()
       }
     })
@@ -171,7 +171,7 @@ class Bookmark extends Component {
       })
   }
   bookmarkUrl (hash) {
-    return window.location.origin + window.location.pathname + '#p=' + hash
+    return window.location.origin + window.location.pathname + '#b=' + hash
   }
   openModal (bookmark) {
     this.modal.find('input').val(this.bookmarkUrl(bookmark))

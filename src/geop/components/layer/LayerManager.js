@@ -2,7 +2,11 @@ import $ from 'jquery'
 import { getState, setState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
 import log from 'Utilities/log'
-import { set as setPermalink, onchange as onPermalinkChange } from 'Utilities/permalink'
+import {
+  set as setPermalink,
+  onchange as onPermalinkChange,
+  viewConfToPermalink
+} from 'Utilities/permalink'
 import Component from 'Geop/Component'
 import OSMEdit from 'Components/osmedit/OSMEdit'
 import WMSLayer from './WMSLayer'
@@ -47,8 +51,8 @@ class LayerManager extends Component {
     this.urlLayer = new UrlLayer()
     // listen permalink change
     onPermalinkChange(permalink => {
-      if (permalink.m) {
-        const baseLayerId = this.permalinkToViewConf(permalink.m)
+      if (permalink.view) {
+        const baseLayerId = this.permalinkToViewConf(permalink.view)
         if (baseLayerId) {
           this.changeBaseLayer(baseLayerId)
         }
@@ -69,7 +73,7 @@ class LayerManager extends Component {
         } else {
           if (this.changeBaseLayer(id)) {
             setPermalink({
-              m: this.viewConfToPermalink({
+              view: viewConfToPermalink({
                 center: getState('map/center'),
                 zoom: getState('map/zoom'),
                 rotation: getState('map/rotation'),
@@ -156,16 +160,6 @@ class LayerManager extends Component {
   permalinkToViewConf (permalink) {
     const parts = permalink ? permalink.split('-') : []
     return parts[4]
-  }
-
-  viewConfToPermalink (data) {
-    return [
-      data.center[1],
-      data.center[0],
-      data.zoom,
-      data.rotation,
-      data.baseLayer
-    ].join('-')
   }
 
   layerVisible (layer) {

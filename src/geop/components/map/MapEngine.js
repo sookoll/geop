@@ -5,7 +5,8 @@ import { degToRad, radToDeg } from 'Utilities/util'
 import {
   get as getPermalink,
   set as setPermalink,
-  onchange as onPermalinkChange
+  onchange as onPermalinkChange,
+  viewConfToPermalink
 } from 'Utilities/permalink'
 import Map from 'ol/Map'
 import View from 'ol/View'
@@ -54,7 +55,7 @@ class MapEngine extends Component {
     this.overlay = null
     this.shouldUpdate = true
     // permalink
-    const permalink = this.permalinkToViewConf(getPermalink('m'))
+    const permalink = this.permalinkToViewConf(getPermalink('view'))
     this.createBaseLayers(getState('layer/baseLayers'), permalink ? permalink.baselayer : null)
     this.createLayers(getState('layer/layers'))
     this.createOverlays(getState('layer/overlays'))
@@ -85,8 +86,8 @@ class MapEngine extends Component {
     })
     // listen permalink change
     onPermalinkChange(permalink => {
-      if (permalink.m) {
-        const viewConf = this.permalinkToViewConf(permalink.m)
+      if (permalink.view) {
+        const viewConf = this.permalinkToViewConf(permalink.view)
         if (viewConf) {
           this.map.getView().animate({
             center: fromLonLat(viewConf.center, getState('map/projection')),
@@ -101,7 +102,7 @@ class MapEngine extends Component {
 
   init () {
     // permalink
-    const permalink = this.permalinkToViewConf(getPermalink('m'))
+    const permalink = this.permalinkToViewConf(getPermalink('view'))
     this.map = this.createMap(permalink)
     setState('map', this.map)
     this.map.on('moveend', (e) => {
@@ -111,7 +112,7 @@ class MapEngine extends Component {
       setState('map/zoom', view.getZoom(), true)
       setState('map/rotation', radToDeg(view.getRotation()), true)
       setPermalink({
-        m: this.viewConfToPermalink({
+        view: viewConfToPermalink({
           center: toLonLat(view.getCenter()),
           zoom: view.getZoom(),
           rotation: radToDeg(view.getRotation()),
@@ -127,7 +128,6 @@ class MapEngine extends Component {
       }
     })
   }
-
   permalinkToViewConf (permalink) {
     const parts = permalink ? permalink.split('-') : []
     return {
@@ -137,17 +137,6 @@ class MapEngine extends Component {
       baselayer: parts[4] || getState('map/baseLayer')
     }
   }
-
-  viewConfToPermalink (data) {
-    return [
-      data.center[1],
-      data.center[0],
-      data.zoom,
-      data.rotation,
-      data.baseLayer
-    ].join('-')
-  }
-
   createMap (viewConf) {
     return new Map({
       layers: Object.keys(this.layers).map(i => this.layers[i]),

@@ -57,7 +57,7 @@ export function set (data) {
   } else {
     const newHash = Object.assign(state.hash, data)
     Object.keys(newHash).forEach(k => {
-      if (newHash[k] === null) {
+      if (newHash[k] === null || typeof newHash[k] === 'undefined') {
         delete newHash[k]
       }
     })
@@ -69,4 +69,14 @@ export function set (data) {
 
 export function onchange (cb) {
   events.push(cb)
+}
+
+export function viewConfToPermalink (data) {
+  return [
+    Math.round(data.center[1] * 100000) / 100000,
+    Math.round(data.center[0] * 100000) / 100000,
+    Math.round(data.zoom * 100) / 100,
+    parseInt(data.rotation),
+    data.baseLayer
+  ].join('-')
 }

@@ -25,13 +25,13 @@ class GeocacheLoader extends Component {
     this.el.html(`
       <ul class="list-group mb-3">
         <li class="list-group-item">
-          <span class="badge badge-pill badge-primary">1</span>
+          <span class="badge badge-pill badge-secondary">1</span>
           ${t('Go to')}
           <a href="${cacheConf.authUrl}" target="geopeitus">geopeitus.ee</a>
           ${t('and log in')},
         </li>
         <li class="list-group-item">
-          <span class="badge badge-pill badge-primary">2</span>
+          <span class="badge badge-pill badge-secondary">2</span>
           ${t('download GPX from')}
           <a href="${cacheConf.downloadUrl.page}" target="geopeitus">${t('here')}</a>
           ${t('and drop it on map or import file from layers menu')}
@@ -43,7 +43,7 @@ class GeocacheLoader extends Component {
           </div>
         </li>
         <li class="list-group-item">
-          <span class="badge badge-pill badge-primary">3</span>
+          <span class="badge badge-pill badge-secondary">3</span>
           ${t('or open')}
           <a href="${cacheConf.downloadUrl.geojson}" target="geopeitus">link</a>
           ${t('and copy page content to textbox below')}
