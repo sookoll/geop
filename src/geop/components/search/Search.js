@@ -17,7 +17,7 @@ class Search extends Component {
     super(target)
     this.el = $(`
       <div id="search" class="float-right">
-        <button class="btn btn-secondary d-inline-block d-sm-none toggle">
+        <button class="btn btn-secondary d-inline-block d-sm-none toggle" aria-label="${t('Search')}">
           <i class="fa fa-search"></i>
         </button>
         <div class="d-none d-sm-block">
@@ -145,7 +145,7 @@ class Search extends Component {
         <button class="btn btn-link clear">
           <i class="fa fa-backspace"></i>
         </button>
-        <button class="btn btn-link toggle d-inline-block d-sm-none">
+        <button class="btn btn-link toggle d-inline-block d-sm-none" aria-label="${t('Close')}">
           <i class="fa fa-times"></i>
         </button>
       </div>`)

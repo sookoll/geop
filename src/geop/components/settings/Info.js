@@ -1,4 +1,5 @@
 import { getState } from 'Utilities/store'
+import { t } from 'Utilities/translate'
 import Component from 'Geop/Component'
 import $ from 'jquery'
 import './Info.styl'
@@ -22,30 +23,31 @@ class Info extends Component {
       <h5>
         Geop
         <i class="text-muted small">v1.0.0</i>
-        <span class="attribution small">
-          <a href="http://openstreetmap.org" >OSM</a> |
-          <a href="http://www.maaamet.ee" >maa-amet</a> |
-          <a href="http://sookoll.ee" >oo</a>
-        </span>
       </h5>
+      <span class="attribution small">
+        <a href="http://openstreetmap.org" >OSM</a> |
+        <a href="http://www.maaamet.ee" >maa-amet</a> |
+        <a href="http://sookoll.ee" >oo</a>
+      </span>
       <ul>
-        <li>Lisa aarded kaardile. Filtreeri aardeid oleku ja tüübi järgi.</li>
-        <li>Otsi aardeid, aadresse ja koordinaate.</li>
-        <li>OSM kaartide kasutamine on taotluslik, lisatud on Maa-ameti foto ja põhikaart.</li>
-        <li>Kui näed kaardil viga, paranda see ära!</li>
-        <li>Võimalus lisada kaardile WMS-kihte.</li>
-        <li>Vaata aardeümbrust Google Streetviw abil, mille leiad parema kliki menüüst.</li>
-        <li>Lisa aardeid oma geotuurile, järjesta aardeid ja salvesta tuur gpx-failina.</li>
-        <li>Jaga geotuuri kaaslastega.</li>
-        <li>Pärast aardejahti tiri (drag'n'drop) gepsulogi kaardile, on mugav jälge mööda aardeid logida.</li>
-        <li>Tegu on HTML-rakendusega, sinu arvutist välja andmeid ei liigu.</li>
+        <li>${t('Geop is progressive web application with partial offline support.')}</li>
+        <li>${t('Install it to Your home screen.')}</li>
+        <li>${t('Add any GPX, GeoJSON, KML files or WMS layers to map from layers menu or drag and drop file.')}</li>
+        <li>${t('App will recognize if geocaches are added to map.')}</li>
+        <li>${t('Filter and search caches on map.')}</li>
+        <li>${t('Search and display coordinates in WGS, L-Est, UTM and MGRS system.')}</li>
+        <li>${t('Find streetview link and measure tools from context menu.')}</li>
+        <li>${t('Add caches and map objects to geotrip. Reorder geotrip.')}</li>
+        <li>${t('Navigate to cache with two tracking mode')}</li>
+        <li>${t('Share snapshot of app state via link or QR-code. Download geotrip as GPX-file.')}</li>
       </ul>
-      <h5>Koordinaatide otsing</h5>
+      <h5>${t('Search coordinates')}</h5>
       <ul>
         <li>WGS'84: lat, lon; kk.nnnn; kk° mm.nnn; kk° mm' ss''</li>
         <li>L-EST'97: x, y; y, x</li>
         <li>UTM zone 34N: x, y; y, x</li>
         <li>UTM zone 35N: x, y; y, x</li>
+        <li>MGRS</li>
       </ul>
     `)
   }

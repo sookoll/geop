@@ -88,7 +88,7 @@ module.exports = {
       short_name: 'Geop',
       description: 'Simple map tool for Geocaching',
       display: 'standalone',
-      start_url: '/',
+      start_url: 'index.html',
       background_color: '#6c757d',
       theme_color: '#6c757d',
       crossorigin: null, //can be null, use-credentials or anonymous

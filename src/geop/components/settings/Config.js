@@ -6,14 +6,21 @@ import log from 'Utilities/log'
 import { reloadApp } from 'Root'
 import Component from 'Geop/Component'
 import $ from 'jquery'
-import saveAs from 'file-saver';
+import saveAs from 'file-saver'
+import './Config.styl'
 
 class Config extends Component {
   constructor (target) {
     super(target)
     this.id = 'settings-tab'
     this.icon = 'fa fa-cog'
-    this.el = $(`<div class="tab-pane fade ${this.id === getState('app/sideBarTab') ? 'show active' : ''}" id="${this.id}" role="tabpanel"></div>`)
+    this.el = $(`
+      <div
+        class="tab-pane fade ${this.id === getState('app/settingsTabOpen') ? 'show active' : ''}"
+        id="${this.id}"
+        role="tabpanel">
+      </div>
+    `)
     this.create()
   }
   create () {
@@ -55,7 +62,7 @@ class Config extends Component {
           class="form-control"
           id="settings-account"
           placeholder="${t('Username')}"
-          value="${getState('app/account') || ''}">
+          value="${getState('app/account') || ''}"/>
       </div>
       <small class="form-text text-muted mb-3">
         ${t('Enter geopeitus.ee or geocaching.com username. App will reload after change!')}
@@ -84,7 +91,7 @@ class Config extends Component {
           class="btn btn-warning">
           <i class="fa fa-sync-alt"></i>
           ${t('Reset')}
-        </a>
+        </button>
       </div>
       <small class="form-text text-muted mb-3">
         ${t('Reset app to default. App will reload!')}
@@ -97,10 +104,18 @@ class Config extends Component {
           class="btn btn-danger">
           <i class="fa fa-download"></i>
           ${t('Download debug log')}
-        </a>
+        </button>
         <input type="file" style="display:none;" />
       </div>
       ` : ''}
+      <div class="install p-3 position-absolute">
+        <button
+          id="install"
+          class="btn btn-danger btn-lg btn-block">
+          <i class="fa fa-plus"></i>
+          ${t('Install app to home screen')}
+        </button>
+      </div>
     `)
     // language change
     this.el.on('click', 'button.set-locale-btn', e => {
@@ -148,6 +163,25 @@ class Config extends Component {
       const logs = getDebugStore()
       const blob = new window.Blob([logs.join('\n')], {type: "text/plain;charset=utf-8"})
       saveAs(blob, getState('app/debugFile'))
+    })
+    let deferredPrompt
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault()
+      deferredPrompt = e
+      this.el.find('.install').show()
+    })
+    this.el.on('click', '#install', e => {
+      this.el.find('.install').hide()
+      deferredPrompt.prompt()
+      deferredPrompt.userChoice
+        .then(choiceResult => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the A2HS prompt')
+          } else {
+            console.log('User dismissed the A2HS prompt')
+          }
+          deferredPrompt = null
+        })
     })
   }
 }

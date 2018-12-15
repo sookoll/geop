@@ -106,6 +106,7 @@ class LayerManager extends Component {
       <button type="button"
         class="btn btn-secondary toggle-btn dropdown-toggle no-caret"
         data-toggle="dropdown"
+        aria-label="${t('Layers')}"
         aria-expanded="false">
         <span class="display-name d-none d-sm-inline-block">
           ${this.state.activeBaseLayer ?

@@ -123,7 +123,7 @@ class Geotrip extends Component {
     return collection.getArray().map((f, i) => {
       return `
         <li class="list-group-item sort-item" data-id="${f.getId()}">
-          <button type="button" class="close">
+          <button type="button" class="close" aria-label="${t('Close')}">
             <i class="fa fa-times"></i>
           </button>
           <span class="badge badge-pill badge-primary">${i+1}</span>

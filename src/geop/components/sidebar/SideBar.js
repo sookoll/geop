@@ -35,11 +35,11 @@ class Sidebar extends Component {
   }
   render () {
     this.el.html(`
-      <button type="button" class="close">
+      <button type="button" class="close" aria-label="${t('Close')}">
         <i class="fa fa-times"></i>
       </button>
-      <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist"></ul>
-      <div class="tab-content" id="pills-tabContent"></div>
+      <ul class="nav nav-pills mb-3" role="tablist"></ul>
+      <div class="tab-content"></div>
     `)
     this.trigger.on('click', e => {
       this.openSidebar()
