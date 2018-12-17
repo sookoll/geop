@@ -137,7 +137,8 @@
     "Waypoint|Virtual Stage": "Virtual Stage",
     "Zoom in": "Zoom in",
     "Zoom out": "Zoom out",
-    "Close": "Close"
+    "Close": "Close",
+    "Install web app to your home screen.": "Install web app to your home screen."
   },
   "et": {
     "Account": "Konto",
@@ -277,6 +278,7 @@
     "Waypoint|Virtual Stage": "Virtuaalne vahepunkt",
     "Zoom in": "Suurenda",
     "Zoom out": "Vähenda",
-    "Close": "Sulge"
+    "Close": "Sulge",
+    "Install web app to your home screen.": "Paigalda rakendus oma seadmesse."
   }
 }

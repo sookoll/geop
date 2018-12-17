@@ -10,7 +10,7 @@ import { getBookmarkState } from 'Components/bookmark/Bookmark'
 export function initConf () {
   return new Promise(async (resolve, reject) => {
     const conf = {}
-    const permalink = getPermalink('p')
+    const permalink = getPermalink('b')
     let storageState
     let bookmarkState
     try {

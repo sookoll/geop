@@ -84,11 +84,12 @@ module.exports = {
       filename: 'index.html'
     }),
     new WebpackPwaManifest({
-      name: 'Geocaching Map Tool',
+      name: 'Geop by sookoll',
       short_name: 'Geop',
-      description: 'Simple map tool for Geocaching',
+      description: 'Geop - Geocaching map',
       display: 'standalone',
-      start_url: 'index.html',
+      orientation: 'any',
+      start_url: '.',
       background_color: '#6c757d',
       theme_color: '#6c757d',
       crossorigin: null, //can be null, use-credentials or anonymous

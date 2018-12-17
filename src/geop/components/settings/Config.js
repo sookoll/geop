@@ -31,6 +31,17 @@ class Config extends Component {
   }
   render () {
     this.el.html(`
+      <div class="install mb-3">
+        <button
+          id="install"
+          class="btn btn-danger btn-lg btn-block">
+          <i class="fa fa-plus"></i>
+          ${t('Install app to home screen')}
+        </button>
+        <small class="form-text text-muted">
+          ${t('Install web app to your home screen.')}
+        </small>
+      </div>
       <h5>${t('Language')}</h5>
       <div class="btn-group" role="group">
         ${getLocales().map(locale => {
@@ -108,14 +119,6 @@ class Config extends Component {
         <input type="file" style="display:none;" />
       </div>
       ` : ''}
-      <div class="install p-3 position-absolute">
-        <button
-          id="install"
-          class="btn btn-danger btn-lg btn-block">
-          <i class="fa fa-plus"></i>
-          ${t('Install app to home screen')}
-        </button>
-      </div>
     `)
     // language change
     this.el.on('click', 'button.set-locale-btn', e => {

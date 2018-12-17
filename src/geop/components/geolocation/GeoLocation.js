@@ -94,11 +94,29 @@ class GeoLocation extends Component {
       this.speedChanged(e)
     })
     this.state.locator.on('error', e => {
-      console.error('geolocation error', e)
-      this.disable()
-      this.el.removeClass(this.state.status.join(' '))
-      log('error', t('Unable to find location'))
+      this.error(e)
     })
+  }
+  error (e) {
+    console.error('geolocation error', e)
+    this.disable()
+    this.el.removeClass(this.state.status.join(' '))
+    let errorText = t('Unable to find location.')
+    switch (e.code) {
+      case e.PERMISSION_DENIED:
+        errorText = t('User denied the request for Geolocation.')
+        break
+      case e.POSITION_UNAVAILABLE:
+        errorText = t('Location information is unavailable.')
+        break
+      case e.TIMEOUT:
+        errorText = t('The request to get user location timed out.')
+        break
+      case e.UNKNOWN_ERROR:
+        errorText = t('An unknown error occurred.')
+        break
+    }
+    log('error', errorText)
   }
   enable () {
     const map = getState('map')
