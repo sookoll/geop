@@ -40,6 +40,6 @@ npm run start:prod
 Make sure all changes are commited in current branch.
 Usually you want to merge all development branches (done) to master before deploy.
 ```
-./tools/deploy.sh
+npm run deploy
 ```
 It will build:prod app and commit dist folder to gh-pages branch and push to github.

@@ -19,7 +19,11 @@ class Coordinate extends Provider {
         throw new Error(t('Query string too short, aborting!'))
       }
       this.geocode(query, (results) => {
-        resolve(this.format(results))
+        if (results) {
+          resolve(this.format(results))
+        } else {
+          throw new Error(t('Unable to perform search!'))
+        }
       })
     })
   }
