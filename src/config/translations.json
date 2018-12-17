@@ -138,7 +138,8 @@
     "Zoom in": "Zoom in",
     "Zoom out": "Zoom out",
     "Close": "Close",
-    "Install web app to your home screen.": "Install web app to your home screen."
+    "Install web app to your home screen.": "Install web app to your home screen.",
+    "Geocaches": "Geocaches"
   },
   "et": {
     "Account": "Konto",
@@ -279,6 +280,7 @@
     "Zoom in": "Suurenda",
     "Zoom out": "Vähenda",
     "Close": "Sulge",
-    "Install web app to your home screen.": "Paigalda rakendus oma seadmesse."
+    "Install web app to your home screen.": "Paigalda rakendus oma seadmesse.",
+    "Geocaches": "Aarded"
   }
 }

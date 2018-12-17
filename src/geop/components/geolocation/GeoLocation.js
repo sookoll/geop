@@ -98,7 +98,6 @@ class GeoLocation extends Component {
     })
   }
   error (e) {
-    console.error('geolocation error', e)
     this.disable()
     this.el.removeClass(this.state.status.join(' '))
     let errorText = t('Unable to find location.')
@@ -117,6 +116,9 @@ class GeoLocation extends Component {
         break
     }
     log('error', errorText)
+    if (getState('app/debug')) {
+      console.error('geolocation error', JSON.stringify(e))
+    }
   }
   enable () {
     const map = getState('map')
@@ -212,7 +214,9 @@ class GeoLocation extends Component {
     ]
   }
   updateView () {
-    console.debug(`updateView: ${JSON.stringify(this.state.lastPosition)} ${this.state.lastHeading}`)
+    if (getState('app/debug')) {
+      console.debug(`updateView: ${JSON.stringify(this.state.lastPosition)} ${this.state.lastHeading}`)
+    }
     if (this.state.status[this.state.active] === 'tracking') {
       const view = getState('map').getView()
       if (this.state.lastPosition && this.state.lastHeading) {

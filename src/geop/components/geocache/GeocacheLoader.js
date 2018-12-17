@@ -78,18 +78,25 @@ class GeocacheLoader extends Component {
   addCaches (content) {
     let json = null
     content = this.fixme(content)
+    const debug = getState('app/debug')
     try {
       json = JSON.parse(content)
       if (json.type !== 'FeatureCollection' || !json.features) {
         throw new Error('Not valid GeoJSON')
       }
-    } catch (err) {
-      log('error', t('Not valid GeoJSON'))
+    } catch (e) {
+      log('error', t(e.message))
+      if (debug) {
+        console.debug('GeocacheLoader.addCaches: error ' + JSON.stringify(e))
+      }
     }
     if (json) {
       const layer = this.createLayer(json)
       getState('map/layer/layers').push(layer)
       log('success', `${t('Added')} ${json.features.length} ${t('features')}`)
+      if (debug) {
+        console.debug('GeocacheLoader.addCaches: added ' + json.features.length)
+      }
     }
   }
   fixme (content) {

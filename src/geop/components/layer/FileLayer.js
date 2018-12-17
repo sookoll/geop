@@ -32,6 +32,7 @@ class FileLayer extends Component {
     // create is called from parent
   }
   render () {
+    const debug = getState('app/debug')
     this.el.html(`
       <a href="#"
         id="add-file-layer"
@@ -52,6 +53,9 @@ class FileLayer extends Component {
         const filename = files[0].name
         const ext = filename.split('.').pop().toLowerCase()
         if (ext in this.fileTypes) {
+          if (debug) {
+            console.debug(`FileLayer.render input change: ${filename}`)
+          }
           const reader = new window.FileReader()
           reader.onload = (e) => {
             const parser = this.fileTypes[ext]
@@ -62,11 +66,17 @@ class FileLayer extends Component {
             if (layer) {
               this.state.layers.push(layer)
               log('success', `${t('Added')} ${conf.features.length} ${t('features')}`)
+              if (debug) {
+                console.debug(`FileLayer.render layer created: ${filename}, features: ${conf.features.length}`)
+              }
             }
           }
           reader.readAsText(files[0])
         } else {
           log('error', t('Unsupported file type'))
+          if (debug) {
+            console.error(`FileLayer.render Unsupported file type: ${filename}`)
+          }
         }
       }
     })
@@ -100,6 +110,9 @@ class FileLayer extends Component {
         if (layer) {
           this.state.layers.push(layer)
           log('success', `${t('Added')} ${conf.features.length} ${t('features')}`)
+          if (getState('app/debug')) {
+            console.debug(`FileLayer.addDragNDrop layer created: ${e.file.name}, features: ${conf.features.length}`)
+          }
         }
       })
       if (map) {
@@ -142,9 +155,15 @@ class FileLayer extends Component {
         return createLayer(conf)
       } catch (e) {
         log('error', t('Error creating layer') + e)
+        if (getState('app/debug')) {
+          console.debug(`FileLayer.addDragNDrop layer created: ${e.file.name}, features: ${conf.features.length}`)
+        }
       }
     } else {
       log('error', t('Empty file'))
+      if (getState('app/debug')) {
+        console.debug(`FileLayer.addDragNDrop empty file: ${conf.title}`)
+      }
     }
   }
 }

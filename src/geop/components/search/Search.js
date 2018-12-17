@@ -168,6 +168,7 @@ class Search extends Component {
     this.render()
   }
   search (query) {
+    const debug = getState('app/debug')
     this.query = query
     let counter = 0
     let stop = false
@@ -183,9 +184,14 @@ class Search extends Component {
             stop = true
             counter = 1
           }
+          if (debug) {
+            console.debug(`Search.search: query: ${query}, results: ${results.length}`)
+          }
         })
         .catch(e => {
-          console.debug(e)
+          if (debug) {
+            console.error(`Search.search: error: ${JSON.stringify(e)}`)
+          }
         })
         .finally(() => {
           counter--

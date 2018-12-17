@@ -224,6 +224,9 @@ class LayerManager extends Component {
           })
         } else {
           log('error', `${t('Unable to find layer extent')}`)
+          if (getState('app/debug')) {
+            console.error(`LayerManager.fitTo: no bbox ${groupId}, ${id}`)
+          }
         }
         break
       }

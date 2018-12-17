@@ -3,6 +3,7 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const WorkboxPlugin = require('workbox-webpack-plugin')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
@@ -74,6 +75,7 @@ module.exports = {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new CleanWebpackPlugin(path.join(__dirname, 'dist'), {} ),
+    new CopyWebpackPlugin([{ from: path.join(__dirname, 'src', 'favicon.ico'), to: path.join(__dirname, 'dist', 'favicon.ico') }]),
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
@@ -81,7 +83,8 @@ module.exports = {
       hash: true,
       path: path.join(__dirname, 'dist'),
       template: path.join(__dirname, 'src', 'index.html'),
-      filename: 'index.html'
+      filename: 'index.html',
+      title: 'Geop'
     }),
     new WebpackPwaManifest({
       name: 'Geop by sookoll',

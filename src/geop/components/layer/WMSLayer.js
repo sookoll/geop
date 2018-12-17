@@ -93,6 +93,7 @@ class WMSLayer extends Component {
     `)
   }
   createLayer (url) {
+    const debug = getState('app/debug')
     const urlComponents = parseURL(url)
     if (validURL(url) && urlComponents.query) {
       const conf = Object.assign({}, this.layer_conf)
@@ -103,6 +104,9 @@ class WMSLayer extends Component {
         delete urlComponents.query.layers
       } else {
         log('error', t('Missing LAYERS parameter'))
+        if (debug) {
+          console.error(`WMSLayer.createLayer: Missing LAYERS parameter - ${url}`)
+        }
         return
       }
       if (urlComponents.query.SRS || urlComponents.query.srs) {
@@ -111,6 +115,9 @@ class WMSLayer extends Component {
         delete urlComponents.query.srs
       } else {
         log('error', t('Missing SRS parameter'))
+        if (debug) {
+          console.error(`WMSLayer.createLayer: Missing SRS parameter - ${url}`)
+        }
         return
       }
       conf.url = constructURL(urlComponents)
@@ -119,7 +126,11 @@ class WMSLayer extends Component {
       return createLayer(conf)
     } else {
       log('error', t('URL is not valid WMS resource!'))
+      if (debug) {
+        console.error(`WMSLayer.createLayer: URL is not valid WMS resource! - ${url}`)
+      }
     }
+    return null
   }
   destroy () {
     this.modal.modal('dispose')

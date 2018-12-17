@@ -107,8 +107,23 @@ class Config extends Component {
       <small class="form-text text-muted mb-3">
         ${t('Reset app to default. App will reload!')}
       </small>
-      ${getState('app/debug') ? `
       <h5>${t('Debug')}</h5>
+      <div class="btn-group" role="group">
+        <button type="button"
+          class="btn btn-outline-primary set-debug-btn ${getState('app/debug') ? 'active' : ''}"
+          data-debug="on">
+          ${t('On')}
+        </button>
+        <button type="button"
+          class="btn btn-outline-primary set-debug-btn ${getState('app/debug') ? '' : 'active'}"
+          data-debug="off">
+          ${t('Off')}
+        </button>
+      </div>
+      <small class="form-text text-muted mb-3">
+        ${t('Debug mode. Will write debug logs into file. App will reload after change!')}
+      </small>
+      ${getState('app/debug') ? `
       <div class="mb-3">
         <button
           id="download-log"
@@ -128,6 +143,9 @@ class Config extends Component {
       log('warning', t('Language changed, page will reload!'), () => {
         reloadApp()
       })
+      if (getState('app/debug')) {
+        console.debug(`Config.render: Locale changed to ${$(e.currentTarget).data('locale')}`)
+      }
     })
     // keep awake
     this.el.on('change', '#settings-awake', e => {
@@ -146,6 +164,9 @@ class Config extends Component {
       log('warning', t('Account changed, page will reload!'), () => {
         reloadApp()
       })
+      if (getState('app/debug')) {
+        console.debug(`Config.render: Account changed to ${e.target.value}`)
+      }
     })
     // share change
     this.el.on('click', 'button.set-share-btn', e => {
@@ -160,6 +181,21 @@ class Config extends Component {
         setPermalink(null)
         reloadApp()
       })
+      if (getState('app/debug')) {
+        console.debug(`Config.render: App resetted`)
+      }
+    })
+    // debug change
+    this.el.on('click', 'button.set-debug-btn', e => {
+      setState('app/debug', $(e.currentTarget).data('debug') === 'on' ? true : false, true)
+      this.el.find('button.set-debug-btn').removeClass('active')
+      $(e.currentTarget).addClass('active')
+      log('warning', t('Debug changed, app will reload!'), () => {
+        reloadApp()
+      })
+      if (getState('app/debug')) {
+        console.debug(`Config.render: Debug changed to ${$(e.currentTarget).data('debug')}`)
+      }
     })
     // download debug log file
     this.el.on('click', '#download-log', e => {
@@ -179,9 +215,13 @@ class Config extends Component {
       deferredPrompt.userChoice
         .then(choiceResult => {
           if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the A2HS prompt')
+            if (getState('app/debug')) {
+              console.debug(`Config.render: User accepted the A2HS prompt`)
+            }
           } else {
-            console.log('User dismissed the A2HS prompt')
+            if (getState('app/debug')) {
+              console.debug(`Config.render: User dismissed the A2HS prompt`)
+            }
           }
           deferredPrompt = null
         })

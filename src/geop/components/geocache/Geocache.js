@@ -170,6 +170,9 @@ class Geocache extends Component {
     this.state.layers.push(layer)
     // run for onchange events
     setState('geocache/loadend', this.state.layers.getLength())
+    if (getState('app/debug')) {
+      console.debug('Geocache.registerLayer: ' + layer.get('id') + ', ' + layer.get('title'))
+    }
   }
   styleGeocache (feature, resolution) {
     const type = feature.get('type')

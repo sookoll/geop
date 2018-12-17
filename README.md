@@ -1,6 +1,6 @@
 # geop
 
-Simple ol3 tool for Estonian geocache game
+Simple ol tool for Estonian geocache game
 
 https://gp.sookoll.ee
 
@@ -9,11 +9,15 @@ https://gp.sookoll.ee
 ### Dev.env Requirements
 
 * Node and npm
-* Python 3.7 (only for start:prod to test production build)
+* Python 3.7
 
 ### To build app for debug:
 
     npm run build
+
+### To rebuild translations
+
+    npm run build:translations
 
 ### To build app for production
 
@@ -22,6 +26,10 @@ https://gp.sookoll.ee
 ### To run dev.server
 
     npm start
+
+### To run dev.server with HTTPS
+
+    npm run start:ssl
 
 ### To test production build
 

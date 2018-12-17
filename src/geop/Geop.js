@@ -17,11 +17,17 @@ import './Geop.styl'
 class Geop extends Component {
   render () {
     // debug
-    if (getState('app/debug')) {
+    const debug = getState('app/debug')
+    if (debug) {
       initDebug()
+      console.debug('Debug mode enabled')
     }
     // set locale
     initLocale(getState('app/locale'), translations)
+    if (debug) {
+      console.debug('Locale: ' + getState('app/locale'))
+    }
+
     // components
     this.components = {
       map: new MapEngine(this.target),

@@ -132,6 +132,7 @@ class Bookmark extends Component {
   }
   //https://dev.to/bauripalash/building-a-simple-url-shortener-with-just-html-and-javascript-16o4
   share () {
+    const debug = getState('app/debug')
     getSessionState()
       .then(appState => {
         setBookmarkState(appState)
@@ -140,13 +141,22 @@ class Bookmark extends Component {
             setState('app/bookmarks', this.state.bookmarks, true)
             this.render()
             this.openModal(bookmark)
+            if (debug) {
+              console.debug('Bookmark saved: ' + bookmark)
+            }
           })
           .catch(e => {
-            log('error', t(e))
+            log('error', t(e.message))
+            if (debug) {
+              console.error('Bookmark error [setBookmarkState]: ' + JSON.stringify(e))
+            }
           })
       })
       .catch(e => {
-        log('error', t(e))
+        log('error', t(e.message))
+        if (debug) {
+          console.error('Bookmark error [getSessionState]: ' + JSON.stringify(e))
+        }
       })
   }
   copy (content) {
@@ -159,15 +169,22 @@ class Bookmark extends Component {
       })
   }
   delete (bookmark) {
+    const debug = getState('app/debug')
     deleteBookmarkState(bookmark)
       .then(() => {
         this.state.bookmarks = this.state.bookmarks.filter(item => item !== bookmark)
         setState('app/bookmarks', this.state.bookmarks, true)
         this.render()
         log('success', `${t('Bookmark deleted!')}`)
+        if (debug) {
+          console.debug('Bookmark deleted: ' + bookmark)
+        }
       })
       .catch(e => {
-        log('error', t(e))
+        log('error', t(e.message))
+        if (debug) {
+          console.error('Bookmark error [deleteBookmarkState]: ' + JSON.stringify(e))
+        }
       })
   }
   bookmarkUrl (hash) {

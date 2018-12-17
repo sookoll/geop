@@ -75,6 +75,9 @@ class UrlLayer extends Component {
         extend(bbox, markerLayer.getSource().getExtent())
         this.state.layers.push(markerLayer)
       }
+      if (getState('app/debug')) {
+        console.error(`UrlLayer.loadFeaturesFromUrl: caches ${caches.length}, features ${markers.length}`)
+      }
       return bbox
     }
     return null
@@ -116,6 +119,9 @@ class UrlLayer extends Component {
         que.push(map => {
           layer.setMap(map)
         })
+      }
+      if (getState('app/debug')) {
+        console.error(`UrlLayer.addMarker: ${coordString}`)
       }
       return layer.getSource().getExtent()
     }

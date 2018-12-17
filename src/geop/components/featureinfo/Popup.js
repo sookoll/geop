@@ -75,9 +75,9 @@ class Popup extends Component {
       }
       let popContent
       if (hit[0] && this.state.infoStore[hit[0].get('id')]) {
-          popContent = this.state.infoStore[hit[0].get('id')](hit[1])
+        popContent = this.state.infoStore[hit[0].get('id')](hit[1])
       } else {
-          popContent = this.getContent(hit[1], hit[0])
+        popContent = this.getContent(hit[1], hit[0])
       }
       this.state.overlay.setPosition(coord)
       this.el.popover(popContent.definition).popover('show')
