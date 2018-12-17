@@ -1,0 +1,42 @@
+{
+  "icons": [
+    {
+      "src": "assets/icon_512x512.da5b3297bd30cd39b4b531a27b3eb7e5.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon_384x384.29dd8f614d1a2299e6bb86a484b96a52.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon_256x256.18cb2eef66402b657cf0bcc4332f1278.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon_192x192.63b54dc84ea44079274c49fb2fc8cd1c.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon_128x128.ed20d63eb096c0070358645eda2e0cac.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon_96x96.ee999325f1be955df6a6b13fe8e50aa7.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    }
+  ],
+  "name": "Geop by sookoll",
+  "short_name": "Geop",
+  "orientation": "any",
+  "display": "standalone",
+  "start_url": ".",
+  "description": "Geop - Geocaching map",
+  "background_color": "#6c757d",
+  "theme_color": "#6c757d"
+}
