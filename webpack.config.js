@@ -81,7 +81,7 @@ module.exports = {
       },
       {
         from: path.join(__dirname, 'src', 'CNAME'),
-        to: path.join(__dirname, 'dist', 'CNAME')
+        to: path.join(__dirname, 'dist')
       }
     ]),
     new MiniCssExtractPlugin({
