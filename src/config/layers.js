@@ -7,37 +7,13 @@ export const layers = {
       projection: 'EPSG:3857',
       crossOrigin: null
     },
-    okaart: {
-      type: 'XYZ',
-      title: 'O-kaart',
-      url: 'https://okaart.osport.ee/{z}/{x}/{y}.png',
+    photo: {
+      type: 'Bing',
+      title: 'Aerial',
+      key: 'AozX0lfGO2nv-11kPOU6_BKWeJwgfAcyFQAXAwXQmnQtSJahtmYj8ZJ3JAzk36Z4',
       projection: 'EPSG:3857',
-      crossOrigin: null
-    },
-    maorto : {
-      type: 'Group',
-      title: 'Satellite',
-      projection: 'EPSG:3301',
-      layers: [{
-        type: 'XYZ',
-        projection: 'EPSG:3857',
-        url: 'https://tiles.maaamet.ee/tm/tms/1.0.0/foto@GMC/{z}/{x}/{-y}.png',
-        minResolution: 0.5,
-        crossOrigin: null
-      }, {
-        type: 'TileWMS',
-        url: 'http://kaart.maaamet.ee/wms/fotokaart',
-        params: {
-          LAYERS: 'EESTIFOTO',
-          TILED: true,
-          FORMAT: 'image/png',
-          VERSION: '1.1.1'
-        },
-        maxResolution: 0.75,
-        tileSize: 1024,
-        gutter: 20,
-        crossOrigin: null
-      }]
+      imagerySet: 'AerialWithLabels',
+      maxZoom: 19
     },
     makaart: {
       type: 'Group',
@@ -100,6 +76,38 @@ export const layers = {
         gutter: 20,
         crossOrigin: null
       }]
+    },
+    maorto : {
+      type: 'Group',
+      title: 'Aerial Estonia',
+      projection: 'EPSG:3301',
+      layers: [{
+        type: 'XYZ',
+        projection: 'EPSG:3857',
+        url: 'https://tiles.maaamet.ee/tm/tms/1.0.0/foto@GMC/{z}/{x}/{-y}.png',
+        minResolution: 0.5,
+        crossOrigin: null
+      }, {
+        type: 'TileWMS',
+        url: 'http://kaart.maaamet.ee/wms/fotokaart',
+        params: {
+          LAYERS: 'EESTIFOTO',
+          TILED: true,
+          FORMAT: 'image/png',
+          VERSION: '1.1.1'
+        },
+        maxResolution: 0.75,
+        tileSize: 1024,
+        gutter: 20,
+        crossOrigin: null
+      }]
+    },
+    okaart: {
+      type: 'XYZ',
+      title: 'O-kaart',
+      url: 'https://okaart.osport.ee/{z}/{x}/{y}.png',
+      projection: 'EPSG:3857',
+      crossOrigin: null
     }
   },
   layers: [],

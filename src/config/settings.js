@@ -55,7 +55,7 @@ export const geocache = {
   },
   newCacheDays: 30,
   waypointMaxResolution: 10,
-  overviewMinResolution: 300,
+  overviewMinResolution: 100,
   exportFileName: 'geop.gpx',
   mapping: {
     fstatusJSON: {

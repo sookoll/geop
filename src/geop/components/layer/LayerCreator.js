@@ -5,6 +5,7 @@ import LayerVector from 'ol/layer/Vector'
 import XYZ from 'ol/source/XYZ'
 import TileWMS from 'ol/source/TileWMS'
 import ImageWMS from 'ol/source/ImageWMS'
+import Bing from 'ol/source/BingMaps'
 import Vector from 'ol/source/Vector'
 import GeoJSONFormat from 'ol/format/GeoJSON'
 import { get as getProjection } from 'ol/proj'
@@ -22,6 +23,7 @@ const sources = {
   XYZ,
   TileWMS,
   ImageWMS,
+  Bing,
   Vector
 }
 const formats = {
@@ -100,6 +102,7 @@ export function createLayer (layerConf) {
       break
     case 'XYZ':
     case 'TileWMS':
+    case 'Bing':
       layer = new TileLayer(deepCopy(layerConf))
       break
     case 'ImageWMS':
