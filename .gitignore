@@ -1,4 +1,6 @@
-www/dist
-node_modules
+dist/
+node_modules/
+.ide/
 .brackets.json
 .DS_Store
+npm-debug.log
