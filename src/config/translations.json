@@ -147,7 +147,8 @@
     "Waypoint|Trailhead": "Trailhead",
     "Waypoint|Virtual Stage": "Virtual Stage",
     "Zoom in": "Zoom in",
-    "Zoom out": "Zoom out"
+    "Zoom out": "Zoom out",
+    "Config": "Config"
   },
   "et": {
     "Account": "Konto",
@@ -297,6 +298,7 @@
     "Waypoint|Trailhead": "Matkaraja algus",
     "Waypoint|Virtual Stage": "Virtuaalne vahepunkt",
     "Zoom in": "Suurenda",
-    "Zoom out": "Vähenda"
+    "Zoom out": "Vähenda",
+    "Config": "Seaded"
   }
 }

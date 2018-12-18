@@ -78,6 +78,17 @@ class Config extends Component {
       <small class="form-text text-muted mb-3">
         ${t('Enter geopeitus.ee or geocaching.com username. App will reload after change!')}
       </small>
+      <h5>${t('Search')}</h5>
+      <div class="form-group">
+        <input type="text"
+          class="form-control"
+          id="settings-search"
+          placeholder="${t('Country codes')}"
+          value="${getState('app/nominatimCountries') || ''}"/>
+      </div>
+      <small class="form-text text-muted mb-3">
+        ${t('Limit address search with comma separated list of country codes (ee,fi - Estonia, Finland). Empty means no limit.')}
+      </small>
       <h5>${t('Share only geotrip features')}</h5>
       <div class="btn-group" role="group">
         <button type="button"
@@ -160,12 +171,24 @@ class Config extends Component {
     })
     // account name
     this.el.on('blur', '#settings-account', e => {
-      setState('app/account', e.target.value, true)
-      log('warning', t('Account changed, page will reload!'), () => {
-        reloadApp()
-      })
-      if (getState('app/debug')) {
-        console.debug(`Config.render: Account changed to ${e.target.value}`)
+      if (e.target.value.trim() !== getState('app/account')) {
+        setState('app/account', e.target.value.trim(), true)
+        log('warning', t('Account changed, page will reload!'), () => {
+          reloadApp()
+        })
+        if (getState('app/debug')) {
+          console.debug(`Config.render: Account changed to ${e.target.value.trim()}`)
+        }
+      }
+
+    })
+    // search limit
+    this.el.on('blur', '#settings-search', e => {
+      if (e.target.value.trim() !== getState('app/nominatimCountries')) {
+        setState('app/nominatimCountries', e.target.value.trim(), true)
+        if (getState('app/debug')) {
+          console.debug(`Config.render: Search limit changed to ${e.target.value}`)
+        }
       }
     })
     // share change

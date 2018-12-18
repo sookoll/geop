@@ -1,4 +1,5 @@
-import {apiUrls} from 'Conf/settings'
+import { apiUrls } from 'Conf/settings'
+import { getState } from 'Utilities/store'
 import Provider from 'Geop/Provider'
 import {t} from 'Utilities/translate'
 import $ from 'jquery'
@@ -38,7 +39,7 @@ class Coordinate extends Provider {
       url : apiUrls.nominatim + '/search/',
       data: {
         q: query,
-        countrycodes: 'ee',
+        countrycodes: getState('app/nominatimCountries') || '',
         format: 'json'
       },
       dataType: 'json',
