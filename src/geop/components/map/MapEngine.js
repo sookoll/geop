@@ -24,7 +24,6 @@ proj4.defs("EPSG:32635", "+proj=utm +zone=35 +datum=WGS84 +units=m +no_defs")
 proj4.defs("EPSG:3067", "+proj=utm +zone=35 +ellps=GRS80 +units=m +no_defs")
 register(proj4)
 getProjection('EPSG:3301').setExtent([40500, 5993000, 1064500, 7017000])
-getProjection('EPSG:3067').setExtent([50199.4814, 6582464.0358, 761274.6247, 7799839.8902])
 
 class MapEngine extends Component {
   constructor (target) {
