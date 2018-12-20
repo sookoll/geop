@@ -21,8 +21,10 @@ import './MapEngine.styl'
 proj4.defs("EPSG:3301", "+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
 proj4.defs("EPSG:32634", "+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs")
 proj4.defs("EPSG:32635", "+proj=utm +zone=35 +datum=WGS84 +units=m +no_defs")
+proj4.defs("EPSG:3067", "+proj=utm +zone=35 +ellps=GRS80 +units=m +no_defs")
 register(proj4)
 getProjection('EPSG:3301').setExtent([40500, 5993000, 1064500, 7017000])
+getProjection('EPSG:3067').setExtent([50199.4814, 6582464.0358, 761274.6247, 7799839.8902])
 
 class MapEngine extends Component {
   constructor (target) {

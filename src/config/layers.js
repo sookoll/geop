@@ -108,6 +108,16 @@ export const layers = {
       url: 'https://okaart.osport.ee/{z}/{x}/{y}.png',
       projection: 'EPSG:3857',
       crossOrigin: null
+    },
+    fin: {
+      type: 'WMTS',
+      title: 'Fin',
+      url: 'https://mapservices.navici.com/basemaps/gwc/service/wmts?apikey=gdqWSTM10Le9XVAX8B6vFKxnpZAmTx5x',
+      projection: 'EPSG:3067',
+      layer: 'basemaps:rk',
+      matrixSet: 'ETRS-TM35FIN',
+      format: 'image/png8',
+      style: 'default'
     }
   },
   layers: [],
