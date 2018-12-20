@@ -74,9 +74,18 @@ module.exports = {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new CleanWebpackPlugin(path.join(__dirname, 'dist'), {} ),
-    new CopyWebpackPlugin([{ from: path.join(__dirname, 'src', 'favicon.ico'), to: path.join(__dirname, 'dist', 'favicon.ico') }]),
+    new CopyWebpackPlugin([
+      {
+        from: path.join(__dirname, 'src', 'favicon.ico'),
+        to: path.join(__dirname, 'dist', 'favicon.ico')
+      },
+      {
+        from: path.join(__dirname, 'src', 'CNAME'),
+        to: path.join(__dirname, 'dist')
+      }
+    ]),
     new MiniCssExtractPlugin({
-      filename: '[name].css',
+      filename: '[name].css'
     }),
     new HtmlWebpackPlugin({
       hash: true,

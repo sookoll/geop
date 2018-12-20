@@ -17,7 +17,8 @@ export const app = {
   shareOnlyTripFeatures: true,// keep only features on trip
   settingsTabOpen: 'settings-tab',// active tab on sidebar
   debug: false,// collect all console debug, info and error into downloadable file
-  debugFile: 'geop_debug.log'
+  debugFile: 'geop_debug.log',
+  nominatimCountries: 'ee'
 }
 export const map = {
   el: '#map',

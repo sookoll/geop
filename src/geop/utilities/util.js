@@ -181,6 +181,13 @@ export function validURL (href) {
   return (match !== null)
 }
 
+export function makeLink (text) {
+  return text.replace(
+    /((http|https|ftp|ftps):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,3}(\/\S*)?)/g,
+    '<a href="$1" target="_blank">$1</a>'
+  )
+}
+
 export function constructURL (parsedURL) {
   const querystring = Object.keys(parsedURL.query).map(item => {
     return item + '=' + parsedURL.query[item]

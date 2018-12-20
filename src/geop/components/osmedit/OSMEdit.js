@@ -20,8 +20,8 @@ class OSMEdit extends Component {
   render () {
     this.el.on('click', e => {
       e.preventDefault()
-      const center = toLonLat(getState('map/view/center'))
-      const zoom = getState('map/view/zoom')
+      const center = toLonLat(getState('map/center'))
+      const zoom = getState('map/zoom')
       window.open(apiUrls.ideditor + zoom + '/' + center[1] + '/' + center[0])
     })
   }

@@ -1,6 +1,6 @@
 import Component from 'Geop/Component'
 import {t} from 'Utilities/translate'
-import {formatLength, formatArea} from 'Utilities/util'
+import {formatLength, formatArea, makeLink } from 'Utilities/util'
 import {getState, setState} from 'Utilities/store'
 import Overlay from 'ol/Overlay'
 import Point from 'ol/geom/Point'
@@ -114,9 +114,9 @@ class Popup extends Component {
             </a>
           ` : ''}`
         content = Object.keys(props).filter(key => {
-          return (typeof props[key] === 'string' || typeof props[key] === 'number')
+          return (typeof props[key] === 'string' || typeof props[key] === 'number' || typeof props[key] === 'boolean')
         }).map(key => {
-          return `${key}: ${props[key]}`
+          return `${key}: ${makeLink(props[key])}`
         })
         if (this.state.geomTypes.linestrings.indexOf(feature.getGeometry().getType()) > -1) {
           content.push(`${t('Length')}: ${formatLength(feature.getGeometry())}`)

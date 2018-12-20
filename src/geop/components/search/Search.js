@@ -195,7 +195,7 @@ class Search extends Component {
         })
         .finally(() => {
           counter--
-          if (counter <= 0) {
+          if (counter === 0) {
             this.render()
             this.searchEnd()
           }
