@@ -1,10 +1,13 @@
 export default {
-  test: feature => {
-    return (
-      feature.get('fstatus') &&
-      typeof feature.get('type') !== 'undefined' &&
-      feature.get('date_hidden')
-    )
+  test: features => {
+    const test = features.filter(f => {
+      return (
+        f.get('fstatus') &&
+        typeof f.get('type') !== 'undefined' &&
+        f.get('date_hidden')
+      )
+    })
+    return test.length > 0
   },
   formatFeatures: opts => {
     const today = new Date()

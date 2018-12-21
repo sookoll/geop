@@ -92,10 +92,10 @@ class Geocache extends Component {
   }
   checkLayer (layer) {
     const features = layer.getSource().getFeatures ?
-      layer.getSource().getFeatures() : false
-    if (features && features[0]) {
-      const isGeopeitusJSON = geopeitusJSON.test(features[0])
-      const isCacheGPX = geocacheGPX.test(features[0])
+      layer.getSource().getFeatures() : null
+    if (features) {
+      const isGeopeitusJSON = geopeitusJSON.test(features)
+      const isCacheGPX = geocacheGPX.test(features)
       if (isCacheGPX) {
         layer.set('_cacheFormatParser', geocacheGPX)
       } else if (isGeopeitusJSON) {

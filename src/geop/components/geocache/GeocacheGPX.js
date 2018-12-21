@@ -1,6 +1,9 @@
 export default {
-  test: feature => {
-    return (feature.get('wpt') && feature.get('wpt')['groundspeak:cache'])
+  test: features => {
+    const test = features.filter(f => {
+      return (f.get('wpt') && f.get('wpt')['groundspeak:cache'])
+    })
+    return test.length > 0
   },
   formatFeatures: opts => {
     const today = new Date()
