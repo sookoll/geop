@@ -29,9 +29,11 @@
     "Change language. App will reload after change!": "Change language. App will reload after change!",
     "Clear trip": "Clear trip",
     "Close": "Close",
+    "Config": "Config",
     "Coordinate": "Coordinate",
     "Coordinates": "Coordinates",
     "copied to clipboard": "copied to clipboard",
+    "Country codes": "Country codes",
     "Debug": "Debug",
     "Debug changed, app will reload!": "Debug changed, app will reload!",
     "Debug mode. Will write debug logs into file. App will reload after change!": "Debug mode. Will write debug logs into file. App will reload after change!",
@@ -43,8 +45,8 @@
     "Enter geopeitus.ee or geocaching.com username. App will reload after change!": "Enter geopeitus.ee or geocaching.com username. App will reload after change!",
     "Error creating layer": "Error creating layer",
     "Feature": "Feature",
-    "Features": "Features",
     "features": "features",
+    "Features": "Features",
     "Filter": "Filter",
     "Filter and search caches on map.": "Filter and search caches on map.",
     "Find streetview link and measure tools from context menu.": "Find streetview link and measure tools from context menu.",
@@ -148,7 +150,7 @@
     "Waypoint|Virtual Stage": "Virtual Stage",
     "Zoom in": "Zoom in",
     "Zoom out": "Zoom out",
-    "Config": "Config"
+    "Limit address search with comma separated list of country codes (ee,fi - Estonia, Finland). Empty means no limit.": "Limit address search with comma separated list of country codes (ee,fi - Estonia, Finland). Empty means no limit."
   },
   "et": {
     "Account": "Konto",
@@ -180,9 +182,11 @@
     "Change language. App will reload after change!": "Muuda rakenduse keel. Rakendus taaskäivitub peale muutmist!",
     "Clear trip": "Tühjenda",
     "Close": "Sulge",
+    "Config": "Seaded",
     "Coordinate": "Koordinaat",
     "Coordinates": "Koordinaadid",
     "copied to clipboard": "kopeeritud",
+    "Country codes": "Riigi kood",
     "Debug": "Silumine",
     "Debug changed, app will reload!": "Silumisrežiimi muutus. Rakendus taaskäivitub!",
     "Debug mode. Will write debug logs into file. App will reload after change!": "Silumisrežiim. Silumise logid kirjutatakse faili. Rakendus taaskäivitub peale muutmist!",
@@ -194,8 +198,8 @@
     "Enter geopeitus.ee or geocaching.com username. App will reload after change!": "Sisesta geopeitus.ee või geocaching.com kasutajanimi. Rakendus taaskäivitub peale muutmist!",
     "Error creating layer": "Kihi loomine ebaõnnestus",
     "Feature": "Objekt",
-    "Features": "Objektid",
     "features": "objekti",
+    "Features": "Objektid",
     "Filter": "Filter",
     "Filter and search caches on map.": "Filtreeri ja otsi aardeid.",
     "Find streetview link and measure tools from context menu.": "Parema kliki menüüst leiad tänavavaate ja mõõtmise tööriistad.",
@@ -299,6 +303,6 @@
     "Waypoint|Virtual Stage": "Virtuaalne vahepunkt",
     "Zoom in": "Suurenda",
     "Zoom out": "Vähenda",
-    "Config": "Seaded"
+    "Limit address search with comma separated list of country codes (ee,fi - Estonia, Finland). Empty means no limit.": "Piira aadressiotsingut riigiti. Mitme riigi otsingu jaoks eralda komaga (ee,fi - Eesti, Soome). Tühi otsib üle maailma."
   }
 }
