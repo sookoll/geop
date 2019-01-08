@@ -43,3 +43,23 @@ Usually you want to merge all development branches (done) to master before deplo
 npm run deploy
 ```
 It will build:prod app and commit dist folder to gh-pages branch and push to github.
+
+## Layers configuration
+
+**WMTS**
+```
+{
+  type: 'WMTS',
+  title: 'Fin',
+  url: 'https://mapservices.navici.com/basemaps/gwc/service/wmts?apikey=<your_key>',
+  projection: 'EPSG:3067',
+  layer: 'rk',
+  matrixSet: 'ETRS-TM35FIN',
+  matrixSetPrepend: 'ETRS-TM35FIN:',
+  matrixSetCount: 16,
+  extent: [-2097152, 5242880, 3145728, 9437184],
+  maxResolution: 8192,
+  format: 'image/png8',
+  style: 'default'
+}
+```
