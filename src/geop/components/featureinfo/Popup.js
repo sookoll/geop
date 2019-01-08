@@ -172,6 +172,10 @@ class Popup extends Component {
               }
             }
           })
+          // call stored onShow
+          if (f[0].get('_featureInfo') && typeof f[0].get('_featureInfo').onShow === 'function') {
+            f[0].get('_featureInfo').onShow(f, pop)
+          }
         },
         'onHide' : function () {}
       }
