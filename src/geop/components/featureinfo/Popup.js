@@ -17,7 +17,8 @@ class Popup extends Component {
       geomTypes: {
         linestrings: ['LineString', 'MultiLineString'],
         polygons: ['Polygon', 'MultiPolygon']
-      }
+      },
+      offset: 0
     }
     this.handlers = {
       clicked: e => {
@@ -31,9 +32,8 @@ class Popup extends Component {
   render () {
     this.state.overlay = new Overlay({
       element: this.el[0],
-      autoPan: true,
       positioning: 'center-center',
-      offset: [0, -16]
+      offset: [0, -this.state.offset]
     })
     const map = getState('map')
     if (map) {
@@ -82,12 +82,17 @@ class Popup extends Component {
       this.state.overlay.setPosition(coord)
       this.el.popover(popContent.definition).popover('show')
       // when popover's content is shown
-      this.el.on('shown.bs.popover', e => {
-        popContent.onShow(hit, $(e.target).data('bs.popover').tip)
+      this.el.on('shown.bs.popover', evt => {
+        const h = popContent.definition.container.find('.popup').height()
+        this.state.overlay.setOffset([
+          0,
+          h + this.state.offset + 20 > e.pixel[1] ? this.state.offset : -this.state.offset
+        ])
+        popContent.onShow(hit, $(evt.target).data('bs.popover').tip)
       })
       // when popover's content is hidden
-      this.el.on('hidden.bs.popover', e => {
-        popContent.onHide(e)
+      this.el.on('hidden.bs.popover', evt => {
+        popContent.onHide(evt)
       })
       this.el.popover('show')
     }
@@ -167,6 +172,10 @@ class Popup extends Component {
               }
             }
           })
+          // call stored onShow
+          if (f[0].get('_featureInfo') && typeof f[0].get('_featureInfo').onShow === 'function') {
+            f[0].get('_featureInfo').onShow(f, pop)
+          }
         },
         'onHide' : function () {}
       }

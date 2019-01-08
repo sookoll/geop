@@ -156,8 +156,8 @@ class Geocache extends Component {
               <i class="fa fa-expand-arrows-alt ml-2"></i> ${t(f.get('container'))}<br/>
               ${f.get('cmt') ? `<i class="fa fa-hand-point-right"></i> ${f.get('cmt')}` : ''}
             </p>
-            <p>
-              <i class="${stat[f.get('fstatus')]}"></i> ${t(f.get('fstatus'))}
+            <p class="toggle-found">
+              <i class="${stat[f.get('fstatus')]}"></i> <span>${t(f.get('fstatus'))}</span>
             </p>`
         } else {
           return `
@@ -165,6 +165,15 @@ class Geocache extends Component {
               ${f.get('desc')}
             </p>`
         }
+      },
+      onShow: (f, pop) => {
+        $(pop).on('click', '.toggle-found', e => {
+          $(e.currentTarget).find('i').removeClass(stat[f[1].get('fstatus')])
+          f[1].set('fstatus', f[1].get('fstatus') === 'Found' ? 'Not Found' : 'Found')
+          $(e.currentTarget).find('span').html(t(f[1].get('fstatus')))
+          $(e.currentTarget).find('i').addClass(stat[f[1].get('fstatus')])
+          // TODO: toggle in found caches log
+        })
       }
     })
     this.state.layers.push(layer)

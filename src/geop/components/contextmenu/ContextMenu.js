@@ -2,6 +2,7 @@ import Component from 'Geop/Component'
 import {getState, setState} from 'Utilities/store'
 import Overlay from 'ol/Overlay'
 import Point from 'ol/geom/Point'
+import Popper from 'popper.js'
 import $ from 'jquery'
 import './ContextMenu.styl'
 
@@ -61,6 +62,8 @@ class ContextMenu extends Component {
     })
   }
   open (coord, popContent) {
+    Popper.Defaults.modifiers.preventOverflow.enabled = false
+    Popper.Defaults.modifiers.hide.enabled = false
     this.el.popover('dispose')
     this.state.overlay.setPosition(coord)
     this.el.popover(popContent.definition)
@@ -112,6 +115,8 @@ class ContextMenu extends Component {
               item.onBtnClick(e, coord)
               if (item.closeOnClick) {
                 this.el.popover('dispose')
+                Popper.Defaults.modifiers.preventOverflow.enabled = true
+                Popper.Defaults.modifiers.hide.enabled = true
               }
             })
           }
