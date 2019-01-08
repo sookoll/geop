@@ -1,6 +1,6 @@
 import { geocache as cacheConf } from 'Conf/settings'
 import { t } from 'Utilities/translate'
-import { uid, scaleFactor, formatTime, hexToRgbA, deepCopy } from 'Utilities/util'
+import { uid, scaleFactor, formatDate, hexToRgbA, deepCopy } from 'Utilities/util'
 import { getState, setState, onchange } from 'Utilities/store'
 import { toLonLat } from 'ol/proj'
 import Component from 'Geop/Component'
@@ -118,7 +118,7 @@ class Geocache extends Component {
       user: this.state.currentUser,
       uid: uid,
       url: cacheConf.cacheUrl,
-      date: formatTime
+      date: formatDate
     })
     layer.setStyle((feature, resolution) => this.styleGeocache(feature, resolution))
     layer.set('_featureInfo', {
@@ -130,16 +130,20 @@ class Geocache extends Component {
           return `
             <i class="${styleType ? styleType.class : this.state.styleConfig.base.class} ${f.get('status') !== 'Available' ? 'unavailable' : ''}"></i>
             <a href="${f.get('url')}" target="_blank" class="${f.get('status') === 'Archived' ? 'archived' : ''}">${t(f.get('name'))}</a>
-            <a href="#" class="tools cache-toggle float-right" data-id="${f.getId()}" title="${t('Add to geotrip')}">
-              <i class="fas ${inTrip ? 'fa-minus-square' : 'fa-thumbtack'}"></i>
-            </a>`
+            <div class="tools">
+              <a href="#" class="cache-toggle" data-id="${f.getId()}" title="${t('Add to geotrip')}">
+                <i class="fas ${inTrip ? 'fa-minus-square' : 'fa-thumbtack'}"></i>
+              </a>
+            </div>`
         } else {
           return `
             <i class="${styleType ? styleType.class : this.state.styleConfig.base.class}"></i>
             <a href="${f.get('url')}" target="_blank">${t(f.get('name'))}</a>
-            <a href="#" class="cache-toggle" data-id="${f.getId()}" title="${t('Add to geotrip')}">
-              <i class="fas ${inTrip ? 'fa-minus-square' : 'fa-thumbtack'}"></i>
-            </a>`
+            <div class="tools">
+              <a href="#" class="cache-toggle" data-id="${f.getId()}" title="${t('Add to geotrip')}">
+                <i class="fas ${inTrip ? 'fa-minus-square' : 'fa-thumbtack'}"></i>
+              </a>
+            </div>`
         }
       },
       content: f => {
@@ -147,7 +151,7 @@ class Geocache extends Component {
         if (f.get('isCache')) {
           return `
             <p class="text-muted metadata">
-              <i class="fas fa-clock"></i> ${formatTime(f.get('time'))}<br/>
+              <i class="fas fa-clock"></i> ${formatDate(f.get('time'))}<br/>
               <i class="fa fa-user"></i> ${f.get('owner')}<br/>
               <i class="${styleType ? styleType.class : this.state.styleConfig.base.class}"></i>
               ${t(f.get('type'))}<br/>
@@ -167,12 +171,23 @@ class Geocache extends Component {
         }
       },
       onShow: (f, pop) => {
+        const geotrip = getState('geocache/trip')
         $(pop).on('click', '.toggle-found', e => {
+          const inTrip = geotrip && geotrip.getArray().indexOf(f[1]) > -1
+          const found = f[1].get('fstatus') === 'Found'
           $(e.currentTarget).find('i').removeClass(stat[f[1].get('fstatus')])
-          f[1].set('fstatus', f[1].get('fstatus') === 'Found' ? 'Not Found' : 'Found')
+          f[1].set('fstatus', found ? 'Not Found' : 'Found')
+          f[1].set('fstatus_timestamp', !found ? Date.now() : null)
           $(e.currentTarget).find('span').html(t(f[1].get('fstatus')))
           $(e.currentTarget).find('i').addClass(stat[f[1].get('fstatus')])
-          // TODO: toggle in found caches log
+          if (!inTrip && !found) {
+            geotrip.push(f[1])
+          }
+          if (inTrip) {
+            const idx = geotrip.getArray().indexOf(f[1])
+            geotrip.remove(f[1])
+            geotrip.insertAt(idx, f[1])
+          }
         })
       }
     })

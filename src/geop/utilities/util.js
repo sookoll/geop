@@ -234,13 +234,17 @@ export function formatArea (polygon) {
   }
 }
 
-export function formatTime (time) {
+export function formatDate (time, short = false) {
   const d = new Date(time)
   let month = (1 + d.getMonth()).toString()
   month = month.length > 1 ? month : '0' + month
   let day = d.getDate().toString()
   day = day.length > 1 ? day : '0' + day
-  return d.getFullYear() + '.' + month + '.' + day
+  return short ? day + '.' + month : d.getFullYear() + '.' + month + '.' + day
+}
+
+export function formatTime (s) {
+  return new Date(s).toTimeString().slice(0, 8)
 }
 
 // LZW-compress a string

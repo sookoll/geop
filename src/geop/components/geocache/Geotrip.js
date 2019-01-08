@@ -1,7 +1,7 @@
 import { geocache as cacheConf } from 'Conf/settings'
 import { t } from 'Utilities/translate'
 import { getState, setState } from 'Utilities/store'
-import { gpxExport } from 'Utilities/util'
+import { gpxExport, formatDate, formatTime } from 'Utilities/util'
 import Component from 'Geop/Component'
 import Collection from 'ol/Collection'
 import { createLayer } from 'Components/layer/LayerCreator'
@@ -31,7 +31,8 @@ class Geotrip extends Component {
       tab: null,
       routeLayer: null,
       layers: getState('map/layer/layers'),
-      collection: new Collection()
+      collection: new Collection(),
+      init: false
     }
     setState('geocache/trip', this.state.collection)
     getState('map/layer/layers').on('remove', e => {
@@ -66,6 +67,9 @@ class Geotrip extends Component {
     }
   }
   render () {
+    const found = this.state.collection.getArray().filter(f => {
+      return !!f.get('fstatus_timestamp') && f.get('fstatus') === 'Found'
+    })
     this.el.html(`
       <ul class="list-group mb-3">
       ${this.state.collection.getLength() ?
@@ -76,7 +80,10 @@ class Geotrip extends Component {
         </li>`}
       </ul>
       ${this.state.collection.getLength() ?
-        `<div class="btn-group float-right" role="group">
+        `<button type="button" class="btn btn-link sortby-found" ${found.length ? '' : 'disabled'}>
+          <i class="fas fa-sort-amount-down"></i> ${t('Found')}
+        </button>
+        <div class="btn-group float-right" role="group">
           <a role="button" class="btn btn-secondary export" title="${t('Download')}">
             <i class="fas fa-download"></i> GPX
           </a>
@@ -116,8 +123,20 @@ class Geotrip extends Component {
           this.render()
         }
       })
-      setState('geocache/trip/ids', this.state.collection.getArray().map(f => f.getId()), true)
     }
+    if (this.state.init) {
+      setState('geocache/trip/ids',
+        this.state.collection.getArray().map(f => f.getId()), true)
+      setState('geocache/trip/found',
+        found.map(f => {
+          return {
+            id: f.getId(),
+            fstatus: f.get('fstatus'),
+            timestamp: f.get('fstatus_timestamp')
+          }
+        }), true)
+    }
+    this.state.init = true
   }
   renderTrip (collection) {
     return collection.getArray().map((f, i) => {
@@ -128,6 +147,12 @@ class Geotrip extends Component {
           </button>
           <span class="badge badge-pill badge-primary">${i+1}</span>
           <a href="#">${t(f.get('name'))}</a>
+          <i class="fas fa-circle fstatus ${f.get('fstatus') === 'Found' ? 'found' : ''}"></i>
+          ${f.get('fstatus_timestamp') ?
+            `<div class="text-muted small timestamp">
+              ${t('Found')}:
+              ${formatDate(f.get('fstatus_timestamp'), true) + ' ' +
+              formatTime(f.get('fstatus_timestamp'))}</div>` : ''}
         </li>`
     }).join('')
   }
@@ -151,8 +176,8 @@ class Geotrip extends Component {
       this.export()
     });
     // share trip
-    this.el.on('click', 'button.share', e => {
-      this.share()
+    this.el.on('click', 'button.sortby-found', e => {
+      this.sortByFound()
     })
   }
   reorderCollection (collection, order) {
@@ -171,12 +196,37 @@ class Geotrip extends Component {
     })
     this.reorderCollection(this.state.collection, order)
   }
+  sortByFound () {
+    function compare(a, b) {
+      if (a.timestamp < b.timestamp)
+        return -1
+      if (a.timestamp > b.timestamp)
+        return 1
+      return 0
+    }
+    const collection = this.state.collection.getArray().filter(f => {
+      return f.get('fstatus') === 'Found' && f.get('fstatus_timestamp')
+    })
+    this.state.collection.clear()
+    this.state.collection.extend(collection)
+    const found = getState('geocache/trip/found')
+    found.sort(compare)
+    this.reorderCollection(this.state.collection, found.map(item => item.id))
+  }
   loadState () {
     const ids = getState('geocache/trip/ids')
+    const found = getState('geocache/trip/found')
     this.clearTrip()
     if (ids) {
       this.getTripFeaturesFromGroup(getState('map/layer/layers'), ids, this.state.collection)
       this.getTripFeaturesFromGroup(getState('map/layer/overlays'), ids, this.state.collection)
+      found && this.state.collection.forEach(f => {
+        const foundItem = found.filter(item => item.id === f.getId())[0]
+        if (foundItem) {
+          f.set('fstatus', foundItem.fstatus)
+          f.set('fstatus_timestamp', foundItem.timestamp)
+        }
+      })
       this.reorderCollection(this.state.collection, ids)
     }
   }

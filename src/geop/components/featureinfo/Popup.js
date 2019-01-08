@@ -110,14 +110,16 @@ class Popup extends Component {
         title = `
           <i class="fa fa-map-marker-alt"></i>
           ${t('Feature')}
-          <a href="#" class="tools remove-marker float-right" title="Eemalda">
-            <i class="far fa-trash-alt"></i>
-          </a>
-          ${feature.getGeometry() instanceof Point ? `
-            <a href="#" class="tools cache-toggle float-right" data-id="${feature.get('id')}" title="${t('Add to geotrip')}">
+          <div class="tools">
+            <a href="#" class="remove-marker" title="Eemalda">
+              <i class="far fa-trash-alt"></i>
+            </a>
+            ${feature.getGeometry() instanceof Point ? `
+            <a href="#" class="cache-toggle" data-id="${feature.get('id')}" title="${t('Add to geotrip')}">
               <i class="fas ${(geotrip && geotrip.getArray().indexOf(feature) > -1) ? 'fa-minus-square' : 'fa-thumbtack'}"></i>
             </a>
-          ` : ''}`
+            ` : ''}
+          </div>`
         content = Object.keys(props).filter(key => {
           return (typeof props[key] === 'string' || typeof props[key] === 'number' || typeof props[key] === 'boolean')
         }).map(key => {
