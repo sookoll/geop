@@ -134,6 +134,7 @@ class GeoLocation extends Component {
       this.state.layer.setMap(map)
       this.state.locator.setTracking(true)
     }
+    setState('map/geolocation', true)
   }
   disable () {
     this.disableTracking()
@@ -145,6 +146,7 @@ class GeoLocation extends Component {
     this.state.lastPosition = null
     this.state.lastHeading = null
     this.state.active = this.state.status.indexOf('')
+    setState('map/geolocation', false)
   }
   disableTracking () {
     const map = getState('map')
@@ -178,6 +180,7 @@ class GeoLocation extends Component {
         this.state.isFirst = false
         this.searchEnd()
       }
+      setState('map/geolocation/position', coordinate)
     }
     this.updateView()
   }

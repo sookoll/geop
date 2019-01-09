@@ -204,11 +204,6 @@ class Geotrip extends Component {
         return 1
       return 0
     }
-    const collection = this.state.collection.getArray().filter(f => {
-      return f.get('fstatus') === 'Found' && f.get('fstatus_timestamp')
-    })
-    this.state.collection.clear()
-    this.state.collection.extend(collection)
     const found = getState('geocache/trip/found')
     found.sort(compare)
     this.reorderCollection(this.state.collection, found.map(item => item.id))

@@ -1,9 +1,11 @@
 import Component from 'Geop/Component'
-import {t} from 'Utilities/translate'
-import {formatLength, formatArea, makeLink } from 'Utilities/util'
-import {getState, setState} from 'Utilities/store'
+import { t } from 'Utilities/translate'
+import { formatLength, formatArea, makeLink } from 'Utilities/util'
+import { getState, setState } from 'Utilities/store'
+import { getDistance } from 'ol/sphere'
 import Overlay from 'ol/Overlay'
 import Point from 'ol/geom/Point'
+import { toLonLat } from 'ol/proj'
 import $ from 'jquery'
 import './Popup.styl'
 
@@ -15,6 +17,7 @@ class Popup extends Component {
       overlay: null,
       infoStore: [],
       geomTypes: {
+        points: ['Point'],
         linestrings: ['LineString', 'MultiLineString'],
         polygons: ['Polygon', 'MultiPolygon']
       },
@@ -132,6 +135,16 @@ class Popup extends Component {
           content.push(`${t('Area')}: ${formatArea(feature.getGeometry())}`)
         }
         content = content.join('<br>')
+      }
+      if (
+        this.state.geomTypes.points.indexOf(feature.getGeometry().getType()) > -1 &&
+        getState('map/geolocation')
+      ) {
+        // calculate distance from current location to feature
+        const position = getState('map/geolocation/position')
+        const distance = getDistance(toLonLat(position),
+          toLonLat(feature.getGeometry().getCoordinates()))
+        content += `<div class="distance"><i class="fas fa-location-arrow"></i> ${formatLength(null, distance)}</div>`
       }
       return {
         definition: {

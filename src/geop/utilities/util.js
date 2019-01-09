@@ -216,8 +216,10 @@ export function hexToRgbA (hex, a) {
   throw new Error('Bad Hex')
 }
 
-export function formatLength (line) {
-  const length = getLength(line)
+export function formatLength (line, length) {
+  if (!length) {
+    length = getLength(line)
+  }
   if (length > 10000) {
     return `${(Math.round(length / 1000 * 100) / 100)} km`
   } else {
