@@ -95,6 +95,9 @@ body .mini-toastr-notification__message {
 body .popover {
   z-index: 1000 !important;
 }
+body .size-1_1 {
+  font-size: 1.1rem;
+}
 
 #map {
   margin: 0;
@@ -156,6 +159,20 @@ body .popover {
 
 #tab-geotrip ul li .badge {
   cursor: ns-resize;
+}
+#tab-geotrip ul li .fstatus {
+  position: absolute;
+  top: 0.75rem;
+  right: 35px;
+  color: #ddd;
+  font-size: 0.8rem;
+  padding: 4px 6px;
+}
+#tab-geotrip ul li .fstatus.found {
+  color: #4c9900;
+}
+#tab-geotrip ul li .timestamp {
+  padding-left: 23px;
 }
 #tab-geotrip a.export {
   color: #fff;
@@ -318,9 +335,24 @@ circle#map-click-animation {
   }
 }
 
+#navigation {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #fff;
+  margin-top: 6px;
+}
+#navigation i {
+  padding: 0 10px;
+}
+#navigation button {
+  padding: 0 10px;
+}
+
 #statusbar {
   top: auto;
   bottom: 0;
+}
+#statusbar > * {
+  color: #fff;
 }
 #statusbar .btn.active {
   background-color: #000;
@@ -415,6 +447,7 @@ body .contextmenu .popover-body .list-group-item .context-item-btn {
   position: absolute;
   top: 0;
   right: 0;
+  width: 36px;
   padding: 0.5rem 0.75rem;
   border-radius: 0;
   border-left: 1px solid #ddd;
@@ -458,13 +491,28 @@ body .popup .popover-header a {
   font-weight: bold;
   color: inherit;
 }
-body .popup .popover-header a.tools {
-  padding-left: 10px;
+body .popup .popover-header .tools {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
   background: #f7f7f7;
+}
+body .popup .popover-header .tools a {
+  padding-left: 6px;
 }
 body .popup .popover-body {
   overflow: hidden;
   user-select: text;
+}
+body .popup .popover-body .toggle-found {
+  cursor: pointer;
+  margin-bottom: 0;
+}
+body .popup .popover-body .distance {
+  cursor: pointer;
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.75rem;
 }
 
 #geop {
