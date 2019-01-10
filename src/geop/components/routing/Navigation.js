@@ -1,5 +1,5 @@
 import Component from 'Geop/Component'
-import { getState, onchange } from 'Utilities/store'
+import { getState, setState, onchange } from 'Utilities/store'
 import { formatLength, radToDeg } from 'Utilities/util'
 import { getLayer } from './Routing'
 import { createStyle } from 'Components/layer/StyleBuilder'
@@ -81,6 +81,8 @@ class Navigation extends Component {
     this.el.find('span').html('')
     getLayer().getSource().clear()
     this.state.route.getGeometry().setCoordinates([])
+    // context menu items reset
+    setState('routing/stops', [])
     this.state.active = false
   }
 }
