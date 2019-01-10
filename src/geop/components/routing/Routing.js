@@ -6,7 +6,7 @@ import log from 'Utilities/log'
 import { uid } from 'Utilities/util'
 import { createMarker } from 'Components/mouseposition/MousePosition'
 import { createLayer } from 'Components/layer/LayerCreator'
-import { toLonLat } from 'ol/proj'
+import { toLonLat, fromLonLat } from 'ol/proj'
 import Polyline from 'ol/format/Polyline'
 import $ from 'jquery'
 
@@ -87,8 +87,8 @@ class Routing extends Component {
     const coords = getState('routing/stops')
     findRoute(coords).then(route => {
       const routeCoords = route.getGeometry().getCoordinates()
-      routeCoords.unshift(this.state.from)
-      routeCoords.push(this.state.to)
+      routeCoords.unshift(fromLonLat(coords[0], getState('map/projection')))
+      routeCoords.push(fromLonLat(coords[coords.length - 1], getState('map/projection')))
       route.getGeometry().setCoordinates(routeCoords)
     }).catch(e => {})
   }
