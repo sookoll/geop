@@ -85,7 +85,12 @@ class Routing extends Component {
   }
   findRoute () {
     const coords = getState('routing/stops')
-    findRoute(coords).then(route => {}).catch(e => {})
+    findRoute(coords).then(route => {
+      const routeCoords = route.getGeometry().getCoordinates()
+      routeCoords.unshift(this.state.from)
+      routeCoords.push(this.state.to)
+      route.getGeometry().setCoordinates(routeCoords)
+    }).catch(e => {})
   }
   clear () {
     this.state.from = null

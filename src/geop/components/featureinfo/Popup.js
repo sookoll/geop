@@ -196,6 +196,10 @@ class Popup extends Component {
             ]
             findRoute(coords).then(route => {
               if (route) {
+                const routeCoords = route.getGeometry().getCoordinates()
+                routeCoords.unshift(getState('map/geolocation/position'))
+                routeCoords.push(f[1].getGeometry().getCoordinates())
+                route.getGeometry().setCoordinates(routeCoords)
                 setState('navigate/to', f[1])
               }
             }).catch(e => {})
