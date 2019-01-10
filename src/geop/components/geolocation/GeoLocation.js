@@ -247,7 +247,7 @@ class GeoLocation extends Component {
     }, true)
     const trackStyle = createStyle({
       stroke: {
-        color: 'rgba(255, 0, 0, 0.5)',
+        color: 'rgba(0, 133, 203, 1)',
         width: 3,
         lineDash: [5, 5]
       }

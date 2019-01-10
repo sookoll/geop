@@ -155,7 +155,8 @@
     "Waypoint|Trailhead": "Trailhead",
     "Waypoint|Virtual Stage": "Virtual Stage",
     "Zoom in": "Zoom in",
-    "Zoom out": "Zoom out"
+    "Zoom out": "Zoom out",
+    "Too Many Requests": "Too Many Requests"
   },
   "et": {
     "Account": "Konto",
@@ -313,6 +314,7 @@
     "Waypoint|Trailhead": "Matkaraja algus",
     "Waypoint|Virtual Stage": "Virtuaalne vahepunkt",
     "Zoom in": "Suurenda",
-    "Zoom out": "Vähenda"
+    "Zoom out": "Vähenda",
+    "Too Many Requests": "Päringute limiit on täis"
   }
 }
