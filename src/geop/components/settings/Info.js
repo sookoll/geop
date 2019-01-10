@@ -22,7 +22,7 @@ class Info extends Component {
     this.el.html(`
       <h5>
         Geop
-        <i class="text-muted small">v1.0.0</i>
+        <i class="text-muted small">v1.1.0</i>
       </h5>
       <span class="attribution small">
         <a href="http://openstreetmap.org" >OSM</a> |
@@ -39,6 +39,7 @@ class Info extends Component {
         <li>${t('Find streetview link and measure tools from context menu.')}</li>
         <li>${t('Add caches and map objects to geotrip. Reorder geotrip.')}</li>
         <li>${t('Navigate to cache with two tracking mode')}</li>
+        <li>${t('Driving directions between points or from your current location')}</li>
         <li>${t('Share snapshot of app state via link or QR-code. Download geotrip as GPX-file.')}</li>
       </ul>
       <h5>${t('Search coordinates')}</h5>
