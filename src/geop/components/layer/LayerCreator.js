@@ -88,6 +88,9 @@ export function createLayer (layerConf) {
         if (!inputConf.projection) {
           inputConf.projection = layerConf.projection
         }
+        if (!inputConf.zIndex) {
+          inputConf.zIndex = layerConf.zIndex
+        }
         return createLayer(inputConf)
       })
       // group should be visible, if not specified

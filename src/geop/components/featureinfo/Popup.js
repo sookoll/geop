@@ -145,7 +145,8 @@ class Popup extends Component {
         const position = getState('map/geolocation/position')
         const distance = getDistance(toLonLat(position),
           toLonLat(feature.getGeometry().getCoordinates()))
-        content += `<div class="distance"><i class="fas fa-directions"></i> ${formatLength(null, distance)}</div>`
+        content += `<div class="distance"><i class="fas fa-location-arrow"></i>
+          ${formatLength(null, distance)}</div>`
       }
       return {
         definition: {
@@ -202,7 +203,9 @@ class Popup extends Component {
                 route.getGeometry().setCoordinates(routeCoords)
                 setState('navigate/to', f[1])
               }
-            }).catch(e => {})
+            }).catch(e => {
+              setState('navigate/to', f[1])
+            })
           })
           // call stored onShow
           if (f[0].get('_featureInfo') && typeof f[0].get('_featureInfo').onShow === 'function') {

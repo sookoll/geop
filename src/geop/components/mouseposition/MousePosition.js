@@ -228,14 +228,14 @@ function layerCreate () {
         width: 2
       },
       fill: {
-        color: hexToRgbA(color, 0.5)
+        color: hexToRgbA('#fff', 0.5)
       },
       circle: {
         stroke: {
           color: color
         },
         fill: {
-          color: hexToRgbA(color, 0.3)
+          color: hexToRgbA('#fff', 0.9)
         }
       }
     }

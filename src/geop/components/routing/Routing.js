@@ -177,17 +177,25 @@ function layerCreate () {
     title: 'Route',
     style: [{
       stroke: {
-        color: 'rgba(255, 255, 255, 0.5)',
-        width: 8
+        color: 'rgba(255, 255, 255, 0.7)',
+        width: 7
       }
     }, {
       stroke: {
-        color: 'rgb(0, 133, 203)',
-        width: 4
+        color: 'rgba(0, 133, 203, 1)',
+        width: 3
       }
     }]
   }
   return createLayer(conf)
+}
+
+export function getLayer () {
+  if (!routeLayer) {
+    routeLayer = layerCreate()
+    routeLayer.setMap(getState('map'))
+  }
+  return routeLayer
 }
 
 export default Routing
