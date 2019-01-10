@@ -13,6 +13,37 @@ import { transform } from 'ol/proj'
 import $ from 'jquery'
 import './MousePosition.styl'
 
+const coordFormats = [
+  {
+    projection: 'EPSG:4326',
+    srname: 'WGS',
+    coordinateFormat: (coordinate) => {
+      return format(coordinate, '{y}, {x}', 4)
+    }
+  },
+  {
+    projection: 'EPSG:4326',
+    srname: 'WGS dms',
+    coordinateFormat: (coordinate) => {
+      return toStringHDMS(coordinate, 1)
+    }
+  },
+  {
+    projection: 'EPSG:3301',
+    srname: 'L-EST',
+    coordinateFormat: (coordinate) => {
+      return format(coordinate, '{y}, {x}', 0)
+    }
+  },
+  {
+    projection: 'EPSG:4326',
+    srname: 'MGRS',
+    coordinateFormat: (coordinate) => {
+      return mgrs.forward(coordinate)
+    }
+  }
+]
+
 class MousePosition extends Component {
   constructor (target) {
     super(target)
@@ -21,48 +52,18 @@ class MousePosition extends Component {
     `)
     this.animationEl = $(`
       <svg width="20" height="20"></svg>`)
-    this.coordFormats = [
-      {
-        projection: 'EPSG:4326',
-        srname: 'WGS',
-        coordinateFormat: (coordinate) => {
-          return format(coordinate, '{y}, {x}', 4)
-        }
-      },
-      {
-        projection: 'EPSG:4326',
-        srname: 'WGS dms',
-        coordinateFormat: (coordinate) => {
-          return toStringHDMS(coordinate, 1)
-        }
-      },
-      {
-        projection: 'EPSG:3301',
-        srname: 'L-EST',
-        coordinateFormat: (coordinate) => {
-          return format(coordinate, '{y}, {x}', 0)
-        }
-      },
-      {
-        projection: 'EPSG:4326',
-        srname: 'MGRS',
-        coordinateFormat: (coordinate) => {
-          return mgrs.forward(coordinate)
-        }
-      }
-    ]
 
     this.state = {
       format: 0,
       control: null,
       lock: false,
       lastCoord: null,
-      layer: null,
       overlay: new Overlay({
         element: this.animationEl[0],
         positioning: 'center-center'
       })
     }
+    setState('map/coordinateFormat', this.state.format, true)
     this.handlers = {
       onclick: e => {
         this.clicked(e)
@@ -77,14 +78,14 @@ class MousePosition extends Component {
     contextMenuItems.push({
       content: coord => {
         return `<i class="fa fa-map-marker-alt"></i>
-          ${this.format(coord)}
+          ${formatCoordinate(coord)}
           <button class="btn btn-link context-item-btn"><i class="far fa-clone"></i></button>`
       },
-      onClick: (e, coord) => {
-        this.createMarker(coord)
+      onClick: (e, coord, feature) => {
+        !feature && createMarker(coord)
       },
       onBtnClick: (e, coord) => {
-        this.copy(this.format(coord))
+        this.copy(formatCoordinate(coord))
       },
       closeOnClick: true
     })
@@ -100,7 +101,7 @@ class MousePosition extends Component {
           data-toggle="dropdown">
         </button>
         <div class="dropdown-menu">
-          ${this.coordFormats.map((format, i) => {
+          ${coordFormats.map((format, i) => {
             return `
               <a class="dropdown-item" href="#" data-format="${i}">
                 <i class="far ${i === this.state.format ? 'fa-dot-circle' : 'fa-circle'}"></i>
@@ -111,7 +112,7 @@ class MousePosition extends Component {
       </div>
       <button type="button" class="btn btn-link copy float-left">
         <i class="far fa-clone"></i>
-        <span>${this.coordFormats[this.state.format].srname}</span>
+        <span>${coordFormats[this.state.format].srname}</span>
       </button>
     `)
     this.el.on('click', '.lock', e => {
@@ -125,16 +126,17 @@ class MousePosition extends Component {
     })
     this.el.on('click', 'a[data-format]', e => {
       this.state.format = $(e.currentTarget).data('format')
-      this.state.control.setProjection(this.coordFormats[this.state.format].projection)
-      this.state.control.setCoordinateFormat(this.coordFormats[this.state.format].coordinateFormat)
+      setState('map/coordinateFormat', this.state.format, true)
+      this.state.control.setProjection(coordFormats[this.state.format].projection)
+      this.state.control.setCoordinateFormat(coordFormats[this.state.format].coordinateFormat)
       this.el.find('a[data-format] i').removeClass('fa-dot-circle').addClass('fa-circle')
       $(e.currentTarget).find('i').removeClass('fa-circle').addClass('fa-dot-circle')
-      this.el.find('button.copy span').html(this.coordFormats[this.state.format].srname)
+      this.el.find('button.copy span').html(coordFormats[this.state.format].srname)
     })
     if (!this.state.control) {
       this.state.control = new MousePositionControl({
-        coordinateFormat: this.coordFormats[this.state.format].coordinateFormat,
-        projection: this.coordFormats[this.state.format].projection,
+        coordinateFormat: coordFormats[this.state.format].coordinateFormat,
+        projection: coordFormats[this.state.format].projection,
         className: 'float-left coords',
         target: this.el[0],
         undefinedHTML: ''
@@ -165,7 +167,7 @@ class MousePosition extends Component {
     }
   }
   clicked (e) {
-    this.el.find('.coords').html(this.format(e.coordinate))
+    this.el.find('.coords').html(formatCoordinate(e.coordinate))
   }
   copy (content) {
     copy(content)
@@ -176,69 +178,6 @@ class MousePosition extends Component {
         log('error', t('Unable to copy to clipboard'))
       })
   }
-  format (coordinate) {
-    const coord = transform(
-      coordinate,
-      getState('map/projection'),
-      this.coordFormats[this.state.format].projection
-    )
-    return this.coordFormats[this.state.format].coordinateFormat(coord)
-  }
-  createMarker (coordinate) {
-    if (!this.state.layer) {
-      const layerId = getState('layer/mousePositionId')
-      if (layerId) {
-        const layer = getState('map/layer/overlays').getArray().filter(l => l.get('id') === layerId)
-        if (layer && layer[0]) {
-          this.state.layer = layer[0]
-        }
-      }
-      if (!this.state.layer) {
-        this.state.layer = this.createLayer()
-        getState('map/layer/overlays').push(this.state.layer)
-      }
-      setState('layer/mousePositionId', this.state.layer.get('id'), true)
-    }
-    const feature = new GeoJSONFormat().readFeature({
-      type: 'Feature',
-      id: uid(),
-      properties: {
-        name: this.format(coordinate)
-      },
-      geometry: {
-        type: 'Point',
-        coordinates: coordinate
-      }
-    })
-    this.state.layer.getSource().addFeature(feature)
-    setState('layerchange', this.state.layer.get('id'))
-  }
-  createLayer () {
-    const color = '#000000'
-    const conf = {
-      type: 'FeatureCollection',
-      id: uid(),
-      title: 'Features',
-      style: {
-        stroke: {
-          color: color,
-          width: 2
-        },
-        fill: {
-          color: hexToRgbA(color, 0.5)
-        },
-        circle: {
-          stroke: {
-            color: color
-          },
-          fill: {
-            color: hexToRgbA(color, 0.3)
-          }
-        }
-      }
-    }
-    return createLayer(conf)
-  }
   animate (e) {
     const coord = e.coordinate
     this.state.overlay.setPosition(coord)
@@ -248,6 +187,76 @@ class MousePosition extends Component {
       this.animationEl.html('')
     }, 500)
   }
+}
+
+function formatCoordinate (coordinate) {
+  const coord = transform(
+    coordinate,
+    getState('map/projection'),
+    coordFormats[getState('map/coordinateFormat')].projection
+  )
+  return coordFormats[getState('map/coordinateFormat')].coordinateFormat(coord)
+}
+
+export function createMarker (coordinate) {
+  const layer = layerCreate()
+  const feature = new GeoJSONFormat().readFeature({
+    type: 'Feature',
+    id: uid(),
+    properties: {
+      name: formatCoordinate(coordinate)
+    },
+    geometry: {
+      type: 'Point',
+      coordinates: coordinate
+    }
+  })
+  layer.getSource().addFeature(feature)
+  setState('layerchange', layer.get('id'))
+  return feature
+}
+
+function layerCreate () {
+  const color = '#000000'
+  const conf = {
+    type: 'FeatureCollection',
+    id: uid(),
+    title: 'Features',
+    style: {
+      stroke: {
+        color: color,
+        width: 2
+      },
+      fill: {
+        color: hexToRgbA(color, 0.5)
+      },
+      circle: {
+        stroke: {
+          color: color
+        },
+        fill: {
+          color: hexToRgbA(color, 0.3)
+        }
+      }
+    }
+  }
+  const layerId = getState('layer/mousePositionId')
+  let layer
+  if (!layerId) {
+    layer = createLayer(conf)
+    getState('map/layer/overlays').push(layer)
+    setState('layer/mousePositionId', layer.get('id'), true)
+  } else {
+    const lset = getState('map/layer/overlays').getArray().filter(l => l.get('id') === layerId)
+    if (lset && lset[0]) {
+      layer = lset[0]
+    } else {
+      layer = createLayer(conf)
+      getState('map/layer/overlays').push(layer)
+      setState('layer/mousePositionId', layer.get('id'), true)
+    }
+  }
+  return layer
 }
 
 export default MousePosition

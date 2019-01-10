@@ -18,7 +18,8 @@ export const app = {
   settingsTabOpen: 'settings-tab',// active tab on sidebar
   debug: false,// collect all console debug, info and error into downloadable file
   debugFile: 'geop_debug.log',
-  nominatimCountries: 'ee'
+  nominatimCountries: 'ee',
+  routing: true
 }
 export const map = {
   el: '#map',
@@ -37,7 +38,8 @@ export const apiUrls = {
   ideditor: 'https://www.openstreetmap.org/edit?editor=id#background=custom:http://tiles.maaamet.ee/tm/tms/1.0.0/foto@GMC/{z}/{x}/{-y}.png&map=',
   nominatim: 'https://nominatim.openstreetmap.org',
   jsonstore: 'https://www.jsonstore.io/4d04eefd7ed4c19866cefcf038d0bebe95786bf33f0e60fdfbd8a554e6ae2670',
-  qrcode: 'http://api.qrserver.com/v1/create-qr-code/?size=150x150&data='
+  qrcode: 'http://api.qrserver.com/v1/create-qr-code/?size=150x150&data=',
+  osrm: 'https://router.project-osrm.org/route/v1/driving/'
 }
 export const geocache = {
   authUrl: 'http://geopeitus.ee',

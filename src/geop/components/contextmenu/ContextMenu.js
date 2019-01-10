@@ -54,10 +54,8 @@ class ContextMenu extends Component {
       )
       if (feature && feature[1].getGeometry() instanceof Point) {
         coords = feature[1].getGeometry().getCoordinates()
-        content = this.getContent(coords)
-      } else {
-        content = this.getContent(coords)
       }
+      content = this.getContent(coords, feature)
       this.open(coords, content)
     })
   }
@@ -72,10 +70,14 @@ class ContextMenu extends Component {
       popContent.onShow($(e.target).data('bs.popover').tip)
     })
     // when popover's content is hidden
-    this.el.on('hidden.bs.popover', popContent.onHide)
+    this.el.on('hidden.bs.popover', () => {
+      popContent.onHide()
+      Popper.Defaults.modifiers.preventOverflow.enabled = true
+      Popper.Defaults.modifiers.hide.enabled = true
+    })
     this.el.popover('show')
   }
-  getContent (coord) {
+  getContent (coord, feature) {
     const content = this.state.items.map((item, i) => {
       const cont = (typeof item.content === 'function') ? item.content(coord) : item.content
       return `<li class="list-group-item item-${i}">${cont}</li>`
@@ -102,7 +104,7 @@ class ContextMenu extends Component {
           if (typeof item.onClick === 'function') {
             $(pop).on('click', '.item-' + i, e => {
               e.preventDefault()
-              item.onClick(e, coord)
+              item.onClick(e, coord, feature)
               if (item.closeOnClick) {
                 this.el.popover('dispose')
               }
@@ -112,11 +114,9 @@ class ContextMenu extends Component {
             $(pop).on('click', `.item-${i} .context-item-btn`, e => {
               e.preventDefault()
               e.stopPropagation()
-              item.onBtnClick(e, coord)
+              item.onBtnClick(e, coord, feature)
               if (item.closeOnClick) {
                 this.el.popover('dispose')
-                Popper.Defaults.modifiers.preventOverflow.enabled = true
-                Popper.Defaults.modifiers.hide.enabled = true
               }
             })
           }
