@@ -2,6 +2,7 @@ import Component from 'Geop/Component'
 import { t } from 'Utilities/translate'
 import { formatLength, formatArea, makeLink } from 'Utilities/util'
 import { getState, setState } from 'Utilities/store'
+import { findRoute } from 'Components/routing/Routing'
 import { getDistance } from 'ol/sphere'
 import Overlay from 'ol/Overlay'
 import Point from 'ol/geom/Point'
@@ -144,7 +145,7 @@ class Popup extends Component {
         const position = getState('map/geolocation/position')
         const distance = getDistance(toLonLat(position),
           toLonLat(feature.getGeometry().getCoordinates()))
-        content += `<div class="distance"><i class="fas fa-location-arrow"></i> ${formatLength(null, distance)}</div>`
+        content += `<div class="distance"><i class="fas fa-directions"></i> ${formatLength(null, distance)}</div>`
       }
       return {
         definition: {
@@ -186,6 +187,18 @@ class Popup extends Component {
                 geotrip.push(f[1])
               }
             }
+          })
+          $(pop).on('click', '.distance', e => {
+            e.preventDefault()
+            const coords = [
+              toLonLat(getState('map/geolocation/position')),
+              toLonLat(f[1].getGeometry().getCoordinates())
+            ]
+            findRoute(coords).then(route => {
+              if (route) {
+                setState('navigate/to', f[1])
+              }
+            }).catch(e => {})
           })
           // call stored onShow
           if (f[0].get('_featureInfo') && typeof f[0].get('_featureInfo').onShow === 'function') {

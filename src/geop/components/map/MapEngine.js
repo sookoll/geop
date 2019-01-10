@@ -160,6 +160,7 @@ class MapEngine extends Component {
     Object.keys(layers).forEach(id => {
       layers[id].visible = (id === activeBaseLayerId)
       layers[id].id = id
+      layers[id].zIndex = 0
       const layer = createLayer(layers[id])
       this.addBaseLayer(layer)
       if (layers[id].visible) {

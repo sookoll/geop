@@ -267,6 +267,7 @@ class GeoLocation extends Component {
     return createLayer({
       type: 'FeatureCollection',
       title: 'Geolocation',
+      zIndex: 101,
       style: feature => {
         const styles = [trackStyle]
         if (feature.get('id') === 'position') {

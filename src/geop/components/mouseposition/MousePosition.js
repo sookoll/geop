@@ -77,7 +77,7 @@ class MousePosition extends Component {
     const contextMenuItems = getState('map/contextmenu')
     contextMenuItems.push({
       content: coord => {
-        return `<i class="fa fa-map-marker-alt"></i>
+        return `<i class="fa fa-map-marker-alt size-1_1"></i>
           ${formatCoordinate(coord)}
           <button class="btn btn-link context-item-btn"><i class="far fa-clone"></i></button>`
       },

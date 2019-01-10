@@ -141,6 +141,11 @@ function set (layer, layerConf) {
   if (typeof layerConf.opacity !== 'undefined') {
     layer.setOpacity(layerConf.opacity)
   }
+  if (typeof layerConf.zIndex !== 'undefined') {
+    layer.setZIndex(layerConf.zIndex)
+  } else {
+    layer.setZIndex(100)
+  }
   layer.set('conf', layerConf)
   return layer
 }
