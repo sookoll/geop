@@ -27,7 +27,7 @@ export const layers = {
         crossOrigin: null
       }, {
         type: 'TileWMS',
-        url: 'http://kaart.maaamet.ee/wms/kaart',
+        url: 'https://kaart.maaamet.ee/wms/kaart',
         params: {
           LAYERS: 'MA-KAART',
           TILED: true,
@@ -64,7 +64,7 @@ export const layers = {
         crossOrigin: null
       }, {
         type: 'TileWMS',
-        url: 'http://kaart.maaamet.ee/wms/alus',
+        url: 'https://kaart.maaamet.ee/wms/alus',
         params: {
           LAYERS: 'pohi_vv',
           TILED: true,
@@ -89,7 +89,7 @@ export const layers = {
         crossOrigin: null
       }, {
         type: 'TileWMS',
-        url: 'http://kaart.maaamet.ee/wms/fotokaart',
+        url: 'https://kaart.maaamet.ee/wms/fotokaart',
         params: {
           LAYERS: 'EESTIFOTO',
           TILED: true,
