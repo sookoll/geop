@@ -40,19 +40,19 @@ self.__precacheManifest = [
     "url": "assets/52b8345b6d8e11988d8db917c366b4da.woff"
   },
   {
-    "url": "assets/7d43b9ae0b8bb1d0dc425d78dc577b0a.eot"
+    "url": "assets/50a544b5ad4d512e8db3cdc089823a00.ttf"
   },
   {
-    "url": "assets/50a544b5ad4d512e8db3cdc089823a00.ttf"
+    "url": "assets/7d43b9ae0b8bb1d0dc425d78dc577b0a.eot"
   },
   {
     "url": "assets/734248d027cbaac7f03c0d931ec95593.svg"
   },
   {
-    "url": "assets/f72d546abcc27880adf8428792c72519.eot"
+    "url": "assets/1709a2810c3752483683f3f7d287aa89.ttf"
   },
   {
-    "url": "assets/1709a2810c3752483683f3f7d287aa89.ttf"
+    "url": "assets/f72d546abcc27880adf8428792c72519.eot"
   },
   {
     "url": "assets/fef43c1fd872ef7f1880483d9b63ccf2.svg"
