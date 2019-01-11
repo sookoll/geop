@@ -69,7 +69,8 @@ class Popup extends Component {
         if (layer) {
           return [layer, feature]
         }
-      }
+      },
+      { hitTolerance: 10 }
     )
     this.el.popover('dispose')
     if (hit) {

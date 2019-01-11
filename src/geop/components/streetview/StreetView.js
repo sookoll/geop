@@ -14,7 +14,7 @@ class StreetView extends Component {
       content: `<i class="fa fa-street-view size-1_1"></i> ${t('Street view')}`,
       onClick: (e, coord) => {
         const formatted = toLonLat(coord).reverse().join(',')
-        $('<a>').attr('href', apiUrls.streetview + formatted).attr('target', '_blank')[0].click()
+        $('<a>').attr('href', apiUrls.google.streetview + formatted).attr('target', '_blank')[0].click()
       }
     })
   }

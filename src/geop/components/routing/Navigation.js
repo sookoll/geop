@@ -22,7 +22,7 @@ class Navigation extends Component {
     </div>`)
     this.state = {
       active: false,
-      hide: target.find('#mouse-position, #scale-line'),
+      hide: target.find('#mouse-position, #scale-line, #bookmark'),
       to: null,
       route: new Feature(new LineString([]))
     }
@@ -62,7 +62,7 @@ class Navigation extends Component {
     const distance = getDistance(toLonLat(from),
       toLonLat(to))
     this.el.find('span').html(`
-      ${formatLength(null, distance)}
+      ${formatLength(null, distance, [0, 1])}
       <i>&middot;</i> ${Math.round(angle)}&deg;
     `)
     this.state.route.getGeometry().setCoordinates([from, to])

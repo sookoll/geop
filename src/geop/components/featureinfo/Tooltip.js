@@ -58,7 +58,8 @@ class Tooltip extends Component {
     let coord = map.getEventCoordinate(e)
     const feature = map.forEachFeatureAtPixel(
       map.getEventPixel(e),
-      (feature, layer) => feature
+      (feature, layer) => feature,
+      { hitTolerance: 10 }
     )
     // if not same feature
     if (feature !== this.state.currentFeature && (feature.get('name') || feature.get('title'))) {

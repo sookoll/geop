@@ -6,6 +6,16 @@ const CleanWebpackPlugin = require('clean-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const WorkboxPlugin = require('workbox-webpack-plugin')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
+const package = require('./package.json')
+
+function capitalize (string) {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
+const conf = {
+  name: capitalize(package.name),
+  description: capitalize(package.name) + ' by sookoll - Simple map tool for geocachers for creating geotrips'
+}
 
 module.exports = {
   optimization: {
@@ -91,12 +101,14 @@ module.exports = {
       path: path.join(__dirname, 'dist'),
       template: path.join(__dirname, 'src', 'index.html'),
       filename: 'index.html',
-      title: 'Geop'
+      title: conf.name,
+      version: 'v' + package.version,
+      description: conf.description
     }),
     new WebpackPwaManifest({
-      name: 'Geop by sookoll',
-      short_name: 'Geop',
-      description: 'Geop - Geocaching map',
+      name: conf.name + ' by sookoll',
+      short_name: conf.name,
+      description: conf.description,
       display: 'standalone',
       orientation: 'any',
       start_url: '.',

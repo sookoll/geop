@@ -50,7 +50,8 @@ class ContextMenu extends Component {
       let content
       const feature = map.forEachFeatureAtPixel(
         map.getEventPixel(e),
-        (feature, layer) => [layer, feature]
+        (feature, layer) => [layer, feature],
+        { hitTolerance: 10 }
       )
       if (feature && feature[1].getGeometry() instanceof Point) {
         coords = feature[1].getGeometry().getCoordinates()

@@ -32,14 +32,21 @@ class Routing extends Component {
           closeOnClick: true
         },
         to: {
-          content: `<i class="fas fa-directions text-danger size-1_1"></i> ${t('Directions to here')}`,
+          content: `<i class="fas fa-directions text-danger size-1_1"></i>
+            ${t('Directions to here')}
+            <button class="btn btn-link context-item-btn"><i class="fab fa-google"></i></button>`,
           onClick: (e, coord, feature) => {
             const toFeature = feature ? feature[1] : createMarker(coord)
             this.state.to = toFeature.getGeometry().getCoordinates()
             setState('routing/stops', [this.state.from && toLonLat(this.state.from), toLonLat(this.state.to)])
             this.findRoute()
           },
-          closeOnClick: true
+          closeOnClick: true,
+          onBtnClick: (e, coord, feature) => {
+            const formatted = toLonLat(coord).slice(0, 2).reverse().join(',')
+            console.log(formatted)
+            $('<a>').attr('href', apiUrls.google.directions + formatted).attr('target', '_blank')[0].click()
+          }
         },
         done: {
           content: `<i class="fas fa-directions text-info size-1_1"></i>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Geop</title>
+  <title><%= htmlWebpackPlugin.options.title %></title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#6c757d">
@@ -10,8 +10,13 @@
   <meta name="mobile-web-app-capable" content="yes">
   <!-- Tell iOS it's a PWA -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="description" content="Simple map tool for Geocaching">
+  <meta name="description" content="<%= htmlWebpackPlugin.options.description %>">
   <meta charset="utf-8">
+  <script>
+    window.geop = {
+      version: '<%= htmlWebpackPlugin.options.version %>'
+    }
+  </script>
 </head>
 <body>
   <noscript>

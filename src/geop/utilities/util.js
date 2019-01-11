@@ -216,23 +216,29 @@ export function hexToRgbA (hex, a) {
   throw new Error('Bad Hex')
 }
 
-export function formatLength (line, length) {
+export function formatLength (line, length, decimals = [2, 2]) {
   if (!length) {
     length = getLength(line)
   }
   if (length > 10000) {
-    return `${(Math.round(length / 1000 * 100) / 100)} km`
+    const roundFactor = Math.pow(10, decimals[0])
+    return `${(Math.round(length / 1000 * roundFactor) / roundFactor)} km`
   } else {
-    return `${(Math.round(length * 100) / 100)} m`
+    const roundFactor = Math.pow(10, decimals[1])
+    return `${(Math.round(length * roundFactor) / roundFactor)} m`
   }
 }
 
-export function formatArea (polygon) {
-  const area = getArea(polygon)
+export function formatArea (polygon, area, decimals = [2, 2]) {
+  if (!area) {
+    area = getArea(polygon)
+  }
   if (area > 1000000) {
-    return `${(Math.round(area / 1000000 * 100) / 100)} km<sup>2</sup>`
+    const roundFactor = Math.pow(10, decimals[0])
+    return `${(Math.round(area / 1000000 * roundFactor) / roundFactor)} km<sup>2</sup>`
   } else {
-    return `${(Math.round(area * 100) / 100)} m<sup>2</sup>`
+    const roundFactor = Math.pow(10, decimals[0])
+    return `${(Math.round(area * roundFactor) / roundFactor)} m<sup>2</sup>`
   }
 }
 
