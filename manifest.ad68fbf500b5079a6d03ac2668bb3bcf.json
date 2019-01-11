@@ -36,7 +36,7 @@
   "orientation": "any",
   "display": "standalone",
   "start_url": ".",
-  "description": "Geop - Geocaching map",
+  "description": "Geop by sookoll - Simple map tool for geocachers for creating geotrips",
   "background_color": "#6c757d",
   "theme_color": "#6c757d"
 }
