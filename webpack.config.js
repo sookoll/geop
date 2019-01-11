@@ -70,7 +70,6 @@ module.exports = {
   devServer: {
     port: 3000
   },
-  devtool: 'source-map',
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new CleanWebpackPlugin(path.join(__dirname, 'dist'), {} ),
