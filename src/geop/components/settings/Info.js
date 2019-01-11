@@ -22,7 +22,7 @@ class Info extends Component {
     this.el.html(`
       <h5>
         Geop
-        <i class="text-muted small">v1.1.0</i>
+        <i class="text-muted small">v1.1.1</i>
       </h5>
       <span class="attribution small">
         <a href="http://openstreetmap.org" >OSM</a> |
