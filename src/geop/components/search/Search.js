@@ -228,20 +228,21 @@ class Search extends Component {
       id: uid(),
       title: `${t('Search')}: ${title}`,
       features: features,
+      zIndex: 50,
       style: {
         stroke: {
           color: color,
           width: 2
         },
         fill: {
-          color: hexToRgbA(color, 0.5)
+          color: hexToRgbA('#fff', 0.5)
         },
         circle: {
           stroke: {
             color: color
           },
           fill: {
-            color: hexToRgbA(color, 0.3)
+            color: hexToRgbA('#fff', 0.5)
           },
           radius: 5
         }

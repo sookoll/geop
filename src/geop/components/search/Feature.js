@@ -9,7 +9,10 @@ class Feature extends Provider {
     super()
     this.title = 'Features'
     this.layers = getState('map/layer/layers')
-    this.geojson = new GeoJSONFormat()
+    this.geojson = new GeoJSONFormat({
+      featureProjection: getState('map/projection'),
+      dataProjection: 'EPSG:4326'
+    })
   }
   test (query) {
     return (query.length >= 3)
