@@ -12,6 +12,7 @@ import Map from 'ol/Map'
 import View from 'ol/View'
 import GeoJSONFormat from 'ol/format/GeoJSON'
 import { get as getProjection, fromLonLat, toLonLat } from 'ol/proj'
+import { getDistance } from 'ol/sphere'
 import { register } from 'ol/proj/proj4'
 import proj4 from 'proj4'
 import $ from 'jquery'
@@ -226,6 +227,27 @@ class MapEngine extends Component {
     this.map = null
     super.destroy()
   }
+}
+
+export function closestFeatureTo (map, px, coord) {
+  const closest = {
+    feature: null,
+    layer: null,
+    distance: Infinity
+  }
+  map.forEachFeatureAtPixel(
+    px,
+    (feature, layer) => {
+      const distance = getDistance(toLonLat(coord), toLonLat(feature.getGeometry().getCoordinates()))
+      if (layer && distance < closest.distance) {
+        closest.feature = feature
+        closest.layer = layer
+        closest.distance = distance
+      }
+    },
+    { hitTolerance: 10 }
+  )
+  return closest.feature ? [closest.layer, closest.feature] : null
 }
 
 export default MapEngine

@@ -3,6 +3,7 @@ import { t } from 'Utilities/translate'
 import { formatLength, formatArea, makeLink } from 'Utilities/util'
 import { getState, setState } from 'Utilities/store'
 import { findRoute } from 'Components/routing/Routing'
+import { closestFeatureTo } from 'Components/map/MapEngine'
 import { getDistance } from 'ol/sphere'
 import Overlay from 'ol/Overlay'
 import Point from 'ol/geom/Point'
@@ -62,8 +63,9 @@ class Popup extends Component {
     this.state.map.un('singleclick', this.handlers.clicked)
   }
   open (e) {
-    let coord = e.coordinate
-    const hit = this.state.map.forEachFeatureAtPixel(
+    let coords = e.coordinate
+    const hit = closestFeatureTo(this.state.map, e.pixel, coords)
+    /*const hit = this.state.map.forEachFeatureAtPixel(
       e.pixel,
       (feature, layer) => {
         if (layer) {
@@ -71,12 +73,12 @@ class Popup extends Component {
         }
       },
       { hitTolerance: 10 }
-    )
+    )*/
     this.el.popover('dispose')
     if (hit) {
       // if point, then geometry coords
       if (hit[1].getGeometry().getType() === 'Point') {
-        coord = hit[1].getGeometry().getCoordinates()
+        coords = hit[1].getGeometry().getCoordinates()
       }
       let popContent
       if (hit[0] && this.state.infoStore[hit[0].get('id')]) {
@@ -84,7 +86,7 @@ class Popup extends Component {
       } else {
         popContent = this.getContent(hit[1], hit[0])
       }
-      this.state.overlay.setPosition(coord)
+      this.state.overlay.setPosition(coords)
       this.el.popover(popContent.definition).popover('show')
       // when popover's content is shown
       this.el.on('shown.bs.popover', evt => {

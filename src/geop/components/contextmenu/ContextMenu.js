@@ -1,5 +1,6 @@
 import Component from 'Geop/Component'
-import {getState, setState} from 'Utilities/store'
+import { getState, setState } from 'Utilities/store'
+import { closestFeatureTo } from 'Components/map/MapEngine'
 import Overlay from 'ol/Overlay'
 import Point from 'ol/geom/Point'
 import Popper from 'popper.js'
@@ -47,17 +48,11 @@ class ContextMenu extends Component {
     map.getViewport().addEventListener('contextmenu', e => {
       e.preventDefault()
       let coords = map.getEventCoordinate(e)
-      let content
-      const feature = map.forEachFeatureAtPixel(
-        map.getEventPixel(e),
-        (feature, layer) => [layer, feature],
-        { hitTolerance: 10 }
-      )
-      if (feature && feature[1].getGeometry() instanceof Point) {
-        coords = feature[1].getGeometry().getCoordinates()
+      const hit = closestFeatureTo(map, map.getEventPixel(e), coords)
+      if (hit && hit[1].getGeometry() instanceof Point) {
+        coords = hit[1].getGeometry().getCoordinates()
       }
-      content = this.getContent(coords, feature)
-      this.open(coords, content)
+      this.open(coords, this.getContent(coords, hit))
     })
   }
   open (coord, popContent) {
