@@ -59,8 +59,7 @@ class Navigation extends Component {
     if (angle < 0) {
       angle = 360 + angle
     }
-    const distance = getDistance(toLonLat(from),
-      toLonLat(to))
+    const distance = getDistance(toLonLat(from), toLonLat(to))
     this.el.find('span').html(`
       ${formatLength(null, distance, [0, 1])}
       <i>&middot;</i> ${Math.round(angle)}&deg;

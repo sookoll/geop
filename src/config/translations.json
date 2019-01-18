@@ -157,7 +157,8 @@
     "Waypoint|Trailhead": "Trailhead",
     "Waypoint|Virtual Stage": "Virtual Stage",
     "Zoom in": "Zoom in",
-    "Zoom out": "Zoom out"
+    "Zoom out": "Zoom out",
+    "No route between start and destination": "No route between start and destination"
   },
   "et": {
     "Account": "Konto",
@@ -297,7 +298,7 @@
     "Unable to delete bookmark": "Ei saanud järjehoidjat kustutada!",
     "Unable to find layer extent": "Ei leia kihi ulatust",
     "Unable to find location.": "Ei leia asukohta!",
-    "Unable to find route": "Ei leia teekonda!",
+    "Unable to find route": "Ei leia teekonda",
     "Unable to get routing result": "Tulemus puudub!",
     "Unable to load bookmark": "Ei saanud järjehoidjat laadida!",
     "Unable to perform search!": "Otsing luhtus!",
@@ -317,6 +318,7 @@
     "Waypoint|Trailhead": "Matkaraja algus",
     "Waypoint|Virtual Stage": "Virtuaalne vahepunkt",
     "Zoom in": "Suurenda",
-    "Zoom out": "Vähenda"
+    "Zoom out": "Vähenda",
+    "No route between start and destination": "Teekond alguse ja sihtpunkti vahel puudub"
   }
 }

@@ -7,6 +7,7 @@ import { uid } from 'Utilities/util'
 import { createMarker } from 'Components/mouseposition/MousePosition'
 import { createLayer } from 'Components/layer/LayerCreator'
 import { toLonLat, fromLonLat } from 'ol/proj'
+import { getDistance } from 'ol/sphere'
 import Polyline from 'ol/format/Polyline'
 import $ from 'jquery'
 
@@ -44,7 +45,6 @@ class Routing extends Component {
           closeOnClick: true,
           onBtnClick: (e, coord, feature) => {
             const formatted = toLonLat(coord).slice(0, 2).reverse().join(',')
-            console.log(formatted)
             $('<a>').attr('href', apiUrls.google.directions + formatted).attr('target', '_blank')[0].click()
           }
         },
@@ -93,10 +93,7 @@ class Routing extends Component {
   findRoute () {
     const coords = getState('routing/stops')
     findRoute(coords).then(route => {
-      const routeCoords = route.getGeometry().getCoordinates()
-      routeCoords.unshift(fromLonLat(coords[0], getState('map/projection')))
-      routeCoords.push(fromLonLat(coords[coords.length - 1], getState('map/projection')))
-      route.getGeometry().setCoordinates(routeCoords)
+
     }).catch(e => {})
   }
   clear () {
@@ -138,27 +135,40 @@ export function findRoute (coords) {
     .done(response => {
       if (response.code === 'Ok') {
         const route = createRoute(response.routes[0].geometry)
-        setState('routing/stops', coords)
-        resolve(route)
-      } else {
-        log('error', t('Unable to find route') + ': ' + response.code)
-        if (getState('app/debug')) {
-          console.error('routing error', JSON.stringify(response))
+        const routeCoords = route.getGeometry().getCoordinates()
+        const distance = getDistance(coords[0], coords[coords.length - 1])
+        if (routeCoords.length > 1 &&
+          distance > getDistance(coords[0], toLonLat(routeCoords[0])) &&
+          distance > getDistance(coords[coords.length - 1], toLonLat(routeCoords[routeCoords.length - 1]))
+        ) {
+          routeCoords.unshift(fromLonLat(coords[0], getState('map/projection')))
+          routeCoords.push(fromLonLat(coords[coords.length - 1], getState('map/projection')))
+          route.getGeometry().setCoordinates(routeCoords)
+          routeLayer.getSource().addFeature(route)
+          setState('routing/stops', coords)
+          resolve(route)
+        } else {
+          routeError(t('No route between start and destination'), reject)
         }
-        reject(new Error(t('Unable to find route') + ': ' + response.code))
+      } else {
+        routeError(t('Unable to find route') + ': ' + response.code, reject)
       }
     })
     .fail((request, textStatus) => {
       if (request.statusText === 'abort') {
         return
       }
-      log('error', t('Unable to find route') + ': ' + (request.responseJSON ? request.responseJSON.message : textStatus))
-      if (getState('app/debug')) {
-        console.error('routing error', JSON.stringify(request))
-      }
-      reject(new Error(t('Unable to find route') + ': ' + (request.responseJSON ? request.responseJSON.message : textStatus)))
+      routeError(t('Unable to find route') + ': ' + t(request.responseJSON ? request.responseJSON.message : textStatus), reject)
     })
   })
+}
+
+function routeError (errorText, reject) {
+  log('error', errorText)
+  if (getState('app/debug')) {
+    console.error('routing error', errorText)
+  }
+  reject(new Error(errorText))
 }
 
 function createRoute (polyline) {
@@ -172,7 +182,6 @@ function createRoute (polyline) {
     dataProjection: 'EPSG:4326',
     featureProjection: getState('map/projection')
   })
-  routeLayer.getSource().addFeature(route)
   return route
 }
 
