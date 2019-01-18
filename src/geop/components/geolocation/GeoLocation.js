@@ -38,12 +38,13 @@ class GeoLocation extends Component {
         trackingOptions: {
           enableHighAccuracy: true,
           maximumAge: 10000,
-          timeout: 300000
+          timeout: 30000
         }
       }),
       isFirst: false,
       lastPosition: null,
-      lastHeading: null
+      lastHeading: null,
+      minAccuracy: 100
     }
     this.handlers = {
       updateView: e => {
@@ -218,9 +219,9 @@ class GeoLocation extends Component {
   }
   updateView () {
     if (getState('app/debug')) {
-      console.debug(`updateView: ${JSON.stringify(this.state.lastPosition)} ${this.state.lastHeading}`)
+      console.debug(`updateView: ${JSON.stringify(this.state.lastPosition)}; heading: ${this.state.lastHeading}; accuracy: ${this.state.locator.getAccuracy()}`)
     }
-    if (this.state.status[this.state.active] === 'tracking') {
+    if (this.state.status[this.state.active] === 'tracking' && this.state.locator.getAccuracy() <= this.state.minAccuracy) {
       const view = getState('map').getView()
       if (this.state.lastPosition && this.state.lastHeading) {
         view.setCenter(this.getCenterWithHeading(this.state.lastPosition, -this.state.lastHeading, view.getResolution()))
