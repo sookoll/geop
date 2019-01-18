@@ -227,10 +227,12 @@ function formatState (type = 'down', data = {}, hash = null) {
       }
       if (getState('app/shareOnlyTripFeatures') && 'geocache_trip_ids' in state) {
         state.layer_layers && state.layer_layers.forEach(layer => {
-          layer.features = layer.features.filter(f => state.geocache_trip_ids.indexOf(f.id) > -1)
+          layer.features = layer.features ?
+            layer.features.filter(f => state.geocache_trip_ids.indexOf(f.id) > -1) : []
         })
         state.layer_overlays && state.layer_overlays.forEach(layer => {
-          layer.features = layer.features.filter(f => state.geocache_trip_ids.indexOf(f.id) > -1)
+          layer.features = layer.features ?
+            layer.features.filter(f => state.geocache_trip_ids.indexOf(f.id) > -1) : []
         })
       }
       break
