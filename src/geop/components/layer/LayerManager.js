@@ -68,7 +68,7 @@ class LayerManager extends Component {
         e.preventDefault()
         e.stopPropagation()
         const id = $(e.currentTarget).data('id')
-        if (id === this.state.activeBaseLayer.get('id')) {
+        if (this.state.activeBaseLayer && id === this.state.activeBaseLayer.get('id')) {
           this.toggleLayer('baseLayers', id)
         } else {
           if (this.changeBaseLayer(id)) {

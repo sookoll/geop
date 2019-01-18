@@ -65,7 +65,7 @@ class MapEngine extends Component {
     setState('map/layer/base', this.layers.base.getLayers())
     setState('map/layer/layers', this.layers.layers.getLayers())
     setState('map/layer/overlays', this.layers.overlays.getLayers())
-    setState('map/baseLayer', this.activeBaseLayer.get('id'), true)
+    setState('map/baseLayer', this.activeBaseLayer && this.activeBaseLayer.get('id'), true)
     // que for map
     setState('map/que', [])
     // listen layers change
