@@ -37,7 +37,7 @@ class GeoLocation extends Component {
         projection: getState('map/projection'),
         trackingOptions: {
           enableHighAccuracy: true,
-          maximumAge: 10000,
+          maximumAge: 0,// disable cached position
           timeout: 30000
         }
       }),
@@ -167,19 +167,24 @@ class GeoLocation extends Component {
       .removeClass('fa-spinner fa-pulse')
       .addClass('fa-location-arrow')
   }
+  isValid (accuracy) {
+    return accuracy <= this.state.minAccuracy
+  }
   positionChanged (e) {
     const coordinate = this.state.locator.getPosition()
     if (coordinate) {
       this.state.lastPosition = coordinate
       this.state.position.getGeometry().setCoordinates(coordinate)
-      this.state.track.getGeometry().appendCoordinate(coordinate)
-      // if first point
-      if (this.state.isFirst === true) {
-        const view = getState('map').getView()
-        view.setCenter(coordinate)
-        view.setZoom(this.state.zoom)
-        this.state.isFirst = false
-        this.searchEnd()
+      if (this.isValid(this.state.locator.getAccuracy())) {
+        this.state.track.getGeometry().appendCoordinate(coordinate)
+        // if first point
+        if (this.state.isFirst === true) {
+          const view = getState('map').getView()
+          view.setCenter(coordinate)
+          view.setZoom(this.state.zoom)
+          this.state.isFirst = false
+          this.searchEnd()
+        }
       }
       setState('map/geolocation/position', coordinate)
     }
@@ -221,7 +226,7 @@ class GeoLocation extends Component {
     if (getState('app/debug')) {
       console.debug(`updateView: ${JSON.stringify(this.state.lastPosition)}; heading: ${this.state.lastHeading}; accuracy: ${this.state.locator.getAccuracy()}`)
     }
-    if (this.state.status[this.state.active] === 'tracking' && this.state.locator.getAccuracy() <= this.state.minAccuracy) {
+    if (this.state.status[this.state.active] === 'tracking' && this.isValid(this.state.locator.getAccuracy())) {
       const view = getState('map').getView()
       if (this.state.lastPosition && this.state.lastHeading) {
         view.setCenter(this.getCenterWithHeading(this.state.lastPosition, -this.state.lastHeading, view.getResolution()))
