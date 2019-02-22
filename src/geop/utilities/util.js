@@ -182,7 +182,7 @@ export function validURL (href) {
 }
 
 export function makeLink (text) {
-  return text.replace(
+  return String(text).replace(
     /((http|https|ftp|ftps):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,3}(\/\S*)?)/g,
     '<a href="$1" target="_blank">$1</a>'
   )

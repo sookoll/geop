@@ -13,7 +13,7 @@ class StreetView extends Component {
     contextMenuItems.push({
       content: `<i class="fa fa-street-view size-1_1"></i> ${t('Street view')}`,
       onClick: (e, coord) => {
-        const formatted = toLonLat(coord).reverse().join(',')
+        const formatted = toLonLat(coord).slice(0, 2).reverse().join(',')
         $('<a>').attr('href', apiUrls.google.streetview + formatted).attr('target', '_blank')[0].click()
       }
     })
