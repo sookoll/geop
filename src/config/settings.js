@@ -50,8 +50,8 @@ export const geocache = {
     page: 'http://www.geopeitus.ee/index.php?p=300',
     geojson: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&format=2',
     gpx: {
-      gpxActive: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&gname=1&format=1',
-      gpxAll: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&status[]=2&status[]=3&gname=1&format=1'
+      gpxActive: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&format=1',
+      gpxAll: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&status[]=2&status[]=3&format=1'
     }
   },
   cacheUrl: 'http://geopeitus.ee/aare/',
