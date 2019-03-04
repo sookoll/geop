@@ -111,7 +111,7 @@ class Filter extends Component {
     const params = this.getChecked()
     this.state.layers.forEach(l => {
       l.getSource().forEachFeature(f => {
-        if (params.count) {
+        if (f.get('isCache') && params.count) {
           const props = f.getProperties()
           const valid = Object.keys(params.query).filter(i => {
             return (i in props && params.query[i].indexOf(props[i]) > -1)
