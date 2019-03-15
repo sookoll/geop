@@ -97,7 +97,7 @@ class Search extends Component {
         const map = getState('map')
         const id = $(e.currentTarget).attr('data-id')
         const item = this.state.results.filter(item => {
-          return id === item.id
+          return String(id) === String(item.id)
         })[0]
         if (item.bbox) {
           const bbox = transformExtent(item.bbox, 'EPSG:4326', getState('map/projection'))
