@@ -118,7 +118,7 @@ class ContextMenu extends Component {
           }
         })
       },
-      'onHide' : () => {}
+      'onHide': () => {}
     }
   }
 }

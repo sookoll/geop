@@ -1,7 +1,7 @@
 import { apiUrls } from 'Conf/settings'
 import { getState } from 'Utilities/store'
 import Provider from 'Geop/Provider'
-import {t} from 'Utilities/translate'
+import { t } from 'Utilities/translate'
 import $ from 'jquery'
 
 class Coordinate extends Provider {
@@ -34,9 +34,9 @@ class Coordinate extends Provider {
       this.xhr.abort()
     }
     this.xhr = $.ajax({
-      type : 'GET',
-      crossDomain : true,
-      url : apiUrls.nominatim + '/search/',
+      type: 'GET',
+      crossDomain: true,
+      url: apiUrls.nominatim + '/search/',
       data: {
         q: query,
         countrycodes: getState('app/nominatimCountries') || '',
@@ -45,13 +45,13 @@ class Coordinate extends Provider {
       dataType: 'json',
       context: this
     })
-    .done(cb)
-    .fail(function (request) {
-      cb(null)
-      if (request.statusText === 'abort') {
-        return
-      }
-    })
+      .done(cb)
+      .fail(function (request) {
+        cb(null)
+        if (request.statusText === 'abort') {
+
+        }
+      })
   }
 
   format (data) {
@@ -63,7 +63,7 @@ class Coordinate extends Provider {
         name: item.display_name,
         srid: 'EPSG:4326',
         coords: [Number(item.lon), Number(item.lat)],
-        bbox : [bbox[2], bbox[0], bbox[3], bbox[1]]
+        bbox: [bbox[2], bbox[0], bbox[3], bbox[1]]
       })
     })
   }

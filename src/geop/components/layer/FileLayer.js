@@ -90,7 +90,6 @@ class FileLayer extends Component {
       interactions.forEach(i => {
         if (i instanceof DragAndDrop) {
           added = true
-          return
         }
       })
     }

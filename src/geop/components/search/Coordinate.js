@@ -1,6 +1,6 @@
 import formats from 'Conf/coordinate'
 import Provider from 'Geop/Provider'
-import {t} from 'Utilities/translate'
+import { t } from 'Utilities/translate'
 import mgrs from 'mgrs'
 
 class Coordinate extends Provider {

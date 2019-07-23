@@ -13,17 +13,17 @@ class WMSLayer extends Component {
     this.modal = $('#modal_wmslayer')
     this.isRow = true
     this.layer_conf = {
-        type: 'TileWMS',
-        url: null,
-        projection: 'EPSG:3301',
-        gutter: 20,
-        crossOrigin: null
+      type: 'TileWMS',
+      url: null,
+      projection: 'EPSG:3301',
+      gutter: 20,
+      crossOrigin: null
     }
     this.layer_conf_params = {
-        LAYERS: null,
-        TILED: true,
-        FORMAT: 'image/png',
-        VERSION: '1.1.1'
+      LAYERS: null,
+      TILED: true,
+      FORMAT: 'image/png',
+      VERSION: '1.1.1'
     }
     this.state = {
       layers: getState('map/layer/layers')

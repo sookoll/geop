@@ -1,4 +1,4 @@
-import {parseURL} from 'Utilities/util'
+import { parseURL } from 'Utilities/util'
 
 let shouldUpdate = true
 const state = {

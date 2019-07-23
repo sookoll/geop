@@ -113,7 +113,7 @@ class Bookmark extends Component {
         </button>
         <div class="dropdown-menu dropdown-menu-right">
           ${this.state.bookmarks.map((bookmark) => {
-            return `
+    return `
             <li
               class="dropdown-item"
               data-id="${bookmark}">
@@ -125,12 +125,12 @@ class Bookmark extends Component {
                 </a>
               </div>
             </li>`
-          }).join('')}
+  }).join('')}
         </div>
       </div>
     `)
   }
-  //https://dev.to/bauripalash/building-a-simple-url-shortener-with-just-html-and-javascript-16o4
+  // https://dev.to/bauripalash/building-a-simple-url-shortener-with-just-html-and-javascript-16o4
   share () {
     const debug = getState('app/debug')
     getSessionState()
@@ -216,7 +216,7 @@ function formatState (type = 'down', data = {}, hash = null) {
     case 'up':
       state = deepCopy(
         Object.assign(
-          {}, ...Object.keys(data).map(k => ({[k.replace(/\//g, '_')]: data[k]}))
+          {}, ...Object.keys(data).map(k => ({ [k.replace(/\//g, '_')]: data[k] }))
         )
       )
       if ('app_bookmarks' in state) {
@@ -227,19 +227,19 @@ function formatState (type = 'down', data = {}, hash = null) {
       }
       if (getState('app/shareOnlyTripFeatures') && 'geocache_trip_ids' in state) {
         state.layer_layers && state.layer_layers.forEach(layer => {
-          layer.features = layer.features ?
-            layer.features.filter(f => state.geocache_trip_ids.indexOf(f.id) > -1) : []
+          layer.features = layer.features
+            ? layer.features.filter(f => state.geocache_trip_ids.indexOf(f.id) > -1) : []
         })
         state.layer_overlays && state.layer_overlays.forEach(layer => {
-          layer.features = layer.features ?
-            layer.features.filter(f => state.geocache_trip_ids.indexOf(f.id) > -1) : []
+          layer.features = layer.features
+            ? layer.features.filter(f => state.geocache_trip_ids.indexOf(f.id) > -1) : []
         })
       }
       break
     case 'down':
       state = deepCopy(
         Object.assign(
-          {}, ...Object.keys(data).map(k => ({[k.replace(/_/g, '/')]: data[k]}))
+          {}, ...Object.keys(data).map(k => ({ [k.replace(/_/g, '/')]: data[k] }))
         )
       )
       if (hash) {
@@ -260,29 +260,29 @@ function setBookmarkState (data) {
     const hash = uid()
 
     xhr = $.ajax({
-      type : 'POST',
-      crossDomain : true,
-      url : apiUrls.jsonstore + '/' + hash,
+      type: 'POST',
+      crossDomain: true,
+      url: apiUrls.jsonstore + '/' + hash,
       data: JSON.stringify({
         state: JSON.stringify(JSONP.pack(formatState('up', data)))
       }),
       dataType: 'json',
       contentType: 'application/json; charset=utf-8'
     })
-    .done(data => {
-      if (data && data.ok) {
-        resolve(hash)
-      } else {
-        reject(new Error('Unable to save bookmark'))
-      }
-    })
-    .fail(request => {
-      if (request.statusText === 'abort') {
-        resolve(null)
-      } else {
-        reject(new Error('Unable to save bookmark'))
-      }
-    })
+      .done(data => {
+        if (data && data.ok) {
+          resolve(hash)
+        } else {
+          reject(new Error('Unable to save bookmark'))
+        }
+      })
+      .fail(request => {
+        if (request.statusText === 'abort') {
+          resolve(null)
+        } else {
+          reject(new Error('Unable to save bookmark'))
+        }
+      })
   })
 }
 
@@ -292,27 +292,27 @@ export function getBookmarkState (hash) {
       xhr.abort()
     }
     xhr = $.ajax({
-      type : 'GET',
-      crossDomain : true,
-      url : apiUrls.jsonstore + '/' + hash,
+      type: 'GET',
+      crossDomain: true,
+      url: apiUrls.jsonstore + '/' + hash,
       dataType: 'json',
       contentType: 'application/json; charset=utf-8'
     })
-    .done(data => {
-      if (data && data.ok && data.result && data.result.state) {
-        const state = formatState('down', JSONP.unpack(data.result.state), hash)
-        resolve(state)
-      } else {
-        reject(new Error('Unable to load bookmark'))
-      }
-    })
-    .fail(request => {
-      if (request.statusText === 'abort') {
-        resolve(null)
-      } else {
-        reject(new Error('Unable to load bookmark'))
-      }
-    })
+      .done(data => {
+        if (data && data.ok && data.result && data.result.state) {
+          const state = formatState('down', JSONP.unpack(data.result.state), hash)
+          resolve(state)
+        } else {
+          reject(new Error('Unable to load bookmark'))
+        }
+      })
+      .fail(request => {
+        if (request.statusText === 'abort') {
+          resolve(null)
+        } else {
+          reject(new Error('Unable to load bookmark'))
+        }
+      })
   })
 }
 
@@ -322,26 +322,26 @@ function deleteBookmarkState (hash) {
       xhr.abort()
     }
     xhr = $.ajax({
-      type : 'DELETE',
-      crossDomain : true,
-      url : apiUrls.jsonstore + '/' + hash,
+      type: 'DELETE',
+      crossDomain: true,
+      url: apiUrls.jsonstore + '/' + hash,
       dataType: 'json',
       contentType: 'application/json; charset=utf-8'
     })
-    .done(data => {
-      if (data && data.ok) {
-        resolve()
-      } else {
-        reject(new Error('Unable to delete bookmark'))
-      }
-    })
-    .fail(request => {
-      if (request.statusText === 'abort') {
-        resolve(null)
-      } else {
-        reject(new Error('Unable to delete bookmark'))
-      }
-    })
+      .done(data => {
+        if (data && data.ok) {
+          resolve()
+        } else {
+          reject(new Error('Unable to delete bookmark'))
+        }
+      })
+      .fail(request => {
+        if (request.statusText === 'abort') {
+          resolve(null)
+        } else {
+          reject(new Error('Unable to delete bookmark'))
+        }
+      })
   })
 }
 

@@ -102,12 +102,12 @@ class MousePosition extends Component {
         </button>
         <div class="dropdown-menu">
           ${coordFormats.map((format, i) => {
-            return `
+    return `
               <a class="dropdown-item" href="#" data-format="${i}">
                 <i class="far ${i === this.state.format ? 'fa-dot-circle' : 'fa-circle'}"></i>
                 ${format.srname}
               </a>`
-          }).join('')}
+  }).join('')}
         </div>
       </div>
       <button type="button" class="btn btn-link copy float-left">

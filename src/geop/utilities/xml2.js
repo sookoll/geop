@@ -5,7 +5,6 @@ export default function xml2js (xml) {
       const attribute = xml.attributes.item(j)
       obj['@' + attribute.nodeName] = attribute.nodeValue
     }
-
   } else if (xml.nodeType === 3) {
     return xml.nodeValue.trim()
   }

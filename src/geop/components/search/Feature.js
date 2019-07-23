@@ -1,8 +1,8 @@
-import {getState} from 'Utilities/store'
+import { getState } from 'Utilities/store'
 import Provider from 'Geop/Provider'
 import VectorLayer from 'ol/layer/Vector'
 import GeoJSONFormat from 'ol/format/GeoJSON'
-import {t} from 'Utilities/translate'
+import { t } from 'Utilities/translate'
 
 class Feature extends Provider {
   constructor () {

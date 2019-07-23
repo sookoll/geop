@@ -37,7 +37,7 @@ class GeoLocation extends Component {
         projection: getState('map/projection'),
         trackingOptions: {
           enableHighAccuracy: true,
-          maximumAge: 0,// disable cached position
+          maximumAge: 0, // disable cached position
           timeout: 30000
         }
       }),
@@ -63,8 +63,8 @@ class GeoLocation extends Component {
   render () {
     this.el.prop('disabled', false)
     this.el.on('click', e => {
-      this.state.active = (this.state.active + 1 >= this.state.status.length) ?
-        0 : this.state.active + 1
+      this.state.active = (this.state.active + 1 >= this.state.status.length)
+        ? 0 : this.state.active + 1
       if (this.state.active === 0) {
         this.disable()
         $(e.currentTarget).removeClass(this.state.status.join(' '))

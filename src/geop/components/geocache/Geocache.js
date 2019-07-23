@@ -13,7 +13,7 @@ import Circle from 'ol/geom/Circle'
 import Collection from 'ol/Collection'
 import geopeitusJSON from './GeopeitusJSON'
 import geocacheGPX from './GeocacheGPX'
-//import geocacheGPX from './GeocacheGPX'
+// import geocacheGPX from './GeocacheGPX'
 import './Geocache.styl'
 import $ from 'jquery'
 
@@ -77,12 +77,12 @@ class Geocache extends Component {
   layersPick () {
     const layers = getState('map/layer/layers')
     layers.forEach(layer => {
-      if(this.checkLayer(layer)) {
+      if (this.checkLayer(layer)) {
         this.registerLayer(layer)
       }
     })
     layers.on('add', e => {
-      if(this.checkLayer(e.element)) {
+      if (this.checkLayer(e.element)) {
         this.registerLayer(e.element)
       }
     })
@@ -91,8 +91,8 @@ class Geocache extends Component {
     })
   }
   checkLayer (layer) {
-    const features = layer.getSource().getFeatures ?
-      layer.getSource().getFeatures() : null
+    const features = layer.getSource().getFeatures
+      ? layer.getSource().getFeatures() : null
     if (features) {
       const isGeopeitusJSON = geopeitusJSON.test(features)
       const isCacheGPX = geocacheGPX.test(features)
@@ -212,15 +212,15 @@ class Geocache extends Component {
       return null
     }
     if (!this.state.styleCache[hash]) {
-      const definition = !overviewStyle ?
-        Object.assign(
+      const definition = !overviewStyle
+        ? Object.assign(
           {},
           this.state.styleConfig.base,
           this.state.styleConfig.text[type],
           this.state.styleConfig.color[fstatus],
           this.state.styleConfig.newCache[newCache] || {}
-        ) :
-        Object.assign(
+        )
+        : Object.assign(
           {},
           this.state.styleConfig.base,
           this.state.styleConfig.overview,

@@ -77,7 +77,7 @@ export const layers = {
         crossOrigin: null
       }]
     },
-    maorto : {
+    maorto: {
       type: 'Group',
       title: 'Aerial Estonia',
       projection: 'EPSG:3301',

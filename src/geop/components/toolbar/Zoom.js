@@ -31,7 +31,6 @@ class Zoom extends Component {
         this.zoomTo(view, zoom)
       })
     }
-
   }
   zoomTo (view, zoom) {
     view.animate({

@@ -72,15 +72,15 @@ class Geotrip extends Component {
     })
     this.el.html(`
       <ul class="list-group mb-3">
-      ${this.state.collection.getLength() ?
-        this.renderTrip(this.state.collection) :
-        `<li class="list-group-item">
+      ${this.state.collection.getLength()
+    ? this.renderTrip(this.state.collection)
+    : `<li class="list-group-item">
           <i class="fas fa-plus"></i>
           ${t('Add features from map')}
         </li>`}
       </ul>
-      ${this.state.collection.getLength() ?
-        `<button type="button" class="btn btn-link sortby-found" ${found.length ? '' : 'disabled'}>
+      ${this.state.collection.getLength()
+    ? `<button type="button" class="btn btn-link sortby-found" ${found.length ? '' : 'disabled'}>
           <i class="fas fa-sort-amount-down"></i> ${t('Found')}
         </button>
         <div class="btn-group float-right" role="group">
@@ -145,11 +145,11 @@ class Geotrip extends Component {
           <button type="button" class="close" aria-label="${t('Close')}">
             <i class="fa fa-times"></i>
           </button>
-          <span class="badge badge-pill badge-primary">${i+1}</span>
+          <span class="badge badge-pill badge-primary">${i + 1}</span>
           <a href="#">${t(f.get('name'))}</a>
           <i class="fas fa-circle fstatus ${f.get('fstatus') === 'Found' ? 'found' : ''}"></i>
-          ${f.get('fstatus_timestamp') ?
-            `<div class="text-muted small timestamp">
+          ${f.get('fstatus_timestamp')
+    ? `<div class="text-muted small timestamp">
               ${t('Found')}:
               ${formatDate(f.get('fstatus_timestamp'), true) + ' ' +
               formatTime(f.get('fstatus_timestamp'))}</div>` : ''}
@@ -174,7 +174,7 @@ class Geotrip extends Component {
     this.el.on('click', 'a.export', e => {
       e.preventDefault()
       this.export()
-    });
+    })
     // share trip
     this.el.on('click', 'button.sortby-found', e => {
       this.sortByFound()
@@ -197,11 +197,9 @@ class Geotrip extends Component {
     this.reorderCollection(this.state.collection, order)
   }
   sortByFound () {
-    function compare(a, b) {
-      if (a.timestamp < b.timestamp)
-        return -1
-      if (a.timestamp > b.timestamp)
-        return 1
+    function compare (a, b) {
+      if (a.timestamp < b.timestamp) { return -1 }
+      if (a.timestamp > b.timestamp) { return 1 }
       return 0
     }
     const found = getState('geocache/trip/found')

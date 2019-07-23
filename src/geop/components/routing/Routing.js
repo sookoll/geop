@@ -124,42 +124,42 @@ export function findRoute (coords) {
       xhr.abort()
     }
     xhr = $.ajax({
-      type : 'GET',
-      crossDomain : true,
-      url : apiUrls.osrm + coordinates.join(';'),
+      type: 'GET',
+      crossDomain: true,
+      url: apiUrls.osrm + coordinates.join(';'),
       data: {
         overview: 'full'
       },
       dataType: 'json'
     })
-    .done(response => {
-      if (response.code === 'Ok') {
-        const route = createRoute(response.routes[0].geometry)
-        const routeCoords = route.getGeometry().getCoordinates()
-        const distance = getDistance(coords[0], coords[coords.length - 1])
-        if (routeCoords.length > 1 &&
+      .done(response => {
+        if (response.code === 'Ok') {
+          const route = createRoute(response.routes[0].geometry)
+          const routeCoords = route.getGeometry().getCoordinates()
+          const distance = getDistance(coords[0], coords[coords.length - 1])
+          if (routeCoords.length > 1 &&
           distance > getDistance(coords[0], toLonLat(routeCoords[0])) &&
           distance > getDistance(coords[coords.length - 1], toLonLat(routeCoords[routeCoords.length - 1]))
-        ) {
-          routeCoords.unshift(fromLonLat(coords[0], getState('map/projection')))
-          routeCoords.push(fromLonLat(coords[coords.length - 1], getState('map/projection')))
-          route.getGeometry().setCoordinates(routeCoords)
-          routeLayer.getSource().addFeature(route)
-          setState('routing/stops', coords)
-          resolve(route)
+          ) {
+            routeCoords.unshift(fromLonLat(coords[0], getState('map/projection')))
+            routeCoords.push(fromLonLat(coords[coords.length - 1], getState('map/projection')))
+            route.getGeometry().setCoordinates(routeCoords)
+            routeLayer.getSource().addFeature(route)
+            setState('routing/stops', coords)
+            resolve(route)
+          } else {
+            routeError(t('No route between start and destination'), reject)
+          }
         } else {
-          routeError(t('No route between start and destination'), reject)
+          routeError(t('Unable to find route') + ': ' + response.code, reject)
         }
-      } else {
-        routeError(t('Unable to find route') + ': ' + response.code, reject)
-      }
-    })
-    .fail((request, textStatus) => {
-      if (request.statusText === 'abort') {
-        return
-      }
-      routeError(t('Unable to find route') + ': ' + t(request.responseJSON ? request.responseJSON.message : textStatus), reject)
-    })
+      })
+      .fail((request, textStatus) => {
+        if (request.statusText === 'abort') {
+          return
+        }
+        routeError(t('Unable to find route') + ': ' + t(request.responseJSON ? request.responseJSON.message : textStatus), reject)
+      })
   })
 }
 

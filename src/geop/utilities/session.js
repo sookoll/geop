@@ -15,8 +15,8 @@ export function initConf () {
     let bookmarkState
     try {
       storageState = await getAppState()
-      bookmarkState = permalink && permalink.length ?
-        await getBookmarkState(permalink) : {}
+      bookmarkState = permalink && permalink.length
+        ? await getBookmarkState(permalink) : {}
     } catch (e) {
       storageState = {}
       bookmarkState = {}
@@ -32,7 +32,7 @@ export function initConf () {
     })
     const state = Object.assign({}, conf, storageState, bookmarkState)
     // disable bookmarks if not supported
-    if (!'onhashchange' in window) {
+    if (!('onhashchange' in window)) {
       state['app/shareState'] = false
     }
     // set state

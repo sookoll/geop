@@ -109,23 +109,23 @@ class LayerManager extends Component {
         aria-label="${t('Layers')}"
         aria-expanded="false">
         <span class="display-name d-none d-sm-inline-block">
-          ${this.state.activeBaseLayer ?
-            t(this.state.activeBaseLayer.get('title')) : t('Layers')}
+          ${this.state.activeBaseLayer
+    ? t(this.state.activeBaseLayer.get('title')) : t('Layers')}
         </span>
         <i class="fa fa-layer-group"></i>
       </button>
       <ul class="dropdown-menu dropdown-menu-right">
-        ${this.state.baseLayers.getLength() > 0 ?
-          this.state.baseLayers.getArray().map(layer => {
-            return `
+        ${this.state.baseLayers.getLength() > 0
+    ? this.state.baseLayers.getArray().map(layer => {
+      return `
               <li
                 class="dropdown-item baselayer ${this.layerVisible(layer) ? '' : 'disabled'}"
                 data-id="${layer.get('id')}">
                 <i class="far ${layer.getVisible() ? 'fa-dot-circle' : 'fa-circle'}"></i>
                 ${t(layer.get('title'))}
               </li>`
-        }).join('') :
-        `<li class="dropdown-item disabled">${t('No baselyers added')}</li>`}
+    }).join('')
+    : `<li class="dropdown-item disabled">${t('No baselyers added')}</li>`}
         ${this.renderLayerGroup('overlays', this.state.overlays)}
         ${this.renderLayerGroup('layers', this.state.layers)}
       </ul>`)
@@ -137,8 +137,8 @@ class LayerManager extends Component {
   }
 
   renderLayerGroup (groupId, group) {
-    return group.getLength() > 0 ?
-      `<li class="dropdown-divider"></li>` +
+    return group.getLength() > 0
+      ? `<li class="dropdown-divider"></li>` +
       group.getArray().map(layer => {
         return `
           <li
@@ -155,7 +155,7 @@ class LayerManager extends Component {
               </a>
             </div>
           </li>`
-        }).join('') : ''
+      }).join('') : ''
   }
 
   permalinkToViewConf (permalink) {
@@ -165,12 +165,12 @@ class LayerManager extends Component {
 
   layerVisible (layer) {
     if (layer.minResolution && this._map.getView().getResolution() < layer.minResolution) {
-      return false;
+      return false
     }
     if (layer.maxResolution && this._map.getView().getResolution() > layer.maxResolution) {
-      return false;
+      return false
     }
-    return true;
+    return true
   }
 
   changeBaseLayer (id) {
@@ -182,7 +182,7 @@ class LayerManager extends Component {
       layers[0].setVisible(true)
       this.state.activeBaseLayer = layers[0]
       setState('map/baseLayer', id, true)
-      //this.state.open = true
+      // this.state.open = true
       this.render()
       return true
     }
@@ -193,7 +193,6 @@ class LayerManager extends Component {
     this.state[groupId].forEach(layer => {
       if (layer.get('id') === id) {
         layer.setVisible(!layer.getVisible())
-        return
       }
     })
     this.state.open = true
@@ -205,7 +204,6 @@ class LayerManager extends Component {
       if (layer && layer.get('id') === id) {
         this.state.open = true
         this.state[groupId].remove(layer)
-        return
       }
     })
   }
@@ -214,8 +212,8 @@ class LayerManager extends Component {
     for (let layer of this.state[groupId].getArray()) {
       if (layer && layer.get('id') === id) {
         this.state.open = true
-        const bbox = layer.getSource().getExtent ?
-          layer.getSource().getExtent() : layer.getExtent()
+        const bbox = layer.getSource().getExtent
+          ? layer.getSource().getExtent() : layer.getExtent()
         if (bbox) {
           getState('map').getView().fit(bbox, {
             padding: [50, 50, 50, 50],
@@ -244,7 +242,6 @@ class LayerManager extends Component {
       plug.create()
     })
   }
-
 }
 
 export default LayerManager

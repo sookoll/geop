@@ -61,8 +61,8 @@ class TileLayer extends LayerTile {
 }
 class FeatureLayer extends LayerVector {
   constructor (opts) {
-    const features = opts.features ?
-      formats.geojson.readFeatures(opts, {
+    const features = opts.features
+      ? formats.geojson.readFeatures(opts, {
         dataProjection: dataProjection,
         featureProjection: getState('map/projection')
       }) : []

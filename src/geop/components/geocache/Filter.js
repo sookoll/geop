@@ -32,9 +32,9 @@ class Filter extends Component {
     this.state.filter = this.buildPropertyList(this.state.layers)
     this.el.html(`
       <ul class="list-group mb-3">
-      ${Object.keys(this.state.filter).length ?
-        this.renderFilter(this.state.filter) :
-        `<li class="list-group-item">
+      ${Object.keys(this.state.filter).length
+    ? this.renderFilter(this.state.filter)
+    : `<li class="list-group-item">
           <i class="fas fa-plus"></i>
           ${t('Add caches to map')}
         </li>`}
@@ -63,14 +63,14 @@ class Filter extends Component {
         </label>
       </li>
       ${Object.keys(filter).map(group => {
-        const list = Object.keys(filter[group]).map(item => {
-          return `<label>
+    const list = Object.keys(filter[group]).map(item => {
+      return `<label>
             <input type="checkbox" name="${group}" data-filter="${group}" value="${item}">
             ${t(filter[group][item])}
           </label>`
-        })
-        return '<li class="list-group-item">' + list.join('') + '</li>'
-      }).join('')}`
+    })
+    return '<li class="list-group-item">' + list.join('') + '</li>'
+  }).join('')}`
   }
   createConf () {
     const conf = {}

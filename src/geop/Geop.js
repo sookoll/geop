@@ -40,7 +40,7 @@ class Geop extends Component {
       measure: getState('app/measureTool') && new Measure(this.target),
       tooltip: getState('app/tooltip') && new Tooltip(this.target),
       popup: getState('app/featureInfo') && new Popup(this.target),
-      routing: getState('app/routing') && new Routing(this.target),
+      routing: getState('app/routing') && new Routing(this.target)
     }
     this.components.map.init()
   }
