@@ -35,7 +35,7 @@ class Routing extends Component {
         to: {
           content: `<i class="fas fa-directions text-danger size-1_1"></i>
             ${t('Directions to here')}
-            <button class="btn btn-link context-item-btn"><i class="fab fa-google"></i></button>`,
+            <a href="#" class="btn btn-link context-item-btn"><i class="fab fa-google"></i></a>`,
           onClick: (e, coord, feature) => {
             const toFeature = feature ? feature[1] : createMarker(coord)
             this.state.to = toFeature.getGeometry().getCoordinates()
@@ -44,6 +44,7 @@ class Routing extends Component {
           },
           closeOnClick: true,
           onBtnClick: (e, coord, feature) => {
+            e.preventDefault()
             const formatted = toLonLat(coord).slice(0, 2).reverse().join(',')
             $('<a>').attr('href', apiUrls.google.directions + formatted).attr('target', '_blank')[0].click()
           }
@@ -51,12 +52,13 @@ class Routing extends Component {
         done: {
           content: `<i class="fas fa-directions text-info size-1_1"></i>
             ${t('Retry directions')}
-            <button class="btn btn-link context-item-btn"><i class="fas fa-times"></i></button>`,
+            <a href="#" class="btn btn-link context-item-btn"><i class="fas fa-times"></i></a>`,
           onClick: (e, coord, feature) => {
             this.findRoute()
           },
           closeOnClick: true,
           onBtnClick: (e, coord, feature) => {
+            e.preventDefault()
             this.clear()
           }
         }

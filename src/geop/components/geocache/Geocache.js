@@ -188,6 +188,7 @@ class Geocache extends Component {
             geotrip.remove(f[1])
             geotrip.insertAt(idx, f[1])
           }
+          $(pop).popover('dispose')
         })
       }
     })

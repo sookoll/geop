@@ -78,5 +78,5 @@ export function viewConfToPermalink (data) {
     Math.round(data.zoom * 100) / 100,
     parseInt(data.rotation),
     data.baseLayer
-  ].join('-')
+  ].join('/')
 }

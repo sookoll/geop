@@ -85,11 +85,12 @@ class Measure extends Component {
     const contextMenuItems = getState('map/contextmenu')
     contextMenuItems.push({
       content: `<i class="fa fa-ruler-combined"></i> ${t('Measure')}
-        <button class="btn btn-link context-item-btn"><i class="far fa-dot-circle"></i></button>`,
+        <a href="#" class="btn btn-link context-item-btn"><i class="far fa-dot-circle"></i></a>`,
       onClick: (e, coord) => {
         this.init(coord)
       },
       onBtnClick: (e, coord) => {
+        e.preventDefault()
         this.init(coord, 'circle')
       },
       closeOnClick: true
@@ -234,7 +235,7 @@ class Measure extends Component {
     }
     const radius = getLength(g)
     this.el.find('input[name=angle]').val(Math.round((angle + 0.00001) * 100) / 100)
-    this.el.find('input[name=radius]').val(Math.round((radius + 0.00001) * 1000) / 1000)
+    this.el.find('input[name=radius]').val(Math.round((radius + 0.00001) * 100) / 100)
   }
   reset () {
     this.state.drawing.getGeometry().un('change', this.handlers.onmodify)

@@ -131,7 +131,7 @@ class MapEngine extends Component {
     })
   }
   permalinkToViewConf (permalink) {
-    const parts = permalink ? permalink.split('-') : []
+    const parts = permalink ? permalink.split('/') : []
     return {
       center: (!isNaN(parts[1]) && !isNaN(parts[0])) ? [Number(parts[1]), Number(parts[0])] : getState('map/center'),
       zoom: !isNaN(parts[2]) ? Number(parts[2]) : getState('map/zoom'),
