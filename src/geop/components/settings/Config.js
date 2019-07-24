@@ -45,13 +45,13 @@ class Config extends Component {
       <h5>${t('Language')}</h5>
       <div class="btn-group" role="group">
         ${getLocales().map(locale => {
-          return `
+    return `
             <button type="button"
               class="btn btn-outline-primary set-locale-btn ${getLocale() === locale ? 'active' : ''}"
               data-locale="${locale}">
               ${locale}
             </button>`
-        }).join('')}
+  }).join('')}
       </div>
       <small class="form-text text-muted mb-3">
         ${t('Change language. App will reload after change!')}
@@ -180,7 +180,6 @@ class Config extends Component {
           console.debug(`Config.render: Account changed to ${e.target.value.trim()}`)
         }
       }
-
     })
     // search limit
     this.el.on('blur', '#settings-search', e => {
@@ -193,7 +192,7 @@ class Config extends Component {
     })
     // share change
     this.el.on('click', 'button.set-share-btn', e => {
-      setState('app/shareOnlyTripFeatures', $(e.currentTarget).data('share') === 'on' ? true : false, true)
+      setState('app/shareOnlyTripFeatures', $(e.currentTarget).data('share') === 'on', true)
       this.el.find('button.set-share-btn').removeClass('active')
       $(e.currentTarget).addClass('active')
     })
@@ -210,7 +209,7 @@ class Config extends Component {
     })
     // debug change
     this.el.on('click', 'button.set-debug-btn', e => {
-      setState('app/debug', $(e.currentTarget).data('debug') === 'on' ? true : false, true)
+      setState('app/debug', $(e.currentTarget).data('debug') === 'on', true)
       this.el.find('button.set-debug-btn').removeClass('active')
       $(e.currentTarget).addClass('active')
       log('warning', t('Debug changed, app will reload!'), () => {
@@ -223,7 +222,7 @@ class Config extends Component {
     // download debug log file
     this.el.on('click', '#download-log', e => {
       const logs = getDebugStore()
-      const blob = new window.Blob([logs.join('\n')], {type: "text/plain;charset=utf-8"})
+      const blob = new window.Blob([logs.join('\n')], { type: 'text/plain;charset=utf-8' })
       saveAs(blob, getState('app/debugFile'))
     })
     let deferredPrompt

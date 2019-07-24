@@ -29,7 +29,7 @@ export function reloadApp () {
     app = null
     el.html('')
   }
-  //createApp()
+  // createApp()
   window.location.reload()
 }
 

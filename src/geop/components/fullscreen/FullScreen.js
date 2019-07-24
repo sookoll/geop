@@ -1,5 +1,5 @@
 import Component from 'Geop/Component'
-import {t} from 'Utilities/translate'
+import { t } from 'Utilities/translate'
 import $ from 'jquery'
 
 class FullScreen extends Component {
@@ -45,9 +45,9 @@ class FullScreen extends Component {
   }
   toggle () {
     if (!this.state.active) {
-        this.on()
+      this.on()
     } else {
-        this.off()
+      this.off()
     }
   }
   toggleState () {

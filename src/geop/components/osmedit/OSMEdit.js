@@ -1,8 +1,8 @@
-import {apiUrls} from 'Conf/settings'
-import {getState} from 'Utilities/store'
-import {t} from 'Utilities/translate'
+import { apiUrls } from 'Conf/settings'
+import { getState } from 'Utilities/store'
+import { t } from 'Utilities/translate'
 import Component from 'Geop/Component'
-//import {toLonLat} from 'ol/proj'
+// import {toLonLat} from 'ol/proj'
 import './OSMEdit.styl'
 import $ from 'jquery'
 

@@ -1,5 +1,5 @@
-import {toLonLat} from 'ol/proj'
-import {uid} from 'Utilities/util'
+import { toLonLat } from 'ol/proj'
+import { uid } from 'Utilities/util'
 
 class Provider {
   clear () {

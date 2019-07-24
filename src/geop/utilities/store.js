@@ -3,7 +3,7 @@ import { deepCopy } from './util'
 
 const state = {}
 const events = {}
-let storeAvailable = !!window.indexedDB;
+let storeAvailable = !!window.indexedDB
 
 export function getAppState () {
   return new Promise((resolve, reject) => {
@@ -13,7 +13,7 @@ export function getAppState () {
           const storageConf = {}
           for (const key of keys) {
             const val = await get(key)
-            if (typeof(val) !== 'undefined' && val !== null) {
+            if (typeof (val) !== 'undefined' && val !== null) {
               storageConf[key] = val
             }
           }
@@ -23,7 +23,7 @@ export function getAppState () {
         reject(e)
       }
     } else {
-      reject(new Error ('Storage is not available'))
+      reject(new Error('Storage is not available'))
     }
   })
 }

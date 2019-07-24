@@ -1,6 +1,6 @@
 import NoSleep from 'nosleep.js'
 import randomColor from 'randomcolor'
-import { getLength, getArea} from 'ol/sphere'
+import { getLength, getArea } from 'ol/sphere'
 import GPX from 'ol/format/GPX'
 import { b64encode } from './b64encode'
 
@@ -10,30 +10,30 @@ const debugStore = []
 export function initServiceWorker () {
   // Check for Service Worker browser support
   if ('serviceWorker' in navigator === false) {
-    console.log('Service worker is not supported');
-    return false;
+    console.log('Service worker is not supported')
+    return false
   }
   // Logic to load our produced `sw.js`
   navigator.serviceWorker.register('sw.js')
-    .then(function(registration) {
-      registration.onupdatefound = function() {
+    .then(function (registration) {
+      registration.onupdatefound = function () {
         if (navigator.serviceWorker.controller) {
-          var installingWorker = registration.installing;
-          installingWorker.onstatechange = function() {
+          var installingWorker = registration.installing
+          installingWorker.onstatechange = function () {
             switch (installingWorker.state) {
               case 'installed':
-                break;
+                break
               case 'redundant':
-                throw new Error('The installing service worker became redundant.');
+                throw new Error('The installing service worker became redundant.')
               default:
                 // Ignore
             }
-          };
+          }
         }
-      };
-    }).catch(function(e) {
-      console.error('Error during service worker registration:', e);
-    });
+      }
+    }).catch(function (e) {
+      console.error('Error during service worker registration:', e)
+    })
 }
 
 export function copy (str) {
@@ -84,9 +84,9 @@ export function initDebug () {
         const arg = arguments[i]
         output += ' ' + typeof arg
         if (
-          typeof arg === "object" &&
-          typeof JSON === "object" &&
-          typeof JSON.stringify === "function"
+          typeof arg === 'object' &&
+          typeof JSON === 'object' &&
+          typeof JSON.stringify === 'function'
         ) {
           const cache = []
           output += ' ' + JSON.stringify(arg, (key, value) => {
@@ -120,7 +120,7 @@ export function getDebugStore () {
   return debugStore
 }
 
-function enableNoSleep() {
+function enableNoSleep () {
   noSleep.enable()
   document.removeEventListener('click', enableNoSleep, false)
 }
@@ -135,12 +135,12 @@ export function disableScreenLock () {
 
 // convert radians to degrees
 export function radToDeg (rad) {
-  return rad * 360 / (Math.PI * 2);
+  return rad * 360 / (Math.PI * 2)
 }
 
 // convert degrees to radians
 export function degToRad (deg) {
-  return deg * Math.PI * 2 / 360;
+  return deg * Math.PI * 2 / 360
 }
 
 export function scaleFactor (lonlat) {
@@ -151,7 +151,7 @@ export function scaleFactor (lonlat) {
 function parseSearch (search) {
   if (search && search.length > 1) {
     try {
-      return JSON.parse('{"' + search.slice(1).replace(/&/g, '","').replace(/=/g,'":"') + '"}', function (key, value) {
+      return JSON.parse('{"' + search.slice(1).replace(/&/g, '","').replace(/=/g, '":"') + '"}', function (key, value) {
         return key === '' ? value : decodeURIComponent(value)
       })
     } catch (err) {
@@ -192,7 +192,7 @@ export function constructURL (parsedURL) {
   const querystring = Object.keys(parsedURL.query).map(item => {
     return item + '=' + parsedURL.query[item]
   }).join('&')
-  return parsedURL.protocol + '//' + parsedURL.host + parsedURL.pathname + '?' + querystring;
+  return parsedURL.protocol + '//' + parsedURL.host + parsedURL.pathname + '?' + querystring
 }
 
 export function uid () {
@@ -211,7 +211,7 @@ export function hexToRgbA (hex, a) {
       c = [c[0], c[0], c[1], c[1], c[2], c[2]]
     }
     c = '0x' + c.join('')
-    return 'rgba(' + [(c>>16)&255, (c>>8)&255, c&255].join(',') + ',' + a + ')'
+    return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ',' + a + ')'
   }
   throw new Error('Bad Hex')
 }
@@ -257,55 +257,53 @@ export function formatTime (s) {
 
 // LZW-compress a string
 export function compress (s) {
-  var dict = {};
-  var data = (s + "").split("");
-  var out = [];
-  var currChar;
-  var phrase = data[0];
-  var code = 256;
-  for (var i=1; i<data.length; i++) {
-    currChar=data[i];
+  var dict = {}
+  var data = (s + '').split('')
+  var out = []
+  var currChar
+  var phrase = data[0]
+  var code = 256
+  for (var i = 1; i < data.length; i++) {
+    currChar = data[i]
     if (dict['_' + phrase + currChar] != null) {
-      phrase += currChar;
-    }
-    else {
-      out.push(phrase.length > 1 ? dict['_'+phrase] : phrase.charCodeAt(0));
-      dict['_' + phrase + currChar] = code;
-      code++;
-      phrase=currChar;
+      phrase += currChar
+    } else {
+      out.push(phrase.length > 1 ? dict['_' + phrase] : phrase.charCodeAt(0))
+      dict['_' + phrase + currChar] = code
+      code++
+      phrase = currChar
     }
   }
-  out.push(phrase.length > 1 ? dict['_'+phrase] : phrase.charCodeAt(0));
-  for (i=0; i<out.length; i++) {
-    out[i] = String.fromCharCode(out[i]);
+  out.push(phrase.length > 1 ? dict['_' + phrase] : phrase.charCodeAt(0))
+  for (i = 0; i < out.length; i++) {
+    out[i] = String.fromCharCode(out[i])
   }
-  return out.join("");
+  return out.join('')
 }
 
 // Decompress an LZW-encoded string
 export function decompress (s) {
-  var dict = {};
-  var data = (s + "").split("");
-  var currChar = data[0];
-  var oldPhrase = currChar;
-  var out = [currChar];
-  var code = 256;
-  var phrase;
-  for (var i=1; i<data.length; i++) {
-    var currCode = data[i].charCodeAt(0);
+  var dict = {}
+  var data = (s + '').split('')
+  var currChar = data[0]
+  var oldPhrase = currChar
+  var out = [currChar]
+  var code = 256
+  var phrase
+  for (var i = 1; i < data.length; i++) {
+    var currCode = data[i].charCodeAt(0)
     if (currCode < 256) {
-      phrase = data[i];
+      phrase = data[i]
+    } else {
+      phrase = dict['_' + currCode] ? dict['_' + currCode] : (oldPhrase + currChar)
     }
-    else {
-      phrase = dict['_'+currCode] ? dict['_'+currCode] : (oldPhrase + currChar);
-    }
-    out.push(phrase);
-    currChar = phrase.charAt(0);
-    dict['_'+code] = oldPhrase + currChar;
-    code++;
-    oldPhrase = phrase;
+    out.push(phrase)
+    currChar = phrase.charAt(0)
+    dict['_' + code] = oldPhrase + currChar
+    code++
+    oldPhrase = phrase
   }
-  return out.join("");
+  return out.join('')
 }
 
 export function deepCopy (json) {

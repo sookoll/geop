@@ -1,5 +1,5 @@
 export const app = {
-  locale: 'et',// app locale
+  locale: 'et', // app locale
   layerManager: true,
   searchEnabled: true,
   locateEnabled: true,
@@ -14,9 +14,9 @@ export const app = {
   mousePosition: true,
   geoLocation: true,
   shareState: true,
-  shareOnlyTripFeatures: true,// keep only features on trip
-  settingsTabOpen: 'settings-tab',// active tab on sidebar
-  debug: false,// collect all console debug, info and error into downloadable file
+  shareOnlyTripFeatures: true, // keep only features on trip
+  settingsTabOpen: 'settings-tab', // active tab on sidebar
+  debug: false, // collect all console debug, info and error into downloadable file
   debugFile: 'geop_debug.log',
   nominatimCountries: 'ee',
   routing: true

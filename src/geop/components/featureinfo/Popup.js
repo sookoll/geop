@@ -65,15 +65,6 @@ class Popup extends Component {
   open (e) {
     let coords = e.coordinate
     const hit = closestFeatureTo(this.state.map, e.pixel, coords)
-    /*const hit = this.state.map.forEachFeatureAtPixel(
-      e.pixel,
-      (feature, layer) => {
-        if (layer) {
-          return [layer, feature]
-        }
-      },
-      { hitTolerance: 10 }
-    )*/
     this.el.popover('dispose')
     if (hit) {
       // if point, then geometry coords
@@ -211,7 +202,7 @@ class Popup extends Component {
             f[0].get('_featureInfo').onShow(f, pop)
           }
         },
-        'onHide' : function () {}
+        'onHide': function () {}
       }
     }
   }

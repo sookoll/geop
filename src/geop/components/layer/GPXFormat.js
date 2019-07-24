@@ -3,12 +3,12 @@ import Point from 'ol/geom/Point'
 import LineString from 'ol/geom/LineString'
 import MultiLineString from 'ol/geom/MultiLineString'
 import Feature from 'ol/Feature'
-import {transformWithOptions} from 'ol/format/Feature'
+import { transformWithOptions } from 'ol/format/Feature'
 import GeometryLayout from 'ol/geom/GeometryLayout'
-import {includes} from 'ol/array'
-import {makeStructureNS, makeObjectPropertySetter, parseNode, pushParseAndPop,
-  makeArrayPusher} from 'ol/xml'
-import {readString, readDecimal, readNonNegativeInteger, readDateTime} from 'ol/format/xsd'
+import { includes } from 'ol/array'
+import { makeStructureNS, makeObjectPropertySetter, parseNode, pushParseAndPop,
+  makeArrayPusher } from 'ol/xml'
+import { readString, readDecimal, readNonNegativeInteger, readDateTime } from 'ol/format/xsd'
 import xml2js from 'Utilities/xml2'
 
 /**
@@ -162,7 +162,7 @@ export default class GPXFormat extends GPX {
  * @param {Element} node Node.
  * @param {Array<*>} objectStack Object stack.
  */
-function parseLink(node, objectStack) {
+function parseLink (node, objectStack) {
   const values = /** @type {Object} */ (objectStack[objectStack.length - 1])
   const href = node.getAttribute('href')
   if (href !== null) {
@@ -174,7 +174,7 @@ function parseLink(node, objectStack) {
  * @param {Node} node Node.
  * @param {Array<*>} objectStack Object stack.
  */
-function parseExtensions(node, objectStack) {
+function parseExtensions (node, objectStack) {
   const values = /** @type {Object} */ (objectStack[objectStack.length - 1])
   values['extensionsNode_'] = node
 }
@@ -183,7 +183,7 @@ function parseExtensions(node, objectStack) {
  * @param {Array<*>} objectStack Object stack.
  * @return {Feature|undefined} Waypoint.
  */
-function readWpt(node, objectStack) {
+function readWpt (node, objectStack) {
   const options = /** @type {import("./Feature.js").ReadOptions} */ (objectStack[0])
   const values = pushParseAndPop({}, WPT_PARSERS, node, objectStack)
   if (!values) {
@@ -206,7 +206,7 @@ function readWpt(node, objectStack) {
  * @param {!Object} values Values.
  * @return {Array<number>} Flat coordinates.
  */
-function appendCoordinate(flatCoordinates, layoutOptions, node, values) {
+function appendCoordinate (flatCoordinates, layoutOptions, node, values) {
   flatCoordinates.push(
     parseFloat(node.getAttribute('lon')),
     parseFloat(node.getAttribute('lat')))
@@ -235,7 +235,7 @@ function appendCoordinate(flatCoordinates, layoutOptions, node, values) {
  * @param {Array<number>=} ends Ends.
  * @return {GeometryLayout} Layout.
  */
-function applyLayoutOptions(layoutOptions, flatCoordinates, ends) {
+function applyLayoutOptions (layoutOptions, flatCoordinates, ends) {
   let layout = GeometryLayout.XY
   let stride = 2
   if (layoutOptions.hasZ && layoutOptions.hasM) {
@@ -273,7 +273,7 @@ function applyLayoutOptions(layoutOptions, flatCoordinates, ends) {
  * @param {Array<*>} objectStack Object stack.
  * @return {Feature|undefined} Track.
  */
-function readRte(node, objectStack) {
+function readRte (node, objectStack) {
   const options = /** @type {import("./Feature.js").ReadOptions} */ (objectStack[0])
   const values = pushParseAndPop({
     'flatCoordinates': [],
@@ -299,65 +299,65 @@ function readRte(node, objectStack) {
  * @param {Array<*>} objectStack Object stack.
  * @return {Feature|undefined} Track.
  */
-function readTrk(node, objectStack) {
-  const options = /** @type {import("./Feature.js").ReadOptions} */ (objectStack[0]);
+function readTrk (node, objectStack) {
+  const options = /** @type {import("./Feature.js").ReadOptions} */ (objectStack[0])
   const values = pushParseAndPop({
     'flatCoordinates': [],
     'ends': [],
     'layoutOptions': {}
-  }, TRK_PARSERS, node, objectStack);
+  }, TRK_PARSERS, node, objectStack)
   if (!values) {
-    return undefined;
+    return undefined
   }
   const flatCoordinates = /** @type {Array<number>} */
-      (values['flatCoordinates']);
-  delete values['flatCoordinates'];
-  const ends = /** @type {Array<number>} */ (values['ends']);
-  delete values['ends'];
-  const layoutOptions = /** @type {LayoutOptions} */ (values['layoutOptions']);
-  delete values['layoutOptions'];
-  const layout = applyLayoutOptions(layoutOptions, flatCoordinates, ends);
-  const geometry = new MultiLineString(flatCoordinates, layout, ends);
-  transformWithOptions(geometry, false, options);
-  const feature = new Feature(geometry);
-  feature.setProperties(values);
-  return feature;
+      (values['flatCoordinates'])
+  delete values['flatCoordinates']
+  const ends = /** @type {Array<number>} */ (values['ends'])
+  delete values['ends']
+  const layoutOptions = /** @type {LayoutOptions} */ (values['layoutOptions'])
+  delete values['layoutOptions']
+  const layout = applyLayoutOptions(layoutOptions, flatCoordinates, ends)
+  const geometry = new MultiLineString(flatCoordinates, layout, ends)
+  transformWithOptions(geometry, false, options)
+  const feature = new Feature(geometry)
+  feature.setProperties(values)
+  return feature
 }
 /**
  * @param {Element} node Node.
  * @param {Array<*>} objectStack Object stack.
  */
-function parseRtePt(node, objectStack) {
-  const values = pushParseAndPop({}, RTEPT_PARSERS, node, objectStack);
+function parseRtePt (node, objectStack) {
+  const values = pushParseAndPop({}, RTEPT_PARSERS, node, objectStack)
   if (values) {
-    const rteValues = /** @type {!Object} */ (objectStack[objectStack.length - 1]);
-    const flatCoordinates = /** @type {Array<number>} */ (rteValues['flatCoordinates']);
-    const layoutOptions = /** @type {LayoutOptions} */ (rteValues['layoutOptions']);
-    appendCoordinate(flatCoordinates, layoutOptions, node, values);
+    const rteValues = /** @type {!Object} */ (objectStack[objectStack.length - 1])
+    const flatCoordinates = /** @type {Array<number>} */ (rteValues['flatCoordinates'])
+    const layoutOptions = /** @type {LayoutOptions} */ (rteValues['layoutOptions'])
+    appendCoordinate(flatCoordinates, layoutOptions, node, values)
   }
 }
 /**
  * @param {Element} node Node.
  * @param {Array<*>} objectStack Object stack.
  */
-function parseTrkSeg(node, objectStack) {
-  const values = /** @type {Object} */ (objectStack[objectStack.length - 1]);
-  parseNode(TRKSEG_PARSERS, node, objectStack);
+function parseTrkSeg (node, objectStack) {
+  const values = /** @type {Object} */ (objectStack[objectStack.length - 1])
+  parseNode(TRKSEG_PARSERS, node, objectStack)
   const flatCoordinates = /** @type {Array<number>} */
-      (values['flatCoordinates']);
-  const ends = /** @type {Array<number>} */ (values['ends']);
-  ends.push(flatCoordinates.length);
+      (values['flatCoordinates'])
+  const ends = /** @type {Array<number>} */ (values['ends'])
+  ends.push(flatCoordinates.length)
 }
 /**
  * @param {Element} node Node.
  * @param {Array<*>} objectStack Object stack.
  */
-function parseTrkPt(node, objectStack) {
-  const values = pushParseAndPop({}, TRKPT_PARSERS, node, objectStack);
+function parseTrkPt (node, objectStack) {
+  const values = pushParseAndPop({}, TRKPT_PARSERS, node, objectStack)
   if (values) {
-    const trkValues = /** @type {!Object} */ (objectStack[objectStack.length - 1]);
-    const flatCoordinates = /** @type {Array<number>} */ (trkValues['flatCoordinates']);
-    const layoutOptions = /** @type {LayoutOptions} */ (trkValues['layoutOptions']);
-    appendCoordinate(flatCoordinates, layoutOptions, node, values);
+    const trkValues = /** @type {!Object} */ (objectStack[objectStack.length - 1])
+    const flatCoordinates = /** @type {Array<number>} */ (trkValues['flatCoordinates'])
+    const layoutOptions = /** @type {LayoutOptions} */ (trkValues['layoutOptions'])
+    appendCoordinate(flatCoordinates, layoutOptions, node, values)
   }
 }

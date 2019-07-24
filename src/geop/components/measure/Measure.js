@@ -85,16 +85,16 @@ class Measure extends Component {
     const contextMenuItems = getState('map/contextmenu')
     contextMenuItems.push({
       content: `<i class="fa fa-ruler-combined"></i> ${t('Measure')}
-        <button class="btn btn-link context-item-btn"><i class="far fa-dot-circle"></i></button>`,
+        <a href="#" class="btn btn-link context-item-btn"><i class="far fa-dot-circle"></i></a>`,
       onClick: (e, coord) => {
         this.init(coord)
       },
       onBtnClick: (e, coord) => {
+        e.preventDefault()
         this.init(coord, 'circle')
       },
       closeOnClick: true
     })
-
   }
   init (coord, type = 'distance') {
     if (!this.state.map) {
@@ -114,7 +114,7 @@ class Measure extends Component {
     this.state.snapFeatures.push(this.state.drawing)
     if (type === 'circle') {
       this.state.circle.setGeometry(new Circle(coord))
-      //this._snapFeatures.push(this._circle);
+      // this._snapFeatures.push(this._circle);
       this.state.source.addFeatures([this.state.circle, this.state.drawing, this.state.sketch])
     } else {
       this.state.source.addFeatures([this.state.drawing, this.state.sketch])
@@ -197,7 +197,7 @@ class Measure extends Component {
         const coord2 = this.getCoordinateByAngleDistance(coords[0], Number(a), Number(r))
         this.state.drawing.getGeometry().setCoordinates([coords[0], coord2])
         this.interaction.modify.setActive(true)
-      });
+      })
     }
     this.el.on('closed.bs.alert', () => {
       this.reset()
@@ -235,7 +235,7 @@ class Measure extends Component {
     }
     const radius = getLength(g)
     this.el.find('input[name=angle]').val(Math.round((angle + 0.00001) * 100) / 100)
-    this.el.find('input[name=radius]').val(Math.round((radius + 0.00001) * 1000) / 1000)
+    this.el.find('input[name=radius]').val(Math.round((radius + 0.00001) * 100) / 100)
   }
   reset () {
     this.state.drawing.getGeometry().un('change', this.handlers.onmodify)
@@ -283,7 +283,7 @@ class Measure extends Component {
         coords.push(coord2)
         this.state.drawing.getGeometry().setCoordinates(coords)
         this.finish()
-      } else if (coords.length > 1 && coords[coords.length -1][0] === coord2[0] && coords[coords.length -1][1] === coord2[1]) {
+      } else if (coords.length > 1 && coords[coords.length - 1][0] === coord2[0] && coords[coords.length - 1][1] === coord2[1]) {
         // clicked last
         this.finish()
       } else {
@@ -304,9 +304,9 @@ class Measure extends Component {
   }
   mousemoved (e) {
     const coords = this.state.drawing.getGeometry().getCoordinates()
-    const coord1 = this.state.measureType === 'circle' ?
-      coords[0] :
-      coords[coords.length - 1]
+    const coord1 = this.state.measureType === 'circle'
+      ? coords[0]
+      : coords[coords.length - 1]
     const coord2 = this.getSnappedCoordinate(
       e.coordinate,
       this.state.snapFeatures.getArray(),
@@ -332,7 +332,7 @@ class Measure extends Component {
     this.state.sketch.getGeometry().setCoordinates([])
     this.updateResults()
     this.state.map.addInteraction(this.interaction.modify)
-    this.interaction.snap = new Snap({features: this.state.snapFeatures})
+    this.interaction.snap = new Snap({ features: this.state.snapFeatures })
     this.state.map.addInteraction(this.interaction.snap)
     this.state.drawing.getGeometry().on('change', this.handlers.onmodify)
   }
@@ -375,13 +375,13 @@ class Measure extends Component {
     let lon = degToRad(lonlat[0])
     // Do the math magic
     lat = Math.asin(Math.sin(lat) * Math.cos(distance / R) + Math.cos(lat) * Math.sin(distance / R) * Math.cos(brng))
-    lon += Math.atan2(Math.sin(brng) * Math.sin(distance / R) * Math.cos(lat), Math.cos(distance/R)-Math.sin(lat)*Math.sin(lat))
+    lon += Math.atan2(Math.sin(brng) * Math.sin(distance / R) * Math.cos(lat), Math.cos(distance / R) - Math.sin(lat) * Math.sin(lat))
     // Coords back to degrees and return
     return fromLonLat([radToDeg(lon), radToDeg(lat)])
   }
   getCoordinatesDistance (coord1, coord2) {
-    const a = Math.abs(coord1[0]-coord2[0])
-    const b = Math.abs(coord1[1]-coord2[1])
+    const a = Math.abs(coord1[0] - coord2[0])
+    const b = Math.abs(coord1[1] - coord2[1])
     return Math.sqrt(a * a + b * b)
   }
   getAllFeatures () {

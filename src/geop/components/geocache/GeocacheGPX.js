@@ -15,8 +15,8 @@ export default {
         const cacheData = {}
         Object.keys(wpt['groundspeak:cache']).forEach(i => {
           if (i !== '_text') {
-            cacheData[i.replace('groundspeak:', '')] = wpt['groundspeak:cache'][i]['_text'] ?
-              wpt['groundspeak:cache'][i]['_text'] : wpt['groundspeak:cache'][i]
+            cacheData[i.replace('groundspeak:', '')] = wpt['groundspeak:cache'][i]['_text']
+              ? wpt['groundspeak:cache'][i]['_text'] : wpt['groundspeak:cache'][i]
           }
         })
         // id

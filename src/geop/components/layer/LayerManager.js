@@ -12,6 +12,7 @@ import OSMEdit from 'Components/osmedit/OSMEdit'
 import WMSLayer from './WMSLayer'
 import FileLayer from './FileLayer'
 import UrlLayer from './UrlLayer'
+import Sortable from 'sortablejs'
 import './LayerManager.styl'
 
 class LayerManager extends Component {
@@ -109,40 +110,49 @@ class LayerManager extends Component {
         aria-label="${t('Layers')}"
         aria-expanded="false">
         <span class="display-name d-none d-sm-inline-block">
-          ${this.state.activeBaseLayer ?
-            t(this.state.activeBaseLayer.get('title')) : t('Layers')}
+          ${this.state.activeBaseLayer
+    ? t(this.state.activeBaseLayer.get('title')) : t('Layers')}
         </span>
         <i class="fa fa-layer-group"></i>
       </button>
       <ul class="dropdown-menu dropdown-menu-right">
-        ${this.state.baseLayers.getLength() > 0 ?
-          this.state.baseLayers.getArray().map(layer => {
-            return `
+        ${this.state.baseLayers.getLength() > 0
+    ? this.state.baseLayers.getArray().map(layer => {
+      return `
               <li
                 class="dropdown-item baselayer ${this.layerVisible(layer) ? '' : 'disabled'}"
                 data-id="${layer.get('id')}">
                 <i class="far ${layer.getVisible() ? 'fa-dot-circle' : 'fa-circle'}"></i>
                 ${t(layer.get('title'))}
               </li>`
-        }).join('') :
-        `<li class="dropdown-item disabled">${t('No baselyers added')}</li>`}
+    }).join('')
+    : `<li class="dropdown-item disabled">${t('No baselyers added')}</li>`}
         ${this.renderLayerGroup('overlays', this.state.overlays)}
-        ${this.renderLayerGroup('layers', this.state.layers)}
+        ${this.renderLayerGroup('layers', this.state.layers, true)}
       </ul>`)
     this.renderComponents(this.el.find('.dropdown-menu'))
     if (this.state.open) {
       this.el.find('button.toggle-btn').dropdown('toggle')
       this.state.open = false
     }
+    // sortable
+    Sortable.create(this.el.find('div.sortable')[0], {
+      draggable: 'li.sort-item',
+      // handle: '.badge',
+      onUpdate: e => {
+        this.reorderLayers(e)
+        // this.render()
+      }
+    })
   }
 
-  renderLayerGroup (groupId, group) {
-    return group.getLength() > 0 ?
-      `<li class="dropdown-divider"></li>` +
+  renderLayerGroup (groupId, group, sortable = false) {
+    return group.getLength() > 0
+      ? `<li class="dropdown-divider"></li>${sortable ? '<div class="sortable">' : ''}` +
       group.getArray().map(layer => {
         return `
           <li
-            class="dropdown-item layer ${this.layerVisible(layer) ? '' : 'disabled'}"
+            class="dropdown-item ${sortable ? 'sort-item' : ''} layer ${this.layerVisible(layer) ? '' : 'disabled'}"
             data-group="${groupId}" data-id="${layer.get('id')}">
             <i class="far ${layer.getVisible() ? 'fa-check-square' : 'fa-square'}"></i>
             ${t(layer.get('title'))}
@@ -155,7 +165,7 @@ class LayerManager extends Component {
               </a>
             </div>
           </li>`
-        }).join('') : ''
+      }).join('') + `${sortable ? '</div>' : ''}` : ''
   }
 
   permalinkToViewConf (permalink) {
@@ -165,12 +175,12 @@ class LayerManager extends Component {
 
   layerVisible (layer) {
     if (layer.minResolution && this._map.getView().getResolution() < layer.minResolution) {
-      return false;
+      return false
     }
     if (layer.maxResolution && this._map.getView().getResolution() > layer.maxResolution) {
-      return false;
+      return false
     }
-    return true;
+    return true
   }
 
   changeBaseLayer (id) {
@@ -182,7 +192,7 @@ class LayerManager extends Component {
       layers[0].setVisible(true)
       this.state.activeBaseLayer = layers[0]
       setState('map/baseLayer', id, true)
-      //this.state.open = true
+      // this.state.open = true
       this.render()
       return true
     }
@@ -193,7 +203,6 @@ class LayerManager extends Component {
     this.state[groupId].forEach(layer => {
       if (layer.get('id') === id) {
         layer.setVisible(!layer.getVisible())
-        return
       }
     })
     this.state.open = true
@@ -205,17 +214,32 @@ class LayerManager extends Component {
       if (layer && layer.get('id') === id) {
         this.state.open = true
         this.state[groupId].remove(layer)
-        return
       }
     })
+  }
+
+  reorderLayers (e) {
+    if (e.oldIndex !== e.newIndex) {
+      const layerId = $(e.item).data('id')
+      const groupId = $(e.item).data('group')
+      this.state[groupId].forEach(layer => {
+        if (layer.get('id') === layerId) {
+          // store reordering state
+          setState('ui/layermanager/sorting', true)
+          this.state[groupId].remove(layer)
+          this.state[groupId].insertAt(e.newIndex, layer)
+          setState('ui/layermanager/sorting', false)
+        }
+      })
+    }
   }
 
   fitTo (groupId, id) {
     for (let layer of this.state[groupId].getArray()) {
       if (layer && layer.get('id') === id) {
         this.state.open = true
-        const bbox = layer.getSource().getExtent ?
-          layer.getSource().getExtent() : layer.getExtent()
+        const bbox = layer.getSource().getExtent
+          ? layer.getSource().getExtent() : layer.getExtent()
         if (bbox) {
           getState('map').getView().fit(bbox, {
             padding: [50, 50, 50, 50],
@@ -244,7 +268,6 @@ class LayerManager extends Component {
       plug.create()
     })
   }
-
 }
 
 export default LayerManager
