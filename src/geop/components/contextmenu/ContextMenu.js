@@ -74,7 +74,6 @@ class ContextMenu extends Component {
     this.el.popover('show')
   }
   getContent (coord, feature) {
-    console.log(this.state.items)
     const content = this.state.items.map((item, i) => {
       const cont = (typeof item.content === 'function') ? item.content(coord) : item.content
       return `<li class="list-group-item item-${i}">${cont}</li>`
