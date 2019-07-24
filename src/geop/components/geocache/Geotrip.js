@@ -257,18 +257,15 @@ class Geotrip extends Component {
     }
   }
   export () {
+    let coords = []
     const features = this.state.collection.getArray().map(f => {
       const clone = f.clone()
       clone.getGeometry().transform(getState('map/projection'), 'EPSG:4326')
+      coords.push(clone.getGeometry().getCoordinates())
       return clone
     })
     if (features.length > 1) {
-      let coords = []
-      this.state.routeLayer.getSource().getFeatures().forEach(f => {
-        const clone = f.clone()
-        coords = coords.concat(clone.getGeometry().getCoordinates())
-      })
-      features.push(new Feature(new LineString(coords).transform(getState('map/projection'), 'EPSG:4326')))
+      features.push(new Feature(new LineString(coords)))
     }
     gpxExport(cacheConf.exportFileName, features)
   }

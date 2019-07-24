@@ -12,6 +12,7 @@ import OSMEdit from 'Components/osmedit/OSMEdit'
 import WMSLayer from './WMSLayer'
 import FileLayer from './FileLayer'
 import UrlLayer from './UrlLayer'
+import Sortable from 'sortablejs'
 import './LayerManager.styl'
 
 class LayerManager extends Component {
@@ -127,22 +128,31 @@ class LayerManager extends Component {
     }).join('')
     : `<li class="dropdown-item disabled">${t('No baselyers added')}</li>`}
         ${this.renderLayerGroup('overlays', this.state.overlays)}
-        ${this.renderLayerGroup('layers', this.state.layers)}
+        ${this.renderLayerGroup('layers', this.state.layers, true)}
       </ul>`)
     this.renderComponents(this.el.find('.dropdown-menu'))
     if (this.state.open) {
       this.el.find('button.toggle-btn').dropdown('toggle')
       this.state.open = false
     }
+    // sortable
+    Sortable.create(this.el.find('div.sortable')[0], {
+      draggable: 'li.sort-item',
+      // handle: '.badge',
+      onUpdate: e => {
+        this.reorderLayers(e)
+        // this.render()
+      }
+    })
   }
 
-  renderLayerGroup (groupId, group) {
+  renderLayerGroup (groupId, group, sortable = false) {
     return group.getLength() > 0
-      ? `<li class="dropdown-divider"></li>` +
+      ? `<li class="dropdown-divider"></li>${sortable ? '<div class="sortable">' : ''}` +
       group.getArray().map(layer => {
         return `
           <li
-            class="dropdown-item layer ${this.layerVisible(layer) ? '' : 'disabled'}"
+            class="dropdown-item ${sortable ? 'sort-item' : ''} layer ${this.layerVisible(layer) ? '' : 'disabled'}"
             data-group="${groupId}" data-id="${layer.get('id')}">
             <i class="far ${layer.getVisible() ? 'fa-check-square' : 'fa-square'}"></i>
             ${t(layer.get('title'))}
@@ -155,7 +165,7 @@ class LayerManager extends Component {
               </a>
             </div>
           </li>`
-      }).join('') : ''
+      }).join('') + `${sortable ? '</div>' : ''}` : ''
   }
 
   permalinkToViewConf (permalink) {
@@ -206,6 +216,19 @@ class LayerManager extends Component {
         this.state[groupId].remove(layer)
       }
     })
+  }
+
+  reorderLayers (e) {
+    if (e.oldIndex !== e.newIndex) {
+      const layerId = $(e.item).data('id')
+      const groupId = $(e.item).data('group')
+      this.state[groupId].forEach(layer => {
+        if (layer.get('id') === layerId) {
+          this.state[groupId].remove(layer)
+          this.state[groupId].insertAt(e.newIndex, layer)
+        }
+      })
+    }
   }
 
   fitTo (groupId, id) {
