@@ -36,10 +36,16 @@ class Geotrip extends Component {
     }
     setState('geocache/trip', this.state.collection)
     getState('map/layer/layers').on('remove', e => {
-      this.loadState()
+      // disable loadState when remove layer for reordering
+      if (!getState('ui/layermanager/sorting')) {
+        this.loadState()
+      }
     })
     getState('map/layer/overlays').on('remove', e => {
-      this.loadState()
+      // disable loadState when remove layer for reordering
+      if (!getState('ui/layermanager/sorting')) {
+        this.loadState()
+      }
     })
     this.state.collection.on('add', e => {
       // allow only points

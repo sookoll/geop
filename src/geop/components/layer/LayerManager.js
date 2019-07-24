@@ -224,8 +224,11 @@ class LayerManager extends Component {
       const groupId = $(e.item).data('group')
       this.state[groupId].forEach(layer => {
         if (layer.get('id') === layerId) {
+          // store reordering state
+          setState('ui/layermanager/sorting', true)
           this.state[groupId].remove(layer)
           this.state[groupId].insertAt(e.newIndex, layer)
+          setState('ui/layermanager/sorting', false)
         }
       })
     }
