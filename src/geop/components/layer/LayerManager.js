@@ -136,14 +136,16 @@ class LayerManager extends Component {
       this.state.open = false
     }
     // sortable
-    Sortable.create(this.el.find('div.sortable')[0], {
-      draggable: 'li.sort-item',
-      // handle: '.badge',
-      onUpdate: e => {
-        this.reorderLayers(e)
-        // this.render()
-      }
-    })
+    if (this.el.find('div.sortable').length) {
+      Sortable.create(this.el.find('div.sortable')[0], {
+        draggable: 'li.sort-item',
+        handle: '.layer-title',
+        onUpdate: e => {
+          this.reorderLayers(e)
+          // this.render()
+        }
+      })
+    }
   }
 
   renderLayerGroup (groupId, group, sortable = false) {
@@ -155,7 +157,7 @@ class LayerManager extends Component {
             class="dropdown-item ${sortable ? 'sort-item' : ''} layer ${this.layerVisible(layer) ? '' : 'disabled'}"
             data-group="${groupId}" data-id="${layer.get('id')}">
             <i class="far ${layer.getVisible() ? 'fa-check-square' : 'fa-square'}"></i>
-            ${t(layer.get('title'))}
+            <span class="layer-title">${t(layer.get('title'))}</span>
             <div class="layer-tools">
               <a href="#" class="fit-layer">
                 <i class="fa fa-search-plus"></i>
