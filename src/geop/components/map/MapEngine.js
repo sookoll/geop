@@ -54,7 +54,6 @@ class MapEngine extends Component {
     this.controls = {
       mouseCoordinates : null
     }
-    this.overlay = null
     this.shouldUpdate = true
     // permalink
     const permalink = this.permalinkToViewConf(getPermalink('view'))
