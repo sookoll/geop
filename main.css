@@ -176,6 +176,7 @@ body .size-1_1 {
 }
 #tab-geotrip a.export {
   color: #fff;
+  cursor: pointer;
 }
 
 body .popup .popover-header i.unavailable {
