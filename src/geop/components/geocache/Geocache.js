@@ -12,10 +12,16 @@ import { createStyle } from 'Components/layer/StyleBuilder'
 import Circle from 'ol/geom/Circle'
 import Collection from 'ol/Collection'
 import geopeitusJSON from './GeopeitusJSON'
+import projectGCJSON from './ProjectGCJSON'
 import geocacheGPX from './GeocacheGPX'
-// import geocacheGPX from './GeocacheGPX'
 import './Geocache.styl'
 import $ from 'jquery'
+
+const cacheFormatParsers = [
+  geopeitusJSON,
+  projectGCJSON,
+  geocacheGPX
+]
 
 class Geocache extends Component {
   constructor (target) {
@@ -94,14 +100,12 @@ class Geocache extends Component {
     const features = layer.getSource().getFeatures
       ? layer.getSource().getFeatures() : null
     if (features) {
-      const isGeopeitusJSON = geopeitusJSON.test(features)
-      const isCacheGPX = geocacheGPX.test(features)
-      if (isCacheGPX) {
-        layer.set('_cacheFormatParser', geocacheGPX)
-      } else if (isGeopeitusJSON) {
-        layer.set('_cacheFormatParser', geopeitusJSON)
+      for (let i = 0, len = cacheFormatParsers.length; i < len; i++) {
+        if (cacheFormatParsers[i].test(features)) {
+          layer.set('_cacheFormatParser', cacheFormatParsers[i])
+          return true
+        }
       }
-      return (isGeopeitusJSON || isCacheGPX)
     }
     return false
   }
@@ -151,7 +155,7 @@ class Geocache extends Component {
         if (f.get('isCache')) {
           return `
             <p class="text-muted metadata">
-              <i class="fas fa-clock"></i> ${formatDate(f.get('time'))}<br/>
+              <i class="fas fa-clock"></i> ${f.get('time') ? formatDate(f.get('time')) : ''}<br/>
               <i class="fa fa-user"></i> ${f.get('owner')}<br/>
               <i class="${styleType ? styleType.class : this.state.styleConfig.base.class}"></i>
               ${t(f.get('type'))}<br/>
