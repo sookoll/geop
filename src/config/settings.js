@@ -217,7 +217,7 @@ export const geocache = {
       },
       'Owner': {
         fill: {
-          color: 'red'
+          color: '#f00'
         }
       }
     },
