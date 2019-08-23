@@ -207,6 +207,24 @@ a#osm-edit {
   text-decoration: none;
   background-color: inherit;
 }
+#layermanager li .dot {
+  position: absolute;
+  top: 10px;
+  left: 8px;
+  height: 6px;
+  width: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  overflow: hidden;
+}
+#layermanager li .dot input {
+  border: 0;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: -6px;
+  left: -6px;
+}
 #layermanager li .layer-tools {
   position: absolute;
   padding: 0.25rem 6px;
@@ -502,7 +520,8 @@ body .popup .popover-header .tools a {
   padding-left: 6px;
 }
 body .popup .popover-body {
-  overflow: hidden;
+  max-height: 300px;
+  overflow: auto;
   user-select: text;
 }
 body .popup .popover-body .toggle-found {
