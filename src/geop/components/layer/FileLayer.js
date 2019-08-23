@@ -106,6 +106,7 @@ class FileLayer extends Component {
         const conf = this.fileTypes.geojson.writeFeaturesObject(e.features)
         conf.title = e.file.name
         const layer = this.createLayer(conf)
+        console.log(layer.get('conf').color)
         if (layer) {
           this.state.layers.push(layer)
           log('success', `${t('Added')} ${conf.features.length} ${t('features')}`)
@@ -133,23 +134,8 @@ class FileLayer extends Component {
       conf.features && conf.features.forEach(f => {
         f.id = uid()
       })
-      conf.style = {
-        stroke: {
-          color: color,
-          width: 2
-        },
-        fill: {
-          color: hexToRgbA(color, 0.5)
-        },
-        circle: {
-          stroke: {
-            color: color
-          },
-          fill: {
-            color: hexToRgbA(color, 0.3)
-          }
-        }
-      }
+      conf.color = color
+      conf.style = getFileLayerStyleConf(color)
       try {
         return createLayer(conf)
       } catch (e) {
@@ -162,6 +148,26 @@ class FileLayer extends Component {
       log('error', t('Empty file'))
       if (getState('app/debug')) {
         console.debug(`FileLayer.addDragNDrop empty file: ${conf.title}`)
+      }
+    }
+  }
+}
+
+export function getFileLayerStyleConf (color) {
+  return {
+    stroke: {
+      color: color,
+      width: 2
+    },
+    fill: {
+      color: hexToRgbA(color, 0.5)
+    },
+    circle: {
+      stroke: {
+        color: color
+      },
+      fill: {
+        color: hexToRgbA(color, 0.3)
       }
     }
   }

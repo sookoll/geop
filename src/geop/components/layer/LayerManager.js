@@ -1,4 +1,6 @@
 import $ from 'jquery'
+import FileLayer, { getFileLayerStyleConf } from './FileLayer'
+import { createStyle } from './StyleBuilder'
 import { getState, setState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
 import log from 'Utilities/log'
@@ -10,7 +12,7 @@ import {
 import Component from 'Geop/Component'
 import OSMEdit from 'Components/osmedit/OSMEdit'
 import WMSLayer from './WMSLayer'
-import FileLayer from './FileLayer'
+
 import UrlLayer from './UrlLayer'
 import Sortable from 'sortablejs'
 import './LayerManager.styl'
@@ -84,10 +86,10 @@ class LayerManager extends Component {
           }
         }
       })
-      this.el.on('click', '.layer', e => {
+      this.el.on('click', '.layer .check, .layer .layer-title', e => {
         e.preventDefault()
         e.stopPropagation()
-        this.toggleLayer($(e.currentTarget).data('group'), $(e.currentTarget).data('id'))
+        this.toggleLayer($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'))
       })
       this.el.on('click', '.layer a.fit-layer', e => {
         e.preventDefault()
@@ -98,6 +100,9 @@ class LayerManager extends Component {
         e.preventDefault()
         e.stopPropagation()
         this.removeLayer($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'))
+      })
+      this.el.on('change', '.layer input[type=color]', e => {
+        this.setLayerColor($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'), e.target.value)
       })
     }
   }
@@ -122,7 +127,7 @@ class LayerManager extends Component {
               <li
                 class="dropdown-item baselayer ${this.layerVisible(layer) ? '' : 'disabled'}"
                 data-id="${layer.get('id')}">
-                <i class="far ${layer.getVisible() ? 'fa-dot-circle' : 'fa-circle'}"></i>
+                <i class="check far ${layer.getVisible() ? 'fa-dot-circle' : 'fa-circle'}"></i>
                 ${t(layer.get('title'))}
               </li>`
     }).join('')
@@ -152,11 +157,16 @@ class LayerManager extends Component {
     return group.getLength() > 0
       ? `<li class="dropdown-divider"></li>${sortable ? '<div class="sortable">' : ''}` +
       group.getArray().map(layer => {
+        const colorpicker = layer.get('conf').color
+          ? `<span class="dot">
+              <input type="color" value="${layer.get('conf').color}"/>
+            </span>` : ''
         return `
           <li
             class="dropdown-item ${sortable ? 'sort-item' : ''} layer ${this.layerVisible(layer) ? '' : 'disabled'}"
             data-group="${groupId}" data-id="${layer.get('id')}">
-            <i class="far ${layer.getVisible() ? 'fa-check-square' : 'fa-square'}"></i>
+            ${colorpicker}
+            <i class="check far ${layer.getVisible() ? 'fa-check-square' : 'fa-square'}"></i>
             <span class="layer-title">${t(layer.get('title'))}</span>
             <div class="layer-tools">
               <a href="#" class="fit-layer">
@@ -269,6 +279,28 @@ class LayerManager extends Component {
       }
       plug.create()
     })
+  }
+
+  setLayerColor (groupId, id, color) {
+    this.state[groupId].forEach(layer => {
+      if (layer && layer.get('id') === id) {
+        const conf = layer.get('conf')
+        conf.color = color
+        conf.style = getFileLayerStyleConf(color)
+        layer.set('conf', conf)
+        layer.setStyle(createStyle(conf.style))
+        this.storeLayers(groupId)
+        return true
+      }
+    })
+  }
+
+  storeLayers (groupId) {
+    const layerConfs = this.state[groupId].getArray().map(layer => {
+      return layer.get('conf')
+    })
+    console.log(layerConfs)
+    setState('layer/' + groupId, layerConfs, true)
   }
 }
 

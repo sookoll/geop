@@ -237,7 +237,7 @@ export function closestFeatureTo (map, px, coord) {
     px,
     (feature, layer) => {
       const distance = getDistance(toLonLat(coord), toLonLat(feature.getGeometry().getCoordinates()))
-      if (layer && distance < closest.distance) {
+      if (!isNaN(distance) && layer && distance < closest.distance) {
         closest.feature = feature
         closest.layer = layer
         closest.distance = distance
@@ -245,6 +245,20 @@ export function closestFeatureTo (map, px, coord) {
     },
     { hitTolerance: 10 }
   )
+  if (!closest.feature) {
+    map.forEachFeatureAtPixel(
+      px,
+      (feature, layer) => {
+        const distance = getDistance(toLonLat(coord), toLonLat(feature.getGeometry().getCoordinates()))
+        if (isNaN(distance)) {
+          closest.feature = feature
+          closest.layer = layer
+          closest.distance = 0
+        }
+      },
+      { hitTolerance: 5 }
+    )
+  }
   return closest.feature ? [closest.layer, closest.feature] : null
 }
 
