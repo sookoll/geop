@@ -157,7 +157,7 @@ class LayerManager extends Component {
     return group.getLength() > 0
       ? `<li class="dropdown-divider"></li>${sortable ? '<div class="sortable">' : ''}` +
       group.getArray().map(layer => {
-        const colorpicker = layer.get('conf').color
+        const colorpicker = layer.get('conf').color && !layer.get('_cacheFormatParser')
           ? `<span class="dot">
               <input type="color" value="${layer.get('conf').color}"/>
             </span>` : ''
