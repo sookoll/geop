@@ -1,3 +1,4 @@
+import { apiUrls } from 'Conf/settings'
 import { t } from 'Utilities/translate'
 import { validURL, parseURL, constructURL, uid } from 'Utilities/util'
 import { getState } from 'Utilities/store'
@@ -32,6 +33,11 @@ class WMSLayer extends Component {
   }
   render () {
     if (!this.modal || this.modal.length === 0) {
+      const examples = Object.keys(apiUrls.wmsexamples).map(title => {
+        return `<a href="${apiUrls.wmsexamples[title]}">
+          ${title}
+        </a>`
+      })
       this.modal = $(`
         <div class="modal fade"
           id="modal_wmslayer"
@@ -53,10 +59,8 @@ class WMSLayer extends Component {
                 ${t('Insert WMS v.1.1.1 URL with LAYERS and SRS parameters')}
                 <textarea class="form-control" rows="3"></textarea>
                 <div class="small examples">
-                  <b>Näited:</b><br>
-                  <a href="http://kaart.maaamet.ee/wms/alus?layers=TOPOYKSUS_6569,TOPOYKSUS_7793&SRS=EPSG:3301&title=Kataster">
-                    katastrikaart
-                  </a>
+                  ${examples.length ? '<b>Näited:</b><br>' : ''}
+                  ${examples.join('<br/>')}
                 </div>
               </div>
               <div class="modal-footer">
