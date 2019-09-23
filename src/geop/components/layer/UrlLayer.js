@@ -83,7 +83,7 @@ class UrlLayer extends Component {
     return null
   }
   addMarker (coordString) {
-    const coords = coordString.split('-')
+    const coords = coordString.split('/')
     if (coords && coords.length === 2) {
       const feature = {
         type: 'Feature',
