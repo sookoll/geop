@@ -97,7 +97,18 @@ class Popup extends Component {
       // not feature hit. Try WMS GetFeatureInfo
       const viewResolution = this.state.map.getView().getResolution()
       const layers = getState('map/layer/layers').getArray().filter(layer => layer.get('conf').type === 'TileWMS')
-      console.log(layers, viewResolution)
+      console.log(layers.length, viewResolution)
+      let url = null
+      for (let i = 0, len = layers.length; i < len; i++) {
+        console.log(i, layers[i], coords)
+        const queryLayers = layers[i].getSource().getParams().LAYERS
+        url = layers[i].getSource().getGetFeatureInfoUrl(
+          coords, viewResolution, this.state.map.getView().getProjection(),
+          { 'INFO_FORMAT': 'application/json', 'QUERY_LAYERS': queryLayers, 'FEATURE_COUNT': queryLayers.split(',').length })
+        this.getWMSFeatureInfo(url, (result) => {
+          console.log(result)
+        })
+      }
     }
   }
   getContent (feature, layer) {
@@ -210,6 +221,19 @@ class Popup extends Component {
         'onHide': function () {}
       }
     }
+  }
+  getWMSFeatureInfo (url, cb) {
+    $.ajax({
+      type: 'GET',
+      crossDomain: true,
+      url: url,
+      dataType: 'json',
+      context: this
+    })
+      .done(cb)
+      .fail(function (request) {
+        cb(null)
+      })
   }
 }
 
