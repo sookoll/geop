@@ -93,6 +93,11 @@ class Popup extends Component {
         popContent.onHide(evt)
       })
       this.el.popover('show')
+    } else {
+      // not feature hit. Try WMS GetFeatureInfo
+      const viewResolution = this.state.map.getView().getResolution()
+      const layers = getState('map/layer/layers').getArray().filter(layer => layer.get('conf').type === 'TileWMS')
+      console.log(layers, viewResolution)
     }
   }
   getContent (feature, layer) {
