@@ -106,7 +106,7 @@ class MapEngine extends Component {
     const permalink = this.permalinkToViewConf(getPermalink('view'))
     this.map = this.createMap(permalink)
     setState('map', this.map)
-    this.map.on('moveend', (e) => {
+    this.map.on('moveend', e => {
       const view = e.map.getView()
       setState('map/resolution', view.getResolution())
       setState('map/center', toLonLat(view.getCenter()), true)
@@ -121,6 +121,19 @@ class MapEngine extends Component {
         })
       })
     })
+    /* this.map.on('pointermove', e => {
+      if (e.dragging) {
+        return
+      }
+      const pixel = this.map.getEventPixel(e.originalEvent)
+      const hit = this.map.forEachLayerAtPixel(pixel, () => true, {
+        layerFilter: layer => {
+          return !!this.getLayer('layers', layer.get('id'))
+        }
+      })
+      console.log(hit)
+      this.el.css('cursor', hit ? 'pointer' : '')
+    }) */
     // run que
     const que = getState('map/que')
     que.forEach(item => {
@@ -195,9 +208,10 @@ class MapEngine extends Component {
         const layers = this.layers[group].getLayers().getArray().filter(layer => {
           return layer.get('id') === id
         })
-        return layers[0]
+        return layers[0] || false
       }
     }
+    return false
   }
   storeLayers (group) {
     const layerConfs = this.layers[group].getLayers().getArray().map(layer => {

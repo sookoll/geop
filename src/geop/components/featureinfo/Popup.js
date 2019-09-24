@@ -7,6 +7,7 @@ import { closestFeatureTo } from 'Components/map/MapEngine'
 import { getDistance } from 'ol/sphere'
 import Overlay from 'ol/Overlay'
 import Point from 'ol/geom/Point'
+import GeoJSONFormat from 'ol/format/GeoJSON'
 import { toLonLat } from 'ol/proj'
 import $ from 'jquery'
 import './Popup.styl'
@@ -23,12 +24,16 @@ class Popup extends Component {
         linestrings: ['LineString', 'MultiLineString'],
         polygons: ['Polygon', 'MultiPolygon']
       },
-      offset: 0
+      offset: 0,
+      open: false
     }
     this.handlers = {
       clicked: e => {
         this.open(e)
       }
+    }
+    this.format = {
+      geojson: new GeoJSONFormat()
     }
     this.create()
     // store component so it can be disabled outside (by measure)
@@ -62,53 +67,72 @@ class Popup extends Component {
   disable () {
     this.state.map.un('singleclick', this.handlers.clicked)
   }
+  show (e, coords, hit, popContent) {
+    this.state.overlay.setPosition(coords)
+    this.el.popover(popContent.definition).popover('show')
+    // when popover's content is shown
+    this.el.on('shown.bs.popover', evt => {
+      this.state.open = true
+      const h = popContent.definition.container.find('.popup').height()
+      this.state.overlay.setOffset([
+        0,
+        h + this.state.offset + 20 > e.pixel[1] ? this.state.offset : -this.state.offset
+      ])
+      popContent.onShow(hit, $(evt.target).data('bs.popover').tip)
+    })
+    // FIXME: not called! when popover's content is hidden
+    this.el.on('hidden.bs.popover', evt => {
+      popContent.onHide(evt)
+    })
+    this.el.popover('show')
+  }
   open (e) {
     let coords = e.coordinate
+    // FIXME: multiple results
     const hit = closestFeatureTo(this.state.map, e.pixel, coords)
-    this.el.popover('dispose')
+    if (this.state.open) {
+      this.el.popover('dispose')
+      this.state.open = false
+      if (!hit) {
+        return
+      }
+    }
+    let popContent
     if (hit) {
       // if point, then geometry coords
       if (hit[1].getGeometry().getType() === 'Point') {
         coords = hit[1].getGeometry().getCoordinates()
       }
-      let popContent
       if (hit[0] && this.state.infoStore[hit[0].get('id')]) {
         popContent = this.state.infoStore[hit[0].get('id')](hit[1])
       } else {
         popContent = this.getContent(hit[1], hit[0])
       }
-      this.state.overlay.setPosition(coords)
-      this.el.popover(popContent.definition).popover('show')
-      // when popover's content is shown
-      this.el.on('shown.bs.popover', evt => {
-        const h = popContent.definition.container.find('.popup').height()
-        this.state.overlay.setOffset([
-          0,
-          h + this.state.offset + 20 > e.pixel[1] ? this.state.offset : -this.state.offset
-        ])
-        popContent.onShow(hit, $(evt.target).data('bs.popover').tip)
-      })
-      // when popover's content is hidden
-      this.el.on('hidden.bs.popover', evt => {
-        popContent.onHide(evt)
-      })
-      this.el.popover('show')
+      if (popContent) {
+        this.show(e, coords, hit, popContent)
+      }
     } else {
       // not feature hit. Try WMS GetFeatureInfo
       const viewResolution = this.state.map.getView().getResolution()
       const layers = getState('map/layer/layers').getArray().filter(layer => {
         return layer.get('conf').type === 'TileWMS' && layer.getVisible()
       })
-      console.log(layers.length, viewResolution)
       let url = null
-      for (let i = 0, len = layers.length; i < len; i++) {
-        console.log(i, layers[i], coords)
+      // FIXME: multiple results
+      for (let i = layers.length - 1; i >= 0; i--) {
         const queryLayers = layers[i].getSource().getParams().LAYERS
         url = layers[i].getSource().getGetFeatureInfoUrl(
           coords, viewResolution, this.state.map.getView().getProjection(),
-          { 'INFO_FORMAT': 'application/json', 'QUERY_LAYERS': queryLayers, 'FEATURE_COUNT': queryLayers.split(',').length })
+          { 'INFO_FORMAT': 'application/json', 'QUERY_LAYERS': queryLayers.split(',').reverse().join(','), 'FEATURE_COUNT': queryLayers.split(',').length })
         this.getWMSFeatureInfo(url, (result) => {
-          console.log(result)
+          if (result) {
+            const features = this.format.geojson.readFeatures(result)
+            if (features.length) {
+              // FIXME: multiple results
+              popContent = this.getContent(features[0], layers[i])
+              this.show(e, coords, hit, popContent)
+            }
+          }
         })
       }
     }
@@ -182,7 +206,7 @@ class Popup extends Component {
           })
           $(pop).on('click', '.remove-marker', e => {
             e.preventDefault()
-            if (f[0]) {
+            if (f && f[0]) {
               f[0].getSource().removeFeature(f[1])
               if (geotrip) {
                 geotrip.remove(f[1])
@@ -216,7 +240,7 @@ class Popup extends Component {
             })
           })
           // call stored onShow
-          if (f[0].get('_featureInfo') && typeof f[0].get('_featureInfo').onShow === 'function') {
+          if (f && f[0] && f[0].get('_featureInfo') && typeof f[0].get('_featureInfo').onShow === 'function') {
             f[0].get('_featureInfo').onShow(f, pop)
           }
         },
