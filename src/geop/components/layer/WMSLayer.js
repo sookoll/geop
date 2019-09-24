@@ -127,6 +127,7 @@ class WMSLayer extends Component {
       conf.url = constructURL(urlComponents)
       conf.id = uid()
       conf.title = urlComponents.query.title || conf.params.LAYERS
+      conf.opacity = urlComponents.query.opacity || 1
       return createLayer(conf)
     } else {
       log('error', t('URL is not valid WMS resource!'))

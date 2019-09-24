@@ -96,7 +96,9 @@ class Popup extends Component {
     } else {
       // not feature hit. Try WMS GetFeatureInfo
       const viewResolution = this.state.map.getView().getResolution()
-      const layers = getState('map/layer/layers').getArray().filter(layer => layer.get('conf').type === 'TileWMS')
+      const layers = getState('map/layer/layers').getArray().filter(layer => {
+        return layer.get('conf').type === 'TileWMS' && layer.getVisible()
+      })
       console.log(layers.length, viewResolution)
       let url = null
       for (let i = 0, len = layers.length; i < len; i++) {
