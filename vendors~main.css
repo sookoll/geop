@@ -10036,13 +10036,14 @@ a.text-dark:hover, a.text-dark:focus {
   }
 }
 /*!
- * Font Awesome Free 5.9.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 5.11.2 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 .fa,
 .fas,
 .far,
 .fal,
+.fad,
 .fab {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -10723,6 +10724,9 @@ readers do not read off random characters that represent icons */
 .fa-business-time:before {
   content: "\F64A"; }
 
+.fa-buy-n-large:before {
+  content: "\F8A6"; }
+
 .fa-buysellads:before {
   content: "\F20D"; }
 
@@ -11124,6 +11128,9 @@ readers do not read off random characters that represent icons */
 
 .fa-copyright:before {
   content: "\F1F9"; }
+
+.fa-cotton-bureau:before {
+  content: "\F89E"; }
 
 .fa-couch:before {
   content: "\F4B8"; }
@@ -12079,6 +12086,12 @@ readers do not read off random characters that represent icons */
 .fa-hashtag:before {
   content: "\F292"; }
 
+.fa-hat-cowboy:before {
+  content: "\F8C0"; }
+
+.fa-hat-cowboy-side:before {
+  content: "\F8C1"; }
+
 .fa-hat-wizard:before {
   content: "\F6E8"; }
 
@@ -12559,6 +12572,9 @@ readers do not read off random characters that represent icons */
 .fa-maxcdn:before {
   content: "\F136"; }
 
+.fa-mdb:before {
+  content: "\F8CA"; }
+
 .fa-medal:before {
   content: "\F5A2"; }
 
@@ -12697,6 +12713,9 @@ readers do not read off random characters that represent icons */
 .fa-mountain:before {
   content: "\F6FC"; }
 
+.fa-mouse:before {
+  content: "\F8CC"; }
+
 .fa-mouse-pointer:before {
   content: "\F245"; }
 
@@ -12777,6 +12796,9 @@ readers do not read off random characters that represent icons */
 
 .fa-optin-monster:before {
   content: "\F23C"; }
+
+.fa-orcid:before {
+  content: "\F8D2"; }
 
 .fa-osi:before {
   content: "\F41A"; }
@@ -13119,6 +13141,9 @@ readers do not read off random characters that represent icons */
 
 .fa-receipt:before {
   content: "\F543"; }
+
+.fa-record-vinyl:before {
+  content: "\F8D9"; }
 
 .fa-recycle:before {
   content: "\F1B8"; }
@@ -13708,6 +13733,9 @@ readers do not read off random characters that represent icons */
 .fa-swatchbook:before {
   content: "\F5C3"; }
 
+.fa-swift:before {
+  content: "\F8E1"; }
+
 .fa-swimmer:before {
   content: "\F5C4"; }
 
@@ -13992,6 +14020,9 @@ readers do not read off random characters that represent icons */
 
 .fa-uikit:before {
   content: "\F403"; }
+
+.fa-umbraco:before {
+  content: "\F8E8"; }
 
 .fa-umbrella:before {
   content: "\F0E9"; }
@@ -14399,8 +14430,8 @@ readers do not read off random characters that represent icons */
   font-style: normal;
   font-weight: normal;
   font-display: auto;
-  src: url(assets/03783c5172ee1ad128c576bf88fac168.eot);
-  src: url(assets/03783c5172ee1ad128c576bf88fac168.eot?#iefix) format("embedded-opentype"), url(assets/7559b3774a0625e8ca6c0160f8f6cfd8.woff2) format("woff2"), url(assets/fe9d62e0d16a333a20e63c3e7595f82e.woff) format("woff"), url(assets/ed2b8bf117160466ba6220a8f1da54a4.ttf) format("truetype"), url(assets/073c2f3ce60eaf69cc2767ef3d989078.svg#fontawesome) format("svg"); }
+  src: url(assets/5063b105c7646c8043d58c5289f02cca.eot);
+  src: url(assets/5063b105c7646c8043d58c5289f02cca.eot?#iefix) format("embedded-opentype"), url(assets/cccc9d29470e879e40eb70249d9a2705.woff2) format("woff2"), url(assets/c5e0f14f88a828261ba01558ce2bf26f.woff) format("woff"), url(assets/06147b6cd88c7346cecd1edd060cd5de.ttf) format("truetype"), url(assets/a9c4bb7348f42626454c988dbde1d0a0.svg#fontawesome) format("svg"); }
 
 .fab {
   font-family: 'Font Awesome 5 Brands'; }
@@ -14409,8 +14440,8 @@ readers do not read off random characters that represent icons */
   font-style: normal;
   font-weight: 400;
   font-display: auto;
-  src: url(assets/fc9c63c8224fb341fc933641cbdd12ef.eot);
-  src: url(assets/fc9c63c8224fb341fc933641cbdd12ef.eot?#iefix) format("embedded-opentype"), url(assets/e07d9e40b26048d9abe2ef966cd6e263.woff2) format("woff2"), url(assets/e5770f9863963fb576942e25214a226d.woff) format("woff"), url(assets/59215032a4397507b80e5625dc323de3.ttf) format("truetype"), url(assets/8fdea4e89ac405d9f8db327adb331d8d.svg#fontawesome) format("svg"); }
+  src: url(assets/c1a866ec0e04a5e1915b41fcf261457c.eot);
+  src: url(assets/c1a866ec0e04a5e1915b41fcf261457c.eot?#iefix) format("embedded-opentype"), url(assets/f5f2566b93e89391da4db79462b8078b.woff2) format("woff2"), url(assets/c4f508e7c4f01a9eeba7f08155cde04e.woff) format("woff"), url(assets/65b286af947c0d982ca01b40e1fcab38.ttf) format("truetype"), url(assets/7b9568e6389b1f8ae0902cd39665fc1e.svg#fontawesome) format("svg"); }
 
 .far {
   font-family: 'Font Awesome 5 Free';
@@ -14420,8 +14451,8 @@ readers do not read off random characters that represent icons */
   font-style: normal;
   font-weight: 900;
   font-display: auto;
-  src: url(assets/ef3df98419d143d9617fe163bf4edc0b.eot);
-  src: url(assets/ef3df98419d143d9617fe163bf4edc0b.eot?#iefix) format("embedded-opentype"), url(assets/b5cf8ae26748570d8fb95a47f46b69e1.woff2) format("woff2"), url(assets/4bced7c4c0d61d4f988629bb8ae80b8b.woff) format("woff"), url(assets/acf50f59802f20d8b45220eaae532a1c.ttf) format("truetype"), url(assets/b557f56e367e59344ca95f9d1fb44352.svg#fontawesome) format("svg"); }
+  src: url(assets/8e4a6dcc692b3887f9f542cd6894d6d4.eot);
+  src: url(assets/8e4a6dcc692b3887f9f542cd6894d6d4.eot?#iefix) format("embedded-opentype"), url(assets/44d537ab79f921fde5a28b2c1636f397.woff2) format("woff2"), url(assets/333bae208dc363746961b234ff6c2500.woff) format("woff"), url(assets/0bff33a5fd7ec390235476b4859747a0.ttf) format("truetype"), url(assets/c2801fb415f03c7b170934769d7b5397.svg#fontawesome) format("svg"); }
 
 .fa,
 .fas {
@@ -14456,9 +14487,41 @@ readers do not read off random characters that represent icons */
   text-align: center;
   margin: 1px;
   will-change: contents, width;
+  transition: all 0.25s;
 }
-.ol-overlay-container {
-  will-change: left,right,top,bottom;
+.ol-scale-bar {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+}
+.ol-scale-step-marker {
+  width: 1px;
+  height: 15px;
+  background-color: #000000;
+  float: right;
+  z-Index: 10;
+}
+.ol-scale-step-text {
+  position: absolute;
+  bottom: -5px;
+  font-size: 12px;
+  z-Index: 11;
+  color: #000000;
+  text-shadow: -2px 0 #FFFFFF, 0 2px #FFFFFF, 2px 0 #FFFFFF, 0 -2px #FFFFFF;
+}
+.ol-scale-text {
+  position: absolute;
+  font-size: 14px;
+  text-align: center;
+  bottom: 25px;
+  color: #000000;
+  text-shadow: -2px 0 #FFFFFF, 0 2px #FFFFFF, 2px 0 #FFFFFF, 0 -2px #FFFFFF;
+}
+.ol-scale-singlebar {
+  position: relative;
+  height: 10px;
+  z-Index: 9;
+  border: 1px solid black;
 }
 
 .ol-unsupported {
@@ -14520,11 +14583,6 @@ readers do not read off random characters that represent icons */
 .ol-full-screen {
   right: .5em;
   top: .5em;
-}
-@media print {
-  .ol-control {
-    display: none;
-  }
 }
 
 .ol-control button {
