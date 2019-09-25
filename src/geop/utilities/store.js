@@ -32,12 +32,14 @@ export function setState (item, value, permanent = false) {
   state[item] = value
   // local storage
   if (permanent && storeAvailable) {
-    set(item, value).then(() => {
-      // events
-      if (item in events) {
-        events[item].forEach(handler => handler(state[item]))
-      }
-    })
+    set(item, value)
+      .then(() => {
+        // events
+        if (item in events) {
+          events[item].forEach(handler => handler(state[item]))
+        }
+      })
+      .catch(err => console.error(err))
   } else {
     // events
     if (item in events) {

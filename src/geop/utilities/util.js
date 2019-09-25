@@ -3,6 +3,12 @@ import randomColor from 'randomcolor'
 import { getLength, getArea } from 'ol/sphere'
 import GPX from 'ol/format/GPX'
 import { b64encode } from './b64encode'
+import X2JS from 'x2js'
+
+const x2js = new X2JS({
+  attributePrefix: '@',
+  useDoubleQuotes: true
+})
 
 const noSleep = new NoSleep()
 const debugStore = []
@@ -59,7 +65,18 @@ export function copy (str) {
 }
 
 export function gpxExport (fn, fset) {
-  const string = new GPX().writeFeatures(fset)
+  // hack to fix ol bug
+  const additional = {
+    name: 'Geop export',
+    url: 'https://gp.sookoll.ee',
+    time: new Date().toISOString()
+  }
+  const node = new GPX().writeFeatures(fset)
+  const json = x2js.xml_str2json(node)
+  json.gpx = Object.assign(additional, json.gpx)
+  json.gpx['@creator'] = 'Geop'
+  json.gpx.wpt = fset.filter(f => f.get('_inGeotrip')).map(f => f.get('wpt'))
+  const string = x2js.json2xml_str(json)
   const base64 = b64encode('<?xml version="1.0" encoding="utf-8"?>' + string)
   file(fn, 'data:text/gpx+xml;base64,' + base64)
 }

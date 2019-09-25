@@ -1,7 +1,7 @@
 export default {
   test: features => {
     const test = features.filter(f => {
-      return (f.get('wpt') && f.get('wpt')['groundspeak:cache'])
+      return (f.get('wpt') && f.get('wpt')['cache'] && f.get('wpt')['cache']['__prefix'] === 'groundspeak')
     })
     return test.length > 0
   },
@@ -9,14 +9,12 @@ export default {
     const today = new Date()
     opts.features.forEach(feature => {
       const wpt = feature.get('wpt')
-      feature.unset('wpt')
-      feature.unset('extensionsNode_')
-      if (wpt['groundspeak:cache']) {
+      if (wpt && wpt['cache']) {
         const cacheData = {}
-        Object.keys(wpt['groundspeak:cache']).forEach(i => {
-          if (i !== '_text') {
-            cacheData[i.replace('groundspeak:', '')] = wpt['groundspeak:cache'][i]['_text']
-              ? wpt['groundspeak:cache'][i]['_text'] : wpt['groundspeak:cache'][i]
+        Object.keys(wpt['cache']).forEach(i => {
+          if (!i.startsWith('__')) {
+            cacheData[i] = wpt['cache'][i]['__text']
+              ? wpt['cache'][i]['__text'] : wpt['cache'][i]
           }
         })
         // id
@@ -37,11 +35,11 @@ export default {
         }
         feature.set('status', status)
         // time
-        feature.set('time', wpt.time['_text'])
+        feature.set('time', wpt.time)
         // name
         feature.set('name', cacheData.name)
         // url
-        feature.set('url', wpt.url['_text'])
+        feature.set('url', wpt.url)
         // owner
         feature.set('owner', cacheData.owner)
         // container
@@ -59,12 +57,12 @@ export default {
         )
         const newCache = (feature.get('fstatus') === 'Not Found' && testDate > today) ? 'New Cache' : null
         feature.set('newCache', newCache)
-      } else {
-        // assume waypoint
+      } else if (wpt) {
+        // assume waypoint or route
         // name
         feature.set('name', feature.get('type'))
         // url
-        feature.set('url', wpt.url['_text'])
+        feature.set('url', wpt.url)
       }
       if (!feature.getId()) {
         feature.setId(opts.uid())

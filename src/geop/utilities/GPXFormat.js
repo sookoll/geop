@@ -3,13 +3,19 @@ import Point from 'ol/geom/Point'
 import LineString from 'ol/geom/LineString'
 import MultiLineString from 'ol/geom/MultiLineString'
 import Feature from 'ol/Feature'
-import { transformWithOptions } from 'ol/format/Feature'
+import { transformGeometryWithOptions } from 'ol/format/Feature'
 import GeometryLayout from 'ol/geom/GeometryLayout'
 import { includes } from 'ol/array'
 import { makeStructureNS, makeObjectPropertySetter, parseNode, pushParseAndPop,
   makeArrayPusher } from 'ol/xml'
 import { readString, readDecimal, readNonNegativeInteger, readDateTime } from 'ol/format/xsd'
-import xml2js from 'Utilities/xml2'
+import { deepCopy } from 'Utilities/util'
+import X2JS from 'x2js'
+
+const x2js = new X2JS({
+  attributePrefix: '@',
+  useDoubleQuotes: true
+})
 
 /**
  * @const
@@ -193,10 +199,11 @@ function readWpt (node, objectStack) {
   const coordinates = appendCoordinate([], layoutOptions, node, values)
   const layout = applyLayoutOptions(layoutOptions, coordinates)
   const geometry = new Point(coordinates, layout)
-  transformWithOptions(geometry, false, options)
+  transformGeometryWithOptions(geometry, false, options)
   const feature = new Feature(geometry)
   feature.setProperties(values)
-  feature.set('wpt', xml2js(node))
+  // added this!
+  feature.set('wpt', deepCopy(x2js.xml2json(node)))
   return feature
 }
 /**
@@ -289,7 +296,7 @@ function readRte (node, objectStack) {
   delete values['layoutOptions']
   const layout = applyLayoutOptions(layoutOptions, flatCoordinates)
   const geometry = new LineString(flatCoordinates, layout)
-  transformWithOptions(geometry, false, options)
+  transformGeometryWithOptions(geometry, false, options)
   const feature = new Feature(geometry)
   feature.setProperties(values)
   return feature
@@ -318,7 +325,7 @@ function readTrk (node, objectStack) {
   delete values['layoutOptions']
   const layout = applyLayoutOptions(layoutOptions, flatCoordinates, ends)
   const geometry = new MultiLineString(flatCoordinates, layout, ends)
-  transformWithOptions(geometry, false, options)
+  transformGeometryWithOptions(geometry, false, options)
   const feature = new Feature(geometry)
   feature.setProperties(values)
   return feature
