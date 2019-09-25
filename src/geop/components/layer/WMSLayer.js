@@ -58,6 +58,7 @@ class WMSLayer extends Component {
               <div class="modal-body text-muted">
                 ${t('Insert WMS v.1.1.1 URL with LAYERS and SRS parameters')}
                 <textarea class="form-control" rows="3"></textarea>
+                <input type="hidden" />
                 <div class="small examples">
                   ${examples.length ? '<b>Näited:</b><br>' : ''}
                   ${examples.join('<br/>')}
@@ -72,16 +73,31 @@ class WMSLayer extends Component {
       `)
       this.modal.on('click', 'button.confirm', e => {
         e.preventDefault()
+        let idx = this.state.layers.length
+        if (this.modal.find('textarea').val().length < 10) {
+          return
+        }
+        // edit
+        if (this.modal.find('input').val().length) {
+          // get old index
+          const oldLayer = this.state.layers.getArray()
+            .filter(layer => layer.get('id') === this.modal.find('input').val())
+          if (oldLayer.length) {
+            idx = this.state.layers.getArray().indexOf(oldLayer[0])
+            // remove old layer
+            this.state.layers.remove(oldLayer[0])
+          }
+        }
         const layer = this.createLayer(this.modal.find('textarea').val().trim())
         if (layer) {
-          this.state.layers.push(layer)
-          this.modal.find('textarea').val('')
+          this.state.layers.insertAt(idx, layer)
+          this.modal.find('textarea, input').val('')
           this.modal.modal('hide')
         }
       })
       this.modal.on('click', '.examples a', e => {
         e.preventDefault()
-        this.modal.find('textarea').val(e.target.href)
+        this.modal.find('textarea').val(decodeURIComponent(e.target.href))
       })
       $('body').append(this.modal)
     }

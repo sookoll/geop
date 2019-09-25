@@ -104,6 +104,15 @@ class LayerManager extends Component {
       this.el.on('change', '.layer input[type=color]', e => {
         this.setLayerColor($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'), e.target.value)
       })
+      this.el.on('click', '.layer a.edit-layer', e => {
+        e.preventDefault()
+        const id = $(e.currentTarget).closest('.layer').data('id')
+        const url = this.getWMSUrl($(e.currentTarget).closest('.layer').data('group'), id)
+        if (url) {
+          $($(e.currentTarget).data('target')).find('textarea').val(url)
+          $($(e.currentTarget).data('target')).find('input').val(id)
+        }
+      })
     }
   }
 
@@ -147,7 +156,6 @@ class LayerManager extends Component {
         handle: '.layer-title',
         onUpdate: e => {
           this.reorderLayers(e)
-          // this.render()
         }
       })
     }
@@ -161,6 +169,13 @@ class LayerManager extends Component {
           ? `<span class="dot">
               <input type="color" value="${layer.get('conf').color}"/>
             </span>` : ''
+        const btn = layer.get('conf').type === 'FeatureCollection'
+          ? `<a href="#" class="fit-layer">
+              <i class="fa fa-search-plus"></i>
+            </a>`
+          : `<a href="#" class="edit-layer" data-toggle="modal" data-target="#modal_wmslayer">
+              <i class="fa fa-edit"></i>
+            </a>`
         return `
           <li
             class="dropdown-item ${sortable ? 'sort-item' : ''} layer ${this.layerVisible(layer) ? '' : 'disabled'}"
@@ -169,9 +184,7 @@ class LayerManager extends Component {
             <i class="check far ${layer.getVisible() ? 'fa-check-square' : 'fa-square'}"></i>
             <span class="layer-title">${t(layer.get('title'))}</span>
             <div class="layer-tools">
-              <a href="#" class="fit-layer">
-                <i class="fa fa-search-plus"></i>
-              </a>
+              ${btn}
               <a href="#" class="remove-layer">
                 <i class="fa fa-times"></i>
               </a>
@@ -295,11 +308,20 @@ class LayerManager extends Component {
     })
   }
 
+  getWMSUrl (groupId, id) {
+    for (let layer of this.state[groupId].getArray()) {
+      if (layer && layer.get('id') === id) {
+        const conf = layer.get('conf')
+        return conf.url + '&layers=' + conf.params.LAYERS + '&srs=' + conf.projection
+      }
+    }
+    return null
+  }
+
   storeLayers (groupId) {
     const layerConfs = this.state[groupId].getArray().map(layer => {
       return layer.get('conf')
     })
-    console.log(layerConfs)
     setState('layer/' + groupId, layerConfs, true)
   }
 }
