@@ -45,7 +45,7 @@ export const apiUrls = {
   },
   wmsexamples: {
     'Kataster': 'http://kaart.maaamet.ee/wms/alus?layers=TOPOYKSUS_6569,TOPOYKSUS_7793&SRS=EPSG:3301&title=Kataster',
-    'Looduskaitse': 'https://gsavalik.envir.ee/geoserver/eelis/ows?layers=kr_kaitseala,kr_hoiuala,kr_hooldatav_skv,kr_looduslik_skv,kr_reservaat,kr_ramsar,kr_vep,plk,kr_kohalik_objekt_pv,kr_yksikobjekti_kaitsetsoon,kr_kohalik_objekt,kr_yksikobjektid&SRS=EPSG:3301&opacity=0.9&title=Looduskaitse',
+    'Looduskaitse': 'https://gsavalik.envir.ee/geoserver/eelis/ows?layers=kr_kaitseala,kr_hoiuala,kr_hooldatav_skv,kr_looduslik_skv,kr_reservaat,kr_vep,plk,kr_kohalik_objekt_pv,kr_yksikobjekti_kaitsetsoon,kr_kohalik_objekt,kr_yksikobjektid&SRS=EPSG:3301&opacity=0.9&title=Looduskaitse',
     'Pärandkultuur': 'https://gsavalik.envir.ee/geoserver/eelis/ows?layers=pk_objekt_metsas&SRS=EPSG:3301&title=Pärandkultuur'
   }
 }

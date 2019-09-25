@@ -4,7 +4,7 @@ import { getState } from 'Utilities/store'
 import log from 'Utilities/log'
 import { createLayer, dataProjection } from './LayerCreator'
 import Component from 'Geop/Component'
-import GPXFormat from './GPXFormat'
+import GPXFormat from 'Utilities/GPXFormat'
 import GeoJSONFormat from 'ol/format/GeoJSON'
 import KMLFormat from 'ol/format/KML'
 import DragAndDrop from 'ol/interaction/DragAndDrop'
@@ -106,7 +106,6 @@ class FileLayer extends Component {
         const conf = this.fileTypes.geojson.writeFeaturesObject(e.features)
         conf.title = e.file.name
         const layer = this.createLayer(conf)
-        console.log(layer.get('conf').color)
         if (layer) {
           this.state.layers.push(layer)
           log('success', `${t('Added')} ${conf.features.length} ${t('features')}`)

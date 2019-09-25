@@ -121,19 +121,6 @@ class MapEngine extends Component {
         })
       })
     })
-    /* this.map.on('pointermove', e => {
-      if (e.dragging) {
-        return
-      }
-      const pixel = this.map.getEventPixel(e.originalEvent)
-      const hit = this.map.forEachLayerAtPixel(pixel, () => true, {
-        layerFilter: layer => {
-          return !!this.getLayer('layers', layer.get('id'))
-        }
-      })
-      console.log(hit)
-      this.el.css('cursor', hit ? 'pointer' : '')
-    }) */
     // run que
     const que = getState('map/que')
     que.forEach(item => {
