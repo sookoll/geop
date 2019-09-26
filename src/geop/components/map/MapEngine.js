@@ -83,6 +83,10 @@ class MapEngine extends Component {
     })
     // listen when feature has added or removed
     onchange('layerchange', ids => {
+      // for compability
+      if (typeof ids === 'string') {
+        ids = ['overlays', ids]
+      }
       this.updateStore(ids[0], ids[1])
     })
     // listen permalink change

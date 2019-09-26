@@ -9,8 +9,6 @@ export default {
     const today = new Date()
     opts.features.forEach(feature => {
       const wpt = feature.get('wpt')
-      // feature.unset('wpt')
-      // feature.unset('extensionsNode_')
       if (wpt['groundspeak:cache']) {
         const cacheData = {}
         Object.keys(wpt['groundspeak:cache']).forEach(i => {
@@ -29,7 +27,6 @@ export default {
           fstatus = 'Geocache Owner'
         }
         feature.set('fstatus', opts.mapping.fstatusGPX[fstatus] || fstatus)
-        // feature.unset('sym')
         // status
         let status = cacheData['@available'] === 'True' ? 'Available' : 'Unavailable'
         if (cacheData['@archived'] === 'True') {

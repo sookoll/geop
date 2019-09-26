@@ -30,18 +30,18 @@ class Filter extends Component {
   }
   render () {
     this.state.filter = this.buildPropertyList(this.state.layers)
+    const storedFilter = getState('geocache/filter')
+    console.log(storedFilter)
     this.el.html(`
       <ul class="list-group mb-3">
       ${Object.keys(this.state.filter).length
-    ? this.renderFilter(this.state.filter)
+    ? this.renderFilter(this.state.filter, storedFilter.query)
     : `<li class="list-group-item">
           <i class="fas fa-plus"></i>
           ${t('Add caches to map')}
         </li>`}
       </ul>
     `)
-    const storedFilter = getState('geocache/filter')
-    console.log(this.state.filter, storedFilter)
     this.el.find('input[data-filter]').on('change', e => {
       e.stopPropagation()
       this.filter()
@@ -56,8 +56,11 @@ class Filter extends Component {
       })
       this.filter()
     })
+    if (Object.keys(this.state.filter).length && storedFilter.count) {
+      this.filter()
+    }
   }
-  renderFilter (filter) {
+  renderFilter (filter, storedFilter = {}) {
     return `
       <li class="list-group-item">
         <label>
@@ -66,8 +69,9 @@ class Filter extends Component {
       </li>
       ${Object.keys(filter).map(group => {
     const list = Object.keys(filter[group]).map(item => {
+      const checked = storedFilter[group] && storedFilter[group].indexOf(item) > -1 ? 'checked="true"' : ''
       return `<label>
-            <input type="checkbox" name="${group}" data-filter="${group}" value="${item}">
+            <input type="checkbox" name="${group}" data-filter="${group}" value="${item}" ${checked}>
             ${t(filter[group][item])}
           </label>`
     })
