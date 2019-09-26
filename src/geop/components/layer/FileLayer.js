@@ -134,6 +134,7 @@ class FileLayer extends Component {
         f.id = uid()
       })
       conf.color = color
+      conf.visible = true
       conf.style = getFileLayerStyleConf(color)
       try {
         return createLayer(conf)

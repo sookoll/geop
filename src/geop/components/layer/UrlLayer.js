@@ -132,6 +132,7 @@ class UrlLayer extends Component {
       type: 'FeatureCollection',
       id: uid(),
       title: t(title),
+      visible: true,
       features: features,
       style: style
     })

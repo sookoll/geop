@@ -228,6 +228,7 @@ class LayerManager extends Component {
     this.state[groupId].forEach(layer => {
       if (layer.get('id') === id) {
         layer.setVisible(!layer.getVisible())
+        setState('layerchange', [groupId, id])
       }
     })
     this.state.open = true

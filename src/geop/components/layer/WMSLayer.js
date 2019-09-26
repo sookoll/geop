@@ -143,6 +143,7 @@ class WMSLayer extends Component {
       conf.url = constructURL(urlComponents)
       conf.id = uid()
       conf.title = urlComponents.query.title || conf.params.LAYERS
+      conf.visible = true
       conf.opacity = Number(urlComponents.query.opacity) || 1
       conf.crossOrigin = 'anonymous'
       return createLayer(conf)
