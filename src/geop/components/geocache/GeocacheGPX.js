@@ -7,7 +7,6 @@ export default {
   },
   formatFeatures: opts => {
     const today = new Date()
-    let show = false
     opts.features.forEach(feature => {
       const wpt = feature.get('wpt')
       // feature.unset('wpt')
@@ -69,10 +68,6 @@ export default {
       }
       if (!feature.getId()) {
         feature.setId(opts.uid())
-      }
-      if (!show) {
-        console.log(feature)
-        show = true
       }
     })
   }

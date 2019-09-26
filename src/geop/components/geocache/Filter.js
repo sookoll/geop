@@ -1,6 +1,6 @@
 import { geocache as cacheConf } from 'Conf/settings'
 import { t } from 'Utilities/translate'
-import { setState } from 'Utilities/store'
+import { getState, setState } from 'Utilities/store'
 import Component from 'Geop/Component'
 import $ from 'jquery'
 import './Filter.styl'
@@ -40,6 +40,8 @@ class Filter extends Component {
         </li>`}
       </ul>
     `)
+    const storedFilter = getState('geocache/filter')
+    console.log(this.state.filter, storedFilter)
     this.el.find('input[data-filter]').on('change', e => {
       e.stopPropagation()
       this.filter()
@@ -122,7 +124,7 @@ class Filter extends Component {
         }
       })
     })
-    setState('geocache/filter', params)
+    setState('geocache/filter', params, true)
   }
   getChecked () {
     const checked = this.el.find('input[data-filter]').serializeArray()
