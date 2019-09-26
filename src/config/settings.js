@@ -46,7 +46,9 @@ export const apiUrls = {
   wmsexamples: {
     'Kataster': 'http://kaart.maaamet.ee/wms/alus?layers=TOPOYKSUS_6569,TOPOYKSUS_7793&SRS=EPSG:3301&title=Kataster',
     'Looduskaitse': 'https://gsavalik.envir.ee/geoserver/eelis/ows?layers=kr_kaitseala,kr_hoiuala,kr_hooldatav_skv,kr_looduslik_skv,kr_reservaat,kr_vep,plk,kr_kohalik_objekt_pv,kr_yksikobjekti_kaitsetsoon,kr_kohalik_objekt,kr_yksikobjektid&SRS=EPSG:3301&opacity=0.9&title=Looduskaitse',
-    'Pärandkultuur': 'https://gsavalik.envir.ee/geoserver/eelis/ows?layers=pk_objekt_metsas&SRS=EPSG:3301&title=Pärandkultuur'
+    'Pärandkultuur': 'https://gsavalik.envir.ee/geoserver/eelis/ows?layers=pk_objekt_metsas&SRS=EPSG:3301&title=Pärandkultuur',
+    'LV foto': 'https://wmsbm4.kartes.lv/BMz8FJwH6/wgs/orto/?title=LV orto&layers=0&srs=EPSG:3857',
+    'LV kaart': 'https://wmsbm1.kartes.lv/BMz8FJwH6/wgs/15/?title=LV&layers=0&srs=EPSG:3857'
   }
 }
 export const geocache = {
@@ -88,7 +90,8 @@ export const geocache = {
       'Asukohata (tagurpidi) aare': 'Geocache|Locationless Cache',
       'Mõistatusaare': 'Geocache|Unknown Cache',
       'Kirjakastiaare': 'Geocache|Letterbox Hybrid',
-      'KusMaLäen': 'Geocache|Whereigo Cache'
+      'KusMaLäen': 'Geocache|Wherigo Cache',
+      'Maa-aare': 'Geocache|Earthcache'
     },
     container: {
       'mikro': 'Micro',
@@ -168,10 +171,15 @@ export const geocache = {
         class: 'fa fa-envelope',
         font: '900 12px "Font Awesome 5 Free"'
       },
-      'Geocache|Whereigo Cache': {
+      'Geocache|Wherigo Cache': {
         text: '\uf0a9',
         class: 'fa fa-arrow-circle-right',
         font: '900 12px "Font Awesome 5 Free"'
+      },
+      'Geocache|Earthcache': {
+        text: '\uf57c',
+        class: 'fa fa-globe-africa',
+        font: '900 13px "Font Awesome 5 Free"'
       },
       'Waypoint|Parking Area': {
         text: '\uf540',
