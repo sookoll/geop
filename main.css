@@ -196,7 +196,7 @@ a#osm-edit {
 
 #layermanager li {
   position: relative;
-  width: 250px;
+  width: 300px;
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
