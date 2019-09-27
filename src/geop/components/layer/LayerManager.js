@@ -153,20 +153,18 @@ class LayerManager extends Component {
       }
     })
     // sortable
-    if (ul.find('div.sortable').length) {
-      Sortable.create(ul.find('div.sortable')[0], {
-        draggable: 'li.sort-item',
-        handle: '.check',
-        onUpdate: e => {
-          this.reorderLayers(e)
-        }
-      })
-    }
+    Sortable.create(ul[0], {
+      draggable: 'li.sort-item',
+      handle: '.sort-handle',
+      onUpdate: e => {
+        this.reorderLayers(e)
+      }
+    })
   }
 
   renderLayerGroup (groupId, group, sortable = false) {
     return group.getLength() > 0
-      ? `<li class="dropdown-divider"></li>${sortable ? '<div class="sortable">' : ''}` +
+      ? `<li class="dropdown-divider"></li>` +
       group.getArray().map(layer => {
         const colorpicker = layer.get('conf').color && !layer.get('_cacheFormatParser')
           ? `<span class="dot color">
@@ -179,6 +177,10 @@ class LayerManager extends Component {
           : `<a href="#" class="edit-layer" data-toggle="modal" data-target="#modal_wmslayer">
               <i class="fa fa-edit"></i>
             </a>`
+        const sortHandle = sortable
+          ? `<a href="#" class="sort-handle">
+              <i class="dot"></i>
+            </a>` : ''
         return `
           <li
             class="dropdown-item ${sortable ? 'sort-item' : ''} layer ${this.layerVisible(layer) ? '' : 'disabled'}"
@@ -187,13 +189,14 @@ class LayerManager extends Component {
             <i class="check far ${layer.getVisible() ? 'fa-check-square' : 'fa-square'}"></i>
             <span class="layer-title">${t(layer.get('title'))}</span>
             <div class="layer-tools">
+              ${sortHandle}
               ${btn}
               <a href="#" class="remove-layer">
                 <i class="fa fa-times"></i>
               </a>
             </div>
           </li>`
-      }).join('') + `${sortable ? '</div>' : ''}` : ''
+      }).join('') : ''
   }
 
   permalinkToViewConf (permalink) {
