@@ -34,7 +34,7 @@ class Filter extends Component {
     this.el.html(`
       <ul class="list-group mb-3">
       ${Object.keys(this.state.filter).length
-    ? this.renderFilter(this.state.filter, storedFilter['query'] || {})
+    ? this.renderFilter(this.state.filter, storedFilter ? storedFilter['query'] : {})
     : `<li class="list-group-item">
           <i class="fas fa-plus"></i>
           ${t('Add caches to map')}
@@ -55,7 +55,7 @@ class Filter extends Component {
       })
       this.filter()
     })
-    if (Object.keys(this.state.filter).length && storedFilter['count']) {
+    if (Object.keys(this.state.filter).length && storedFilter && storedFilter['count']) {
       this.filter()
     }
   }
