@@ -30,7 +30,9 @@ class LayerManager extends Component {
     }
     this.handlers = {
       onchange: () => {
-        this.render()
+        if (!getState('ui/layermanager/sorting')) {
+          this.render()
+        }
       }
     }
     this.state.baseLayers.forEach(layer => {
@@ -67,52 +69,7 @@ class LayerManager extends Component {
     super.create()
     // events
     if (this.target && this.el) {
-      this.el.on('click', '.baselayer', e => {
-        e.preventDefault()
-        e.stopPropagation()
-        const id = $(e.currentTarget).data('id')
-        if (this.state.activeBaseLayer && id === this.state.activeBaseLayer.get('id')) {
-          this.toggleLayer('baseLayers', id)
-        } else {
-          if (this.changeBaseLayer(id)) {
-            setPermalink({
-              view: viewConfToPermalink({
-                center: getState('map/center'),
-                zoom: getState('map/zoom'),
-                rotation: getState('map/rotation'),
-                baseLayer: id
-              })
-            })
-          }
-        }
-      })
-      this.el.on('click', '.layer .check, .layer .layer-title', e => {
-        e.preventDefault()
-        e.stopPropagation()
-        this.toggleLayer($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'))
-      })
-      this.el.on('click', '.layer a.fit-layer', e => {
-        e.preventDefault()
-        e.stopPropagation()
-        this.fitTo($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'))
-      })
-      this.el.on('click', '.layer a.remove-layer', e => {
-        e.preventDefault()
-        e.stopPropagation()
-        this.removeLayer($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'))
-      })
-      this.el.on('change', '.layer input[type=color]', e => {
-        this.setLayerColor($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'), e.target.value)
-      })
-      this.el.on('click', '.layer a.edit-layer', e => {
-        e.preventDefault()
-        const id = $(e.currentTarget).closest('.layer').data('id')
-        const url = this.getWMSUrl($(e.currentTarget).closest('.layer').data('group'), id)
-        if (url) {
-          $($(e.currentTarget).data('target')).find('textarea').val(url)
-          $($(e.currentTarget).data('target')).find('input').val(id)
-        }
-      })
+
     }
   }
 
@@ -144,14 +101,61 @@ class LayerManager extends Component {
         ${this.renderLayerGroup('overlays', this.state.overlays)}
         ${this.renderLayerGroup('layers', this.state.layers, true)}
       </ul>`)
-    this.renderComponents(this.el.find('.dropdown-menu'))
+    const ul = this.el.find('.dropdown-menu')
+    this.renderComponents(ul)
     if (this.state.open) {
       this.el.find('button.toggle-btn').dropdown('toggle')
       this.state.open = false
     }
+    ul.on('click', '.baselayer', e => {
+      e.preventDefault()
+      e.stopPropagation()
+      const id = $(e.currentTarget).data('id')
+      if (this.state.activeBaseLayer && id === this.state.activeBaseLayer.get('id')) {
+        this.toggleLayer('baseLayers', id)
+      } else {
+        if (this.changeBaseLayer(id)) {
+          setPermalink({
+            view: viewConfToPermalink({
+              center: getState('map/center'),
+              zoom: getState('map/zoom'),
+              rotation: getState('map/rotation'),
+              baseLayer: id
+            })
+          })
+        }
+      }
+    })
+    ul.on('click', '.layer .check, .layer .layer-title', e => {
+      e.preventDefault()
+      e.stopPropagation()
+      this.toggleLayer($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'))
+    })
+    ul.on('click', '.layer a.fit-layer', e => {
+      e.preventDefault()
+      e.stopPropagation()
+      this.fitTo($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'))
+    })
+    ul.on('click', '.layer a.remove-layer', e => {
+      e.preventDefault()
+      e.stopPropagation()
+      this.removeLayer($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'))
+    })
+    ul.on('change', '.layer input[type=color]', e => {
+      this.setLayerColor($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'), e.target.value)
+    })
+    ul.on('click', '.layer a.edit-layer', e => {
+      e.preventDefault()
+      const id = $(e.currentTarget).closest('.layer').data('id')
+      const url = this.getWMSUrl($(e.currentTarget).closest('.layer').data('group'), id)
+      if (url) {
+        $($(e.currentTarget).data('target')).find('textarea').val(url)
+        $($(e.currentTarget).data('target')).find('input').val(id)
+      }
+    })
     // sortable
-    if (this.el.find('div.sortable').length) {
-      Sortable.create(this.el.find('div.sortable')[0], {
+    if (ul.find('div.sortable').length) {
+      Sortable.create(ul.find('div.sortable')[0], {
         draggable: 'li.sort-item',
         handle: '.layer-title',
         onUpdate: e => {
@@ -217,6 +221,7 @@ class LayerManager extends Component {
       layers[0].setVisible(true)
       this.state.activeBaseLayer = layers[0]
       setState('map/baseLayer', id, true)
+      this.state.open = true
       this.render()
       return true
     }
@@ -256,6 +261,8 @@ class LayerManager extends Component {
           setState('ui/layermanager/sorting', false)
         }
       })
+      this.state.open = true
+      this.render()
     }
   }
 

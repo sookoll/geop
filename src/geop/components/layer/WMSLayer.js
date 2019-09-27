@@ -73,7 +73,7 @@ class WMSLayer extends Component {
       `)
       this.modal.on('click', 'button.confirm', e => {
         e.preventDefault()
-        let idx = this.state.layers.length
+        let idx = this.state.layers.getLength()
         if (this.modal.find('textarea').val().length < 10) {
           return
         }
