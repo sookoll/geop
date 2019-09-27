@@ -31,7 +31,6 @@ class Filter extends Component {
   render () {
     this.state.filter = this.buildPropertyList(this.state.layers)
     const storedFilter = getState('geocache/filter')
-    console.log(storedFilter)
     this.el.html(`
       <ul class="list-group mb-3">
       ${Object.keys(this.state.filter).length

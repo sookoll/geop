@@ -3,7 +3,7 @@ import Point from 'ol/geom/Point'
 import LineString from 'ol/geom/LineString'
 import MultiLineString from 'ol/geom/MultiLineString'
 import Feature from 'ol/Feature'
-import { transformGeometryWithOptions } from 'ol/format/Feature'
+import { transformWithOptions } from 'ol/format/Feature'
 import GeometryLayout from 'ol/geom/GeometryLayout'
 import { includes } from 'ol/array'
 import { makeStructureNS, makeObjectPropertySetter, parseNode, pushParseAndPop,
@@ -193,7 +193,7 @@ function readWpt (node, objectStack) {
   const coordinates = appendCoordinate([], layoutOptions, node, values)
   const layout = applyLayoutOptions(layoutOptions, coordinates)
   const geometry = new Point(coordinates, layout)
-  transformGeometryWithOptions(geometry, false, options)
+  transformWithOptions(geometry, false, options)
   const feature = new Feature(geometry)
   feature.setProperties(values)
   feature.set('wpt', xml2js(node))
@@ -289,7 +289,7 @@ function readRte (node, objectStack) {
   delete values['layoutOptions']
   const layout = applyLayoutOptions(layoutOptions, flatCoordinates)
   const geometry = new LineString(flatCoordinates, layout)
-  transformGeometryWithOptions(geometry, false, options)
+  transformWithOptions(geometry, false, options)
   const feature = new Feature(geometry)
   feature.setProperties(values)
   return feature
@@ -318,7 +318,7 @@ function readTrk (node, objectStack) {
   delete values['layoutOptions']
   const layout = applyLayoutOptions(layoutOptions, flatCoordinates, ends)
   const geometry = new MultiLineString(flatCoordinates, layout, ends)
-  transformGeometryWithOptions(geometry, false, options)
+  transformWithOptions(geometry, false, options)
   const feature = new Feature(geometry)
   feature.setProperties(values)
   return feature

@@ -217,7 +217,6 @@ class LayerManager extends Component {
       layers[0].setVisible(true)
       this.state.activeBaseLayer = layers[0]
       setState('map/baseLayer', id, true)
-      // this.state.open = true
       this.render()
       return true
     }
