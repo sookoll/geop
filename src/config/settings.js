@@ -19,7 +19,7 @@ export const app = {
   debug: false, // collect all console debug, info and error into downloadable file
   debugFile: 'geop_debug.log',
   nominatimCountries: 'ee',
-  routing: true
+  routing: 'osrm'// provider key or false
 }
 export const map = {
   el: '#map',
@@ -39,6 +39,9 @@ export const apiUrls = {
   jsonstore: 'https://www.jsonstore.io/4d04eefd7ed4c19866cefcf038d0bebe95786bf33f0e60fdfbd8a554e6ae2670',
   qrcode: 'http://api.qrserver.com/v1/create-qr-code/?size=150x150&data=',
   osrm: 'https://router.project-osrm.org/route/v1/driving/',
+  openrouteservice: {
+    directions: 'https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b99b83882966492086eee3c4a0522e9c&start=8.681495,49.41461&end=8.687872,49.420318'
+  },
   google: {
     streetview: 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=',
     directions: 'https://www.google.com/maps/dir/?api=1&destination='
