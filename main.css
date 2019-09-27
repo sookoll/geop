@@ -241,6 +241,13 @@ a#osm-edit {
   width: 20px;
   text-align: center;
 }
+#layermanager li .layer-tools a.sort-handle {
+  cursor: ns-resize;
+}
+#layermanager li .layer-tools a.sort-handle .dot {
+  background: #ccc;
+  margin-bottom: 1px;
+}
 
 #search .input-group {
   width: 146px;
