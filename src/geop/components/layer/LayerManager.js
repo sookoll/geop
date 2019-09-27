@@ -251,7 +251,7 @@ class LayerManager extends Component {
   }
 
   reorderLayers (e) {
-    if (e.oldIndex !== e.newIndex) {
+    if (e.oldDraggableIndex !== e.newDraggableIndex) {
       const layerId = $(e.item).data('id')
       const groupId = $(e.item).data('group')
       this.state[groupId].forEach(layer => {
@@ -259,7 +259,7 @@ class LayerManager extends Component {
           // store reordering state
           setState('ui/layermanager/sorting', true)
           this.state[groupId].remove(layer)
-          this.state[groupId].insertAt(e.newIndex, layer)
+          this.state[groupId].insertAt(e.newDraggableIndex, layer)
           setState('ui/layermanager/sorting', false)
         }
       })
