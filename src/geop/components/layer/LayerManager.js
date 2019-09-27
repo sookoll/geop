@@ -12,9 +12,8 @@ import {
 import Component from 'Geop/Component'
 import OSMEdit from 'Components/osmedit/OSMEdit'
 import WMSLayer from './WMSLayer'
-
 import UrlLayer from './UrlLayer'
-import Sortable from 'sortablejs'
+// import Sortable from 'sortablejs'
 import './LayerManager.styl'
 
 class LayerManager extends Component {
@@ -155,13 +154,13 @@ class LayerManager extends Component {
     })
     // sortable
     if (ul.find('div.sortable').length) {
-      Sortable.create(ul.find('div.sortable')[0], {
+      /* Sortable.create(ul.find('div.sortable')[0], {
         draggable: 'li.sort-item',
         handle: '.layer-title',
         onUpdate: e => {
           this.reorderLayers(e)
         }
-      })
+      }) */
     }
   }
 
