@@ -30,6 +30,8 @@ class Config extends Component {
     }
   }
   render () {
+    const routingProfile = (typeof getState('routing/profile') !== 'undefined')
+      ? getState('routing/profile') : getState('app/routing').profile
     this.el.html(`
       <div class="install mb-3">
         <button
@@ -94,9 +96,9 @@ class Config extends Component {
         <select
           class="form-control"
           id="settings-routing">
-          <option value="" ${getState('app/routing').profile === '' ? 'selected' : ''}>${t('Disabled')}</option>
-          <option value="driving" ${getState('app/routing').profile === 'driving' ? 'selected' : ''}>${t('Driving')}</option>
-          <option value="hiking" ${getState('app/routing').profile === 'hiking' ? 'selected' : ''}>${t('Hiking')}</option>
+          <option value="" ${routingProfile === '' ? 'selected' : ''}>${t('Disabled')}</option>
+          <option value="driving" ${routingProfile === 'driving' ? 'selected' : ''}>${t('Driving')}</option>
+          <option value="hiking" ${routingProfile === 'hiking' ? 'selected' : ''}>${t('Hiking')}</option>
         </select>
       </div>
       <small class="form-text text-muted mb-3">
@@ -205,10 +207,10 @@ class Config extends Component {
     })
     // routing
     this.el.on('change', '#settings-routing', e => {
-      const settings = getState('app/routing')
-      if (e.target.value.trim() !== settings.profile) {
-        settings.profile = e.target.value.trim()
-        setState('app/routing', settings, true)
+      const routingProfile = (typeof getState('routing/profile') !== 'undefined')
+        ? getState('routing/profile') : getState('app/routing').profile
+      if (e.target.value.trim() !== routingProfile) {
+        setState('routing/profile', e.target.value.trim(), true)
         if (getState('app/debug')) {
           console.debug(`Config.render: Routing changed to ${e.target.value}`)
         }

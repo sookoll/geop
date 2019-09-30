@@ -42,11 +42,12 @@ export const apiUrls = {
   jsonstore: 'https://www.jsonstore.io/4d04eefd7ed4c19866cefcf038d0bebe95786bf33f0e60fdfbd8a554e6ae2670',
   qrcode: 'http://api.qrserver.com/v1/create-qr-code/?size=150x150&data=',
   osrm: {
-    driving: 'https://router.project-osrm.org/route/v1/driving/'
+    directions: 'https://router.project-osrm.org/route/v1/'
   },
   openrouteservice: {
-    driving: 'https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b99b83882966492086eee3c4a0522e9c',
-    hiking: 'https://api.openrouteservice.org/v2/directions/foot-hiking?api_key=5b3ce3597851110001cf6248b99b83882966492086eee3c4a0522e9c'
+    key: '5b3ce3597851110001cf6248b99b83882966492086eee3c4a0522e9c',
+    directions: 'https://api.openrouteservice.org/v2/directions/',
+    optimize: 'https://api.openrouteservice.org/optimization/'
   },
   google: {
     streetview: 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=',

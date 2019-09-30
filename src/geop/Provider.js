@@ -7,6 +7,15 @@ class Provider {
       this.xhr.abort()
     }
   }
+  test (coords) {
+    return !(coords.length < 2)
+  }
+  formatInput (coords, join = false) {
+    return coords.filter(lonLat => !!lonLat).map(lonLat => {
+      const pair = lonLat.slice(0, 2)
+      return join ? pair.join() : pair
+    })
+  }
   toGeoJSON (data) {
     data.id = data.id || uid()
     return {

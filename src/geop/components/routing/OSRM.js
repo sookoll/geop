@@ -10,13 +10,16 @@ class OSRM extends Provider {
     super()
     this.title = 'OSRM'
     this.xhr = null
-  }
-  formatInput (coords) {
-    return coords.filter(lonLat => !!lonLat).map(lonLat => {
-      return lonLat.slice(0, 2).join()
-    })
+    this.profiles = {
+      driving: 'driving'
+    }
   }
   test (coords) {
+    const routingProfile = (typeof getState('routing/profile') !== 'undefined')
+      ? getState('routing/profile') : getState('app/routing').profile
+    if (!(routingProfile in this.profiles)) {
+      return false
+    }
     return !(coords.length < 2)
   }
   directions (coords) {
@@ -25,7 +28,7 @@ class OSRM extends Provider {
       this.xhr = $.ajax({
         type: 'GET',
         crossDomain: true,
-        url: apiUrls.osrm.driving + coords.join(';'),
+        url: apiUrls.osrm.directions + this.profiles.driving + '/' + coords.join(';'),
         data: {
           overview: 'full'
         },

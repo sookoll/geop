@@ -74,20 +74,21 @@ class Routing extends Component {
     onchange('routing/stops', () => {
       this.handleContextMenuItems()
     })
-    onchange('app/routing', () => {
+    onchange('routing/profile', () => {
       this.handleContextMenuItems()
     })
   }
   handleContextMenuItems () {
     const contextMenuItems = getState('map/contextmenu')
-    const profile = getState('app/routing').profile
+    const routingProfile = (typeof getState('routing/profile') !== 'undefined')
+      ? getState('routing/profile') : getState('app/routing').profile
     Object.keys(this.state.contextmenu).forEach(key => {
       const idx = contextMenuItems.indexOf(this.state.contextmenu[key])
       if (idx > -1) {
         contextMenuItems.splice(idx, 1)
       }
     })
-    if (profile) {
+    if (routingProfile) {
       if (routeLayer && routeLayer.getSource().getFeatures().length) {
         contextMenuItems.push(this.state.contextmenu.done)
       } else {
@@ -139,7 +140,7 @@ export function findRoute (coords) {
     if (!provider) {
       throw new Error(t('Missing provider, aborting!'))
     }
-    const coordinates = provider.formatInput(coords)
+    const coordinates = provider.formatInput(coords, true)
     if (!provider.test(coordinates)) {
       throw new Error(t('Routing input test failed, aborting!'))
     }
@@ -164,6 +165,23 @@ export function findRoute (coords) {
           }
         }
       })
+      .catch(reject)
+  })
+}
+
+export function optimize (coords) {
+  return new Promise((resolve, reject) => {
+    const providerKey = getState('app/routing').provider
+    const provider = (providerKey in providers) ? providers[providerKey] : null
+    if (!provider) {
+      throw new Error(t('Missing provider, aborting!'))
+    }
+    const coordinates = provider.formatInput(coords, false)
+    if (!provider.test(coordinates)) {
+      throw new Error(t('Routing input test failed, aborting!'))
+    }
+    provider.optimize(coordinates)
+      .then(resolve)
       .catch(reject)
   })
 }

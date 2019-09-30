@@ -2,13 +2,16 @@ import { geocache as cacheConf } from 'Conf/settings'
 import { t } from 'Utilities/translate'
 import { getState, setState } from 'Utilities/store'
 import { gpxExport, formatDate, formatTime } from 'Utilities/util'
+import log from 'Utilities/log'
 import Component from 'Geop/Component'
+import { optimize } from 'Components/routing/Routing'
 import Collection from 'ol/Collection'
 import { createLayer } from 'Components/layer/LayerCreator'
 import Sortable from 'sortablejs'
 import Point from 'ol/geom/Point'
 import LineString from 'ol/geom/LineString'
 import Feature from 'ol/Feature'
+import { toLonLat } from 'ol/proj'
 import { getLength } from 'ol/sphere'
 import lineSliceAlong from '@turf/line-slice-along'
 import $ from 'jquery'
@@ -88,6 +91,9 @@ class Geotrip extends Component {
       ${this.state.collection.getLength()
     ? `<button type="button" class="btn btn-link sortby-found" ${found.length ? '' : 'disabled'}>
           <i class="fas fa-sort-amount-down"></i> ${t('Found')}
+        </button>
+        <button type="button" class="btn btn-link sortby-routing">
+          <i class="fas fa-sort-amount-down"></i> ${t('Routing')}
         </button>
         <div class="btn-group float-right" role="group">
           <a role="button" class="btn btn-secondary export" title="${t('Download')}">
@@ -181,9 +187,13 @@ class Geotrip extends Component {
       e.preventDefault()
       this.export()
     })
-    // share trip
+    // order trip by found date
     this.el.on('click', 'button.sortby-found', e => {
       this.sortByFound()
+    })
+    // order trip by routing
+    this.el.on('click', 'button.sortby-routing', e => {
+      this.sortByRouting()
     })
   }
   reorderCollection (collection, order) {
@@ -211,6 +221,24 @@ class Geotrip extends Component {
     const found = getState('geocache/trip/found')
     found.sort(compare)
     this.reorderCollection(this.state.collection, found.map(item => item.id))
+  }
+  sortByRouting () {
+    if (getState('app/routing').profile) {
+      optimize(this.state.collection.getArray().map(f => toLonLat(f.getGeometry().getCoordinates())))
+        .then(route => {
+          const order = route.steps
+            .filter(item => item.type === 'job')
+            .map(item => {
+              const f = this.state.collection.getArray()[item.job]
+              return f.getId()
+            })
+          this.reorderCollection(this.state.collection, order)
+          log('success', t('Geotrip reordered by optimum path'))
+        })
+        .catch(e => log('error', t('Unable to determine ordering')))
+    } else {
+      log('error', t('Routing disabled'))
+    }
   }
   loadState () {
     const ids = getState('geocache/trip/ids')
