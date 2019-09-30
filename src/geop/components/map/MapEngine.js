@@ -82,8 +82,12 @@ class MapEngine extends Component {
       this.storeLayers('overlays')
     })
     // listen when feature has added or removed
-    onchange('layerchange', layerId => {
-      this.updateStore(layerId)
+    onchange('layerchange', ids => {
+      // for compability
+      if (typeof ids === 'string') {
+        ids = ['overlays', ids]
+      }
+      this.updateStore(ids[0], ids[1])
     })
     // listen permalink change
     onPermalinkChange(permalink => {
@@ -121,19 +125,6 @@ class MapEngine extends Component {
         })
       })
     })
-    /* this.map.on('pointermove', e => {
-      if (e.dragging) {
-        return
-      }
-      const pixel = this.map.getEventPixel(e.originalEvent)
-      const hit = this.map.forEachLayerAtPixel(pixel, () => true, {
-        layerFilter: layer => {
-          return !!this.getLayer('layers', layer.get('id'))
-        }
-      })
-      console.log(hit)
-      this.el.css('cursor', hit ? 'pointer' : '')
-    }) */
     // run que
     const que = getState('map/que')
     que.forEach(item => {
@@ -219,8 +210,8 @@ class MapEngine extends Component {
     })
     setState('layer/' + group, layerConfs, true)
   }
-  updateStore (layerId) {
-    let layer = this.getLayer('overlays', layerId)
+  updateStore (group, layerId) {
+    let layer = this.getLayer(group, layerId)
     if (layer) {
       const conf = layer.get('conf')
       if (conf.type === 'FeatureCollection') {
@@ -229,9 +220,10 @@ class MapEngine extends Component {
           dataProjection: 'EPSG:4326'
         })
         conf.features = collection.features
-        layer.set('conf', conf)
       }
-      this.storeLayers('overlays')
+      conf.visible = layer.getVisible()
+      layer.set('conf', conf)
+      this.storeLayers(group)
     }
   }
   destroy () {

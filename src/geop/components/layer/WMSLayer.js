@@ -73,7 +73,7 @@ class WMSLayer extends Component {
       `)
       this.modal.on('click', 'button.confirm', e => {
         e.preventDefault()
-        let idx = this.state.layers.length
+        let idx = this.state.layers.getLength()
         if (this.modal.find('textarea').val().length < 10) {
           return
         }
@@ -143,7 +143,8 @@ class WMSLayer extends Component {
       conf.url = constructURL(urlComponents)
       conf.id = uid()
       conf.title = urlComponents.query.title || conf.params.LAYERS
-      conf.opacity = urlComponents.query.opacity || 1
+      conf.visible = true
+      conf.opacity = Number(urlComponents.query.opacity) || 1
       conf.crossOrigin = 'anonymous'
       return createLayer(conf)
     } else {

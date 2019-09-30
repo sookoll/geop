@@ -27,7 +27,6 @@ export default {
           fstatus = 'Geocache Owner'
         }
         feature.set('fstatus', opts.mapping.fstatusGPX[fstatus] || fstatus)
-        feature.unset('sym')
         // status
         let status = cacheData['@available'] === 'True' ? 'Available' : 'Unavailable'
         if (cacheData['@archived'] === 'True') {

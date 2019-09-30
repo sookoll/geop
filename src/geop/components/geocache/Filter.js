@@ -1,6 +1,6 @@
 import { geocache as cacheConf } from 'Conf/settings'
 import { t } from 'Utilities/translate'
-import { setState } from 'Utilities/store'
+import { getState, setState } from 'Utilities/store'
 import Component from 'Geop/Component'
 import $ from 'jquery'
 import './Filter.styl'
@@ -30,10 +30,11 @@ class Filter extends Component {
   }
   render () {
     this.state.filter = this.buildPropertyList(this.state.layers)
+    const storedFilter = getState('geocache/filter')
     this.el.html(`
       <ul class="list-group mb-3">
       ${Object.keys(this.state.filter).length
-    ? this.renderFilter(this.state.filter)
+    ? this.renderFilter(this.state.filter, storedFilter ? storedFilter['query'] : {})
     : `<li class="list-group-item">
           <i class="fas fa-plus"></i>
           ${t('Add caches to map')}
@@ -54,8 +55,11 @@ class Filter extends Component {
       })
       this.filter()
     })
+    if (Object.keys(this.state.filter).length && storedFilter && storedFilter['count']) {
+      this.filter()
+    }
   }
-  renderFilter (filter) {
+  renderFilter (filter, storedFilter = {}) {
     return `
       <li class="list-group-item">
         <label>
@@ -64,8 +68,9 @@ class Filter extends Component {
       </li>
       ${Object.keys(filter).map(group => {
     const list = Object.keys(filter[group]).map(item => {
+      const checked = storedFilter[group] && storedFilter[group].indexOf(item) > -1 ? 'checked="true"' : ''
       return `<label>
-            <input type="checkbox" name="${group}" data-filter="${group}" value="${item}">
+            <input type="checkbox" name="${group}" data-filter="${group}" value="${item}" ${checked}>
             ${t(filter[group][item])}
           </label>`
     })
@@ -122,7 +127,7 @@ class Filter extends Component {
         }
       })
     })
-    setState('geocache/filter', params)
+    setState('geocache/filter', params, true)
   }
   getChecked () {
     const checked = this.el.find('input[data-filter]').serializeArray()

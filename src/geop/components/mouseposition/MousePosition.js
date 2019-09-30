@@ -294,7 +294,7 @@ export function createMarker (coordinate) {
     }
   })
   layer.getSource().addFeature(feature)
-  setState('layerchange', layer.get('id'))
+  setState('layerchange', ['overlays', layer.get('id')])
   return feature
 }
 

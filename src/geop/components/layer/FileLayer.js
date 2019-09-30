@@ -106,7 +106,6 @@ class FileLayer extends Component {
         const conf = this.fileTypes.geojson.writeFeaturesObject(e.features)
         conf.title = e.file.name
         const layer = this.createLayer(conf)
-        console.log(layer.get('conf').color)
         if (layer) {
           this.state.layers.push(layer)
           log('success', `${t('Added')} ${conf.features.length} ${t('features')}`)
@@ -135,6 +134,7 @@ class FileLayer extends Component {
         f.id = uid()
       })
       conf.color = color
+      conf.visible = true
       conf.style = getFileLayerStyleConf(color)
       try {
         return createLayer(conf)
