@@ -20,7 +20,7 @@ export const app = {
   debugFile: 'geop_debug.log',
   nominatimCountries: 'ee',
   routing: {
-    provider: 'openrouteservice', // provider key or null
+    provider: 'osrm', // provider key or null
     profile: 'driving'// driving, hiking, ''
   }
 }

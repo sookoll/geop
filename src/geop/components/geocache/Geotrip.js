@@ -4,7 +4,7 @@ import { getState, setState } from 'Utilities/store'
 import { gpxExport, formatDate, formatTime } from 'Utilities/util'
 import log from 'Utilities/log'
 import Component from 'Geop/Component'
-import { optimize } from 'Components/routing/Routing'
+import { findRoute, optimize } from 'Components/routing/Routing'
 import Collection from 'ol/Collection'
 import { createLayer } from 'Components/layer/LayerCreator'
 import Sortable from 'sortablejs'
@@ -89,11 +89,22 @@ class Geotrip extends Component {
         </li>`}
       </ul>
       ${this.state.collection.getLength()
-    ? `<button type="button" class="btn btn-link sortby-found" ${found.length ? '' : 'disabled'}>
-          <i class="fas fa-sort-amount-down"></i> ${t('Found')}
-        </button>
-        <button type="button" class="btn btn-link sortby-routing">
-          <i class="fas fa-sort-amount-down"></i> ${t('Routing')}
+    ? `<div class="dropdown sort">
+          <button class="btn btn-link dropdown-toggle"
+            type="button"
+            id="geotripSort"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false">
+            <i class="fas fa-sort-amount-down"></i>
+          </button>
+          <div class="dropdown-menu" aria-labelledby="geotripSort">
+            <a class="dropdown-item sortby-found ${found.length ? '' : 'disabled'}" href="#">${t('Found')}</a>
+            <a class="dropdown-item sortby-routing" href="#">${t('Optimize')}</a>
+          </div>
+        </div>
+        <button type="button" class="btn btn-link routing">
+          <i class="fas fa-directions"></i> ${t('Routing')}
         </button>
         <div class="btn-group float-right" role="group">
           <a role="button" class="btn btn-secondary export" title="${t('Download')}">
@@ -188,12 +199,16 @@ class Geotrip extends Component {
       this.export()
     })
     // order trip by found date
-    this.el.on('click', 'button.sortby-found', e => {
+    this.el.on('click', 'a.sortby-found', e => {
       this.sortByFound()
     })
     // order trip by routing
-    this.el.on('click', 'button.sortby-routing', e => {
+    this.el.on('click', 'a.sortby-routing', e => {
       this.sortByRouting()
+    })
+    // routing
+    this.el.on('click', 'button.routing', e => {
+      this.routing()
     })
   }
   reorderCollection (collection, order) {
@@ -223,7 +238,9 @@ class Geotrip extends Component {
     this.reorderCollection(this.state.collection, found.map(item => item.id))
   }
   sortByRouting () {
-    if (getState('app/routing').profile) {
+    const routingProfile = (typeof getState('routing/profile') !== 'undefined')
+      ? getState('routing/profile') : getState('app/routing').profile
+    if (routingProfile) {
       optimize(this.state.collection.getArray().map(f => toLonLat(f.getGeometry().getCoordinates())))
         .then(route => {
           const order = route.steps
@@ -236,6 +253,19 @@ class Geotrip extends Component {
           log('success', t('Geotrip reordered by optimum path'))
         })
         .catch(e => log('error', t('Unable to determine ordering')))
+    } else {
+      log('error', t('Routing disabled'))
+    }
+  }
+  routing () {
+    const routingProfile = (typeof getState('routing/profile') !== 'undefined')
+      ? getState('routing/profile') : getState('app/routing').profile
+    if (routingProfile) {
+      findRoute(this.state.collection.getArray().map(f => toLonLat(f.getGeometry().getCoordinates())))
+        .then(route => {
+          console.log(route)
+        })
+        .catch(e => log('error', t('Unable to find route')))
     } else {
       log('error', t('Routing disabled'))
     }
