@@ -1,7 +1,7 @@
 import { apiUrls } from 'Conf/settings'
 import { getState } from 'Utilities/store'
 import Provider from 'Geop/Provider'
-import GeoJSONFormat from 'ol/format/GeoJSON'
+import Polyline from 'ol/format/Polyline'
 import { t } from 'Utilities/translate'
 import $ from 'jquery'
 
@@ -23,26 +23,33 @@ class OpenRouteService extends Provider {
     }
     return !(coords.length < 2)
   }
-  directions (coords) {
+  formatInput (coords) {
+    return coords.filter(lonLat => !!lonLat).map(lonLat => {
+      return lonLat.slice(0, 2)
+    })
+  }
+  directions (coordinates) {
     const routingProfile = (typeof getState('routing/profile') !== 'undefined')
       ? getState('routing/profile') : getState('app/routing').profile
     return new Promise((resolve, reject) => {
       this.clear()
       if (routingProfile in this.profiles) {
         this.xhr = $.ajax({
-          type: 'GET',
+          type: 'POST',
           crossDomain: true,
           url: apiUrls.openrouteservice.directions + this.profiles[routingProfile],
-          data: {
-            api_key: apiUrls.openrouteservice.key,
-            start: coords[0],
-            end: coords[1]
+          headers: {
+            Authorization: apiUrls.openrouteservice.key
           },
+          data: JSON.stringify({
+            coordinates
+          }),
+          contentType: 'application/json',
           dataType: 'json'
         })
           .done(response => {
-            if (response && response.features && response.features.length) {
-              resolve(this.format(response.features[0]))
+            if (response && response.routes && response.routes.length) {
+              resolve(this.format(response.routes[0].geometry))
             } else {
               reject(new Error(t('Unable to find route') + ': ' + JSON.stringify(response)))
             }
@@ -108,8 +115,11 @@ class OpenRouteService extends Provider {
       }
     })
   }
-  format (geojson) {
-    return new GeoJSONFormat().readFeature(geojson, {
+  format (polyline) {
+    return new Polyline({
+      factor: 1e5
+    }).readFeature(polyline, {
+      dataProjection: 'EPSG:4326',
       featureProjection: getState('map/projection')
     })
   }

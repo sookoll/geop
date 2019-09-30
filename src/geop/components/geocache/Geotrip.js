@@ -241,7 +241,12 @@ class Geotrip extends Component {
     const routingProfile = (typeof getState('routing/profile') !== 'undefined')
       ? getState('routing/profile') : getState('app/routing').profile
     if (routingProfile) {
-      optimize(this.state.collection.getArray().map(f => toLonLat(f.getGeometry().getCoordinates())))
+      const position = getState('map/geolocation/position')
+      const locations = this.state.collection.getArray().map(f => toLonLat(f.getGeometry().getCoordinates()))
+      if (position) {
+        locations.unshift(toLonLat(position))
+      }
+      optimize(locations)
         .then(route => {
           const order = route.steps
             .filter(item => item.type === 'job')
@@ -263,7 +268,7 @@ class Geotrip extends Component {
     if (routingProfile) {
       findRoute(this.state.collection.getArray().map(f => toLonLat(f.getGeometry().getCoordinates())))
         .then(route => {
-          console.log(route)
+
         })
         .catch(e => log('error', t('Unable to find route')))
     } else {
