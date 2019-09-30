@@ -1,5 +1,6 @@
 import Component from 'Geop/Component'
 import OSRMProvider from './OSRM'
+import OpenRouteService from './OpenRouteService'
 import { apiUrls } from 'Conf/settings'
 import { getState, setState, onchange } from 'Utilities/store'
 import { t } from 'Utilities/translate'
@@ -12,7 +13,8 @@ import { getDistance } from 'ol/sphere'
 import $ from 'jquery'
 
 const providers = {
-  osrm: new OSRMProvider()
+  osrm: new OSRMProvider(),
+  openrouteservice: new OpenRouteService()
 }
 
 let routeLayer = null

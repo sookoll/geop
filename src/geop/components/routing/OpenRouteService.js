@@ -1,14 +1,14 @@
 import { apiUrls } from 'Conf/settings'
 import { getState } from 'Utilities/store'
 import Provider from 'Geop/Provider'
+import GeoJSONFormat from 'ol/format/GeoJSON'
 import { t } from 'Utilities/translate'
-import Polyline from 'ol/format/Polyline'
 import $ from 'jquery'
 
-class OSRM extends Provider {
+class OpenRouteService extends Provider {
   constructor () {
     super()
-    this.title = 'OSRM'
+    this.title = 'OpenRouteService'
     this.xhr = null
   }
   formatInput (coords) {
@@ -25,17 +25,14 @@ class OSRM extends Provider {
       this.xhr = $.ajax({
         type: 'GET',
         crossDomain: true,
-        url: apiUrls.osrm.directions + coords.join(';'),
-        data: {
-          overview: 'full'
-        },
+        url: apiUrls.openrouteservice.directions + `&start=${coords[0]}&end=${coords[1]}`,
         dataType: 'json'
       })
         .done(response => {
-          if (response.code === 'Ok') {
-            resolve(this.format(response.routes[0].geometry))
+          if (response && response.features && response.features.length) {
+            resolve(this.format(response.features[0]))
           } else {
-            reject(new Error(t('Unable to find route') + ': ' + response.code))
+            reject(new Error(t('Unable to find route') + ': ' + JSON.stringify(response)))
           }
         })
         .fail(function (request) {
@@ -46,14 +43,11 @@ class OSRM extends Provider {
         })
     })
   }
-  format (polyline) {
-    return new Polyline({
-      factor: 1e5
-    }).readFeature(polyline, {
-      dataProjection: 'EPSG:4326',
+  format (geojson) {
+    return new GeoJSONFormat().readFeature(geojson, {
       featureProjection: getState('map/projection')
     })
   }
 }
 
-export default OSRM
+export default OpenRouteService
