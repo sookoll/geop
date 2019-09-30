@@ -89,6 +89,19 @@ class Config extends Component {
       <small class="form-text text-muted mb-3">
         ${t('Limit address search with comma separated list of country codes (ee,fi - Estonia, Finland). Empty means no limit.')}
       </small>
+      <h5>${t('Routing')}</h5>
+      <div class="form-group">
+        <select
+          class="form-control"
+          id="settings-routing">
+          <option value="" ${getState('app/routing').profile === '' ? 'selected' : ''}>${t('Disabled')}</option>
+          <option value="driving" ${getState('app/routing').profile === 'driving' ? 'selected' : ''}>${t('Driving')}</option>
+          <option value="hiking" ${getState('app/routing').profile === 'hiking' ? 'selected' : ''}>${t('Hiking')}</option>
+        </select>
+      </div>
+      <small class="form-text text-muted mb-3">
+        ${t('Select routing profile or disable routing')}
+      </small>
       <h5>${t('Share only geotrip features')}</h5>
       <div class="btn-group" role="group">
         <button type="button"
@@ -187,6 +200,17 @@ class Config extends Component {
         setState('app/nominatimCountries', e.target.value.trim(), true)
         if (getState('app/debug')) {
           console.debug(`Config.render: Search limit changed to ${e.target.value}`)
+        }
+      }
+    })
+    // routing
+    this.el.on('change', '#settings-routing', e => {
+      const settings = getState('app/routing')
+      if (e.target.value.trim() !== settings.profile) {
+        settings.profile = e.target.value.trim()
+        setState('app/routing', settings, true)
+        if (getState('app/debug')) {
+          console.debug(`Config.render: Routing changed to ${e.target.value}`)
         }
       }
     })

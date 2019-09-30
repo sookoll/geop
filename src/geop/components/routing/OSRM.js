@@ -25,7 +25,7 @@ class OSRM extends Provider {
       this.xhr = $.ajax({
         type: 'GET',
         crossDomain: true,
-        url: apiUrls.osrm.directions + coords.join(';'),
+        url: apiUrls.osrm.driving + coords.join(';'),
         data: {
           overview: 'full'
         },

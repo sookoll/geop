@@ -20,27 +20,32 @@ class OpenRouteService extends Provider {
     return !(coords.length < 2)
   }
   directions (coords) {
+    const profile = getState('app/routing').profile
     return new Promise((resolve, reject) => {
       this.clear()
-      this.xhr = $.ajax({
-        type: 'GET',
-        crossDomain: true,
-        url: apiUrls.openrouteservice.directions + `&start=${coords[0]}&end=${coords[1]}`,
-        dataType: 'json'
-      })
-        .done(response => {
-          if (response && response.features && response.features.length) {
-            resolve(this.format(response.features[0]))
-          } else {
-            reject(new Error(t('Unable to find route') + ': ' + JSON.stringify(response)))
-          }
+      if (profile in apiUrls.openrouteservice) {
+        this.xhr = $.ajax({
+          type: 'GET',
+          crossDomain: true,
+          url: apiUrls.openrouteservice[profile] + `&start=${coords[0]}&end=${coords[1]}`,
+          dataType: 'json'
         })
-        .fail(function (request) {
-          if (request.statusText === 'abort') {
-            return
-          }
-          reject(new Error(t('Unable to find route') + ': ' + t(request.responseJSON ? request.responseJSON.message : request.statusText)))
-        })
+          .done(response => {
+            if (response && response.features && response.features.length) {
+              resolve(this.format(response.features[0]))
+            } else {
+              reject(new Error(t('Unable to find route') + ': ' + JSON.stringify(response)))
+            }
+          })
+          .fail(function (request) {
+            if (request.statusText === 'abort') {
+              return
+            }
+            reject(new Error(t('Unable to find route') + ': ' + t(request.responseJSON ? request.responseJSON.message : request.statusText)))
+          })
+      } else {
+        reject(new Error(t('Routing disabled')))
+      }
     })
   }
   format (geojson) {

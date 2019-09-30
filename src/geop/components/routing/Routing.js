@@ -74,26 +74,32 @@ class Routing extends Component {
     onchange('routing/stops', () => {
       this.handleContextMenuItems()
     })
+    onchange('app/routing', () => {
+      this.handleContextMenuItems()
+    })
   }
   handleContextMenuItems () {
     const contextMenuItems = getState('map/contextmenu')
+    const profile = getState('app/routing').profile
     Object.keys(this.state.contextmenu).forEach(key => {
       const idx = contextMenuItems.indexOf(this.state.contextmenu[key])
       if (idx > -1) {
         contextMenuItems.splice(idx, 1)
       }
     })
-    if (routeLayer && routeLayer.getSource().getFeatures().length) {
-      contextMenuItems.push(this.state.contextmenu.done)
-    } else {
-      if (!this.state.from) {
-        contextMenuItems.push(this.state.contextmenu.from)
-      }
-      if (!this.state.to) {
-        contextMenuItems.push(this.state.contextmenu.to)
-      }
-      if (this.state.from && this.state.to) {
+    if (profile) {
+      if (routeLayer && routeLayer.getSource().getFeatures().length) {
         contextMenuItems.push(this.state.contextmenu.done)
+      } else {
+        if (!this.state.from) {
+          contextMenuItems.push(this.state.contextmenu.from)
+        }
+        if (!this.state.to) {
+          contextMenuItems.push(this.state.contextmenu.to)
+        }
+        if (this.state.from && this.state.to) {
+          contextMenuItems.push(this.state.contextmenu.done)
+        }
       }
     }
   }
@@ -128,7 +134,7 @@ export function findRoute (coords) {
     routeLayer.getSource().clear()
   }
   return new Promise((resolve, reject) => {
-    const providerKey = getState('app/routing')
+    const providerKey = getState('app/routing').provider
     const provider = (providerKey in providers) ? providers[providerKey] : null
     if (!provider) {
       throw new Error(t('Missing provider, aborting!'))
@@ -139,21 +145,23 @@ export function findRoute (coords) {
     }
     provider.directions(coordinates)
       .then(route => {
-        createRouteLayer()
-        const routeCoords = route.getGeometry().getCoordinates()
-        const distance = getDistance(coords[0], coords[coords.length - 1])
-        if (routeCoords.length > 1 &&
-          distance > getDistance(coords[0], toLonLat(routeCoords[0])) &&
-          distance > getDistance(coords[coords.length - 1], toLonLat(routeCoords[routeCoords.length - 1]))
-        ) {
-          routeCoords.unshift(fromLonLat(coords[0], getState('map/projection')))
-          routeCoords.push(fromLonLat(coords[coords.length - 1], getState('map/projection')))
-          route.getGeometry().setCoordinates(routeCoords)
-          routeLayer.getSource().addFeature(route)
-          setState('routing/stops', coords)
-          resolve(route)
-        } else {
-          throw new Error(t('Invalid route'))
+        if (route) {
+          createRouteLayer()
+          const routeCoords = route.getGeometry().getCoordinates()
+          const distance = getDistance(coords[0], coords[coords.length - 1])
+          if (routeCoords.length > 1 &&
+            distance > getDistance(coords[0], toLonLat(routeCoords[0])) &&
+            distance > getDistance(coords[coords.length - 1], toLonLat(routeCoords[routeCoords.length - 1]))
+          ) {
+            routeCoords.unshift(fromLonLat(coords[0], getState('map/projection')))
+            routeCoords.push(fromLonLat(coords[coords.length - 1], getState('map/projection')))
+            route.getGeometry().setCoordinates(routeCoords)
+            routeLayer.getSource().addFeature(route)
+            setState('routing/stops', coords)
+            resolve(route)
+          } else {
+            throw new Error(t('Invalid route'))
+          }
         }
       })
       .catch(reject)

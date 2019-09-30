@@ -19,7 +19,10 @@ export const app = {
   debug: false, // collect all console debug, info and error into downloadable file
   debugFile: 'geop_debug.log',
   nominatimCountries: 'ee',
-  routing: 'openrouteservice'// provider key or false
+  routing: {
+    provider: 'openrouteservice', // provider key or null
+    profile: 'driving'// driving, hiking, ''
+  }
 }
 export const map = {
   el: '#map',
@@ -39,10 +42,11 @@ export const apiUrls = {
   jsonstore: 'https://www.jsonstore.io/4d04eefd7ed4c19866cefcf038d0bebe95786bf33f0e60fdfbd8a554e6ae2670',
   qrcode: 'http://api.qrserver.com/v1/create-qr-code/?size=150x150&data=',
   osrm: {
-    directions: 'https://router.project-osrm.org/route/v1/driving/'
+    driving: 'https://router.project-osrm.org/route/v1/driving/'
   },
   openrouteservice: {
-    directions: 'https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b99b83882966492086eee3c4a0522e9c'
+    driving: 'https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b99b83882966492086eee3c4a0522e9c',
+    hiking: 'https://api.openrouteservice.org/v2/directions/foot-hiking?api_key=5b3ce3597851110001cf6248b99b83882966492086eee3c4a0522e9c'
   },
   google: {
     streetview: 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=',
