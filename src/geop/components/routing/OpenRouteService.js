@@ -65,7 +65,7 @@ class OpenRouteService extends Provider {
       }
     })
   }
-  optimize (coords) {
+  optimize (start, end, coords) {
     const routingProfile = (typeof getState('routing/profile') !== 'undefined')
       ? getState('routing/profile') : getState('app/routing').profile
     return new Promise((resolve, reject) => {
@@ -73,8 +73,8 @@ class OpenRouteService extends Provider {
       const vehicles = [{
         id: 1,
         profile: this.profiles[routingProfile],
-        start: coords[0],
-        end: coords[coords.length - 1]
+        start: start,
+        end: end
       }]
       const jobs = coords.map((coord, i) => {
         return {

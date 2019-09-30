@@ -243,10 +243,12 @@ class Geotrip extends Component {
     if (routingProfile) {
       const position = getState('map/geolocation/position')
       const locations = this.state.collection.getArray().map(f => toLonLat(f.getGeometry().getCoordinates()))
+      let start = locations[0]
+      let end = locations[locations.length - 1]
       if (position) {
-        locations.unshift(toLonLat(position))
+        start = toLonLat(position)
       }
-      optimize(locations)
+      optimize(start, end, locations)
         .then(route => {
           const order = route.steps
             .filter(item => item.type === 'job')
@@ -257,7 +259,10 @@ class Geotrip extends Component {
           this.reorderCollection(this.state.collection, order)
           log('success', t('Geotrip reordered by optimum path'))
         })
-        .catch(e => log('error', t('Unable to determine ordering')))
+        .catch(e => {
+          console.error(e)
+          log('error', t('Unable to determine ordering'))
+        })
     } else {
       log('error', t('Routing disabled'))
     }
@@ -266,7 +271,12 @@ class Geotrip extends Component {
     const routingProfile = (typeof getState('routing/profile') !== 'undefined')
       ? getState('routing/profile') : getState('app/routing').profile
     if (routingProfile) {
-      findRoute(this.state.collection.getArray().map(f => toLonLat(f.getGeometry().getCoordinates())))
+      const position = getState('map/geolocation/position')
+      const locations = this.state.collection.getArray().map(f => toLonLat(f.getGeometry().getCoordinates()))
+      if (position) {
+        locations.unshift(toLonLat(position))
+      }
+      findRoute(locations)
         .then(route => {
 
         })

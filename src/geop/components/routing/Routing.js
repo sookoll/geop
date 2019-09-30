@@ -169,7 +169,7 @@ export function findRoute (coords) {
   })
 }
 
-export function optimize (coords) {
+export function optimize (start, end, coords) {
   return new Promise((resolve, reject) => {
     const providerKey = getState('app/routing').provider
     const provider = (providerKey in providers) ? providers[providerKey] : null
@@ -180,7 +180,7 @@ export function optimize (coords) {
     if (!provider.test(coordinates)) {
       throw new Error(t('Routing input test failed, aborting!'))
     }
-    provider.optimize(coordinates)
+    provider.optimize(start, end, coordinates)
       .then(resolve)
       .catch(reject)
   })
