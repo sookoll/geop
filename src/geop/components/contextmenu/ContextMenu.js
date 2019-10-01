@@ -18,8 +18,7 @@ class ContextMenu extends Component {
     }
     this.state = {
       overlay: null,
-      items: items,
-      opening: false
+      items: items
     }
     this.create()
   }
@@ -44,16 +43,14 @@ class ContextMenu extends Component {
   init (map) {
     map.addOverlay(this.state.overlay)
     map.on('click', e => {
-      if (e.originalEvent.ctrlKey || this.state.opening) {
-        this.state.opening = false
+      if (e.originalEvent.ctrlKey || getState('event/contextmenu')) {
         return
       }
       this.el.popover('dispose')
     })
     map.getViewport().addEventListener('contextmenu', e => {
       e.preventDefault()
-      e.stopPropagation()
-      this.state.opening = true
+      setState('event/contextmenu', true)
       let coords = map.getEventCoordinate(e)
       const hit = closestFeatureTo(map, map.getEventPixel(e), coords)
       if (hit && hit[1].getGeometry() instanceof Point) {

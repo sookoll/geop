@@ -29,7 +29,8 @@ class Popup extends Component {
     }
     this.handlers = {
       clicked: e => {
-        if (e.originalEvent.ctrlKey) {
+        if (e.originalEvent.ctrlKey || getState('event/contextmenu')) {
+          setState('event/contextmenu', false)
           return
         }
         this.open(e)
