@@ -157,6 +157,60 @@ body .size-1_1 {
   margin-bottom: 0;
 }
 
+#mouse-position {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #fff;
+}
+#mouse-position div.coords {
+  margin-top: 6px;
+}
+circle#map-click-animation {
+  animation-duration: 0.3s;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-out;
+  animation-name: map-click-animation;
+}
+@-moz-keyframes map-click-animation {
+  from {
+    r: 0;
+    opacity: 0.5;
+  }
+  to {
+    r: 10px;
+    opacity: 0;
+  }
+}
+@-webkit-keyframes map-click-animation {
+  from {
+    r: 0;
+    opacity: 0.5;
+  }
+  to {
+    r: 10px;
+    opacity: 0;
+  }
+}
+@-o-keyframes map-click-animation {
+  from {
+    r: 0;
+    opacity: 0.5;
+  }
+  to {
+    r: 10px;
+    opacity: 0;
+  }
+}
+@keyframes map-click-animation {
+  from {
+    r: 0;
+    opacity: 0.5;
+  }
+  to {
+    r: 10px;
+    opacity: 0;
+  }
+}
+
 #tab-geotrip ul li .badge {
   cursor: ns-resize;
 }
@@ -173,6 +227,15 @@ body .size-1_1 {
 }
 #tab-geotrip ul li .timestamp {
   padding-left: 23px;
+}
+#tab-geotrip .sort {
+  display: inline-block;
+}
+#tab-geotrip button.btn-link {
+  text-decoration: none;
+}
+#tab-geotrip button.btn-link:focus {
+  background-color: inherit;
 }
 #tab-geotrip a.export {
   color: #fff;
@@ -309,60 +372,6 @@ a#osm-edit {
   bottom: -8px;
   left: 0;
   line-height: 10px;
-}
-
-#mouse-position {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #fff;
-}
-#mouse-position div.coords {
-  margin-top: 6px;
-}
-circle#map-click-animation {
-  animation-duration: 0.3s;
-  animation-iteration-count: 1;
-  animation-timing-function: ease-out;
-  animation-name: map-click-animation;
-}
-@-moz-keyframes map-click-animation {
-  from {
-    r: 0;
-    opacity: 0.5;
-  }
-  to {
-    r: 10px;
-    opacity: 0;
-  }
-}
-@-webkit-keyframes map-click-animation {
-  from {
-    r: 0;
-    opacity: 0.5;
-  }
-  to {
-    r: 10px;
-    opacity: 0;
-  }
-}
-@-o-keyframes map-click-animation {
-  from {
-    r: 0;
-    opacity: 0.5;
-  }
-  to {
-    r: 10px;
-    opacity: 0;
-  }
-}
-@keyframes map-click-animation {
-  from {
-    r: 0;
-    opacity: 0.5;
-  }
-  to {
-    r: 10px;
-    opacity: 0;
-  }
 }
 
 #navigation {
