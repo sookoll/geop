@@ -182,6 +182,7 @@ class Geotrip extends Component {
   initEvents () {
     // remove element
     this.el.on('click', 'li button.close', e => {
+      e.preventDefault()
       this.remove($(e.currentTarget).closest('li').data('id'))
     })
     // zoom to
@@ -191,6 +192,7 @@ class Geotrip extends Component {
     })
     // clear trip
     this.el.on('click', 'button.clear', e => {
+      e.preventDefault()
       this.clearTrip()
     })
     // export trip
@@ -200,14 +202,17 @@ class Geotrip extends Component {
     })
     // order trip by found date
     this.el.on('click', 'a.sortby-found', e => {
+      e.preventDefault()
       this.sortByFound()
     })
     // order trip by routing
     this.el.on('click', 'a.sortby-routing', e => {
+      e.preventDefault()
       this.sortByRouting()
     })
     // routing
     this.el.on('click', 'button.routing', e => {
+      e.preventDefault()
       this.routing()
     })
   }
