@@ -29,6 +29,9 @@ class Popup extends Component {
     }
     this.handlers = {
       clicked: e => {
+        if (e.originalEvent.ctrlKey) {
+          return
+        }
         this.open(e)
       }
     }
