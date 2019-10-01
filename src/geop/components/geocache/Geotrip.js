@@ -2,13 +2,16 @@ import { geocache as cacheConf } from 'Conf/settings'
 import { t } from 'Utilities/translate'
 import { getState, setState } from 'Utilities/store'
 import { gpxExport, formatDate, formatTime } from 'Utilities/util'
+import log from 'Utilities/log'
 import Component from 'Geop/Component'
+import { findRoute, optimize } from 'Components/routing/Routing'
 import Collection from 'ol/Collection'
 import { createLayer } from 'Components/layer/LayerCreator'
 import Sortable from 'sortablejs'
 import Point from 'ol/geom/Point'
 import LineString from 'ol/geom/LineString'
 import Feature from 'ol/Feature'
+import { toLonLat } from 'ol/proj'
 import { getLength } from 'ol/sphere'
 import lineSliceAlong from '@turf/line-slice-along'
 import $ from 'jquery'
@@ -86,8 +89,22 @@ class Geotrip extends Component {
         </li>`}
       </ul>
       ${this.state.collection.getLength()
-    ? `<button type="button" class="btn btn-link sortby-found" ${found.length ? '' : 'disabled'}>
-          <i class="fas fa-sort-amount-down"></i> ${t('Found')}
+    ? `<div class="dropdown sort">
+          <button class="btn btn-link dropdown-toggle"
+            type="button"
+            id="geotripSort"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false">
+            <i class="fas fa-sort-amount-down"></i>
+          </button>
+          <div class="dropdown-menu" aria-labelledby="geotripSort">
+            <a class="dropdown-item sortby-found ${found.length ? '' : 'disabled'}" href="#">${t('Found')}</a>
+            <a class="dropdown-item sortby-routing" href="#">${t('Optimize')}</a>
+          </div>
+        </div>
+        <button type="button" class="btn btn-link routing">
+          <i class="fas fa-directions"></i> ${t('Routing')}
         </button>
         <div class="btn-group float-right" role="group">
           <a role="button" class="btn btn-secondary export" title="${t('Download')}">
@@ -181,9 +198,17 @@ class Geotrip extends Component {
       e.preventDefault()
       this.export()
     })
-    // share trip
-    this.el.on('click', 'button.sortby-found', e => {
+    // order trip by found date
+    this.el.on('click', 'a.sortby-found', e => {
       this.sortByFound()
+    })
+    // order trip by routing
+    this.el.on('click', 'a.sortby-routing', e => {
+      this.sortByRouting()
+    })
+    // routing
+    this.el.on('click', 'button.routing', e => {
+      this.routing()
     })
   }
   reorderCollection (collection, order) {
@@ -211,6 +236,54 @@ class Geotrip extends Component {
     const found = getState('geocache/trip/found')
     found.sort(compare)
     this.reorderCollection(this.state.collection, found.map(item => item.id))
+  }
+  sortByRouting () {
+    const routingProfile = (typeof getState('routing/profile') !== 'undefined')
+      ? getState('routing/profile') : getState('app/routing').profile
+    if (routingProfile) {
+      const position = getState('map/geolocation/position')
+      const locations = this.state.collection.getArray().map(f => toLonLat(f.getGeometry().getCoordinates()))
+      let start = locations[0]
+      let end = locations[locations.length - 1]
+      if (position) {
+        start = toLonLat(position)
+      }
+      optimize(start, end, locations)
+        .then(route => {
+          const order = route.steps
+            .filter(item => item.type === 'job')
+            .map(item => {
+              const f = this.state.collection.getArray()[item.job]
+              return f.getId()
+            })
+          this.reorderCollection(this.state.collection, order)
+          log('success', t('Geotrip reordered by optimum path'))
+        })
+        .catch(e => {
+          console.error(e)
+          log('error', t('Unable to determine ordering'))
+        })
+    } else {
+      log('error', t('Routing disabled'))
+    }
+  }
+  routing () {
+    const routingProfile = (typeof getState('routing/profile') !== 'undefined')
+      ? getState('routing/profile') : getState('app/routing').profile
+    if (routingProfile) {
+      const position = getState('map/geolocation/position')
+      const locations = this.state.collection.getArray().map(f => toLonLat(f.getGeometry().getCoordinates()))
+      if (position) {
+        locations.unshift(toLonLat(position))
+      }
+      findRoute(locations)
+        .then(route => {
+
+        })
+        .catch(e => log('error', t('Unable to find route')))
+    } else {
+      log('error', t('Routing disabled'))
+    }
   }
   loadState () {
     const ids = getState('geocache/trip/ids')

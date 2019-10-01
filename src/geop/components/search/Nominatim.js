@@ -30,9 +30,7 @@ class Coordinate extends Provider {
   }
 
   geocode (query, cb) {
-    if (this.xhr && typeof this.xhr.abort === 'function') {
-      this.xhr.abort()
-    }
+    this.clear()
     this.xhr = $.ajax({
       type: 'GET',
       crossDomain: true,

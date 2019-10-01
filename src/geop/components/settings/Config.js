@@ -30,6 +30,8 @@ class Config extends Component {
     }
   }
   render () {
+    const routingProfile = (typeof getState('routing/profile') !== 'undefined')
+      ? getState('routing/profile') : getState('app/routing').profile
     this.el.html(`
       <div class="install mb-3">
         <button
@@ -88,6 +90,19 @@ class Config extends Component {
       </div>
       <small class="form-text text-muted mb-3">
         ${t('Limit address search with comma separated list of country codes (ee,fi - Estonia, Finland). Empty means no limit.')}
+      </small>
+      <h5>${t('Routing')}</h5>
+      <div class="form-group">
+        <select
+          class="form-control"
+          id="settings-routing">
+          <option value="" ${routingProfile === '' ? 'selected' : ''}>${t('Disabled')}</option>
+          <option value="driving" ${routingProfile === 'driving' ? 'selected' : ''}>${t('Driving')}</option>
+          <option value="hiking" ${routingProfile === 'hiking' ? 'selected' : ''}>${t('Hiking')}</option>
+        </select>
+      </div>
+      <small class="form-text text-muted mb-3">
+        ${t('Select routing profile or disable routing')}
       </small>
       <h5>${t('Share only geotrip features')}</h5>
       <div class="btn-group" role="group">
@@ -187,6 +202,17 @@ class Config extends Component {
         setState('app/nominatimCountries', e.target.value.trim(), true)
         if (getState('app/debug')) {
           console.debug(`Config.render: Search limit changed to ${e.target.value}`)
+        }
+      }
+    })
+    // routing
+    this.el.on('change', '#settings-routing', e => {
+      const routingProfile = (typeof getState('routing/profile') !== 'undefined')
+        ? getState('routing/profile') : getState('app/routing').profile
+      if (e.target.value.trim() !== routingProfile) {
+        setState('routing/profile', e.target.value.trim(), true)
+        if (getState('app/debug')) {
+          console.debug(`Config.render: Routing changed to ${e.target.value}`)
         }
       }
     })

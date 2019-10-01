@@ -1,4 +1,6 @@
 import Component from 'Geop/Component'
+import OSRMProvider from './OSRM'
+import OpenRouteService from './OpenRouteService'
 import { apiUrls } from 'Conf/settings'
 import { getState, setState, onchange } from 'Utilities/store'
 import { t } from 'Utilities/translate'
@@ -8,10 +10,13 @@ import { createMarker } from 'Components/mouseposition/MousePosition'
 import { createLayer } from 'Components/layer/LayerCreator'
 import { toLonLat, fromLonLat } from 'ol/proj'
 import { getDistance } from 'ol/sphere'
-import Polyline from 'ol/format/Polyline'
 import $ from 'jquery'
 
-let xhr = null
+const providers = {
+  osrm: new OSRMProvider(),
+  openrouteservice: new OpenRouteService()
+}
+
 let routeLayer = null
 
 class Routing extends Component {
@@ -69,34 +74,48 @@ class Routing extends Component {
     onchange('routing/stops', () => {
       this.handleContextMenuItems()
     })
+    onchange('routing/profile', () => {
+      this.handleContextMenuItems()
+    })
   }
   handleContextMenuItems () {
     const contextMenuItems = getState('map/contextmenu')
+    const routingProfile = (typeof getState('routing/profile') !== 'undefined')
+      ? getState('routing/profile') : getState('app/routing').profile
     Object.keys(this.state.contextmenu).forEach(key => {
       const idx = contextMenuItems.indexOf(this.state.contextmenu[key])
       if (idx > -1) {
         contextMenuItems.splice(idx, 1)
       }
     })
-    if (routeLayer && routeLayer.getSource().getFeatures().length) {
-      contextMenuItems.push(this.state.contextmenu.done)
-    } else {
-      if (!this.state.from) {
-        contextMenuItems.push(this.state.contextmenu.from)
-      }
-      if (!this.state.to) {
-        contextMenuItems.push(this.state.contextmenu.to)
-      }
-      if (this.state.from && this.state.to) {
+    if (routingProfile) {
+      if (routeLayer && routeLayer.getSource().getFeatures().length) {
         contextMenuItems.push(this.state.contextmenu.done)
+      } else {
+        if (!this.state.from) {
+          contextMenuItems.push(this.state.contextmenu.from)
+        }
+        if (!this.state.to) {
+          contextMenuItems.push(this.state.contextmenu.to)
+        }
+        if (this.state.from && this.state.to) {
+          contextMenuItems.push(this.state.contextmenu.done)
+        }
       }
     }
   }
   findRoute () {
     const coords = getState('routing/stops')
-    findRoute(coords).then(route => {
+    if (coords.filter(lonLat => !!lonLat).length > 1) {
+      findRoute(coords).then(route => {
 
-    }).catch(e => {})
+      }).catch(e => {
+        log('error', e)
+        if (getState('app/debug')) {
+          console.error('routing error', e)
+        }
+      })
+    }
   }
   clear () {
     this.state.from = null
@@ -116,32 +135,24 @@ export function findRoute (coords) {
     routeLayer.getSource().clear()
   }
   return new Promise((resolve, reject) => {
-    const coordinates = coords.filter(lonLat => !!lonLat).map(lonLat => {
-      return lonLat.slice(0, 2).join()
-    })
-    if (coordinates.length < 2) {
-      throw new Error(t('Less than 2 pair of coordinates, aborting!'))
+    const providerKey = getState('app/routing').provider
+    const provider = (providerKey in providers) ? providers[providerKey] : null
+    if (!provider) {
+      throw new Error(t('Missing provider, aborting!'))
     }
-    if (xhr && typeof xhr.abort === 'function') {
-      xhr.abort()
+    const coordinates = provider.formatInput(coords, true)
+    if (!provider.test(coordinates)) {
+      throw new Error(t('Routing input test failed, aborting!'))
     }
-    xhr = $.ajax({
-      type: 'GET',
-      crossDomain: true,
-      url: apiUrls.osrm + coordinates.join(';'),
-      data: {
-        overview: 'full'
-      },
-      dataType: 'json'
-    })
-      .done(response => {
-        if (response.code === 'Ok') {
-          const route = createRoute(response.routes[0].geometry)
+    provider.directions(coordinates)
+      .then(route => {
+        if (route) {
+          createRouteLayer()
           const routeCoords = route.getGeometry().getCoordinates()
           const distance = getDistance(coords[0], coords[coords.length - 1])
           if (routeCoords.length > 1 &&
-          distance > getDistance(coords[0], toLonLat(routeCoords[0])) &&
-          distance > getDistance(coords[coords.length - 1], toLonLat(routeCoords[routeCoords.length - 1]))
+            distance > getDistance(coords[0], toLonLat(routeCoords[0])) &&
+            distance > getDistance(coords[coords.length - 1], toLonLat(routeCoords[routeCoords.length - 1]))
           ) {
             routeCoords.unshift(fromLonLat(coords[0], getState('map/projection')))
             routeCoords.push(fromLonLat(coords[coords.length - 1], getState('map/projection')))
@@ -150,41 +161,36 @@ export function findRoute (coords) {
             setState('routing/stops', coords)
             resolve(route)
           } else {
-            routeError(t('No route between start and destination'), reject)
+            throw new Error(t('Invalid route'))
           }
-        } else {
-          routeError(t('Unable to find route') + ': ' + response.code, reject)
         }
       })
-      .fail((request, textStatus) => {
-        if (request.statusText === 'abort') {
-          return
-        }
-        routeError(t('Unable to find route') + ': ' + t(request.responseJSON ? request.responseJSON.message : textStatus), reject)
-      })
+      .catch(reject)
   })
 }
 
-function routeError (errorText, reject) {
-  log('error', errorText)
-  if (getState('app/debug')) {
-    console.error('routing error', errorText)
-  }
-  reject(new Error(errorText))
+export function optimize (start, end, coords) {
+  return new Promise((resolve, reject) => {
+    const providerKey = getState('app/routing').provider
+    const provider = (providerKey in providers) ? providers[providerKey] : null
+    if (!provider) {
+      throw new Error(t('Missing provider, aborting!'))
+    }
+    const coordinates = provider.formatInput(coords, false)
+    if (!provider.test(coordinates)) {
+      throw new Error(t('Routing input test failed, aborting!'))
+    }
+    provider.optimize(start, end, coordinates)
+      .then(resolve)
+      .catch(reject)
+  })
 }
 
-function createRoute (polyline) {
+function createRouteLayer () {
   if (!routeLayer) {
     routeLayer = layerCreate()
     routeLayer.setMap(getState('map'))
   }
-  const route = new Polyline({
-    factor: 1e5
-  }).readFeature(polyline, {
-    dataProjection: 'EPSG:4326',
-    featureProjection: getState('map/projection')
-  })
-  return route
 }
 
 function layerCreate () {
