@@ -2,7 +2,7 @@ export default {
   test: features => {
     const test = features.filter(f => {
       return (
-        f.get('fstatus') &&
+        typeof f.get('fstatus') !== 'undefined' &&
         typeof f.get('type') !== 'undefined' &&
         f.get('date_hidden')
       )
