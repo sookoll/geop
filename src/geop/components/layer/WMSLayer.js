@@ -26,9 +26,6 @@ class WMSLayer extends Component {
       FORMAT: 'image/png',
       VERSION: '1.1.1'
     }
-    this.state = {
-      layers: getState('map/layer/layers')
-    }
     // create is called from parent
   }
   render () {
@@ -55,10 +52,22 @@ class WMSLayer extends Component {
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <div class="modal-body text-muted">
-                ${t('Insert WMS v.1.1.1 URL with LAYERS and SRS parameters')}
+              <div class="modal-body">
+                <div class="text-muted">
+                  ${t('Insert WMS v.1.1.1 URL with LAYERS and SRS parameters')}
+                </div>
                 <textarea class="form-control" rows="3"></textarea>
-                <input type="hidden" />
+                <input name="id" type="hidden" />
+                <div class="form-inline py-2">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="group" id="group1" value="base">
+                    <label class="form-check-label" for="group1">${t('Add as base map')}</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="group" id="group2" value="layers" checked>
+                    <label class="form-check-label" for="group2">${t('Add as overlay')}</label>
+                  </div>
+                </div>
                 <div class="small examples">
                   ${examples.length ? '<b>Näited:</b><br>' : ''}
                   ${examples.join('<br/>')}
@@ -73,25 +82,27 @@ class WMSLayer extends Component {
       `)
       this.modal.on('click', 'button.confirm', e => {
         e.preventDefault()
-        let idx = this.state.layers.getLength()
         if (this.modal.find('textarea').val().length < 10) {
           return
         }
+        const groupId = this.modal.find('input[name=group]:checked').val()
+        const group = getState('map/layer/' + groupId)
+        let idx = group.getLength()
         // edit
-        if (this.modal.find('input').val().length) {
+        if (this.modal.find('input[name=id]').val().length) {
           // get old index
-          const oldLayer = this.state.layers.getArray()
-            .filter(layer => layer.get('id') === this.modal.find('input').val())
+          const oldLayer = group.getArray()
+            .filter(layer => layer.get('id') === this.modal.find('input[name=id]').val())
           if (oldLayer.length) {
-            idx = this.state.layers.getArray().indexOf(oldLayer[0])
+            idx = group.getArray().indexOf(oldLayer[0])
             // remove old layer
-            this.state.layers.remove(oldLayer[0])
+            group.remove(oldLayer[0])
           }
         }
         const layer = this.createLayer(this.modal.find('textarea').val().trim())
         if (layer) {
-          this.state.layers.insertAt(idx, layer)
-          this.modal.find('textarea, input').val('')
+          group.insertAt(idx, layer)
+          this.modal.find('textarea, input[name=id]').val('')
           this.modal.modal('hide')
         }
       })
@@ -145,6 +156,7 @@ class WMSLayer extends Component {
       conf.title = urlComponents.query.title || conf.params.LAYERS
       conf.visible = true
       conf.opacity = Number(urlComponents.query.opacity) || 1
+      conf.editable = true
       conf.crossOrigin = 'anonymous'
       return createLayer(conf)
     } else {

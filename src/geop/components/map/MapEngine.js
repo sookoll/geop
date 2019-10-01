@@ -57,7 +57,7 @@ class MapEngine extends Component {
     this.shouldUpdate = true
     // permalink
     const permalink = this.permalinkToViewConf(getPermalink('view'))
-    this.createBaseLayers(getState('layer/baseLayers'), permalink ? permalink.baselayer : null)
+    this.createBaseLayers(getState('layer/base'), permalink ? permalink.baselayer : null)
     this.createLayers(getState('layer/layers'))
     this.createOverlays(getState('layer/overlays'))
     // set to store
@@ -67,6 +67,13 @@ class MapEngine extends Component {
     setState('map/baseLayer', this.activeBaseLayer && this.activeBaseLayer.get('id'), true)
     // que for map
     setState('map/que', [])
+    // listen baselayers change
+    this.layers.base.getLayers().on('add', () => {
+      this.storeLayers('base')
+    })
+    this.layers.base.getLayers().on('remove', () => {
+      this.storeLayers('base')
+    })
     // listen layers change
     this.layers.layers.getLayers().on('add', () => {
       this.storeLayers('layers')
@@ -161,13 +168,12 @@ class MapEngine extends Component {
   }
 
   createBaseLayers (layers, activeBaseLayerId) {
-    Object.keys(layers).forEach(id => {
-      layers[id].visible = (id === activeBaseLayerId)
-      layers[id].id = id
-      layers[id].zIndex = 0
-      const layer = createLayer(layers[id])
+    layers.forEach(layerConf => {
+      layerConf.visible = (layerConf.id === activeBaseLayerId)
+      layerConf.zIndex = 0
+      const layer = createLayer(layerConf)
       this.addBaseLayer(layer)
-      if (layers[id].visible) {
+      if (layerConf.visible) {
         this.activeBaseLayer = layer
       }
     })

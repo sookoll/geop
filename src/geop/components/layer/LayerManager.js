@@ -28,6 +28,10 @@ class LayerManager extends Component {
       open: false
     }
     this.handlers = {
+      onbaselayerschange: (e) => {
+        this.changeBaseLayer(e.element.get('id'))
+        // this.render()
+      },
       onchange: () => {
         if (!getState('ui/layermanager/sorting')) {
           this.render()
@@ -39,6 +43,8 @@ class LayerManager extends Component {
         this.state.activeBaseLayer = layer
       }
     })
+    this.state.baseLayers.on('add', this.handlers.onbaselayerschange)
+    this.state.baseLayers.on('remove', this.handlers.onbaselayerschange)
     this.state.layers.on('add', this.handlers.onchange)
     this.state.layers.on('remove', this.handlers.onchange)
     this.state.overlays.on('add', this.handlers.onchange)
@@ -88,13 +94,29 @@ class LayerManager extends Component {
       <ul class="dropdown-menu dropdown-menu-right">
         ${this.state.baseLayers.getLength() > 0
     ? this.state.baseLayers.getArray().map(layer => {
+      let btn = ''
+      if (layer.get('conf').type === 'FeatureCollection') {
+        btn = `<a href="#" class="fit-layer">
+            <i class="fa fa-search-plus"></i>
+          </a>`
+      } else if (layer.get('conf').editable) {
+        btn = `<a href="#" class="edit-layer" data-toggle="modal" data-target="#modal_wmslayer">
+            <i class="fa fa-edit"></i>
+          </a>
+          <a href="#" class="remove-layer">
+            <i class="fa fa-times"></i>
+          </a>`
+      }
       return `
-              <li
-                class="dropdown-item baselayer ${this.layerVisible(layer) ? '' : 'disabled'}"
-                data-id="${layer.get('id')}">
-                <i class="check far ${layer.getVisible() ? 'fa-dot-circle' : 'fa-circle'}"></i>
-                ${t(layer.get('title'))}
-              </li>`
+        <li
+          class="dropdown-item baselayer ${this.layerVisible(layer) ? '' : 'disabled'}"
+          data-group="baseLayers" data-id="${layer.get('id')}">
+          <i class="check far ${layer.getVisible() ? 'fa-dot-circle' : 'fa-circle'}"></i>
+          <span class="layer-title">${t(layer.get('title'))}</span>
+          <div class="layer-tools">
+            ${btn}
+          </div>
+        </li>`
     }).join('')
     : `<li class="dropdown-item disabled">${t('No baselyers added')}</li>`}
         ${this.renderLayerGroup('overlays', this.state.overlays)}
@@ -106,10 +128,10 @@ class LayerManager extends Component {
       this.el.find('button.toggle-btn').dropdown('toggle')
       this.state.open = false
     }
-    ul.on('click', '.baselayer', e => {
+    ul.on('click', '.baselayer .check, .baselayer .layer-title', e => {
       e.preventDefault()
       e.stopPropagation()
-      const id = $(e.currentTarget).data('id')
+      const id = $(e.currentTarget).closest('li').data('id')
       if (this.state.activeBaseLayer && id === this.state.activeBaseLayer.get('id')) {
         this.toggleLayer('baseLayers', id)
       } else {
@@ -128,28 +150,29 @@ class LayerManager extends Component {
     ul.on('click', '.layer .check, .layer .layer-title', e => {
       e.preventDefault()
       e.stopPropagation()
-      this.toggleLayer($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'))
+      this.toggleLayer($(e.currentTarget).closest('li').data('group'), $(e.currentTarget).closest('li').data('id'))
     })
-    ul.on('click', '.layer a.fit-layer', e => {
+    ul.on('click', 'a.fit-layer', e => {
       e.preventDefault()
       e.stopPropagation()
-      this.fitTo($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'))
+      this.fitTo($(e.currentTarget).closest('li').data('group'), $(e.currentTarget).closest('li').data('id'))
     })
-    ul.on('click', '.layer a.remove-layer', e => {
+    ul.on('click', 'a.remove-layer', e => {
       e.preventDefault()
       e.stopPropagation()
-      this.removeLayer($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'))
+      this.removeLayer($(e.currentTarget).closest('li').data('group'), $(e.currentTarget).closest('li').data('id'))
     })
-    ul.on('change', '.layer input[type=color]', e => {
-      this.setLayerColor($(e.currentTarget).closest('.layer').data('group'), $(e.currentTarget).closest('.layer').data('id'), e.target.value)
+    ul.on('change', 'input[type=color]', e => {
+      this.setLayerColor($(e.currentTarget).closest('li').data('group'), $(e.currentTarget).closest('li').data('id'), e.target.value)
     })
-    ul.on('click', '.layer a.edit-layer', e => {
+    ul.on('click', 'a.edit-layer', e => {
       e.preventDefault()
-      const id = $(e.currentTarget).closest('.layer').data('id')
-      const url = this.getWMSUrl($(e.currentTarget).closest('.layer').data('group'), id)
+      e.stopPropagation()
+      const id = $(e.currentTarget).closest('li').data('id')
+      const url = this.getWMSUrl($(e.currentTarget).closest('li').data('group'), id)
       if (url) {
         $($(e.currentTarget).data('target')).find('textarea').val(url)
-        $($(e.currentTarget).data('target')).find('input').val(id)
+        $($(e.currentTarget).data('target')).find('input[name=id]').val(id)
       }
     })
     // sortable
@@ -170,13 +193,16 @@ class LayerManager extends Component {
           ? `<span class="dot color">
               <input type="color" value="${layer.get('conf').color}"/>
             </span>` : ''
-        const btn = layer.get('conf').type === 'FeatureCollection'
-          ? `<a href="#" class="fit-layer">
+        let btn = ''
+        if (layer.get('conf').type === 'FeatureCollection') {
+          btn = `<a href="#" class="fit-layer">
               <i class="fa fa-search-plus"></i>
             </a>`
-          : `<a href="#" class="edit-layer" data-toggle="modal" data-target="#modal_wmslayer">
+        } else if (layer.get('conf').editable) {
+          btn = `<a href="#" class="edit-layer" data-toggle="modal" data-target="#modal_wmslayer">
               <i class="fa fa-edit"></i>
             </a>`
+        }
         const sortHandle = sortable
           ? `<a href="#" class="sort-handle">
               <i class="dot"></i>
@@ -318,6 +344,7 @@ class LayerManager extends Component {
   }
 
   getWMSUrl (groupId, id) {
+    console.log(groupId, id)
     for (let layer of this.state[groupId].getArray()) {
       if (layer && layer.get('id') === id) {
         const conf = layer.get('conf')

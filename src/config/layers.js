@@ -1,21 +1,22 @@
 export const layers = {
-  baseLayers: {
-    osm: {
+  base: [
+    {
+      id: 'osm',
       type: 'XYZ',
       title: 'OSM',
       url: 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       projection: 'EPSG:3857',
       crossOrigin: null
-    },
-    photo: {
+    }, {
+      id: 'photo',
       type: 'Bing',
       title: 'Aerial',
       key: 'AozX0lfGO2nv-11kPOU6_BKWeJwgfAcyFQAXAwXQmnQtSJahtmYj8ZJ3JAzk36Z4',
       projection: 'EPSG:3857',
       imagerySet: 'AerialWithLabels',
       maxZoom: 19
-    },
-    makaart: {
+    }, {
+      id: 'makaart',
       type: 'Group',
       title: 'Map',
       projection: 'EPSG:3301',
@@ -39,8 +40,8 @@ export const layers = {
         gutter: 20,
         crossOrigin: null
       }]
-    },
-    mapkaart: {
+    }, {
+      id: 'mapkaart',
       type: 'Group',
       title: 'Topo',
       projection: 'EPSG:3301',
@@ -76,8 +77,8 @@ export const layers = {
         gutter: 20,
         crossOrigin: null
       }]
-    },
-    maorto: {
+    }, {
+      id: 'maorto',
       type: 'Group',
       title: 'Aerial Estonia',
       projection: 'EPSG:3301',
@@ -101,15 +102,15 @@ export const layers = {
         gutter: 20,
         crossOrigin: null
       }]
-    },
-    okaart: {
+    }, {
+      id: 'okaart',
       type: 'XYZ',
       title: 'O-kaart',
       url: 'https://okaart.osport.ee/{z}/{x}/{y}.png',
       projection: 'EPSG:3857',
       crossOrigin: null
     }
-  },
+  ],
   layers: [],
   overlays: []
 }
