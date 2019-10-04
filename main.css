@@ -263,6 +263,7 @@ a#osm-edit {
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
+  padding: 0;
 }
 #layermanager li.dropdown-item.active,
 #layermanager li.dropdown-item:active {
@@ -270,25 +271,41 @@ a#osm-edit {
   text-decoration: none;
   background-color: inherit;
 }
+#layermanager li label {
+  display: block;
+  padding: 0.25rem 1.5rem;
+  margin: 0;
+}
 #layermanager li .dot {
   height: 6px;
   width: 6px;
+  background: #ccc;
   border-radius: 50%;
   display: inline-block;
   overflow: hidden;
 }
-#layermanager li .dot.color {
+#layermanager li .color {
   position: absolute;
-  top: 10px;
-  left: 8px;
+  width: 20px;
+  top: 0px;
+  left: 0px;
+  padding: 0.25rem 0;
+  overflow: hidden;
 }
-#layermanager li .dot input {
+#layermanager li .color .colorpicker {
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+}
+#layermanager li .color .colorpicker .dot {
+  margin: 7px;
+}
+#layermanager li .color input {
   border: 0;
   width: 20px;
   height: 20px;
   position: absolute;
-  top: -6px;
-  left: -6px;
+  left: 21px;
 }
 #layermanager li .layer-tools {
   position: absolute;
@@ -308,7 +325,6 @@ a#osm-edit {
   cursor: ns-resize;
 }
 #layermanager li .layer-tools a.sort-handle .dot {
-  background: #ccc;
   margin-bottom: 1px;
 }
 
