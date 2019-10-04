@@ -99,7 +99,7 @@ class WMSLayer extends Component {
             group.remove(oldLayer[0])
           }
         }
-        const layer = this.createLayer(this.modal.find('textarea').val().trim())
+        const layer = this.createLayer(this.modal.find('textarea').val().trim(), (groupId === 'base'))
         if (layer) {
           group.insertAt(idx, layer)
           this.modal.find('textarea, input[name=id]').val('')
@@ -123,7 +123,7 @@ class WMSLayer extends Component {
       </a>
     `)
   }
-  createLayer (url) {
+  createLayer (url, isBase) {
     const debug = getState('app/debug')
     const urlComponents = parseURL(url)
     if (validURL(url) && urlComponents.query) {
@@ -158,6 +158,9 @@ class WMSLayer extends Component {
       conf.opacity = Number(urlComponents.query.opacity) || 1
       conf.editable = true
       conf.crossOrigin = 'anonymous'
+      if (isBase) {
+        conf.zIndex = 0
+      }
       return createLayer(conf)
     } else {
       log('error', t('URL is not valid WMS resource!'))
