@@ -38,7 +38,7 @@ class GeocacheLoader extends Component {
           <div class="alert alert-light" role="alert">
             ${t('Quick links')}<br/>
             ${Object.keys(cacheConf.downloadUrl.gpx).map(key => {
-    return `<a href="${cacheConf.downloadUrl.gpx[key]}" target="geopeitus">${t(key)}</a>`
+    return `<a href="${cacheConf.downloadUrl.gpx[key]}">${t(key)}</a>`
   }).join('<br/>')}
           </div>
         </li>
