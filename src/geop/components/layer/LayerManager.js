@@ -22,15 +22,17 @@ class LayerManager extends Component {
     this.el = $(`<div class="btn-group float-right" id="layermanager"></div>`)
     this.state = {
       activeBaseLayer: null,
-      baseLayers: getState('map/layer/base'),
+      base: getState('map/layer/base'),
       layers: getState('map/layer/layers'),
       overlays: getState('map/layer/overlays'),
       open: false
     }
     this.handlers = {
       onbaselayerschange: (e) => {
-        this.changeBaseLayer(e.element.get('id'))
-        // this.render()
+        if (!this.changeBaseLayer(e.element.get('id'))) {
+          this.state.open = true
+          this.render()
+        }
       },
       onchange: () => {
         if (!getState('ui/layermanager/sorting')) {
@@ -38,13 +40,13 @@ class LayerManager extends Component {
         }
       }
     }
-    this.state.baseLayers.forEach(layer => {
+    this.state.base.forEach(layer => {
       if (layer.get('id') === getState('map/baseLayer')) {
         this.state.activeBaseLayer = layer
       }
     })
-    this.state.baseLayers.on('add', this.handlers.onbaselayerschange)
-    this.state.baseLayers.on('remove', this.handlers.onbaselayerschange)
+    this.state.base.on('add', this.handlers.onbaselayerschange)
+    this.state.base.on('remove', this.handlers.onbaselayerschange)
     this.state.layers.on('add', this.handlers.onchange)
     this.state.layers.on('remove', this.handlers.onchange)
     this.state.overlays.on('add', this.handlers.onchange)
@@ -92,8 +94,8 @@ class LayerManager extends Component {
         <i class="fa fa-layer-group"></i>
       </button>
       <ul class="dropdown-menu dropdown-menu-right">
-        ${this.state.baseLayers.getLength() > 0
-    ? this.state.baseLayers.getArray().map(layer => {
+        ${this.state.base.getLength() > 0
+    ? this.state.base.getArray().map(layer => {
       let btn = ''
       if (layer.get('conf').type === 'FeatureCollection') {
         btn = `<a href="#" class="fit-layer">
@@ -110,12 +112,14 @@ class LayerManager extends Component {
       return `
         <li
           class="dropdown-item baselayer ${this.layerVisible(layer) ? '' : 'disabled'}"
-          data-group="baseLayers" data-id="${layer.get('id')}">
-          <i class="check far ${layer.getVisible() ? 'fa-dot-circle' : 'fa-circle'}"></i>
-          <span class="layer-title">${t(layer.get('title'))}</span>
-          <div class="layer-tools">
+          data-group="base" data-id="${layer.get('id')}">
+          <label>
+            <i class="check far ${layer.getVisible() ? 'fa-dot-circle' : 'fa-circle'}"></i>
+            <span class="layer-title">${t(layer.get('title'))}</span>
+          </label>
+          ${btn.length ? `<div class="layer-tools">
             ${btn}
-          </div>
+          </div>` : ''}
         </li>`
     }).join('')
     : `<li class="dropdown-item disabled">${t('No baselyers added')}</li>`}
@@ -128,12 +132,12 @@ class LayerManager extends Component {
       this.el.find('button.toggle-btn').dropdown('toggle')
       this.state.open = false
     }
-    ul.on('click', '.baselayer .check, .baselayer .layer-title', e => {
+    ul.on('click', '.baselayer label', e => {
       e.preventDefault()
       e.stopPropagation()
       const id = $(e.currentTarget).closest('li').data('id')
       if (this.state.activeBaseLayer && id === this.state.activeBaseLayer.get('id')) {
-        this.toggleLayer('baseLayers', id)
+        this.toggleLayer('base', id)
       } else {
         if (this.changeBaseLayer(id)) {
           setPermalink({
@@ -147,10 +151,14 @@ class LayerManager extends Component {
         }
       }
     })
-    ul.on('click', '.layer .check, .layer .layer-title', e => {
+    ul.on('click', '.layer label', e => {
       e.preventDefault()
       e.stopPropagation()
       this.toggleLayer($(e.currentTarget).closest('li').data('group'), $(e.currentTarget).closest('li').data('id'))
+    })
+    ul.on('click', '.tools a', e => {
+      e.preventDefault()
+      e.stopPropagation()
     })
     ul.on('click', 'a.fit-layer', e => {
       e.preventDefault()
@@ -164,15 +172,24 @@ class LayerManager extends Component {
     })
     ul.on('change', 'input[type=color]', e => {
       this.setLayerColor($(e.currentTarget).closest('li').data('group'), $(e.currentTarget).closest('li').data('id'), e.target.value)
+      $(e.currentTarget).closest('.color').find('.dot').css('background', e.target.value)
+    })
+    ul.on('click', '.colorpicker', e => {
+      e.preventDefault()
+      e.stopPropagation()
+      $(e.currentTarget).closest('.color').find('input[type=color]').click()
     })
     ul.on('click', 'a.edit-layer', e => {
       e.preventDefault()
       e.stopPropagation()
       const id = $(e.currentTarget).closest('li').data('id')
-      const url = this.getWMSUrl($(e.currentTarget).closest('li').data('group'), id)
+      const group = $(e.currentTarget).closest('li').data('group')
+      const url = this.getWMSUrl(group, id)
       if (url) {
+        $($(e.currentTarget).data('target')).modal()
         $($(e.currentTarget).data('target')).find('textarea').val(url)
         $($(e.currentTarget).data('target')).find('input[name=id]').val(id)
+        $($(e.currentTarget).data('target')).find('input[type=radio]').filter(`[value=${group}]`).prop('checked', true)
       }
     })
     // sortable
@@ -190,8 +207,11 @@ class LayerManager extends Component {
       ? `<li class="dropdown-divider"></li>` +
       group.getArray().map(layer => {
         const colorpicker = layer.get('conf').color && !layer.get('_cacheFormatParser')
-          ? `<span class="dot color">
-              <input type="color" value="${layer.get('conf').color}"/>
+          ? `<span class="color">
+              <span class="colorpicker">
+                <i class="dot" style="background:${layer.get('conf').color}"></i>
+              </span>
+              <input type="color" class="" value="${layer.get('conf').color}"/>
             </span>` : ''
         let btn = ''
         if (layer.get('conf').type === 'FeatureCollection') {
@@ -212,8 +232,10 @@ class LayerManager extends Component {
             class="dropdown-item ${sortable ? 'sort-item' : ''} layer ${this.layerVisible(layer) ? '' : 'disabled'}"
             data-group="${groupId}" data-id="${layer.get('id')}">
             ${colorpicker}
-            <i class="check far ${layer.getVisible() ? 'fa-check-square' : 'fa-square'}"></i>
-            <span class="layer-title">${t(layer.get('title'))}</span>
+            <label>
+              <i class="check far ${layer.getVisible() ? 'fa-check-square' : 'fa-square'}"></i>
+              <span class="layer-title">${t(layer.get('title'))}</span>
+            </label>
             <div class="layer-tools">
               ${sortHandle}
               ${btn}
@@ -241,9 +263,9 @@ class LayerManager extends Component {
   }
 
   changeBaseLayer (id) {
-    const layers = this.state.baseLayers.getArray().filter(l => l.get('id') === id)
+    const layers = this.state.base.getArray().filter(l => l.get('id') === id)
     if (layers.length === 1) {
-      this.state.baseLayers.forEach(layer => {
+      this.state.base.forEach(layer => {
         layer.setVisible(false)
       })
       layers[0].setVisible(true)
@@ -289,8 +311,8 @@ class LayerManager extends Component {
           setState('ui/layermanager/sorting', false)
         }
       })
-      this.state.open = true
-      this.render()
+      // this.state.open = true
+      // this.render()
     }
   }
 
@@ -344,7 +366,6 @@ class LayerManager extends Component {
   }
 
   getWMSUrl (groupId, id) {
-    console.log(groupId, id)
     for (let layer of this.state[groupId].getArray()) {
       if (layer && layer.get('id') === id) {
         const conf = layer.get('conf')
