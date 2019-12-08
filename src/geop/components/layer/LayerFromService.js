@@ -7,18 +7,33 @@ import Component from 'Geop/Component'
 import { createLayer } from './LayerCreator'
 import $ from 'jquery'
 
-class WMSLayer extends Component {
+class LayerFromService extends Component {
   constructor (target) {
     super(target)
     this.el = $(`<li />`)
     this.modal = $('#modal_wmslayer')
     this.isRow = true
     this.layer_conf = {
-      type: 'TileWMS',
-      url: null,
-      projection: 'EPSG:3301',
-      gutter: 20,
-      crossOrigin: null
+      TileWMS: {
+        type: 'TileWMS',
+        url: null,
+        projection: 'EPSG:3301',
+        gutter: 20,
+        crossOrigin: null
+      },
+      WMTS: {
+        type: 'WMTS',
+        url: null,
+        projection: 'EPSG:3301',
+        layer: null,
+        matrixSet: null,
+        scaleDenominator: null,
+        topLeftCorner: null,
+        matrixWidth: 1,
+        matrixHeight: 1,
+        format: 'image/png',
+        crossOrigin: null
+      }
     }
     this.layer_conf_params = {
       LAYERS: null,
@@ -54,7 +69,7 @@ class WMSLayer extends Component {
               </div>
               <div class="modal-body">
                 <div class="text-muted">
-                  ${t('Insert WMS v.1.1.1 URL with LAYERS and SRS parameters')}
+                  ${t('Insert WMS/WMTS URL')}
                 </div>
                 <textarea class="form-control" rows="3"></textarea>
                 <input name="id" type="hidden" />
@@ -127,18 +142,40 @@ class WMSLayer extends Component {
     const debug = getState('app/debug')
     const urlComponents = parseURL(url)
     if (validURL(url) && urlComponents.query) {
-      const conf = Object.assign({}, this.layer_conf)
-      conf.params = Object.assign({}, this.layer_conf_params)
-      if (urlComponents.query.LAYERS || urlComponents.query.layers) {
-        conf.params.LAYERS = urlComponents.query.LAYERS || urlComponents.query.layers
-        delete urlComponents.query.LAYERS
-        delete urlComponents.query.layers
-      } else {
-        log('error', t('Missing LAYERS parameter'))
-        if (debug) {
-          console.error(`WMSLayer.createLayer: Missing LAYERS parameter - ${url}`)
-        }
-        return
+      // find service
+      const service = this.pickService(urlComponents.query)
+      if (!service || !(service in this.layer_conf)) {
+        return false
+      }
+      const conf = Object.assign({}, this.layer_conf[service], urlComponents.query)
+      switch (service) {
+        case 'TileWMS':
+          conf.params = Object.assign({}, this.layer_conf_params)
+          if (urlComponents.query.LAYERS || urlComponents.query.layers) {
+            conf.params.LAYERS = urlComponents.query.LAYERS || urlComponents.query.layers
+            conf.title = urlComponents.query.title || conf.params.LAYERS
+            delete urlComponents.query.LAYERS
+            delete urlComponents.query.layers
+          } else {
+            log('error', t('Missing LAYERS parameter'))
+            if (debug) {
+              console.error(`WMSLayer.createLayer: Missing LAYERS parameter - ${url}`)
+            }
+            return
+          }
+
+          break
+        case 'WMTS':
+          conf.topLeftCorner = urlComponents.query.topLeftCorner.split(',').map(string => Number(string))
+          conf.title = urlComponents.query.title || conf.layer
+          delete urlComponents.query.topLeftCorner
+          delete urlComponents.query.layer
+          delete urlComponents.query.matrixSet
+          delete urlComponents.query.scaleDenominator
+          delete urlComponents.query.matrixWidth
+          delete urlComponents.query.matrixHeight
+          delete urlComponents.query.format
+          break
       }
       if (urlComponents.query.SRS || urlComponents.query.srs) {
         conf.projection = urlComponents.query.srs || urlComponents.query.SRS
@@ -151,9 +188,9 @@ class WMSLayer extends Component {
         }
         return
       }
+      delete urlComponents.query.title
       conf.url = constructURL(urlComponents)
       conf.id = uid()
-      conf.title = urlComponents.query.title || conf.params.LAYERS
       conf.visible = true
       conf.opacity = Number(urlComponents.query.opacity) || 1
       conf.editable = true
@@ -176,6 +213,15 @@ class WMSLayer extends Component {
     this.modal = null
     super.destroy()
   }
+  pickService (params) {
+    if ('matrixSet' in params) {
+      return 'WMTS'
+    }
+    if ('layers' in params) {
+      return 'TimeWMS'
+    }
+    return false
+  }
 }
 
-export default WMSLayer
+export default LayerFromService

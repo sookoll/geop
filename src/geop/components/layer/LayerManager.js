@@ -11,7 +11,7 @@ import {
 } from 'Utilities/permalink'
 import Component from 'Geop/Component'
 import OSMEdit from 'Components/osmedit/OSMEdit'
-import WMSLayer from './WMSLayer'
+import LayerFromService from './LayerFromService'
 import UrlLayer from './UrlLayer'
 import Sortable from 'sortablejs'
 import './LayerManager.styl'
@@ -55,7 +55,7 @@ class LayerManager extends Component {
     // do not init here
     this.components = {
       osm: OSMEdit,
-      wms: WMSLayer,
+      wms: LayerFromService,
       file: FileLayer
     }
     this.renderComponents(this.el.find('.dropdown-menu'))
@@ -369,7 +369,16 @@ class LayerManager extends Component {
     for (let layer of this.state[groupId].getArray()) {
       if (layer && layer.get('id') === id) {
         const conf = layer.get('conf')
-        return conf.url + '&layers=' + conf.params.LAYERS + '&srs=' + conf.projection
+        let url
+        switch (conf.type) {
+          case 'TileWMS':
+            url = `${conf.url}&layers=${conf.params.LAYERS}&srs=${conf.projection}&title=${layer.get('title')}`
+            break
+          case 'WMTS':
+            url = `${conf.url}&layer=${conf.layer}&srs=${conf.projection}&title=${layer.get('title')}&matrixSet=${conf.matrixSet}&scaleDenominator=${conf.scaleDenominator}&matrixWidth=${conf.matrixWidth}&matrixHeight=${conf.matrixHeight}&format=${conf.format}&topLeftCorner=${conf.topLeftCorner.join(',')}`
+            break
+        }
+        return url
       }
     }
     return null

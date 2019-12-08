@@ -168,16 +168,38 @@ function tileGridWMS (opts) {
 }
 
 function tileGridWMTS (opts) {
-  const resolutions = range(0, opts.matrixSetCount)
+  const tileSize = opts.tileSize || 256
+  const wmtsData = getBoundsAndMaxResForWMTS(opts.scaleDenominator, opts.topLeftCorner, tileSize, opts.matrixWidth, tileSize, opts.matrixHeight)
+  const projExtent = wmtsData.extent
+  const startResolution = wmtsData.maxResolution
+  const resolutions = Array(16)// range(mapConf.minZoom, mapConf.maxZoom + 1)
   const matrixIds = []
   for (let i = 0, ii = resolutions.length; i < ii; ++i) {
-    resolutions[i] = opts.maxResolution / Math.pow(2, i)
-    matrixIds[i] = opts.matrixSetPrepend ? opts.matrixSetPrepend + i : i
+    resolutions[i] = startResolution / Math.pow(2, i)
+    matrixIds[i] = opts.matrixSet + ':' + i
   }
   return new WMTSTileGrid({
-    extent: opts.extent,
-    origin: getTopLeft(opts.extent),
+    extent: wmtsData.extent,
+    origin: getTopLeft(projExtent),
     resolutions: resolutions,
     matrixIds: matrixIds
   })
+}
+
+// http://www.atlefren.net/post/2014/05/how-to-calculate-maxresolution-for-wmts-given-info-in-getcapabilities/
+function getBoundsAndMaxResForWMTS (scaleDenominator, topLeftCorner, tileWidth, matrixWidth, tileHeight, matrixHeight) {
+  const standardizedRenderingPixelSize = 0.00028
+  const widthPixel = tileWidth * matrixWidth
+  const heightPixel = tileHeight * matrixHeight
+  const right = (scaleDenominator * widthPixel * standardizedRenderingPixelSize) + topLeftCorner[0]
+  const bottom = topLeftCorner[1] - (scaleDenominator * heightPixel * standardizedRenderingPixelSize)
+  const maxResolutionW = Math.round((right - topLeftCorner[0]) / widthPixel)
+  const maxResolutionH = Math.round((topLeftCorner[1] - bottom) / heightPixel)
+  if (maxResolutionW !== maxResolutionH) {
+    throw new Error('Could not calculate resolution!')
+  }
+  return {
+    extent: [topLeftCorner[0], bottom, right, topLeftCorner[1]],
+    maxResolution: maxResolutionW
+  }
 }
