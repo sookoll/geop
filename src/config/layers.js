@@ -1,20 +1,6 @@
 export const layers = {
   base: [
     {
-      id: 'soome',
-      type: 'WMTS',
-      title: 'Soome',
-      url: 'https://mapservices-a.navici.com/basemaps/gwc/service/wmts?apikey=gdqWSTM10Le9XVAX8B6vFKxnpZAmTx5x',
-      projection: 'EPSG:3067',
-      layer: 'basemaps:rk',
-      matrixSet: 'ETRS-TM35FIN',
-      scaleDenominator: 2.925714285714286E7,
-      topLeftCorner: [-2097152.0, 9437184.0],
-      matrixWidth: 3,
-      matrixHeight: 2,
-      format: 'image/png8',
-      crossOrigin: null
-    }, {
       id: 'osm',
       type: 'XYZ',
       title: 'OSM',
@@ -122,6 +108,20 @@ export const layers = {
       title: 'O-kaart',
       url: 'https://okaart.osport.ee/{z}/{x}/{y}.png',
       projection: 'EPSG:3857',
+      crossOrigin: null
+    }, {
+      id: 'soome',
+      type: 'WMTS',
+      title: 'Soome',
+      url: 'https://mapservices-a.navici.com/basemaps/gwc/service/wmts?apikey=gdqWSTM10Le9XVAX8B6vFKxnpZAmTx5x',
+      projection: 'EPSG:3067',
+      layer: 'basemaps:rk',
+      matrixSet: 'ETRS-TM35FIN',
+      scaleDenominator: 2.925714285714286E7,
+      topLeftCorner: [-2097152.0, 9437184.0],
+      matrixWidth: 3,
+      matrixHeight: 2,
+      format: 'image/png8',
       crossOrigin: null
     }
   ],
