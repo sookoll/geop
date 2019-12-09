@@ -172,7 +172,7 @@ export function parseURL (href) {
     pathname: match[5],
     search: match[6],
     hash: match[7],
-    query: parseSearch(match[6])
+    query: parseSearch(match[6]) || {}
   }
 }
 

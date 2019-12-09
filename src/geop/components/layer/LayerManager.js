@@ -9,6 +9,7 @@ import {
   onchange as onPermalinkChange,
   viewConfToPermalink
 } from 'Utilities/permalink'
+import { parseURL, constructURL } from 'Utilities/util'
 import Component from 'Geop/Component'
 import OSMEdit from 'Components/osmedit/OSMEdit'
 import LayerFromService from './LayerFromService'
@@ -369,16 +370,27 @@ class LayerManager extends Component {
     for (let layer of this.state[groupId].getArray()) {
       if (layer && layer.get('id') === id) {
         const conf = layer.get('conf')
-        let url
+        const urlComponents = parseURL(conf.url)
+        console.log(urlComponents)
+        urlComponents.query.srs = conf.projection
+        urlComponents.query.title = layer.get('title')
+        if (conf.format) {
+          urlComponents.query.format = conf.format
+        }
         switch (conf.type) {
           case 'TileWMS':
-            url = `${conf.url}&layers=${conf.params.LAYERS}&srs=${conf.projection}&title=${layer.get('title')}`
+            urlComponents.query.layers = conf.params.LAYERS
             break
           case 'WMTS':
-            url = `${conf.url}&layer=${conf.layer}&srs=${conf.projection}&title=${layer.get('title')}&matrixSet=${conf.matrixSet}&scaleDenominator=${conf.scaleDenominator}&matrixWidth=${conf.matrixWidth}&matrixHeight=${conf.matrixHeight}&format=${conf.format}&topLeftCorner=${conf.topLeftCorner.join(',')}`
+            urlComponents.query.layer = conf.layer
+            urlComponents.query.matrixSet = conf.matrixSet
+            urlComponents.query.scaleDenominator = conf.scaleDenominator
+            urlComponents.query.matrixWidth = conf.matrixWidth
+            urlComponents.query.matrixHeight = conf.matrixHeight
+            urlComponents.query.topLeftCorner = conf.topLeftCorner.join(',')
             break
         }
-        return url
+        return constructURL(urlComponents)
       }
     }
     return null

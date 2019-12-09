@@ -163,11 +163,13 @@ class LayerFromService extends Component {
             }
             return
           }
-
           break
         case 'WMTS':
           conf.topLeftCorner = urlComponents.query.topLeftCorner.split(',').map(string => Number(string))
           conf.title = urlComponents.query.title || conf.layer
+          conf.scaleDenominator = Number(urlComponents.query.scaleDenominator)
+          conf.matrixWidth = Number(urlComponents.query.matrixWidth)
+          conf.matrixHeight = Number(urlComponents.query.matrixHeight)
           delete urlComponents.query.topLeftCorner
           delete urlComponents.query.layer
           delete urlComponents.query.matrixSet
@@ -194,7 +196,6 @@ class LayerFromService extends Component {
       conf.visible = true
       conf.opacity = Number(urlComponents.query.opacity) || 1
       conf.editable = true
-      conf.crossOrigin = 'anonymous'
       if (isBase) {
         conf.zIndex = 0
       }
@@ -218,7 +219,7 @@ class LayerFromService extends Component {
       return 'WMTS'
     }
     if ('layers' in params) {
-      return 'TimeWMS'
+      return 'TileWMS'
     }
     return false
   }
