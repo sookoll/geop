@@ -125,7 +125,7 @@ class Popup extends Component {
       // FIXME: multiple results
       for (let i = layers.length - 1; i >= 0; i--) {
         const queryLayers = layers[i].getSource().getParams().LAYERS
-        url = layers[i].getSource().getGetFeatureInfoUrl(
+        url = layers[i].getSource().getFeatureInfoUrl(
           coords, viewResolution, this.state.map.getView().getProjection(),
           { 'INFO_FORMAT': 'application/json', 'QUERY_LAYERS': queryLayers.split(',').reverse().join(','), 'FEATURE_COUNT': queryLayers.split(',').length })
         this.getWMSFeatureInfo(url, (result) => {
