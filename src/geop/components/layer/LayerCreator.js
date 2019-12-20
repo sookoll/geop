@@ -176,7 +176,7 @@ function tileGridWMTS (opts) {
   const matrixIds = []
   for (let i = 0, ii = resolutions.length; i < ii; ++i) {
     resolutions[i] = startResolution / Math.pow(2, i)
-    matrixIds[i] = opts.matrixSet + ':' + i
+    matrixIds[i] = opts.matrixTemplate ? opts.matrixTemplate.replace(/{z}/, i) : i
   }
   return new WMTSTileGrid({
     extent: wmtsData.extent,
