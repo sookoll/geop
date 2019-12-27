@@ -49,7 +49,10 @@ class OpenRouteService extends Provider {
         })
           .done(response => {
             if (response && response.routes && response.routes.length) {
-              resolve(this.format(response.routes[0].geometry))
+              const feature = this.format(response.routes[0].geometry)
+              feature.set('distance', response.routes[0].summary.distance)
+              feature.set('duration', response.routes[0].summary.duration)
+              resolve(feature)
             } else {
               reject(new Error(t('Unable to find route') + ': ' + JSON.stringify(response)))
             }

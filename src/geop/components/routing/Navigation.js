@@ -1,6 +1,6 @@
 import Component from 'Geop/Component'
 import { getState, setState, onchange } from 'Utilities/store'
-import { formatLength, radToDeg } from 'Utilities/util'
+import { formatLength, getBearing } from 'Utilities/util'
 import { getLayer } from './Routing'
 import { createStyle } from 'Components/layer/StyleBuilder'
 import { getDistance } from 'ol/sphere'
@@ -55,10 +55,7 @@ class Navigation extends Component {
     // calculate distance from current location to feature
     const from = getState('map/geolocation/position')
     const to = this.state.to.getGeometry().getCoordinates()
-    let angle = radToDeg(Math.atan2(to[0] - from[0], to[1] - from[1]))
-    if (angle < 0) {
-      angle = 360 + angle
-    }
+    const angle = getBearing(from, to)
     const distance = getDistance(toLonLat(from), toLonLat(to))
     this.el.find('span').html(`
       ${formatLength(null, distance, [0, 1])}

@@ -251,8 +251,22 @@ export function formatDate (time, short = false) {
   return short ? day + '.' + month : d.getFullYear() + '.' + month + '.' + day
 }
 
-export function formatTime (s) {
-  return new Date(s).toTimeString().slice(0, 8)
+export function formatTime (input, unit = 'timestamp') {
+  let result = null
+  switch (unit) {
+    case 'timestamp':
+      result = new Date(input).toTimeString().slice(0, 8)
+      break
+    case 'seconds':
+      let h = Math.floor(input / 60 / 60)
+      let m = Math.floor((input / 60 / 60 - h) * 60)
+      let s = Math.floor(((input / 60 / 60 - h) * 60 - m) * 60)
+      /* s = s < 10 ? `0${s}` : `${s}`
+      m = m < 10 ? `0${m}` : `${m}`
+      h = h < 10 ? `0${h}` : `${h}` */
+      result = `${h}h ${m}m ${s}s`
+  }
+  return result
 }
 
 // LZW-compress a string
@@ -308,4 +322,12 @@ export function decompress (s) {
 
 export function deepCopy (json) {
   return JSON.parse(JSON.stringify(json))
+}
+
+export function getBearing (from, to) {
+  let angle = radToDeg(Math.atan2(to[0] - from[0], to[1] - from[1]))
+  if (angle < 0) {
+    angle = 360 + angle
+  }
+  return angle
 }

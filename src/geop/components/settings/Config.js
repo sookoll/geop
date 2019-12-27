@@ -104,6 +104,21 @@ class Config extends Component {
       <small class="form-text text-muted mb-3">
         ${t('Select routing profile or disable routing')}
       </small>
+      <div class="btn-group" role="group">
+        <button type="button"
+          class="btn btn-outline-primary set-route-btn ${getState('routing/infoFromRoute') ? 'active' : ''}"
+          data-share="on">
+          ${t('On')}
+        </button>
+        <button type="button"
+          class="btn btn-outline-primary set-route-btn ${getState('routing/infoFromRoute') ? '' : 'active'}"
+          data-share="off">
+          ${t('Off')}
+        </button>
+      </div>
+      <small class="form-text text-muted mb-3">
+        ${t('Show distance and duration along route, not from beginning to end')}
+      </small>
       <h5>${t('Share only geotrip features')}</h5>
       <div class="btn-group" role="group">
         <button type="button"
@@ -215,6 +230,12 @@ class Config extends Component {
           console.debug(`Config.render: Routing changed to ${e.target.value}`)
         }
       }
+    })
+    // routing
+    this.el.on('click', 'button.set-route-btn', e => {
+      setState('routing/infoFromRoute', $(e.currentTarget).data('share') === 'on', true)
+      this.el.find('button.set-route-btn').removeClass('active')
+      $(e.currentTarget).addClass('active')
     })
     // share change
     this.el.on('click', 'button.set-share-btn', e => {

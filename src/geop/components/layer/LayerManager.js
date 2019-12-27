@@ -371,7 +371,6 @@ class LayerManager extends Component {
       if (layer && layer.get('id') === id) {
         const conf = layer.get('conf')
         const urlComponents = parseURL(conf.url)
-        console.log(urlComponents)
         urlComponents.query.srs = conf.projection
         urlComponents.query.title = layer.get('title')
         if (conf.format) {

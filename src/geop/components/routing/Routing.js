@@ -1,11 +1,12 @@
 import Component from 'Geop/Component'
 import OSRMProvider from './OSRM'
 import OpenRouteService from './OpenRouteService'
+import Alert from 'Components/statusbar/Alert'
 import { apiUrls } from 'Conf/settings'
 import { getState, setState, onchange } from 'Utilities/store'
 import { t } from 'Utilities/translate'
 import log from 'Utilities/log'
-import { uid } from 'Utilities/util'
+import { uid, formatLength, formatTime, getBearing } from 'Utilities/util'
 import { createMarker } from 'Components/mouseposition/MousePosition'
 import { createLayer } from 'Components/layer/LayerCreator'
 import { toLonLat, fromLonLat } from 'ol/proj'
@@ -16,23 +17,25 @@ const providers = {
   osrm: new OSRMProvider(),
   openrouteservice: new OpenRouteService()
 }
-
+const state = {
+  from: null,
+  to: null
+}
 let routeLayer = null
+const alert = new Alert()
 
 class Routing extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`<span class="float-right" id="scale-line"></span>`)
+    this.el = null
     this.state = {
-      from: null,
-      to: null,
       contextmenu: {
         from: {
           content: `<i class="fas fa-directions text-success size-1_1"></i> ${t('Directions from here')}`,
           onClick: (e, coord, feature) => {
             const fromFeature = feature ? feature[1] : createMarker(coord)
-            this.state.from = fromFeature.getGeometry().getCoordinates()
-            setState('routing/stops', [toLonLat(this.state.from), this.state.to && toLonLat(this.state.to)])
+            state.from = fromFeature.getGeometry().getCoordinates()
+            setState('routing/stops', [toLonLat(state.from), state.to && toLonLat(state.to)])
             this.findRoute()
           },
           closeOnClick: true
@@ -43,8 +46,8 @@ class Routing extends Component {
             <a href="#" class="btn btn-link context-item-btn"><i class="fab fa-google"></i></a>`,
           onClick: (e, coord, feature) => {
             const toFeature = feature ? feature[1] : createMarker(coord)
-            this.state.to = toFeature.getGeometry().getCoordinates()
-            setState('routing/stops', [this.state.from && toLonLat(this.state.from), toLonLat(this.state.to)])
+            state.to = toFeature.getGeometry().getCoordinates()
+            setState('routing/stops', [state.from && toLonLat(state.from), toLonLat(state.to)])
             this.findRoute()
           },
           closeOnClick: true,
@@ -64,7 +67,7 @@ class Routing extends Component {
           closeOnClick: true,
           onBtnClick: (e, coord, feature) => {
             e.preventDefault()
-            this.clear()
+            alert.close()
           }
         }
       }
@@ -92,13 +95,13 @@ class Routing extends Component {
       if (routeLayer && routeLayer.getSource().getFeatures().length) {
         contextMenuItems.push(this.state.contextmenu.done)
       } else {
-        if (!this.state.from) {
+        if (!state.from) {
           contextMenuItems.push(this.state.contextmenu.from)
         }
-        if (!this.state.to) {
+        if (!state.to) {
           contextMenuItems.push(this.state.contextmenu.to)
         }
-        if (this.state.from && this.state.to) {
+        if (state.from && state.to) {
           contextMenuItems.push(this.state.contextmenu.done)
         }
       }
@@ -107,8 +110,7 @@ class Routing extends Component {
   findRoute () {
     const coords = getState('routing/stops')
     if (coords.filter(lonLat => !!lonLat).length > 1) {
-      findRoute(coords).then(route => {
-
+      findRoute(coords, true).then(route => {
       }).catch(e => {
         log('error', e)
         if (getState('app/debug')) {
@@ -118,19 +120,23 @@ class Routing extends Component {
     }
   }
   clear () {
-    this.state.from = null
-    this.state.to = null
-    if (routeLayer) {
-      routeLayer.setMap(null)
-      routeLayer.getSource().clear()
-      routeLayer = null
-    }
-    setState('routing/stops', [])
-    setState('navigate/to', null)
+    clear()
   }
 }
 
-export function findRoute (coords) {
+function clear () {
+  state.from = null
+  state.to = null
+  if (routeLayer) {
+    routeLayer.setMap(null)
+    routeLayer.getSource().clear()
+    routeLayer = null
+  }
+  setState('routing/stops', [])
+  setState('navigate/to', null)
+}
+
+export function findRoute (coords, openAlert) {
   if (routeLayer && routeLayer.getSource().getFeatures().length) {
     routeLayer.getSource().clear()
   }
@@ -146,10 +152,12 @@ export function findRoute (coords) {
     }
     provider.directions(coordinates)
       .then(route => {
+        alert.close()
         if (route) {
           createRouteLayer()
           const routeCoords = route.getGeometry().getCoordinates()
           const distance = getDistance(coords[0], coords[coords.length - 1])
+          const angle = getBearing(fromLonLat(coords[0]), fromLonLat(coords[coords.length - 1]))
           if (routeCoords.length > 1 &&
             distance > getDistance(coords[0], toLonLat(routeCoords[0])) &&
             distance > getDistance(coords[coords.length - 1], toLonLat(routeCoords[routeCoords.length - 1]))
@@ -159,6 +167,17 @@ export function findRoute (coords) {
             route.getGeometry().setCoordinates(routeCoords)
             routeLayer.getSource().addFeature(route)
             setState('routing/stops', coords)
+            if (!getState('routing/infoFromRoute')) {
+              route.set('distance', distance)
+            }
+            route.set('bearing', angle)
+            if (openAlert) {
+              alert.open(`<b>${t('Directions')}</b> ${getState('routing/infoFromRoute') ? '' : ` - ${t('As crow flies')}`}<br>
+                ${formatLength(null, route.get('distance'), [0, 1])}
+                <i>&middot;</i> ${Math.round(route.get('bearing'))}&deg;
+                ${getState('routing/infoFromRoute') ? `<i>&middot;</i> ${formatTime(route.get('duration'), 'seconds')}` : ''}
+              `, () => { clear() })
+            }
             resolve(route)
           } else {
             throw new Error(t('Invalid route'))

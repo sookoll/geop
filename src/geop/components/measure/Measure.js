@@ -2,6 +2,7 @@ import { getState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
 import { uid, degToRad, radToDeg, formatLength, formatArea } from 'Utilities/util'
 import { createLayer } from 'Components/layer/LayerCreator'
+import Alert from 'Components/statusbar/Alert'
 import Component from 'Geop/Component'
 import { createStyle } from 'Components/layer/StyleBuilder'
 import Feature from 'ol/Feature'
@@ -11,20 +12,12 @@ import Collection from 'ol/Collection'
 import { toLonLat, fromLonLat } from 'ol/proj'
 import { never, always, doubleClick } from 'ol/events/condition'
 import { getLength } from 'ol/sphere'
-import $ from 'jquery'
 import './Measure.styl'
 
 class Measure extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`
-      <div class="alert small alert-warning alert-dismissible measure" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <i class="fa fa-times"></i>
-        </button>
-        <div class=""></div>
-      </div>
-    `)
+    this.alert = new Alert()
     this.state = {
       map: null,
       measureType: null,
@@ -165,9 +158,7 @@ class Measure extends Component {
     return createLayer(conf)
   }
   render () {
-    if (this.el) {
-      this.el.alert('close')
-    }
+    this.alert.close()
     let html = ''
     if (this.state.measureType === 'circle') {
       html += `
@@ -184,24 +175,21 @@ class Measure extends Component {
         ${t('Length')}: ${t('to finish, click on end')}<br>
         ${t('Area')}: ${t('to finish, click on beginning')}`
     }
-    this.el.find('div').html(html)
-    $('body').append(this.el)
+    this.alert.open(html, () => { this.reset() })
+    const el = this.alert.getEl()
     if (this.state.measureType === 'circle') {
-      this.el.on('focus', 'input', e => {
+      el.on('focus', 'input', e => {
         this.interaction.modify.setActive(false)
       })
-      this.el.on('blur', 'input', e => {
-        const a = this.el.find('input[name=angle]').val()
-        const r = this.el.find('input[name=radius]').val()
+      el.on('blur', 'input', e => {
+        const a = el.find('input[name=angle]').val()
+        const r = el.find('input[name=radius]').val()
         const coords = this.state.drawing.getGeometry().getCoordinates()
         const coord2 = this.getCoordinateByAngleDistance(coords[0], Number(a), Number(r))
         this.state.drawing.getGeometry().setCoordinates([coords[0], coord2])
         this.interaction.modify.setActive(true)
       })
     }
-    this.el.on('closed.bs.alert', () => {
-      this.reset()
-    })
   }
   updateResults () {
     if (this.state.measureType === 'circle') {
@@ -217,7 +205,7 @@ class Measure extends Component {
       } else {
         html += `<br>${t('Area')}: ${t('to finish, click on beginning')}`
       }
-      this.el.find('div').html(html)
+      this.alert.update(html)
     }
   }
   updateCircleResults () {
@@ -234,8 +222,9 @@ class Measure extends Component {
       angle = 360 + angle
     }
     const radius = getLength(g)
-    this.el.find('input[name=angle]').val(Math.round((angle + 0.00001) * 100) / 100)
-    this.el.find('input[name=radius]').val(Math.round((radius + 0.00001) * 100) / 100)
+    const el = this.alert.getEl()
+    el.find('input[name=angle]').val(Math.round((angle + 0.00001) * 100) / 100)
+    el.find('input[name=radius]').val(Math.round((radius + 0.00001) * 100) / 100)
   }
   reset () {
     this.state.drawing.getGeometry().un('change', this.handlers.onmodify)
@@ -275,7 +264,8 @@ class Measure extends Component {
     if (this.state.measureType === 'circle') {
       const coord1 = coords[0]
       this.state.drawing.getGeometry().setCoordinates([coord1, coord2])
-      this.el.find('input').prop('readonly', false)
+      const el = this.alert.getEl()
+      el.find('input').prop('readonly', false)
       this.finish()
     } else {
       if (coords.length > 1 && coords[0][0] === coord2[0] && coords[0][1] === coord2[1]) {
@@ -321,7 +311,7 @@ class Measure extends Component {
       const arr = coords.slice(0)
       arr.push(coord2)
       this.state.measureLine.setCoordinates(arr)
-      this.el.find('div').html(`
+      this.alert.update(`
         ${t('Length')}: ${formatLength(this.state.measureLine)}<br>
         ${t('Area')}: ${t('to finish, click on beginning')}
       `)

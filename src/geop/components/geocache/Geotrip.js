@@ -281,11 +281,11 @@ class Geotrip extends Component {
       if (position) {
         locations.unshift(toLonLat(position))
       }
-      findRoute(locations)
+      findRoute(locations, true)
         .then(route => {
 
         })
-        .catch(e => log('error', t('Unable to find route')))
+        .catch(e => log('error', t('Unable to find route') + e))
     } else {
       log('error', t('Routing disabled'))
     }
