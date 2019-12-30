@@ -141,7 +141,7 @@ body .size-1_1 {
   width: 100vw;
   height: 100%;
   background: rgba(0,0,0,0.5);
-  z-index: 998;
+  z-index: 1001;
   opacity: 0;
   transition: all 0.5s ease-in-out;
 }
@@ -155,6 +155,14 @@ body .size-1_1 {
 }
 #tab-filter label:last-child {
   margin-bottom: 0;
+}
+
+.tool-results {
+  position: absolute;
+  bottom: 10px;
+  width: 300px;
+  left: 50%;
+  margin-left: -150px;
 }
 
 #mouse-position {
@@ -513,13 +521,6 @@ body .contextmenu .popover-body .list-group-item .context-item-btn:hover {
   background-color: #eee;
 }
 
-.measure {
-  position: absolute;
-  bottom: 10px;
-  width: 300px;
-  left: 50%;
-  margin-left: -150px;
-}
 .measure .form-inline {
   margin-bottom: 4px;
 }
