@@ -60,7 +60,7 @@ class Config extends Component {
       </small>
       <h5>${t('Keep awake')}</h5>
       <div class="btn-group-toggle" data-toggle="buttons">
-        <label class="btn btn-outline-secondary">
+        <label class="btn btn-outline-primary">
           <input type="checkbox" id="settings-awake" autocomplete="off">
           <i class="fa fa-mobile-alt"></i>
           <span>${t('Off')}</span>
