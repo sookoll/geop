@@ -34,6 +34,7 @@ class OpenRouteService extends Provider {
     return new Promise((resolve, reject) => {
       this.clear()
       if (routingProfile in this.profiles) {
+        const radiuses = coordinates.map(coord => 5000)
         this.xhr = $.ajax({
           type: 'POST',
           crossDomain: true,
@@ -42,7 +43,8 @@ class OpenRouteService extends Provider {
             Authorization: apiUrls.openrouteservice.key
           },
           data: JSON.stringify({
-            coordinates
+            coordinates,
+            radiuses
           }),
           contentType: 'application/json',
           dataType: 'json'
