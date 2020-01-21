@@ -109,6 +109,13 @@ export const layers = {
       url: 'https://okaart.osport.ee/{z}/{x}/{y}.png',
       projection: 'EPSG:3857',
       crossOrigin: null
+    }, {
+      id: 'tf_outdoors',
+      type: 'XYZ',
+      title: 'Outdoors',
+      url: 'https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=bc215709c53e44c9b78c1bcbe825af07',
+      projection: 'EPSG:3857',
+      crossOrigin: null
     }
   ],
   layers: [],
