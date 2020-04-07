@@ -39,7 +39,7 @@ export const map = {
 export const apiUrls = {
   ideditor: 'https://www.openstreetmap.org/edit?editor=id#background=custom:http://tiles.maaamet.ee/tm/tms/1.0.0/foto@GMC/{z}/{x}/{-y}.png&map=',
   nominatim: 'https://nominatim.openstreetmap.org',
-  jsonstore: 'https://www.jsonstore.io/4d04eefd7ed4c19866cefcf038d0bebe95786bf33f0e60fdfbd8a554e6ae2670',
+  jsonstore: 'https://projekt-gp.ee/api/v1/bookmark',
   qrcode: 'http://api.qrserver.com/v1/create-qr-code/?size=150x150&data=',
   osrm: {
     directions: 'https://router.project-osrm.org/route/v1/'
