@@ -3,6 +3,7 @@ import { uid, getRandomColor, hexToRgbA } from 'Utilities/util'
 import { getState } from 'Utilities/store'
 import log from 'Utilities/log'
 import { createLayer, dataProjection } from './LayerCreator'
+import { checkCacheLayer, createCacheLayer } from 'Components/geocache/Geocache'
 import Component from 'Geop/Component'
 import GPXFormat from 'Utilities/GPXFormat'
 import GeoJSONFormat from 'ol/format/GeoJSON'
@@ -60,14 +61,20 @@ class FileLayer extends Component {
           reader.onload = (e) => {
             const parser = this.fileTypes[ext]
             const features = parser.readFeatures(e.target.result)
-            const conf = this.fileTypes.geojson.writeFeaturesObject(features)
-            conf.title = filename
-            const layer = this.createLayer(conf)
-            if (layer) {
-              this.state.layers.push(layer)
-              log('success', `${t('Added')} ${conf.features.length} ${t('features')}`)
-              if (debug) {
-                console.debug(`FileLayer.render layer created: ${filename}, features: ${conf.features.length}`)
+            // test geocaches
+            if (checkLayer(features)) {
+              // create geocache layer
+
+            } else {
+              const conf = this.fileTypes.geojson.writeFeaturesObject(features)
+              conf.title = filename
+              const layer = this.createLayer(conf)
+              if (layer) {
+                this.state.layers.push(layer)
+                log('success', `${t('Added')} ${conf.features.length} ${t('features')}`)
+                if (debug) {
+                  console.debug(`FileLayer.render layer created: ${filename}, features: ${conf.features.length}`)
+                }
               }
             }
           }

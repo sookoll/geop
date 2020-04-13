@@ -23,6 +23,14 @@ const cacheFormatParsers = [
   geocacheGPX
 ]
 
+const state = {
+  layer: null,
+  caches: new Collection(),
+  styleCache: {},
+  styleConfig: cacheConf.styles,
+  currentUser: getState('app/account')
+}
+
 class Geocache extends Component {
   constructor (target) {
     super(target)
@@ -36,27 +44,19 @@ class Geocache extends Component {
         </button>
       </div>
     `)
-    this.state = {
-      layers: new Collection(),
-      styleCache: {},
-      styleConfig: cacheConf.styles,
-      currentUser: getState('app/account')
-    }
-    const listenLayers = e => {
-      let featureCount = 0
-      this.state.layers.forEach(layer => {
-        featureCount += layer.getSource().getFeatures().filter(f => {
-          return (f.get('isCache') && !f.get('hidden'))
-        }).length
-      })
+
+    const listenLayer = e => {
+      let featureCount = state.caches.filter(f => {
+        return (f.get('isCache') && !f.get('hidden'))
+      }).length
       this.el.find('button > span').html(featureCount || t('Caches'))
       this.sidebar.getComponent('Filter').get('tab').find('span').html(featureCount || t('Filter'))
     }
-    this.state.layers.on('add', listenLayers)
-    this.state.layers.on('remove', listenLayers)
-    onchange('geocache/filter', listenLayers)
+    state.caches.on('add', listenLayer)
+    state.caches.on('remove', listenLayer)
+    onchange('geocache/filter', listenLayer)
     // radiusStyle geometry function
-    this.state.styleConfig.radiusStyle.geometry = feature => {
+    state.styleConfig.radiusStyle.geometry = feature => {
       const coordinates = feature.getGeometry().getCoordinates()
       const lonlat = toLonLat(coordinates)
       const scaleF = scaleFactor(lonlat)
@@ -75,40 +75,20 @@ class Geocache extends Component {
       activeComponent: 'tab-loader',
       shadow: false,
       props: {
-        collection: this.state.layers
+        collection: new Collection([state.layer])
       }
     })
     this.layersPick()
   }
   layersPick () {
-    const layers = getState('map/layer/layers')
+    const layers = getState('map/layer/overlays')
     layers.forEach(layer => {
-      if (this.checkLayer(layer)) {
+      if (checkCacheLayer(layer.getSource().getFeatures())) {
         this.registerLayer(layer)
       }
     })
-    layers.on('add', e => {
-      if (this.checkLayer(e.element)) {
-        this.registerLayer(e.element)
-      }
-    })
-    layers.on('remove', e => {
-      this.state.layers.remove(e.element)
-    })
   }
-  checkLayer (layer) {
-    const features = layer.getSource().getFeatures
-      ? layer.getSource().getFeatures() : null
-    if (features) {
-      for (let i = 0, len = cacheFormatParsers.length; i < len; i++) {
-        if (cacheFormatParsers[i].test(features)) {
-          layer.set('_cacheFormatParser', cacheFormatParsers[i])
-          return true
-        }
-      }
-    }
-    return false
-  }
+
   registerLayer (layer) {
     const stat = {
       'Not Found': 'far fa-square',
@@ -261,6 +241,22 @@ class Geocache extends Component {
     }
     return [this.state.styleCache[hash]]
   }
+}
+
+export function checkCacheLayer (features) {
+  if (features) {
+    for (let i = 0, len = cacheFormatParsers.length; i < len; i++) {
+      if (cacheFormatParsers[i].test(features)) {
+        layer.set('_cacheFormatParser', cacheFormatParsers[i])
+        return true
+      }
+    }
+  }
+  return false
+}
+
+export function createCacheLayer (features) {
+
 }
 
 export default Geocache
