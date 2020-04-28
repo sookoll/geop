@@ -60,23 +60,8 @@ class FileLayer extends Component {
           const reader = new window.FileReader()
           reader.onload = (e) => {
             const parser = this.fileTypes[ext]
-            const features = parser.readFeatures(e.target.result)
-            // test geocaches
-            if (checkLayer(features)) {
-              // create geocache layer
-
-            } else {
-              const conf = this.fileTypes.geojson.writeFeaturesObject(features)
-              conf.title = filename
-              const layer = this.createLayer(conf)
-              if (layer) {
-                this.state.layers.push(layer)
-                log('success', `${t('Added')} ${conf.features.length} ${t('features')}`)
-                if (debug) {
-                  console.debug(`FileLayer.render layer created: ${filename}, features: ${conf.features.length}`)
-                }
-              }
-            }
+            let features = parser.readFeatures(e.target.result)
+            this.addLayer(filename, features)
           }
           reader.readAsText(files[0])
         } else {
@@ -110,16 +95,7 @@ class FileLayer extends Component {
         ]
       })
       dragAndDropInteraction.on('addfeatures', e => {
-        const conf = this.fileTypes.geojson.writeFeaturesObject(e.features)
-        conf.title = e.file.name
-        const layer = this.createLayer(conf)
-        if (layer) {
-          this.state.layers.push(layer)
-          log('success', `${t('Added')} ${conf.features.length} ${t('features')}`)
-          if (getState('app/debug')) {
-            console.debug(`FileLayer.addDragNDrop layer created: ${e.file.name}, features: ${conf.features.length}`)
-          }
-        }
+        this.addLayer(e.file.name, e.features)
       })
       if (map) {
         map.addInteraction(dragAndDropInteraction)
@@ -155,6 +131,26 @@ class FileLayer extends Component {
       log('error', t('Empty file'))
       if (getState('app/debug')) {
         console.debug(`FileLayer.addDragNDrop empty file: ${conf.title}`)
+      }
+    }
+  }
+  addLayer (title, features) {
+    const debug = getState('app/debug')
+    const conf = this.fileTypes.geojson.writeFeaturesObject(features)
+    conf.title = title
+    const layer = this.createLayer(conf)
+    features = layer.getSource().getFeatures()
+    // test geocaches
+    if (checkCacheLayer(features)) {
+      // create geocache layer
+      createCacheLayer(features)
+    } else {
+      if (layer) {
+        this.state.layers.push(layer)
+        log('success', `${t('Added')} ${conf.features.length} ${t('features')}`)
+        if (debug) {
+          console.debug(`FileLayer layer created: ${title}, features: ${conf.features.length}`)
+        }
       }
     }
   }

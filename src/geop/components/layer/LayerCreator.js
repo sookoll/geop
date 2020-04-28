@@ -114,6 +114,9 @@ export function createLayer (layerConf) {
       layer = new FeatureLayer(layerConf)
       break
   }
+  if (!layer) {
+    return false
+  }
   set(layer, layerConf)
   return layer
 }

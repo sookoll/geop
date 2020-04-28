@@ -1,12 +1,12 @@
 import { geocache as cacheConf } from 'Conf/settings'
 import { t } from 'Utilities/translate'
-import { getState, setState } from 'Utilities/store'
+import { getState, setState, onchange } from 'Utilities/store'
 import Component from 'Geop/Component'
 import $ from 'jquery'
 import './Filter.styl'
 
 class Filter extends Component {
-  constructor (target, props) {
+  constructor (target) {
     super(target)
     this.id = 'tab-filter'
     this.icon = 'fa fa-filter'
@@ -21,15 +21,17 @@ class Filter extends Component {
     this.state = {
       tab: null,
       conf: this.createConf(),
-      layers: props.collection,
+      layer: null,
       filter: {}
     }
     this.create()
-    this.state.layers.on('add', e => this.render())
-    this.state.layers.on('remove', e => this.render())
+    onchange('geocache/loadend', layer => {
+      this.state.layer = layer
+      this.render()
+    })
   }
   render () {
-    this.state.filter = this.buildPropertyList(this.state.layers)
+    this.state.filter = this.buildPropertyList(this.state.layer)
     const storedFilter = getState('geocache/filter')
     this.el.html(`
       <ul class="list-group mb-3">
@@ -48,10 +50,8 @@ class Filter extends Component {
     this.el.find('input[name=radiusStyle]').on('change', e => {
       e.stopPropagation()
       const visible = $(e.target).is(':checked')
-      this.state.layers.forEach(l => {
-        l.getSource().forEachFeature(f => {
-          f.set('radiusVisible', visible)
-        })
+      this.state.layer.getSource().forEachFeature(f => {
+        f.set('radiusVisible', visible)
       })
       this.filter()
     })
@@ -88,10 +88,10 @@ class Filter extends Component {
     })
     return conf
   }
-  buildPropertyList (layers) {
+  buildPropertyList (layer) {
     let filter = {}
-    layers.getArray().forEach(l => {
-      l.getSource().forEachFeature(f => {
+    if (layer && typeof layer.getSource === 'function') {
+      layer.getSource().forEachFeature(f => {
         const props = f.getProperties()
         Object.keys(props).forEach(i => {
           if (i in this.state.conf) {
@@ -104,7 +104,7 @@ class Filter extends Component {
           }
         })
       })
-    })
+    }
     Object.keys(filter).forEach(f => {
       if (Object.keys(filter[f]).length === 0) {
         delete filter[f]
@@ -114,19 +114,18 @@ class Filter extends Component {
   }
   filter () {
     const params = this.getChecked()
-    this.state.layers.forEach(l => {
-      l.getSource().forEachFeature(f => {
-        if (f.get('isCache') && params.count) {
-          const props = f.getProperties()
-          const valid = Object.keys(params.query).filter(i => {
-            return (i in props && params.query[i].indexOf(props[i]) > -1)
-          })
-          f.set('hidden', valid.length !== Object.keys(params.query).length)
-        } else {
-          f.set('hidden', false)
-        }
-      })
+    this.state.layer.getSource().forEachFeature(f => {
+      if (f.get('isCache') && params.count) {
+        const props = f.getProperties()
+        const valid = Object.keys(params.query).filter(i => {
+          return (i in props && params.query[i].indexOf(props[i]) > -1)
+        })
+        f.set('hidden', valid.length !== Object.keys(params.query).length)
+      } else {
+        f.set('hidden', false)
+      }
     })
+    console.log('change')
     setState('geocache/filter', params, true)
   }
   getChecked () {

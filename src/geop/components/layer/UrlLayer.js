@@ -8,6 +8,8 @@ import GeoJSONFormat from 'ol/format/GeoJSON'
 import { extend } from 'ol/extent'
 import JSONP from 'jsonpack'
 
+// TODO: deprecated, remove or refactor
+
 class UrlLayer extends Component {
   constructor (target) {
     super(target)
