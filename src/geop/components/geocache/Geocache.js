@@ -7,6 +7,7 @@ import { toLonLat } from 'ol/proj'
 import Component from 'Geop/Component'
 import Sidebar from 'Components/sidebar/Sidebar'
 import GeocacheLoader from './GeocacheLoader'
+import GeocacheList from './GeocacheList'
 import Filter from './Filter'
 import Geotrip from './Geotrip'
 import { createStyle } from 'Components/layer/StyleBuilder'
@@ -66,6 +67,7 @@ class Geocache extends Component {
       position: 'left',
       components: {
         GeocacheLoader,
+        GeocacheList,
         Filter,
         Geotrip
       },
