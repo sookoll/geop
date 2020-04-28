@@ -37,7 +37,7 @@ class Geocache extends Component {
       </div>
     `)
     this.state = {
-      layers: new Collection(),
+      layer: new Collection(),
       styleCache: {},
       styleConfig: cacheConf.styles,
       currentUser: getState('app/account')
