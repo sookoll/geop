@@ -108,7 +108,9 @@ class GeocacheLoader extends Component {
   }
   fixme (content) {
     // FIXME: temporary hack to fix known json falses
-    return content.replace('"NAVY"', 'NAVY')
+    return content
+      .replace('Männiku "NAVY"', 'Männiku &quot;NAVY&quot;')
+      .replace('Seikluse "Pärnu villad" boonusaare', 'Seikluse &quot;Pärnu villad&quot; boonusaare')
   }
   createLayer (geojson) {
     const color = '#000000'
