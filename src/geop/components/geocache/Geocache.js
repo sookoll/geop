@@ -78,12 +78,15 @@ class Geocache extends Component {
       this.sidebar.getComponent('Filter').get('tab').find('span').html(featureCount || t('Filter'))
     }
     const layers = getState('map/layer/overlays')
+    // initial cache layer
     layers.forEach(layer => {
-      if (checkCacheLayer(layer.getSource().getFeatures())) {
+      if (checkCaches(layer.getSource().getFeatures())) {
         state.layer = this.createLayer(layer)
         state.layerOnMap = true
+        importCaches(layer.getSource().getFeatures(), true)
       }
     })
+    // remove layer
     layers.on('remove', e => {
       if (e.element.get('id') === state.layer.get('id')) {
         state.layer.getSource().clear()
@@ -96,7 +99,6 @@ class Geocache extends Component {
     if (!state.layer) {
       state.layer = this.createLayer()
     }
-    // FIXME: this took too long
     let count = 0
     state.layer.getSource().on('addfeature', e => {
       count++
@@ -108,6 +110,7 @@ class Geocache extends Component {
     })
     state.layer.getSource().on('clear', listenLayer)
     onchange('geocache/filter', listenLayer)
+    listenLayer()
   }
   createLayer (layer = null) {
     if (!layer) {
@@ -259,7 +262,7 @@ function styleGeocache (feature, resolution) {
   return [state.styleCache[hash]]
 }
 
-export function checkCacheLayer (features) {
+export function checkCaches (features) {
   if (features) {
     for (let i = 0, len = cacheFormatParsers.length; i < len; i++) {
       if (cacheFormatParsers[i].test(features)) {
@@ -271,7 +274,7 @@ export function checkCacheLayer (features) {
   return false
 }
 
-export function createCacheLayer (features) {
+export function importCaches (features, disableLog = false) {
   if (!features || features.length === 0 || !state.cacheFormatParser) {
     log('error', t('No caches to add!'))
     return false
@@ -280,7 +283,9 @@ export function createCacheLayer (features) {
     getState('map/layer/overlays').push(state.layer)
     state.layerOnMap = true
   }
-  state.layer.getSource().clear()
+  if (!getState('cache/import/appendLayer')) {
+    state.layer.getSource().clear()
+  }
   state.cacheFormatParser.formatFeatures({
     features: features,
     newCacheDays: cacheConf.newCacheDays,
@@ -294,7 +299,10 @@ export function createCacheLayer (features) {
   state.layer.getSource().addFeatures(features)
   // run for onchange events
   setState('geocache/loadend', state.layer)
-  log('success', `${t('Added')} ${getCacheCount()} ${t('caches')}`)
+  setState('layerchange', ['overlays', state.layer.get('id')])
+  if (!disableLog) {
+    log('success', `${t('Imported')} ${getCacheCount()} ${t('caches')}`)
+  }
   if (getState('app/debug')) {
     console.debug('Geocache.createCacheLayer: ' + features.length)
   }

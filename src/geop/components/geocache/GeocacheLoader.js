@@ -4,7 +4,7 @@ import log from 'Utilities/log'
 import { getState } from 'Utilities/store'
 import { uid, hexToRgbA } from 'Utilities/util'
 import { createLayer } from 'Components/layer/LayerCreator'
-import { checkCacheLayer, createCacheLayer } from 'Components/geocache/Geocache'
+import { checkCaches, importCaches } from 'Components/geocache/Geocache'
 import Component from 'Geop/Component'
 import $ from 'jquery'
 
@@ -95,8 +95,8 @@ class GeocacheLoader extends Component {
       const layer = this.createLayer(json)
       const features = layer.getSource().getFeatures()
       // if caches, then add to cache layer, else create new layer
-      if (checkCacheLayer(features)) {
-        createCacheLayer(features)
+      if (checkCaches(features)) {
+        importCaches(features)
       } else {
         getState('map/layer/layers').push(layer)
         log('success', `${t('Added')} ${json.features.length} ${t('features')}`)

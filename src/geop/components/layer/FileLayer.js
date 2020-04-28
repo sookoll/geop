@@ -3,7 +3,7 @@ import { uid, getRandomColor, hexToRgbA } from 'Utilities/util'
 import { getState } from 'Utilities/store'
 import log from 'Utilities/log'
 import { createLayer, dataProjection } from './LayerCreator'
-import { checkCacheLayer, createCacheLayer } from 'Components/geocache/Geocache'
+import { checkCaches, importCaches } from 'Components/geocache/Geocache'
 import Component from 'Geop/Component'
 import GPXFormat from 'Utilities/GPXFormat'
 import GeoJSONFormat from 'ol/format/GeoJSON'
@@ -141,9 +141,9 @@ class FileLayer extends Component {
     const layer = this.createLayer(conf)
     features = layer.getSource().getFeatures()
     // test geocaches
-    if (checkCacheLayer(features)) {
+    if (checkCaches(features)) {
       // create geocache layer
-      createCacheLayer(features)
+      importCaches(features)
     } else {
       if (layer) {
         this.state.layers.push(layer)
