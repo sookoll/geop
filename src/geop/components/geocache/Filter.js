@@ -125,7 +125,6 @@ class Filter extends Component {
         f.set('hidden', false)
       }
     })
-    console.log('change')
     setState('geocache/filter', params, true)
   }
   getChecked () {

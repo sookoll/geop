@@ -35,7 +35,8 @@ const state = {
     'Not Found': 'far fa-square',
     'Found': 'far fa-check-square',
     'Owner': 'fas fa-user'
-  }
+  },
+  featureCount: 0
 }
 
 class Geocache extends Component {
@@ -89,13 +90,23 @@ class Geocache extends Component {
         // run for onchange events
         setState('geocache/loadend', state.layer)
         listenLayer()
+        state.layerOnMap = false
       }
     })
     if (!state.layer) {
       state.layer = this.createLayer()
     }
-    state.layer.getSource().on('addfeature', listenLayer)
-    state.layer.getSource().on('removefeature', listenLayer)
+    // FIXME: this took too long
+    let count = 0
+    state.layer.getSource().on('addfeature', e => {
+      count++
+      if (count >= state.featureCount) {
+        listenLayer()
+        state.featureCount = 0
+        count = 0
+      }
+    })
+    state.layer.getSource().on('clear', listenLayer)
     onchange('geocache/filter', listenLayer)
   }
   createLayer (layer = null) {
@@ -279,6 +290,7 @@ export function createCacheLayer (features) {
     url: cacheConf.cacheUrl,
     date: formatDate
   })
+  state.featureCount = features.length
   state.layer.getSource().addFeatures(features)
   // run for onchange events
   setState('geocache/loadend', state.layer)
