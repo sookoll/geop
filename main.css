@@ -150,6 +150,53 @@ body .size-1_1 {
   opacity: 1;
 }
 
+#tab-cacheinfo .header {
+  white-space: nowrap;
+  overflow: hidden;
+  font-weight: bold;
+}
+#tab-cacheinfo .header a {
+  font-weight: bold;
+  color: inherit;
+}
+#tab-cacheinfo .header .tools {
+  display: none;
+}
+#tab-cacheinfo .content .toggle-found {
+  cursor: pointer;
+  margin-bottom: 0;
+}
+#tab-cacheinfo .content .distance {
+  cursor: pointer;
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.75rem;
+}
+#tab-cacheinfo .description {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+#tab-cacheinfo .fstatus {
+  color: #ddd;
+  font-size: 0.8rem;
+  padding: 4px 6px;
+}
+#tab-cacheinfo .fstatus.found {
+  color: #4c9900;
+}
+#tab-cacheinfo .fstatus.notfound {
+  color: #206fd6;
+}
+#tab-cacheinfo .fstatus.problem {
+  color: #f00;
+}
+
 #tab-filter label {
   display: block;
 }
