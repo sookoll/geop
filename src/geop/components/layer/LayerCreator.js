@@ -53,8 +53,11 @@ class TileLayer extends LayerTile {
     if (opts.type === 'WMTS') {
       sourceOpts.tileGrid = tileGridWMTS(opts)
     }
+    const config = Object.assign({}, opts, sourceOpts)
+    delete config.maxResolution
+    delete config.minResolution
     const options = {
-      source: sources[opts.type] ? new sources[opts.type](Object.assign({}, opts, sourceOpts)) : null
+      source: sources[opts.type] ? new sources[opts.type](config) : null
     }
     super(options)
   }

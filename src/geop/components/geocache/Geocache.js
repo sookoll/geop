@@ -78,7 +78,7 @@ class Geocache extends Component {
       this.el.find('button > span').html(featureCount || t('Caches'))
       this.sidebar.getComponent('Filter').get('tab').find('span').html(featureCount || t('Filter'))
     }
-    const layers = getState('map/layer/overlays')
+    const layers = getState('map/layer/layers')
     // initial cache layer
     layers.forEach(layer => {
       if (checkCaches(layer.getSource().getFeatures())) {
@@ -112,7 +112,7 @@ class Geocache extends Component {
     state.layer.getSource().on('clear', listenLayer)
     onchange('geocache/filter', () => {
       listenLayer()
-      setState('layerchange', ['overlays', state.layer.get('id')])
+      setState('layerchange', ['layers', state.layer.get('id')])
     })
     listenLayer()
   }
@@ -284,7 +284,7 @@ export function importCaches (features, disableLog = false) {
     return false
   }
   if (!state.layerOnMap) {
-    getState('map/layer/overlays').push(state.layer)
+    getState('map/layer/layers').push(state.layer)
     state.layerOnMap = true
   }
   if (!getState('cache/import/appendLayer')) {
@@ -303,7 +303,7 @@ export function importCaches (features, disableLog = false) {
   state.layer.getSource().addFeatures(features)
   // run for onchange events
   setState('geocache/loadend', state.layer)
-  setState('layerchange', ['overlays', state.layer.get('id')])
+  setState('layerchange', ['layers', state.layer.get('id')])
   if (!disableLog) {
     log('success', `${t('Imported')} ${getCacheCount()} ${t('caches')}`)
   }
