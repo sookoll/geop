@@ -32,7 +32,7 @@ class GeocacheInfo extends Component {
       this.state.layer = layer
     })
     onchange('popup/show', ({ layerId, feature }) => {
-      if (this.state.layer && this.state.layer.get('id') === layerId) {
+      if (this.state.layer && this.state.layer.get('id') === layerId && feature.get('isCache')) {
         this.state.cache = feature
         this.render()
       }
