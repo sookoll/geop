@@ -1,15 +1,21 @@
 export default {
   test: features => {
-    const test = features.filter(f => {
+    return features.filter(f => {
       return (f.get('wpt') && f.get('wpt')['groundspeak:cache'])
-    })
-    return test.length > 0
+    }).length > 0
   },
   formatFeatures: opts => {
     const today = new Date()
     opts.features.forEach(feature => {
       const wpt = feature.get('wpt')
-      if (wpt['groundspeak:cache']) {
+      // format always
+      if (feature.get('isCache')) {
+        if (opts.user && opts.user === feature.get('owner')) {
+          const fstatus = 'Geocache Owner'
+          feature.set('fstatus', opts.mapping.fstatusGPX[fstatus] || fstatus)
+        }
+      }
+      if (typeof feature.get('isCache') === 'undefined' && wpt['groundspeak:cache']) {
         const cacheData = {}
         Object.keys(wpt['groundspeak:cache']).forEach(i => {
           if (i !== '_text') {
@@ -56,12 +62,35 @@ export default {
         )
         const newCache = (feature.get('fstatus') === 'Not Found' && testDate > today) ? 'New Cache' : null
         feature.set('newCache', newCache)
-      } else {
+        // description
+        if (cacheData.long_description) {
+          feature.set('description', cacheData.long_description)
+        }
+        if (cacheData.logs && cacheData.logs['groundspeak:log']) {
+          // in case of one log, it is object, not array
+          if (typeof cacheData.logs['groundspeak:log'] === 'object' && '@id' in cacheData.logs['groundspeak:log']) {
+            cacheData.logs['groundspeak:log'] = [cacheData.logs['groundspeak:log']]
+          }
+          feature.set('logs', cacheData.logs['groundspeak:log'].map(log => {
+            return {
+              type: log['groundspeak:type']['_text'],
+              date: log['groundspeak:date']['_text'],
+              finder: log['groundspeak:finder']['_text'],
+              text: log['groundspeak:text']['_text']
+            }
+          }))
+        }
+        feature.set('wpt', {
+          'groundspeak:cache': true
+        })
+      }
+      if (typeof feature.get('isCachePoint') === 'undefined' && !wpt['groundspeak:cache']) {
         // assume waypoint
         // name
         feature.set('name', feature.get('type'))
         // url
         feature.set('url', wpt.url['_text'])
+        feature.set('isCachePoint', true)
       }
       if (!feature.getId()) {
         feature.setId(opts.uid())

@@ -7,7 +7,7 @@ import { toLonLat } from 'ol/proj'
 import Component from 'Geop/Component'
 import Sidebar from 'Components/sidebar/Sidebar'
 import GeocacheLoader from './GeocacheLoader'
-import GeocacheList from './GeocacheList'
+import GeocacheInfo from './GeocacheInfo'
 import Filter from './Filter'
 import Geotrip from './Geotrip'
 import { createStyle } from 'Components/layer/StyleBuilder'
@@ -30,7 +30,6 @@ const state = {
   layerOnMap: false,
   styleCache: {},
   styleConfig: cacheConf.styles,
-  currentUser: getState('app/account'),
   cacheFormatParser: null,
   stat: {
     'Not Found': 'far fa-square',
@@ -67,7 +66,7 @@ class Geocache extends Component {
       position: 'left',
       components: {
         GeocacheLoader,
-        GeocacheList,
+        GeocacheInfo,
         Filter,
         Geotrip
       },
@@ -111,7 +110,10 @@ class Geocache extends Component {
       }
     })
     state.layer.getSource().on('clear', listenLayer)
-    onchange('geocache/filter', listenLayer)
+    onchange('geocache/filter', () => {
+      listenLayer()
+      setState('layerchange', ['overlays', state.layer.get('id')])
+    })
     listenLayer()
   }
   createLayer (layer = null) {
@@ -292,7 +294,7 @@ export function importCaches (features, disableLog = false) {
     features: features,
     newCacheDays: cacheConf.newCacheDays,
     mapping: cacheConf.mapping,
-    user: state.currentUser,
+    user: getState('app/account'),
     uid: uid,
     url: cacheConf.cacheUrl,
     date: formatDate

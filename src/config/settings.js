@@ -64,16 +64,21 @@ export const apiUrls = {
   }
 }
 export const geocache = {
-  authUrl: 'http://geopeitus.ee',
+  authUrl: 'https://geopeitus.ee',
   downloadUrl: {
-    page: 'http://www.geopeitus.ee/index.php?p=300',
-    geojson: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&format=2',
+    page: 'https://www.geopeitus.ee/index.php?p=300',
+    geojson: 'https://www.geopeitus.ee/index.php?p=301&status[]=1&format=2',
     gpx: {
-      gpxActive: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&format=1',
-      gpxAll: 'http://www.geopeitus.ee/index.php?p=301&status[]=1&status[]=2&status[]=3&format=1'
+      gpxActive: 'https://www.geopeitus.ee/index.php?p=301&status[]=1&status[]=3&format=1',
+      gpxActiveLogs: 'https://www.geopeitus.ee/index.php?p=301&status[]=1&status[]=3&format=1&gpx_events=2',
+      gpxAll: 'https://www.geopeitus.ee/index.php?p=301&status[]=1&status[]=2&status[]=3&format=1'
     }
   },
-  cacheUrl: 'http://geopeitus.ee/aare/',
+  cacheUrl: 'https://geopeitus.ee/aare/',
+  logUrl: {
+    'geopeitus.ee': 'https://www.geopeitus.ee/logs/new/c/{id}',
+    'geocaching.com': 'https://www.geocaching.com/seek/log.aspx?ID={id}&lcn=1'
+  },
   radiusStyle: {
     maxResolution: 30,
     radius: 160
