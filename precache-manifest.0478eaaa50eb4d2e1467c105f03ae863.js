@@ -3,7 +3,7 @@ self.__precacheManifest = [
     "url": "assets/89ffa3aba80d30ee0a9371b25c968bbb.svg"
   },
   {
-    "revision": "4be0098c4f9654196855",
+    "revision": "9fcc8d28a2b6386d873f",
     "url": "main.css"
   },
   {
@@ -15,17 +15,17 @@ self.__precacheManifest = [
     "url": "vendors~main.js"
   },
   {
-    "revision": "4be0098c4f9654196855",
+    "revision": "9fcc8d28a2b6386d873f",
     "url": "main.js"
   },
   {
-    "url": "assets/a0369ea57eb6d3843d6474c035111f29.eot"
+    "url": "assets/1ab236ed440ee51810c56bd16628aef0.ttf"
   },
   {
     "url": "assets/icon_96x96.64a8394c3dbf65535f09daf414d151bc.png"
   },
   {
-    "revision": "1175d82f984df7f4eff9bd15b442da42",
+    "revision": "fb9f41fcaef4d5c54adc813a46f2211e",
     "url": "index.html"
   },
   {
@@ -54,25 +54,25 @@ self.__precacheManifest = [
     "url": "assets/icon_512x512.6e3f8c34c1e9a12240e4d56bc6935b78.png"
   },
   {
-    "url": "assets/1ab236ed440ee51810c56bd16628aef0.ttf"
+    "url": "assets/a0369ea57eb6d3843d6474c035111f29.eot"
   },
   {
-    "url": "assets/db78b9359171f24936b16d84f63af378.ttf"
+    "url": "assets/b15db15f746f29ffa02638cb455b8ec0.woff2"
   },
   {
     "url": "assets/ec3cfddedb8bebd2d7a3fdf511f7c1cc.woff"
   },
   {
-    "url": "assets/c20b5b7362d8d7bb7eddf94344ace33e.woff2"
+    "url": "assets/bea989e82b07e9687c26fc58a4805021.woff"
   },
   {
     "url": "assets/c1868c9545d2de1cf8488f1dadd8c9d0.eot"
   },
   {
-    "url": "assets/bea989e82b07e9687c26fc58a4805021.woff"
+    "url": "assets/db78b9359171f24936b16d84f63af378.ttf"
   },
   {
-    "url": "assets/b15db15f746f29ffa02638cb455b8ec0.woff2"
+    "url": "assets/c20b5b7362d8d7bb7eddf94344ace33e.woff2"
   },
   {
     "url": "assets/a06da7f0950f9dd366fc9db9d56d618a.woff2"
