@@ -52,7 +52,7 @@ class GeocacheInfo extends Component {
     ? this.renderLogs() : ''}
     `)
     // fix all images
-    this.el.find('img').addClass('img-fluid')
+    this.el.find('img').addClass('img-fluid').css('height', 'auto')
   }
   renderCacheInfo () {
     const info = this.state.layer.get('_featureInfo')
