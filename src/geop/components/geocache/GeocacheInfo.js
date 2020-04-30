@@ -22,9 +22,9 @@ class GeocacheInfo extends Component {
       layer: null,
       cache: null,
       logType: {
-        'Found it': 'found',
+        "Found it": 'found',
         "Didn't find it": 'notfound',
-        'Needs Maintenance': 'problem'
+        "Needs Maintenance": 'problem'
       }
     }
     this.create()
