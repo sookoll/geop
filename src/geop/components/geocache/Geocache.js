@@ -81,7 +81,11 @@ class Geocache extends Component {
     const layers = getState('map/layer/layers')
     // initial cache layer
     layers.forEach(layer => {
-      if (layer && checkCaches(layer.getSource().getFeatures())) {
+      if (
+        layer &&
+        typeof layer.getSource().getFeatures === 'function' &&
+        checkCaches(layer.getSource().getFeatures())
+      ) {
         state.layer = this.createLayer(layer)
         state.layerOnMap = true
         importCaches(layer.getSource().getFeatures(), true)
