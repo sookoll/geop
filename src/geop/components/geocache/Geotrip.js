@@ -18,7 +18,7 @@ import $ from 'jquery'
 import './Geotrip.styl'
 
 class Geotrip extends Component {
-  constructor (target, props) {
+  constructor (target) {
     super(target)
     this.id = 'tab-geotrip'
     this.icon = 'fa fa-thumbtack'

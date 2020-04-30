@@ -2,15 +2,17 @@ import { geocache as cacheConf } from 'Conf/settings'
 import { t } from 'Utilities/translate'
 import { uid, scaleFactor, formatDate, hexToRgbA, deepCopy } from 'Utilities/util'
 import { getState, setState, onchange } from 'Utilities/store'
+import log from 'Utilities/log'
 import { toLonLat } from 'ol/proj'
 import Component from 'Geop/Component'
 import Sidebar from 'Components/sidebar/Sidebar'
 import GeocacheLoader from './GeocacheLoader'
+import GeocacheInfo from './GeocacheInfo'
 import Filter from './Filter'
 import Geotrip from './Geotrip'
 import { createStyle } from 'Components/layer/StyleBuilder'
+import { createLayer } from 'Components/layer/LayerCreator'
 import Circle from 'ol/geom/Circle'
-import Collection from 'ol/Collection'
 import geopeitusJSON from './GeopeitusJSON'
 import projectGCJSON from './ProjectGCJSON'
 import geocacheGPX from './GeocacheGPX'
@@ -22,6 +24,20 @@ const cacheFormatParsers = [
   projectGCJSON,
   geocacheGPX
 ]
+
+const state = {
+  layer: null,
+  layerOnMap: false,
+  styleCache: {},
+  styleConfig: cacheConf.styles,
+  cacheFormatParser: null,
+  stat: {
+    'Not Found': 'far fa-square',
+    'Found': 'far fa-check-square',
+    'Owner': 'fas fa-user'
+  },
+  featureCount: 0
+}
 
 class Geocache extends Component {
   constructor (target) {
@@ -36,27 +52,8 @@ class Geocache extends Component {
         </button>
       </div>
     `)
-    this.state = {
-      layer: new Collection(),
-      styleCache: {},
-      styleConfig: cacheConf.styles,
-      currentUser: getState('app/account')
-    }
-    const listenLayers = e => {
-      let featureCount = 0
-      this.state.layers.forEach(layer => {
-        featureCount += layer.getSource().getFeatures().filter(f => {
-          return (f.get('isCache') && !f.get('hidden'))
-        }).length
-      })
-      this.el.find('button > span').html(featureCount || t('Caches'))
-      this.sidebar.getComponent('Filter').get('tab').find('span').html(featureCount || t('Filter'))
-    }
-    this.state.layers.on('add', listenLayers)
-    this.state.layers.on('remove', listenLayers)
-    onchange('geocache/filter', listenLayers)
     // radiusStyle geometry function
-    this.state.styleConfig.radiusStyle.geometry = feature => {
+    state.styleConfig.radiusStyle.geometry = feature => {
       const coordinates = feature.getGeometry().getCoordinates()
       const lonlat = toLonLat(coordinates)
       const scaleF = scaleFactor(lonlat)
@@ -69,70 +66,77 @@ class Geocache extends Component {
       position: 'left',
       components: {
         GeocacheLoader,
+        GeocacheInfo,
         Filter,
         Geotrip
       },
       activeComponent: 'tab-loader',
-      shadow: false,
-      props: {
-        collection: this.state.layers
-      }
+      shadow: false
     })
-    this.layersPick()
-  }
-  layersPick () {
+    const listenLayer = e => {
+      let featureCount = getCacheCount()
+      this.el.find('button > span').html(featureCount || t('Caches'))
+      this.sidebar.getComponent('Filter').get('tab').find('span').html(featureCount || t('Filter'))
+    }
     const layers = getState('map/layer/layers')
+    // initial cache layer
     layers.forEach(layer => {
-      if (this.checkLayer(layer)) {
-        this.registerLayer(layer)
+      if (
+        layer &&
+        typeof layer.getSource().getFeatures === 'function' &&
+        checkCaches(layer.getSource().getFeatures())
+      ) {
+        state.layer = this.createLayer(layer)
+        state.layerOnMap = true
+        importCaches(layer.getSource().getFeatures(), true)
       }
     })
-    layers.on('add', e => {
-      if (this.checkLayer(e.element)) {
-        this.registerLayer(e.element)
-      }
-    })
+    // remove layer
     layers.on('remove', e => {
-      this.state.layers.remove(e.element)
-    })
-  }
-  checkLayer (layer) {
-    const features = layer.getSource().getFeatures
-      ? layer.getSource().getFeatures() : null
-    if (features) {
-      for (let i = 0, len = cacheFormatParsers.length; i < len; i++) {
-        if (cacheFormatParsers[i].test(features)) {
-          layer.set('_cacheFormatParser', cacheFormatParsers[i])
-          return true
-        }
+      if (e.element.get('id') === state.layer.get('id')) {
+        state.layer.getSource().clear()
+        // run for onchange events
+        setState('geocache/loadend', state.layer)
+        listenLayer()
+        state.layerOnMap = false
       }
-    }
-    return false
-  }
-  registerLayer (layer) {
-    const stat = {
-      'Not Found': 'far fa-square',
-      'Found': 'far fa-check-square',
-      'Owner': 'fas fa-user'
-    }
-    layer.get('_cacheFormatParser').formatFeatures({
-      features: layer.getSource().getFeatures(),
-      newCacheDays: cacheConf.newCacheDays,
-      mapping: cacheConf.mapping,
-      user: this.state.currentUser,
-      uid: uid,
-      url: cacheConf.cacheUrl,
-      date: formatDate
     })
-    layer.setStyle((feature, resolution) => this.styleGeocache(feature, resolution))
+    if (!state.layer) {
+      state.layer = this.createLayer()
+    }
+    let count = 0
+    state.layer.getSource().on('addfeature', e => {
+      count++
+      if (count >= state.featureCount) {
+        listenLayer()
+        state.featureCount = 0
+        count = 0
+      }
+    })
+    state.layer.getSource().on('clear', listenLayer)
+    onchange('geocache/filter', () => {
+      listenLayer()
+      setState('layerchange', ['layers', state.layer.get('id')])
+    })
+    listenLayer()
+  }
+  createLayer (layer = null) {
+    if (!layer) {
+      layer = createLayer({
+        type: 'FeatureCollection',
+        id: uid(),
+        title: t('Caches'),
+        visible: true
+      })
+    }
     layer.set('_featureInfo', {
       title: f => {
         const geotrip = getState('geocache/trip')
         const inTrip = geotrip && geotrip.getArray().indexOf(f) > -1
-        const styleType = this.state.styleConfig.text[f.get('type')]
+        const styleType = state.styleConfig.text[f.get('type')]
         if (f.get('isCache')) {
           return `
-            <i class="${styleType ? styleType.class : this.state.styleConfig.base.class} ${f.get('status') !== 'Available' ? 'unavailable' : ''}"></i>
+            <i class="${styleType ? styleType.class : state.styleConfig.base.class} ${f.get('status') !== 'Available' ? 'unavailable' : ''}"></i>
             <a href="${f.get('url')}" target="_blank" class="${f.get('status') === 'Archived' ? 'archived' : ''}">${t(f.get('name'))}</a>
             <div class="tools">
               <a href="#" class="cache-toggle" data-id="${f.getId()}" title="${t('Add to geotrip')}">
@@ -141,7 +145,7 @@ class Geocache extends Component {
             </div>`
         } else {
           return `
-            <i class="${styleType ? styleType.class : this.state.styleConfig.base.class}"></i>
+            <i class="${styleType ? styleType.class : state.styleConfig.base.class}"></i>
             <a href="${f.get('url')}" target="_blank">${t(f.get('name'))}</a>
             <div class="tools">
               <a href="#" class="cache-toggle" data-id="${f.getId()}" title="${t('Add to geotrip')}">
@@ -151,13 +155,13 @@ class Geocache extends Component {
         }
       },
       content: f => {
-        const styleType = this.state.styleConfig.text[f.get('type')]
+        const styleType = state.styleConfig.text[f.get('type')]
         if (f.get('isCache')) {
           return `
             <p class="text-muted metadata">
               <i class="fas fa-clock"></i> ${f.get('time') ? formatDate(f.get('time')) : ''}<br/>
               <i class="fa fa-user"></i> ${f.get('owner')}<br/>
-              <i class="${styleType ? styleType.class : this.state.styleConfig.base.class}"></i>
+              <i class="${styleType ? styleType.class : state.styleConfig.base.class}"></i>
               ${t(f.get('type'))}<br/>
               <i class="fa fa-chart-area"></i> ${f.get('terrain')}
               <i class="fa fa-star ml-2"></i> ${f.get('difficulty')}
@@ -165,7 +169,7 @@ class Geocache extends Component {
               ${f.get('cmt') ? `<i class="fa fa-hand-point-right"></i> ${f.get('cmt')}` : ''}
             </p>
             <p class="toggle-found">
-              <i class="${stat[f.get('fstatus')]}"></i> <span>${t(f.get('fstatus'))}</span>
+              <i class="${state.stat[f.get('fstatus')]}"></i> <span>${t(f.get('fstatus'))}</span>
             </p>`
         } else {
           return `
@@ -179,11 +183,11 @@ class Geocache extends Component {
         $(pop).on('click', '.toggle-found', e => {
           const inTrip = geotrip && geotrip.getArray().indexOf(f[1]) > -1
           const found = f[1].get('fstatus') === 'Found'
-          $(e.currentTarget).find('i').removeClass(stat[f[1].get('fstatus')])
+          $(e.currentTarget).find('i').removeClass(state.stat[f[1].get('fstatus')])
           f[1].set('fstatus', found ? 'Not Found' : 'Found')
           f[1].set('fstatus_timestamp', !found ? Date.now() : null)
           $(e.currentTarget).find('span').html(t(f[1].get('fstatus')))
-          $(e.currentTarget).find('i').addClass(stat[f[1].get('fstatus')])
+          $(e.currentTarget).find('i').addClass(state.stat[f[1].get('fstatus')])
           if (!inTrip && !found) {
             geotrip.push(f[1])
           }
@@ -196,70 +200,119 @@ class Geocache extends Component {
         })
       }
     })
-    this.state.layers.push(layer)
-    // run for onchange events
-    setState('geocache/loadend', this.state.layers.getLength())
-    if (getState('app/debug')) {
-      console.debug('Geocache.registerLayer: ' + layer.get('id') + ', ' + layer.get('title'))
+    layer.setStyle(styleGeocache)
+    return layer
+  }
+}
+
+function getCacheCount () {
+  return state.layer.getSource().getFeatures().filter(f => {
+    return (f.get('isCache') && !f.get('hidden'))
+  }).length
+}
+
+function styleGeocache (feature, resolution) {
+  const type = feature.get('type')
+  const fstatus = feature.get('fstatus')
+  const newCache = feature.get('newCache')
+  const status = feature.get('status')
+  const overviewStyle = resolution > cacheConf.overviewMinResolution
+  const hash = type + fstatus + newCache + status + overviewStyle
+  if (!feature.get('_inGeotrip') && !feature.get('isCache') && resolution > cacheConf.waypointMaxResolution) {
+    return null
+  }
+  if (!feature.get('_inGeotrip') && feature.get('hidden')) {
+    return null
+  }
+  if (!state.styleCache[hash]) {
+    const definition = !overviewStyle
+      ? Object.assign(
+        {},
+        state.styleConfig.base,
+        state.styleConfig.text[type],
+        state.styleConfig.color[fstatus],
+        state.styleConfig.newCache[newCache] || {}
+      )
+      : Object.assign(
+        {},
+        state.styleConfig.base,
+        state.styleConfig.overview,
+        state.styleConfig.color[fstatus],
+        state.styleConfig.newCache[newCache] || {}
+      )
+    // deep copy for remove references
+    const def = deepCopy(definition)
+    if (status !== 'Available') {
+      if (def.fill) {
+        def.fill.color = hexToRgbA(def.fill.color, 0.5)
+      }
+      if (def.stroke) {
+        def.stroke.color = hexToRgbA(def.stroke.color, 0.7)
+      }
+    }
+    state.styleCache[hash] = createStyle({
+      text: def,
+      zIndex: feature.get('isCache') ? 2 : 1
+    }, true)
+  }
+  if (feature.get('isCache') && feature.get('radiusVisible') && resolution <= cacheConf.radiusStyle.maxResolution) {
+    if (!state.styleCache.radiusStyle) {
+      state.styleCache.radiusStyle = createStyle(
+        state.styleConfig.radiusStyle,
+        true
+      )
+    }
+    return [
+      state.styleCache[hash],
+      state.styleCache.radiusStyle
+    ]
+  }
+  return [state.styleCache[hash]]
+}
+
+export function checkCaches (features) {
+  if (features) {
+    for (let i = 0, len = cacheFormatParsers.length; i < len; i++) {
+      if (cacheFormatParsers[i].test(features)) {
+        state.cacheFormatParser = cacheFormatParsers[i]
+        return true
+      }
     }
   }
-  styleGeocache (feature, resolution) {
-    const type = feature.get('type')
-    const fstatus = feature.get('fstatus')
-    const newCache = feature.get('newCache')
-    const status = feature.get('status')
-    const overviewStyle = resolution > cacheConf.overviewMinResolution
-    const hash = type + fstatus + newCache + status + overviewStyle
-    if (!feature.get('_inGeotrip') && !feature.get('isCache') && resolution > cacheConf.waypointMaxResolution) {
-      return null
-    }
-    if (!feature.get('_inGeotrip') && feature.get('hidden')) {
-      return null
-    }
-    if (!this.state.styleCache[hash]) {
-      const definition = !overviewStyle
-        ? Object.assign(
-          {},
-          this.state.styleConfig.base,
-          this.state.styleConfig.text[type],
-          this.state.styleConfig.color[fstatus],
-          this.state.styleConfig.newCache[newCache] || {}
-        )
-        : Object.assign(
-          {},
-          this.state.styleConfig.base,
-          this.state.styleConfig.overview,
-          this.state.styleConfig.color[fstatus],
-          this.state.styleConfig.newCache[newCache] || {}
-        )
-      // deep copy for remove references
-      const def = deepCopy(definition)
-      if (status !== 'Available') {
-        if (def.fill) {
-          def.fill.color = hexToRgbA(def.fill.color, 0.5)
-        }
-        if (def.stroke) {
-          def.stroke.color = hexToRgbA(def.stroke.color, 0.7)
-        }
-      }
-      this.state.styleCache[hash] = createStyle({
-        text: def,
-        zIndex: feature.get('isCache') ? 2 : 1
-      }, true)
-    }
-    if (feature.get('isCache') && feature.get('radiusVisible') && resolution <= cacheConf.radiusStyle.maxResolution) {
-      if (!this.state.styleCache.radiusStyle) {
-        this.state.styleCache.radiusStyle = createStyle(
-          this.state.styleConfig.radiusStyle,
-          true
-        )
-      }
-      return [
-        this.state.styleCache[hash],
-        this.state.styleCache.radiusStyle
-      ]
-    }
-    return [this.state.styleCache[hash]]
+  return false
+}
+
+export function importCaches (features, disableLog = false) {
+  if (!features || features.length === 0 || !state.cacheFormatParser) {
+    log('error', t('No caches to add!'))
+    return false
+  }
+  if (!state.layerOnMap) {
+    getState('map/layer/layers').push(state.layer)
+    state.layerOnMap = true
+  }
+  if (!getState('cache/import/appendLayer')) {
+    state.layer.getSource().clear()
+  }
+  state.cacheFormatParser.formatFeatures({
+    features: features,
+    newCacheDays: cacheConf.newCacheDays,
+    mapping: cacheConf.mapping,
+    user: getState('app/account'),
+    uid: uid,
+    url: cacheConf.cacheUrl,
+    date: formatDate
+  })
+  state.featureCount = features.length
+  state.layer.getSource().addFeatures(features)
+  // run for onchange events
+  setState('geocache/loadend', state.layer)
+  setState('layerchange', ['layers', state.layer.get('id')])
+  if (!disableLog) {
+    log('success', `${t('Imported')} ${getCacheCount()} ${t('caches')}`)
+  }
+  if (getState('app/debug')) {
+    console.debug('Geocache.createCacheLayer: ' + features.length)
   }
 }
 

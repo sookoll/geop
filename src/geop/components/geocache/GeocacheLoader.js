@@ -4,6 +4,7 @@ import log from 'Utilities/log'
 import { getState } from 'Utilities/store'
 import { uid, hexToRgbA } from 'Utilities/util'
 import { createLayer } from 'Components/layer/LayerCreator'
+import { checkCaches, importCaches } from 'Components/geocache/Geocache'
 import Component from 'Geop/Component'
 import $ from 'jquery'
 
@@ -92,16 +93,24 @@ class GeocacheLoader extends Component {
     }
     if (json) {
       const layer = this.createLayer(json)
-      getState('map/layer/layers').push(layer)
-      log('success', `${t('Added')} ${json.features.length} ${t('features')}`)
-      if (debug) {
-        console.debug('GeocacheLoader.addCaches: added ' + json.features.length)
+      const features = layer.getSource().getFeatures()
+      // if caches, then add to cache layer, else create new layer
+      if (checkCaches(features)) {
+        importCaches(features)
+      } else {
+        getState('map/layer/layers').push(layer)
+        log('success', `${t('Added')} ${json.features.length} ${t('features')}`)
+        if (debug) {
+          console.debug('GeocacheLoader.addCaches: added ' + json.features.length)
+        }
       }
     }
   }
   fixme (content) {
-    // FIXME: temporary hack to fix known json false
-    return content.replace('"NAVY"', 'NAVY')
+    // FIXME: temporary hack to fix known json falses
+    return content
+      .replace('Männiku "NAVY"', 'Männiku &quot;NAVY&quot;')
+      .replace('Seikluse "Pärnu villad" boonusaare', 'Seikluse &quot;Pärnu villad&quot; boonusaare')
   }
   createLayer (geojson) {
     const color = '#000000'

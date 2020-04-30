@@ -60,7 +60,7 @@ export const layers = {
       }, {
         type: 'XYZ',
         url: 'https://tiles.maaamet.ee/tm/tms/1.0.0/epk_vv@LEST/{z}/{x}/{-y}.png',
-        minResolution: 0.5,
+        minResolution: 0.9765625,
         maxResolution: 7.1,
         crossOrigin: null
       }, {
@@ -72,7 +72,7 @@ export const layers = {
           FORMAT: 'image/png',
           VERSION: '1.1.1'
         },
-        maxResolution: 0.75,
+        maxResolution: 0.9765625,
         tileSize: 1024,
         gutter: 20,
         crossOrigin: null

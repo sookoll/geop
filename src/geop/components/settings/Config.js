@@ -119,6 +119,25 @@ class Config extends Component {
       <small class="form-text text-muted mb-3">
         ${t('Show distance and duration along route, not from beginning to end')}
       </small>
+      <!-- Cache import -->
+      <h5>${t('Geocache importing')}</h5>
+      <div class="btn-group" role="group">
+        <button type="button"
+          class="btn btn-outline-primary set-cacheimport-btn ${getState('cache/import/appendLayer') ? '' : 'active'}"
+          data-import="overwrite">
+          ${t('Overwrite')}
+        </button>
+        <button type="button"
+          class="btn btn-outline-primary set-cacheimport-btn ${getState('cache/import/appendLayer') ? 'active' : ''}"
+          data-import="append">
+          ${t('Append')}
+        </button>
+      </div>
+      <small class="form-text text-muted mb-3">
+        ${t('Set a method, how cache import works.')}<br/>
+        ${t('Overwrite will delete old geocaches when import new caches from file.')}
+        ${t('Append will add new geocaches without deleting old ones.')}
+      </small>
       <h5>${t('Share only geotrip features')}</h5>
       <div class="btn-group" role="group">
         <button type="button"
@@ -235,6 +254,12 @@ class Config extends Component {
     this.el.on('click', 'button.set-route-btn', e => {
       setState('routing/infoFromRoute', $(e.currentTarget).data('share') === 'on', true)
       this.el.find('button.set-route-btn').removeClass('active')
+      $(e.currentTarget).addClass('active')
+    })
+    // cache import
+    this.el.on('click', 'button.set-cacheimport-btn', e => {
+      setState('cache/import/appendLayer', $(e.currentTarget).data('import') === 'append', true)
+      this.el.find('button.set-cacheimport-btn').removeClass('active')
       $(e.currentTarget).addClass('active')
     })
     // share change
