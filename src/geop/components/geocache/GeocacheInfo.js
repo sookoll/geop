@@ -22,9 +22,9 @@ class GeocacheInfo extends Component {
       layer: null,
       cache: null,
       logType: {
-        'Found it': 'found',
+        "Found it": 'found',
         "Didn't find it": 'notfound',
-        'Needs Maintenance': 'problem'
+        "Needs Maintenance": 'problem'
       }
     }
     this.create()
@@ -52,7 +52,7 @@ class GeocacheInfo extends Component {
     ? this.renderLogs() : ''}
     `)
     // fix all images
-    this.el.find('img').addClass('img-fluid')
+    this.el.find('img').addClass('img-fluid').css('height', 'auto')
   }
   renderCacheInfo () {
     const info = this.state.layer.get('_featureInfo')
