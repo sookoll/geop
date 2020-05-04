@@ -14,6 +14,8 @@ import { toLonLat } from 'ol/proj'
 import $ from 'jquery'
 import './GeoLocation.styl'
 
+const longPress = 800
+
 class GeoLocation extends Component {
   constructor (target) {
     super(target)
@@ -44,7 +46,9 @@ class GeoLocation extends Component {
       isFirst: false,
       lastPosition: null,
       lastHeading: null,
-      minAccuracy: 100
+      minAccuracy: 100,
+      pressStart: null,
+      pressTimer: null
     }
     this.handlers = {
       updateView: e => {
@@ -63,14 +67,29 @@ class GeoLocation extends Component {
   render () {
     this.el.prop('disabled', false)
     this.el.on('click', e => {
-      this.state.active = (this.state.active + 1 >= this.state.status.length)
-        ? 0 : this.state.active + 1
-      if (this.state.active === 0) {
+      e.preventDefault()
+    })
+    this.el.on('mousedown', e => {
+      this.state.pressStart = new Date().getTime()
+      this.state.pressTimer = setTimeout(() => {
         this.disable()
         $(e.currentTarget).removeClass(this.state.status.join(' '))
-      } else {
-        this.enable()
-        $(e.currentTarget).addClass(this.state.status[this.state.active])
+      }, longPress)
+    }).on('mouseleave', e => {
+      this.state.pressStart = 0
+      clearTimeout(this.state.pressTimer)
+    }).on('mouseup', e => {
+      if (new Date().getTime() < (this.state.pressStart + longPress)) {
+        clearTimeout(this.state.pressTimer)
+        this.state.active = (this.state.active + 1 >= this.state.status.length)
+          ? 0 : this.state.active + 1
+        if (this.state.active === 0) {
+          this.disable()
+          $(e.currentTarget).removeClass(this.state.status.join(' '))
+        } else {
+          this.enable()
+          $(e.currentTarget).addClass(this.state.status[this.state.active])
+        }
       }
     })
   }
