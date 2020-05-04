@@ -11,6 +11,7 @@ class GeocacheInfo extends Component {
     super(target)
     this.id = 'tab-cacheinfo'
     this.icon = 'fa fa-cube'
+    this.btnTextVisible = true
     this.el = $(`
       <div
         class="tab-pane fade"
