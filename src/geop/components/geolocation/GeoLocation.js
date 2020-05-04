@@ -66,19 +66,22 @@ class GeoLocation extends Component {
   }
   render () {
     this.el.prop('disabled', false)
-    this.el.on('click', e => {
+    this.el.on('click contextmenu', e => {
       e.preventDefault()
     })
-    this.el.on('mousedown', e => {
+    this.el.on('mousedown touchstart', e => {
+      e.preventDefault()
       this.state.pressStart = new Date().getTime()
       this.state.pressTimer = setTimeout(() => {
         this.disable()
         $(e.currentTarget).removeClass(this.state.status.join(' '))
       }, longPress)
     }).on('mouseleave', e => {
+      e.preventDefault()
       this.state.pressStart = 0
       clearTimeout(this.state.pressTimer)
-    }).on('mouseup', e => {
+    }).on('mouseup touchend', e => {
+      e.preventDefault()
       if (new Date().getTime() < (this.state.pressStart + longPress)) {
         clearTimeout(this.state.pressTimer)
         this.state.active = (this.state.active + 1 >= this.state.status.length)
