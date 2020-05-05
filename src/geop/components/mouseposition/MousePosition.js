@@ -280,14 +280,26 @@ function toStringHDMS (coordinate, fractionDigits, hemispharePosition) {
   }
 }
 
-export function createMarker (coordinate) {
+export function createMarker (coordinate, props = null) {
   const layer = layerCreate()
+  // we do not create duplicated markers on same coordinate.
+  const features = layer.getSource().getFeatures().filter(feature => {
+    return JSON.stringify(feature.getGeometry().getCoordinates()) === JSON.stringify(coordinate) &&
+      ((props && props.name && feature.getProperties().name &&
+      feature.getProperties().name === props.name) || !props)
+  })
+  if (features.length) {
+    return features[0]
+  }
+  if (!props) {
+    props = {
+      name: formatCoordinate(coordinate)
+    }
+  }
   const feature = new GeoJSONFormat().readFeature({
     type: 'Feature',
     id: uid(),
-    properties: {
-      name: formatCoordinate(coordinate)
-    },
+    properties: props,
     geometry: {
       type: 'Point',
       coordinates: coordinate

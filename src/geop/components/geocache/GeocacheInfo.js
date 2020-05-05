@@ -1,7 +1,10 @@
 import { t } from 'Utilities/translate'
 import { geocache as cacheConf } from 'Conf/settings'
-import { onchange } from 'Utilities/store'
+import { getState, onchange } from 'Utilities/store'
 import { formatDate } from 'Utilities/util'
+import { parseString as parseCoords } from 'Components/search/Coordinate'
+import { createMarker } from 'Components/mouseposition/MousePosition'
+import { fromLonLat } from 'ol/proj'
 import Component from 'Geop/Component'
 import './GeocacheInfo.styl'
 import $ from 'jquery'
@@ -54,12 +57,17 @@ class GeocacheInfo extends Component {
     `)
     // fix all images
     this.el.find('img').addClass('img-fluid').css('height', 'auto')
+    // click on coords
+    this.el.find('a.createMarker').on('click', e => {
+      e.preventDefault()
+      this.mapCoordinates($(e.target).data('coordinates'), $(e.target).text())
+    })
   }
   renderCacheInfo () {
     const info = this.state.layer.get('_featureInfo')
     const title = typeof info.title === 'function' ? info.title(this.state.cache) : info.title
     const content = typeof info.content === 'function' ? info.content(this.state.cache) : info.content
-    const description = this.state.cache.get('description')
+    const description = parseCoords(this.state.cache.get('description'))
     return `
       <li class="list-group-item header">
         ${title}
@@ -91,9 +99,19 @@ class GeocacheInfo extends Component {
             </b>
             <b>${log.finder}</b>
             <br/>
-            ${log.text}
+            ${parseCoords(log.text)}
           </li>`).join('')}
       </ul>`
+  }
+  mapCoordinates (coords, name) {
+    const map = getState('map')
+    coords = fromLonLat(coords)
+    createMarker(coords, { name })
+    map.getView().animate({
+      center: coords,
+      zoom: 15,
+      duration: 500
+    })
   }
 }
 
