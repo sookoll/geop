@@ -150,6 +150,60 @@ body .size-1_1 {
   opacity: 1;
 }
 
+#mouse-position {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #fff;
+}
+#mouse-position div.coords {
+  margin-top: 6px;
+}
+circle#map-click-animation {
+  animation-duration: 0.3s;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-out;
+  animation-name: map-click-animation;
+}
+@-moz-keyframes map-click-animation {
+  from {
+    r: 0;
+    opacity: 0.5;
+  }
+  to {
+    r: 10px;
+    opacity: 0;
+  }
+}
+@-webkit-keyframes map-click-animation {
+  from {
+    r: 0;
+    opacity: 0.5;
+  }
+  to {
+    r: 10px;
+    opacity: 0;
+  }
+}
+@-o-keyframes map-click-animation {
+  from {
+    r: 0;
+    opacity: 0.5;
+  }
+  to {
+    r: 10px;
+    opacity: 0;
+  }
+}
+@keyframes map-click-animation {
+  from {
+    r: 0;
+    opacity: 0.5;
+  }
+  to {
+    r: 10px;
+    opacity: 0;
+  }
+}
+
 #tab-cacheinfo .header {
   white-space: nowrap;
   overflow: hidden;
@@ -210,60 +264,6 @@ body .size-1_1 {
   width: 300px;
   left: 50%;
   margin-left: -150px;
-}
-
-#mouse-position {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #fff;
-}
-#mouse-position div.coords {
-  margin-top: 6px;
-}
-circle#map-click-animation {
-  animation-duration: 0.3s;
-  animation-iteration-count: 1;
-  animation-timing-function: ease-out;
-  animation-name: map-click-animation;
-}
-@-moz-keyframes map-click-animation {
-  from {
-    r: 0;
-    opacity: 0.5;
-  }
-  to {
-    r: 10px;
-    opacity: 0;
-  }
-}
-@-webkit-keyframes map-click-animation {
-  from {
-    r: 0;
-    opacity: 0.5;
-  }
-  to {
-    r: 10px;
-    opacity: 0;
-  }
-}
-@-o-keyframes map-click-animation {
-  from {
-    r: 0;
-    opacity: 0.5;
-  }
-  to {
-    r: 10px;
-    opacity: 0;
-  }
-}
-@keyframes map-click-animation {
-  from {
-    r: 0;
-    opacity: 0.5;
-  }
-  to {
-    r: 10px;
-    opacity: 0;
-  }
 }
 
 #tab-geotrip ul li .badge {
