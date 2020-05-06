@@ -57,6 +57,12 @@ class GeocacheInfo extends Component {
     `)
     // fix all images
     this.el.find('img').addClass('img-fluid').css('height', 'auto')
+    // fix coords links color, if parent have it (https://www.geopeitus.ee/aare/2583)
+    this.el.find('a.createMarker').each((i, el) => {
+      if ($(el).parent().attr('style')) {
+        $(el).attr('style', $(el).parent().attr('style'))
+      }
+    })
     // click on coords
     this.el.find('a.createMarker').on('click', e => {
       e.preventDefault()
