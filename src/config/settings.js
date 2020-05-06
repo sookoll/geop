@@ -11,6 +11,7 @@ export const app = {
   streetView: true,
   measureTool: true,
   fullScreen: true,
+  screenLock: true,
   mousePosition: true,
   geoLocation: true,
   shareState: true,

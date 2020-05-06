@@ -1,5 +1,5 @@
 import { getState, setState, clearState } from 'Utilities/store'
-import { enableScreenLock, disableScreenLock, getDebugStore } from 'Utilities/util'
+import { getDebugStore } from 'Utilities/util'
 import { t, getLocale, getLocales, changeLocale } from 'Utilities/translate'
 import { set as setPermalink } from 'Utilities/permalink'
 import log from 'Utilities/log'
@@ -57,17 +57,6 @@ class Config extends Component {
       </div>
       <small class="form-text text-muted mb-3">
         ${t('Change language. App will reload after change!')}
-      </small>
-      <h5>${t('Keep awake')}</h5>
-      <div class="btn-group-toggle" data-toggle="buttons">
-        <label class="btn btn-outline-primary">
-          <input type="checkbox" id="settings-awake" autocomplete="off">
-          <i class="fa fa-mobile-alt"></i>
-          <span>${t('Off')}</span>
-        </label>
-      </div>
-      <small class="form-text text-muted mb-3">
-        ${t('Keep screen on. Use with caution, might train device battery!')}
       </small>
       <h5>${t('Account')}</h5>
       <div class="form-group">
@@ -206,17 +195,6 @@ class Config extends Component {
       if (getState('app/debug')) {
         console.debug(`Config.render: Locale changed to ${$(e.currentTarget).data('locale')}`)
       }
-    })
-    // keep awake
-    this.el.on('change', '#settings-awake', e => {
-      if (e.target.checked) {
-        enableScreenLock()
-        $(e.target).closest('label').find('span').html(t('On'))
-      } else {
-        disableScreenLock()
-        $(e.target).closest('label').find('span').html(t('Off'))
-      }
-      $(e.target).closest('label').toggleClass('btn-outline-secondary btn-success')
     })
     // account name
     this.el.on('blur', '#settings-account', e => {
