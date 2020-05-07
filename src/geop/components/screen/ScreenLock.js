@@ -6,24 +6,21 @@ import $ from 'jquery'
 class FullScreen extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`<div class="btn-group float-right" id="screenlock"></div>`)
+    this.el = $(`<button type="button"
+      title="${t('Toggle screen lock')}"
+      disabled
+      class="btn btn-secondary">
+      <i class="fa fa-desktop"></i>
+    </button>`)
     this.state = {
       active: false
     }
     this.create()
   }
   render () {
-    this.el.html(`
-      <button type="button"
-        title="${t('Toggle screen lock')}"
-        disabled
-        class="btn btn-secondary">
-        <i class="fa fa-desktop"></i>
-      </button>
-    `)
     if (this.test()) {
-      this.el.find('button').prop('disabled', false)
-      this.el.on('click', 'button', e => {
+      this.el.prop('disabled', false)
+      this.el.on('click', e => {
         e.preventDefault()
         this.toggle()
       })
@@ -41,12 +38,12 @@ class FullScreen extends Component {
   }
   on () {
     this.state.active = true
-    this.el.find('button').addClass('active')
+    this.el.addClass('active')
     enableScreenLock()
   }
   off () {
     this.state.active = false
-    this.el.find('button').removeClass('active')
+    this.el.removeClass('active')
     disableScreenLock()
   }
 }

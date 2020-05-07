@@ -57,7 +57,7 @@ class MousePosition extends Component {
   constructor (target) {
     super(target)
     this.el = $(`
-      <span id="mouse-position" class="mouse-position float-left d-none d-sm-block"></span>
+      <span class="mouse-position"></span>
     `)
     this.animationEl = $(`
       <svg width="20" height="20"></svg>`)
@@ -122,7 +122,6 @@ class MousePosition extends Component {
       </div>
       <button type="button" class="btn btn-link copy float-left">
         <i class="far fa-clone"></i>
-        <span>${coordFormats[this.state.format].srname}</span>
       </button>
     `)
     this.el.on('click', '.lock', e => {
@@ -141,7 +140,6 @@ class MousePosition extends Component {
       this.state.control.setCoordinateFormat(coordFormats[this.state.format].coordinateFormat)
       this.el.find('a[data-format] i').removeClass('fa-dot-circle').addClass('fa-circle')
       $(e.currentTarget).find('i').removeClass('fa-circle').addClass('fa-dot-circle')
-      this.el.find('button.copy span').html(coordFormats[this.state.format].srname)
     })
     if (!this.state.control) {
       this.state.control = new MousePositionControl({
