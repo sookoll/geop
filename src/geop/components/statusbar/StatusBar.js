@@ -7,6 +7,7 @@ import ScreenLock from 'Components/screen/ScreenLock'
 import MousePosition from 'Components/mouseposition/MousePosition'
 import Bookmark from 'Components/bookmark/Bookmark'
 import RoutingInfo from 'Components/routing/RoutingInfo'
+import Measure from 'Components/measure/Measure'
 import { t } from 'Utilities/translate'
 import $ from 'jquery'
 import './StatusBar.styl'
@@ -22,6 +23,7 @@ class StatusBar extends Component {
       <div id="settingsbar" class="slot btn-group float-left"></div>
       <div id="mouseposition" class="slot float-left d-none d-sm-block"></div>
       <div id="routinginfo" class="slot float-left d-none d-sm-block"></div>
+      <div id="measure" class="slot float-left d-none d-sm-block"></div>
       <div id="screen" class="slot btn-group float-right">
         <div class="btn-group dropup d-block d-sm-none">
           <button type="button"
@@ -42,7 +44,8 @@ class StatusBar extends Component {
       scaleline: getState('app/scaleLine') && new ScaleLine(this.el.find('#scaleline'), opts),
       bookmark: getState('app/shareState') && new Bookmark(this.el.find('#bookmark'), opts),
       mouseposition: getState('app/mousePosition') && new MousePosition(this.el.find('#mouseposition'), opts),
-      routinginfo: getState('app/routing') && new RoutingInfo(this.el.find('#routinginfo'), opts)
+      routinginfo: getState('app/routing') && new RoutingInfo(this.el.find('#routinginfo'), opts),
+      measure: getState('app/measureTool') && new Measure(this.el.find('#measure'), opts)
     }
     this.components = Object.assign({}, this.toggleComponents, {
       settings: getState('app/settings') && new SettingsBar(this.el.find('#settingsbar')),

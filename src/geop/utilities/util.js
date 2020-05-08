@@ -216,30 +216,36 @@ export function hexToRgbA (hex, a) {
   throw new Error('Bad Hex')
 }
 
-export function formatLength (line, length, decimals = [2, 2]) {
+export function formatLength (line, length, decimals = [2, 2], asArray = false) {
   if (!length) {
     length = getLength(line)
   }
+  let unit = 'km'
   if (length > 10000) {
     const roundFactor = Math.pow(10, decimals[0])
-    return `${(Math.round(length / 1000 * roundFactor) / roundFactor)} km`
+    length = Math.round(length / 1000 * roundFactor) / roundFactor
   } else {
     const roundFactor = Math.pow(10, decimals[1])
-    return `${(Math.round(length * roundFactor) / roundFactor)} m`
+    length = Math.round(length * roundFactor) / roundFactor
+    unit = 'm'
   }
+  return asArray ? [length, unit] : `${length} ${unit}`
 }
 
-export function formatArea (polygon, area, decimals = [2, 2]) {
+export function formatArea (polygon, area, decimals = [2, 2], asArray = false) {
   if (!area) {
     area = getArea(polygon)
   }
+  let unit = 'km<sup>2</sup>'
   if (area > 1000000) {
     const roundFactor = Math.pow(10, decimals[0])
-    return `${(Math.round(area / 1000000 * roundFactor) / roundFactor)} km<sup>2</sup>`
+    area = Math.round(area / 1000000 * roundFactor) / roundFactor
   } else {
     const roundFactor = Math.pow(10, decimals[0])
-    return `${(Math.round(area * roundFactor) / roundFactor)} m<sup>2</sup>`
+    area = Math.round(area * roundFactor) / roundFactor
+    unit = 'm<sup>2</sup>'
   }
+  return asArray ? [area, unit] : `${area} ${unit}`
 }
 
 export function formatDate (time, short = false) {

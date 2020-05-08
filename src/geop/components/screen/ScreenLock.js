@@ -7,7 +7,7 @@ class FullScreen extends Component {
   constructor (target) {
     super(target)
     this.el = $(`<button type="button"
-      title="${t('Toggle screen lock')}"
+      title="${t('Keep awake')}"
       disabled
       class="btn btn-secondary">
       <i class="fa fa-desktop"></i>

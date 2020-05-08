@@ -9,7 +9,6 @@ import StatusBar from 'Components/statusbar/StatusBar'
 import ToolBar from 'Components/toolbar/ToolBar'
 import ContextMenu from 'Components/contextmenu/ContextMenu'
 import StreetView from 'Components/streetview/StreetView'
-import Measure from 'Components/measure/Measure'
 import Tooltip from 'Components/featureinfo/Tooltip'
 import Popup from 'Components/featureinfo/Popup'
 import Routing from 'Components/routing/Routing'
@@ -38,7 +37,6 @@ class Geop extends Component {
       statusbar: new StatusBar(this.target),
       toolbar: new ToolBar(this.target),
       streetview: getState('app/streetView') && new StreetView(this.target),
-      measure: getState('app/measureTool') && new Measure(this.target),
       tooltip: getState('app/tooltip') && new Tooltip(this.target),
       popup: getState('app/featureInfo') && new Popup(this.target),
       routing: getState('app/routing') && new Routing(this.target),

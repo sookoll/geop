@@ -42,8 +42,8 @@ class ContextMenu extends Component {
   }
   init (map) {
     map.addOverlay(this.state.overlay)
-    map.on('click', e => {
-      if (e.originalEvent.ctrlKey || getState('event/contextmenu')) {
+    map.on('singleclick', e => {
+      if (e.originalEvent.ctrlKey) {
         return
       }
       this.el.popover('dispose')
