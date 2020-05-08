@@ -150,11 +150,11 @@ body .size-1_1 {
   opacity: 1;
 }
 
-#mouse-position {
+#mouseposition {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #fff;
 }
-#mouse-position div.coords {
+#mouseposition div.coords {
   margin-top: 6px;
 }
 circle#map-click-animation {
@@ -256,14 +256,6 @@ circle#map-click-animation {
 }
 #tab-filter label:last-child {
   margin-bottom: 0;
-}
-
-.tool-results {
-  position: absolute;
-  bottom: 10px;
-  width: 300px;
-  left: 50%;
-  margin-left: -150px;
 }
 
 #tab-geotrip ul li .badge {
@@ -437,7 +429,7 @@ a#osm-edit {
   display: none;
 }
 
-#scale-line .ol-scale-line {
+#scaleline .ol-scale-line {
   position: relative;
   background: transparent;
   bottom: -8px;
@@ -445,16 +437,24 @@ a#osm-edit {
   line-height: 10px;
 }
 
-#navigation {
+#routinginfo {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #fff;
   margin-top: 6px;
 }
-#navigation i {
+#routinginfo i {
   padding: 0 6px;
 }
-#navigation button {
+#routinginfo button {
   padding: 0 6px;
+}
+
+#measure label {
+  width: 60px;
+}
+#measure input {
+  width: 80px !important;
+  display: inline-block !important;
 }
 
 #statusbar {
@@ -566,17 +566,6 @@ body .contextmenu .popover-body .list-group-item .context-item-btn {
 }
 body .contextmenu .popover-body .list-group-item .context-item-btn:hover {
   background-color: #eee;
-}
-
-.measure .form-inline {
-  margin-bottom: 4px;
-}
-.measure label {
-  width: 60px;
-}
-.measure input {
-  width: 80px !important;
-  display: inline-block !important;
 }
 
 #tooltip {
