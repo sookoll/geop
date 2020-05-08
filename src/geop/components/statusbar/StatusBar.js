@@ -21,11 +21,11 @@ class StatusBar extends Component {
     this.toggleComponents = {}
     this.el = $(`<footer id="statusbar" class="panel-bar">
       <div id="settingsbar" class="slot btn-group float-left"></div>
-      <div id="mouseposition" class="slot float-left d-none d-sm-block"></div>
-      <div id="routinginfo" class="slot float-left d-none d-sm-block"></div>
-      <div id="measure" class="slot float-left d-none d-sm-block"></div>
+      <div id="mouseposition" class="slot slot-xs-block float-left d-none d-lg-block"></div>
+      <div id="routinginfo" class="slot slot-xs-block float-left d-none d-lg-block"></div>
+      <div id="measure" class="slot slot-xs-block float-left d-none d-lg-block"></div>
       <div id="screen" class="slot btn-group float-right">
-        <div class="btn-group dropup d-block d-sm-none">
+        <div class="btn-group dropup d-block d-lg-none">
           <button type="button"
             class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
             data-toggle="dropdown">
@@ -33,8 +33,8 @@ class StatusBar extends Component {
           <div class="dropdown-menu dropdown-menu-right"></div>
         </div>
       </div>
-      <div id="bookmark" class="slot float-right d-none d-sm-block"></div>
-      <div id="scaleline" class="slot float-right d-none d-sm-block"></div>
+      <div id="bookmark" class="slot float-right d-none d-lg-block"></div>
+      <div id="scaleline" class="slot float-right d-none d-lg-block"></div>
     </footer>`)
     this.create()
     const opts = {
@@ -73,11 +73,14 @@ class StatusBar extends Component {
     const old = this.state.visibleMobile
     this.state.visibleMobile = key
     Object.keys(this.toggleComponents).forEach(key => {
-      this.el.find(`#${key}`).addClass('d-none d-sm-block')
+      this.el.find(`#${key}`).addClass('d-none d-lg-block')
     })
-    this.el.find(`#${key}`).removeClass('d-none d-sm-block')
+    this.el.find(`#${key}`).removeClass('d-none d-lg-block')
     this.el.find('#screen a[data-visible] i').removeClass('fa-dot-circle').addClass('fa-circle')
     this.el.find(`#screen a[data-visible=${key} ]`).find('i').removeClass('fa-circle').addClass('fa-dot-circle')
+    // check mobile screen width
+    const w = this.el.width()
+    console.log(w)
     return old
   }
 }

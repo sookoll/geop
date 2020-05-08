@@ -61,7 +61,7 @@ class Measure extends Component {
         },
         style: createStyle({
           circle: {
-            radius: 5,
+            radius: 6,
             stroke: {
               color: 'black',
               width: 1
@@ -151,7 +151,7 @@ class Measure extends Component {
         },
         {
           circle: {
-            radius: 4,
+            radius: 5,
             stroke: {
               color: 'black',
               width: 1
@@ -195,16 +195,16 @@ class Measure extends Component {
     let html = ''
     if (this.state.measureType === 'circle') {
       html += `
-        <label for="angle">${t('Angle')}: </label>
-        <input type="text" name="angle" class="input-sm" readonly> <b class="angle-unit">&deg</b>
-        <label for="radius">${t('Radius')}: </label>
-        <input type="text" name="radius" class="input-sm" readonly> <b class="radius-unit">m</b>`
+        <label for="angle" class="d-none d-sm-inline-block">${t('Angle')}: </label>
+        <input type="text" name="angle" class="input-sm" disabled> <b class="angle-unit">&deg</b>
+        <label for="radius" class="d-none d-sm-inline-block">${t('Radius')}: </label>
+        <input type="text" name="radius" class="input-sm" disabled> <b class="radius-unit">m</b>`
     } else {
       html += `
-        <label for="length">${t('Length')}: </label>
-        <input type="text" name="length" class="input-sm" readonly> <b class="length-unit">m</b>
-        <label for="area">${t('Area')}: </label>
-        <input type="text" name="area" class="input-sm" readonly> <b class="area-unit">m<sup>2</sup></b>`
+        <label for="length" class="d-none d-sm-inline-block">${t('Length')}: </label>
+        <input type="text" name="length" class="input-sm" disabled> <b class="length-unit">m</b>
+        <label for="area" class="d-none d-sm-inline-block">${t('Area')}: </label>
+        <input type="text" name="area" class="input-sm" disabled> <b class="area-unit">m<sup>2</sup></b>`
     }
     return html
   }
@@ -287,7 +287,7 @@ class Measure extends Component {
     if (this.state.measureType === 'circle') {
       const coord1 = coords[0]
       this.state.drawing.getGeometry().setCoordinates([coord1, coord2])
-      this.el.find('input[name=angle],input[name=radius]').prop('readonly', false)
+      this.el.find('input[name=angle],input[name=radius]').prop('disabled', false)
       this.finish()
     } else {
       if (coords.length > 1 && coords[0][0] === coord2[0] && coords[0][1] === coord2[1]) {
