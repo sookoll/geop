@@ -1,6 +1,7 @@
 import { getState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
 import { uid, degToRad, radToDeg, formatLength, formatArea } from 'Utilities/util'
+import log from 'Utilities/log'
 import { createLayer } from 'Components/layer/LayerCreator'
 import Component from 'Geop/Component'
 import { createStyle } from 'Components/layer/StyleBuilder'
@@ -118,8 +119,10 @@ class Measure extends Component {
       this.state.circle.setGeometry(new Circle(coord))
       // this._snapFeatures.push(this._circle);
       this.state.source.addFeatures([this.state.circle, this.state.drawing, this.state.sketch])
+      log('info', t('Measure angle and distance'))
     } else {
       this.state.source.addFeatures([this.state.drawing, this.state.sketch])
+      log('info', t('Measure distance and area. Click to last point finish measurement. Click to first point calculates area.'))
     }
     getState('components/featureInfo') && getState('components/featureInfo').disable()
     this.enableClick()
