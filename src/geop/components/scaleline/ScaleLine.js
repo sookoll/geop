@@ -1,13 +1,12 @@
 import Component from 'Geop/Component'
 import { getState } from 'Utilities/store'
 import ScaleLineControl from 'ol/control/ScaleLine'
-import $ from 'jquery'
 import './ScaleLine.styl'
 
 class ScaleLine extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`<span class="float-right" id="scale-line"></span>`)
+    this.el = target
     this.state = {
       control: null
     }

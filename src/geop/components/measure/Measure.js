@@ -1,8 +1,8 @@
 import { getState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
 import { uid, degToRad, radToDeg, formatLength, formatArea } from 'Utilities/util'
+import log from 'Utilities/log'
 import { createLayer } from 'Components/layer/LayerCreator'
-import Alert from 'Components/statusbar/Alert'
 import Component from 'Geop/Component'
 import { createStyle } from 'Components/layer/StyleBuilder'
 import Feature from 'ol/Feature'
@@ -12,12 +12,20 @@ import Collection from 'ol/Collection'
 import { toLonLat, fromLonLat } from 'ol/proj'
 import { never, always, doubleClick } from 'ol/events/condition'
 import { getLength } from 'ol/sphere'
+import $ from 'jquery'
 import './Measure.styl'
 
 class Measure extends Component {
-  constructor (target) {
+  constructor (target, opts) {
     super(target)
-    this.alert = new Alert()
+    this.id = 'measure'
+    this.el = $(`<span class="text-center d-none">
+      <i class="fa fa-ruler-combined"></i>
+      <span></span>
+      <button class="btn btn-link">
+        <i class="fas fa-times"></i>
+      </button>
+    </span>`)
     this.state = {
       map: null,
       measureType: null,
@@ -32,9 +40,11 @@ class Measure extends Component {
       sketch: new Feature({
         geometry: new LineString([])
       }),
-      measureLine: new LineString([])
+      measureLine: new LineString([]),
+      prev: null
     }
-
+    this.toggleFn = opts.toggle
+    this.create()
     this.interaction = {
       snap: null,
       modify: new Modify({
@@ -51,7 +61,7 @@ class Measure extends Component {
         },
         style: createStyle({
           circle: {
-            radius: 5,
+            radius: 6,
             stroke: {
               color: 'black',
               width: 1
@@ -109,8 +119,10 @@ class Measure extends Component {
       this.state.circle.setGeometry(new Circle(coord))
       // this._snapFeatures.push(this._circle);
       this.state.source.addFeatures([this.state.circle, this.state.drawing, this.state.sketch])
+      log('info', t('Measure angle and distance'))
     } else {
       this.state.source.addFeatures([this.state.drawing, this.state.sketch])
+      log('info', t('Measure distance and area. Click to last point finish measurement. Click to first point calculates area.'))
     }
     getState('components/featureInfo') && getState('components/featureInfo').disable()
     this.enableClick()
@@ -119,6 +131,8 @@ class Measure extends Component {
         interaction.setActive(false)
       }
     })
+    this.state.prev = this.toggleFn(this.id)
+    this.el.removeClass('d-none')
   }
   createLayer () {
     const conf = {
@@ -137,7 +151,7 @@ class Measure extends Component {
         },
         {
           circle: {
-            radius: 4,
+            radius: 5,
             stroke: {
               color: 'black',
               width: 1
@@ -158,25 +172,11 @@ class Measure extends Component {
     return createLayer(conf)
   }
   render () {
-    this.alert.close()
-    let html = ''
-    if (this.state.measureType === 'circle') {
-      html += `
-        <div class="form-inline">
-          <label for="angle">${t('Angle')}: </label>
-          <input type="text" name="angle" class="form-control input-sm" readonly> &deg;
-        </div>
-        <div class="form-inline">
-          <label for="radius">${t('Radius')}: </label>
-          <input type="text" name="radius" class="form-control input-sm" readonly> m
-        </div>`
-    } else {
-      html += `
-        ${t('Length')}: ${t('to finish, click on end')}<br>
-        ${t('Area')}: ${t('to finish, click on beginning')}`
-    }
-    this.alert.open(html, () => { this.reset() })
-    const el = this.alert.getEl()
+    this.el.on('click', 'button', e => {
+      this.reset()
+    })
+    const el = this.el.find('span')
+    el.html(this.renderResults())
     if (this.state.measureType === 'circle') {
       el.on('focus', 'input', e => {
         this.interaction.modify.setActive(false)
@@ -191,21 +191,41 @@ class Measure extends Component {
       })
     }
   }
-  updateResults () {
+  renderResults () {
+    let html = ''
+    if (this.state.measureType === 'circle') {
+      html += `
+        <label for="angle" class="d-none d-sm-inline-block">${t('Angle')}: </label>
+        <input type="text" name="angle" class="input-sm" disabled> <b class="angle-unit">&deg</b>
+        <label for="radius" class="d-none d-sm-inline-block">${t('Radius')}: </label>
+        <input type="text" name="radius" class="input-sm" disabled> <b class="radius-unit">m</b>`
+    } else {
+      html += `
+        <label for="length" class="d-none d-sm-inline-block">${t('Length')}: </label>
+        <input type="text" name="length" class="input-sm" disabled> <b class="length-unit">m</b>
+        <label for="area" class="d-none d-sm-inline-block">${t('Area')}: </label>
+        <input type="text" name="area" class="input-sm" disabled> <b class="area-unit">m<sup>2</sup></b>`
+    }
+    return html
+  }
+  updateResults (geometry = null) {
     if (this.state.measureType === 'circle') {
       this.updateCircleResults()
     } else {
-      const len = formatLength(this.state.drawing.getGeometry())
-      let html = `${t('Length')}: ${len}`
+      const len = formatLength(geometry || this.state.drawing.getGeometry(), null, [2, 2], true)
       const coords = this.state.drawing.getGeometry().getCoordinates()
+      let area
       // if closed, calculate area
       if (coords[0][0] === coords[coords.length - 1][0] && coords[0][1] === coords[coords.length - 1][1]) {
-        const area = formatArea(new Polygon([coords]))
-        html += `<br>${t('Area')}: ${area}`
-      } else {
-        html += `<br>${t('Area')}: ${t('to finish, click on beginning')}`
+        area = formatArea(new Polygon([coords]), null, [2, 2], true)
       }
-      this.alert.update(html)
+      const el = this.el.find('span')
+      el.find('input[name=length]').val(len[0])
+      el.find('b.length-unit').html(len[1])
+      if (area) {
+        el.find('input[name=area]').val(area[0])
+        el.find('b.area-unit').html(area[1])
+      }
     }
   }
   updateCircleResults () {
@@ -222,11 +242,14 @@ class Measure extends Component {
       angle = 360 + angle
     }
     const radius = getLength(g)
-    const el = this.alert.getEl()
+    const el = this.el.find('span')
     el.find('input[name=angle]').val(Math.round((angle + 0.00001) * 100) / 100)
     el.find('input[name=radius]').val(Math.round((radius + 0.00001) * 100) / 100)
   }
   reset () {
+    this.toggleFn(this.state.prev)
+    this.el.addClass('d-none')
+    this.el.find('span').html('')
     this.state.drawing.getGeometry().un('change', this.handlers.onmodify)
     this.state.map.removeInteraction(this.interaction.modify)
     this.state.map.removeInteraction(this.interaction.snap)
@@ -264,8 +287,7 @@ class Measure extends Component {
     if (this.state.measureType === 'circle') {
       const coord1 = coords[0]
       this.state.drawing.getGeometry().setCoordinates([coord1, coord2])
-      const el = this.alert.getEl()
-      el.find('input').prop('readonly', false)
+      this.el.find('input[name=angle],input[name=radius]').prop('disabled', false)
       this.finish()
     } else {
       if (coords.length > 1 && coords[0][0] === coord2[0] && coords[0][1] === coord2[1]) {
@@ -306,15 +328,12 @@ class Measure extends Component {
     if (this.state.measureType === 'circle') {
       const r = this.getCoordinatesDistance(coord1, coord2)
       this.state.circle.getGeometry().setRadius(r)
-      this.updateCircleResults()
+      this.updateResults()
     } else {
       const arr = coords.slice(0)
       arr.push(coord2)
       this.state.measureLine.setCoordinates(arr)
-      this.alert.update(`
-        ${t('Length')}: ${formatLength(this.state.measureLine)}<br>
-        ${t('Area')}: ${t('to finish, click on beginning')}
-      `)
+      this.updateResults(this.state.measureLine)
     }
   }
   finish () {

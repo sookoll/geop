@@ -5,24 +5,21 @@ import $ from 'jquery'
 class FullScreen extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`<div class="btn-group float-right" id="fullscreen"></div>`)
+    this.el = $(`<button type="button"
+      title="${t('Toggle fullscreen')}"
+      disabled
+      class="btn btn-secondary">
+      <i class="fa fa-expand-arrows-alt"></i>
+    </button>`)
     this.state = {
       active: false
     }
     this.create()
   }
   render () {
-    this.el.html(`
-      <button type="button"
-        title="${t('Toggle fullscreen')}"
-        disabled
-        class="btn btn-secondary">
-        <i class="fa fa-expand-arrows-alt"></i>
-      </button>
-    `)
     if (this.test()) {
-      this.el.find('button').prop('disabled', false)
-      this.el.on('click', 'button', e => {
+      this.el.prop('disabled', false)
+      this.el.on('click', e => {
         e.preventDefault()
         this.toggle()
       })
@@ -56,10 +53,10 @@ class FullScreen extends Component {
       document.mozFullScreenElement ||
       document.webkitFullscreenElement) {
       this.state.active = true
-      this.el.find('button').addClass('active')
+      this.el.addClass('active')
     } else {
       this.state.active = false
-      this.el.find('button').removeClass('active')
+      this.el.removeClass('active')
     }
   }
   on () {

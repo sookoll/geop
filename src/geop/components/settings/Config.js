@@ -1,5 +1,5 @@
 import { getState, setState, clearState } from 'Utilities/store'
-import { enableScreenLock, disableScreenLock, getDebugStore } from 'Utilities/util'
+import { getDebugStore } from 'Utilities/util'
 import { t, getLocale, getLocales, changeLocale } from 'Utilities/translate'
 import { set as setPermalink } from 'Utilities/permalink'
 import log from 'Utilities/log'
@@ -57,17 +57,6 @@ class Config extends Component {
       </div>
       <small class="form-text text-muted mb-3">
         ${t('Change language. App will reload after change!')}
-      </small>
-      <h5>${t('Keep awake')}</h5>
-      <div class="btn-group-toggle" data-toggle="buttons">
-        <label class="btn btn-outline-primary">
-          <input type="checkbox" id="settings-awake" autocomplete="off">
-          <i class="fa fa-mobile-alt"></i>
-          <span>${t('Off')}</span>
-        </label>
-      </div>
-      <small class="form-text text-muted mb-3">
-        ${t('Keep screen on. Use with caution, might train device battery!')}
       </small>
       <h5>${t('Account')}</h5>
       <div class="form-group">
@@ -196,7 +185,7 @@ class Config extends Component {
       ` : ''}
     `)
     // language change
-    this.el.on('click', 'button.set-locale-btn', e => {
+    this.el.find('button.set-locale-btn').on('click', e => {
       changeLocale($(e.currentTarget).data('locale'))
       this.el.find('button.set-locale-btn').removeClass('active')
       $(e.currentTarget).addClass('active')
@@ -207,20 +196,10 @@ class Config extends Component {
         console.debug(`Config.render: Locale changed to ${$(e.currentTarget).data('locale')}`)
       }
     })
-    // keep awake
-    this.el.on('change', '#settings-awake', e => {
-      if (e.target.checked) {
-        enableScreenLock()
-        $(e.target).closest('label').find('span').html(t('On'))
-      } else {
-        disableScreenLock()
-        $(e.target).closest('label').find('span').html(t('Off'))
-      }
-      $(e.target).closest('label').toggleClass('btn-outline-secondary btn-success')
-    })
     // account name
-    this.el.on('blur', '#settings-account', e => {
-      if (e.target.value.trim() !== getState('app/account')) {
+    this.el.find('#settings-account').on('blur', e => {
+      // blur will trigger accidently when using tab to blur measure inputs
+      if (getState('app/settingsTabOpen') && e.target.value.trim() !== getState('app/account')) {
         setState('app/account', e.target.value.trim(), true)
         log('warning', t('Account changed, page will reload!'), () => {
           reloadApp()
@@ -231,8 +210,9 @@ class Config extends Component {
       }
     })
     // search limit
-    this.el.on('blur', '#settings-search', e => {
-      if (e.target.value.trim() !== getState('app/nominatimCountries')) {
+    this.el.find('#settings-search').on('blur', e => {
+      // blur will trigger accidently when using tab to blur measure inputs
+      if (getState('app/settingsTabOpen') && e.target.value.trim() !== getState('app/nominatimCountries')) {
         setState('app/nominatimCountries', e.target.value.trim(), true)
         if (getState('app/debug')) {
           console.debug(`Config.render: Search limit changed to ${e.target.value}`)
@@ -240,7 +220,7 @@ class Config extends Component {
       }
     })
     // routing
-    this.el.on('change', '#settings-routing', e => {
+    this.el.find('#settings-routing').on('change', e => {
       const routingProfile = (typeof getState('routing/profile') !== 'undefined')
         ? getState('routing/profile') : getState('app/routing').profile
       if (e.target.value.trim() !== routingProfile) {
@@ -251,25 +231,25 @@ class Config extends Component {
       }
     })
     // routing
-    this.el.on('click', 'button.set-route-btn', e => {
+    this.el.find('button.set-route-btn').on('click', e => {
       setState('routing/infoFromRoute', $(e.currentTarget).data('share') === 'on', true)
       this.el.find('button.set-route-btn').removeClass('active')
       $(e.currentTarget).addClass('active')
     })
     // cache import
-    this.el.on('click', 'button.set-cacheimport-btn', e => {
+    this.el.find('button.set-cacheimport-btn').on('click', e => {
       setState('cache/import/appendLayer', $(e.currentTarget).data('import') === 'append', true)
       this.el.find('button.set-cacheimport-btn').removeClass('active')
       $(e.currentTarget).addClass('active')
     })
     // share change
-    this.el.on('click', 'button.set-share-btn', e => {
+    this.el.find('button.set-share-btn').on('click', e => {
       setState('app/shareOnlyTripFeatures', $(e.currentTarget).data('share') === 'on', true)
       this.el.find('button.set-share-btn').removeClass('active')
       $(e.currentTarget).addClass('active')
     })
     // reset app
-    this.el.on('click', '#settings-reset', e => {
+    this.el.find('#settings-reset').on('click', e => {
       clearState()
       log('warning', t('App resetted, page will reload!'), () => {
         setPermalink(null)
@@ -280,7 +260,7 @@ class Config extends Component {
       }
     })
     // debug change
-    this.el.on('click', 'button.set-debug-btn', e => {
+    this.el.find('button.set-debug-btn').on('click', e => {
       setState('app/debug', $(e.currentTarget).data('debug') === 'on', true)
       this.el.find('button.set-debug-btn').removeClass('active')
       $(e.currentTarget).addClass('active')
@@ -292,7 +272,7 @@ class Config extends Component {
       }
     })
     // download debug log file
-    this.el.on('click', '#download-log', e => {
+    this.el.find('#download-log').on('click', e => {
       const logs = getDebugStore()
       const blob = new window.Blob([logs.join('\n')], { type: 'text/plain;charset=utf-8' })
       saveAs(blob, getState('app/debugFile'))
@@ -303,7 +283,7 @@ class Config extends Component {
       deferredPrompt = e
       this.el.find('.install').show()
     })
-    this.el.on('click', '#install', e => {
+    this.el.find('#install').on('click', e => {
       this.el.find('.install').hide()
       deferredPrompt.prompt()
       deferredPrompt.userChoice

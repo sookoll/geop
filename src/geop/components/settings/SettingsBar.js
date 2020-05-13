@@ -8,11 +8,14 @@ import $ from 'jquery'
 class SettingsBar extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`<div class="btn-group float-left" id="sidebar-open"></div>`)
+    this.el = $(`<button type="button"
+      class="btn btn-secondary">
+      <i class="fa fa-ellipsis-h"></i>
+    </button>`)
     this.create()
     this.sidebar = new Sidebar({
       target: $('#geop'),
-      trigger: this.el.find('button'),
+      trigger: this.el,
       position: 'left',
       components: {
         Info,
@@ -28,16 +31,7 @@ class SettingsBar extends Component {
       $('body')
         .append(this.sidebar)
         .append(this.shadow)
-      this.render()
     }
-  }
-  render () {
-    this.el.html(`
-      <button type="button"
-        class="btn btn-secondary">
-        <i class="fa fa-ellipsis-h"></i>
-      </button>
-    `)
   }
 }
 

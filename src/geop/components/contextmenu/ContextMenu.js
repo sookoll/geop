@@ -18,7 +18,9 @@ class ContextMenu extends Component {
     }
     this.state = {
       overlay: null,
-      items: items
+      items: items,
+      timeout: null,
+      disableClick: false
     }
     this.create()
   }
@@ -42,8 +44,8 @@ class ContextMenu extends Component {
   }
   init (map) {
     map.addOverlay(this.state.overlay)
-    map.on('click', e => {
-      if (e.originalEvent.ctrlKey || getState('event/contextmenu')) {
+    map.on('singleclick', e => {
+      if (e.originalEvent.ctrlKey || this.state.disableClick) {
         return
       }
       this.el.popover('dispose')
@@ -57,6 +59,8 @@ class ContextMenu extends Component {
         coords = hit[1].getGeometry().getCoordinates()
       }
       this.open(coords, this.getContent(coords, hit))
+      this.state.disableClick = true
+      this.state.timeout = setTimeout(() => { this.state.disableClick = false }, 1000)
     })
   }
   open (coord, popContent) {

@@ -1,5 +1,5 @@
 class Component {
-  constructor (target) {
+  constructor (target, opts = {}) {
     // set target and element
     this.target = target
     this.el = null

@@ -1,7 +1,6 @@
 import Component from 'Geop/Component'
 import OSRMProvider from './OSRM'
 import OpenRouteService from './OpenRouteService'
-import Alert from 'Components/statusbar/Alert'
 import { apiUrls } from 'Conf/settings'
 import { getState, setState, onchange } from 'Utilities/store'
 import { t } from 'Utilities/translate'
@@ -22,7 +21,6 @@ const state = {
   to: null
 }
 let routeLayer = null
-const alert = new Alert()
 
 class Routing extends Component {
   constructor (target) {
@@ -67,7 +65,10 @@ class Routing extends Component {
           closeOnClick: true,
           onBtnClick: (e, coord, feature) => {
             e.preventDefault()
-            alert.close()
+            clear()
+            setState('routing/stops', [])
+            setState('routing/info', null)
+            setState('navigate/to', null)
           }
         }
       }
@@ -119,12 +120,9 @@ class Routing extends Component {
       })
     }
   }
-  clear () {
-    clear()
-  }
 }
 
-function clear () {
+export function clear () {
   state.from = null
   state.to = null
   if (routeLayer) {
@@ -132,11 +130,9 @@ function clear () {
     routeLayer.getSource().clear()
     routeLayer = null
   }
-  setState('routing/stops', [])
-  setState('navigate/to', null)
 }
 
-export function findRoute (coords, openAlert) {
+export function findRoute (coords, updateInfo = false) {
   if (routeLayer && routeLayer.getSource().getFeatures().length) {
     routeLayer.getSource().clear()
   }
@@ -152,7 +148,7 @@ export function findRoute (coords, openAlert) {
     }
     provider.directions(coordinates)
       .then(route => {
-        alert.close()
+        clear()
         if (route) {
           createRouteLayer()
           const routeCoords = route.getGeometry().getCoordinates()
@@ -171,12 +167,12 @@ export function findRoute (coords, openAlert) {
               route.set('distance', distance)
             }
             route.set('bearing', angle)
-            if (openAlert) {
-              alert.open(`<b>${t('Directions')}</b> ${getState('routing/infoFromRoute') ? '' : ` - ${t('As crow flies')}`}<br>
+            if (updateInfo) {
+              setState('routing/info', `<b>${t('Directions')}</b> ${getState('routing/infoFromRoute') ? '' : ` - ${t('As crow flies')}`}
                 ${formatLength(null, route.get('distance'), [0, 1])}
                 <i>&middot;</i> ${Math.round(route.get('bearing'))}&deg;
                 ${getState('routing/infoFromRoute') ? `<i>&middot;</i> ${formatTime(route.get('duration'), 'seconds')}` : ''}
-              `, () => { clear() })
+              `)
             }
             resolve(route)
           } else {
