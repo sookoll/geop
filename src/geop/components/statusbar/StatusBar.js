@@ -78,9 +78,6 @@ class StatusBar extends Component {
     this.el.find(`#${key}`).removeClass('d-none d-lg-block')
     this.el.find('#screen a[data-visible] i').removeClass('fa-dot-circle').addClass('fa-circle')
     this.el.find(`#screen a[data-visible=${key} ]`).find('i').removeClass('fa-circle').addClass('fa-dot-circle')
-    // check mobile screen width
-    const w = this.el.width()
-    console.log(w)
     return old
   }
 }

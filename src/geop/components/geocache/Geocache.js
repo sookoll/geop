@@ -255,7 +255,16 @@ function styleGeocache (feature, resolution) {
       zIndex: feature.get('isCache') ? 2 : 1
     }, true)
   }
-  if (feature.get('isCache') && feature.get('radiusVisible') && resolution <= cacheConf.radiusStyle.maxResolution) {
+  if (
+    feature.get('isCache') && feature.get('radiusVisible') &&
+    type !== 'Geocache|Locationless Cache' &&
+    type !== 'Geocache|Virtual Cache' &&
+    type !== 'Geocache|Webcam Cache' &&
+    type !== 'Geocache|Event Cache' &&
+    type !== 'Geocache|Earthcache' &&
+    status !== 'Archived' &&
+    resolution <= cacheConf.radiusStyle.maxResolution
+  ) {
     if (!state.styleCache.radiusStyle) {
       state.styleCache.radiusStyle = createStyle(
         state.styleConfig.radiusStyle,

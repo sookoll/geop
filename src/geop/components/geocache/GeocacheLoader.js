@@ -66,8 +66,10 @@ class GeocacheLoader extends Component {
     this.el.find('textarea').on('keyup', e => {
       if (e.keyCode === 13) {
         const txt = this.el.find('textarea')
-        this.addCaches(txt.val().trim())
-        txt.val('').trigger('input')
+        if (txt.val().trim().length > '{"type":"Feature"}'.length) {
+          this.addCaches(txt.val().trim())
+          txt.val('').trigger('input')
+        }
       }
     })
     this.el.on('click', 'button.confirm', e => {
