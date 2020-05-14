@@ -305,6 +305,11 @@ a#osm-edit {
   color: inherit;
 }
 
+#layermanager .dropdown-menu {
+  height: auto;
+  max-height: calc(100vh - 100px);
+  overflow-x: hidden;
+}
 #layermanager li {
   position: relative;
   width: 300px;
