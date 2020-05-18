@@ -34,8 +34,12 @@ export default {
         }
         feature.set('fstatus', opts.mapping.fstatusGPX[fstatus] || fstatus)
         // status
-        let status = cacheData['@available'] === 'True' ? 'Available' : 'Unavailable'
-        if (cacheData['@archived'] === 'True') {
+        if (cacheData['@available']) {
+
+        }
+        let status = cacheData['@available'] && cacheData['@available'].toLowerCase() === 'true' ?
+          'Available' : 'Unavailable'
+        if (cacheData['@archived'] && cacheData['@archived'].toLowerCase() === 'true') {
           status = 'Archived'
         }
         feature.set('status', status)
