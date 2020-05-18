@@ -1,6 +1,6 @@
 {
   "name": "geop",
-  "version": "1.5.9",
+  "version": "1.5.10",
   "description": "Estonian geocaching game",
   "main": "index.js",
   "scripts": {

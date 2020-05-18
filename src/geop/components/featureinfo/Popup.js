@@ -73,7 +73,7 @@ class Popup extends Component {
   }
   show (e, coords, hit, popContent) {
     this.state.overlay.setPosition(coords)
-    this.el.popover(popContent.definition).popover('show')
+    this.el.popover(popContent.definition)
     // when popover's content is shown
     this.el.on('shown.bs.popover', evt => {
       this.state.open = true
