@@ -237,18 +237,18 @@ circle#map-click-animation {
   -webkit-hyphens: auto;
   hyphens: auto;
 }
-#tab-cacheinfo .fstatus {
+#tab-cacheinfo .log .fstatus {
   color: #ddd;
   font-size: 0.8rem;
   padding: 4px 6px;
 }
-#tab-cacheinfo .fstatus.found {
+#tab-cacheinfo .log .fstatus.found {
   color: #4c9900;
 }
-#tab-cacheinfo .fstatus.notfound {
+#tab-cacheinfo .log .fstatus.notfound {
   color: #206fd6;
 }
-#tab-cacheinfo .fstatus.problem {
+#tab-cacheinfo .log .fstatus.problem {
   color: #f00;
 }
 
