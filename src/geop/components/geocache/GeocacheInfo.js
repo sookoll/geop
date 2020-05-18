@@ -73,7 +73,7 @@ class GeocacheInfo extends Component {
     const info = this.state.layer.get('_featureInfo')
     const title = typeof info.title === 'function' ? info.title(this.state.cache) : info.title
     const content = typeof info.content === 'function' ? info.content(this.state.cache) : info.content
-    const description = parseCoords(this.state.cache.get('description'))
+    const description = parseCoords(this.state.cache.get('description') || '')
     return `
       <li class="list-group-item header">
         ${title}
@@ -89,8 +89,13 @@ class GeocacheInfo extends Component {
   renderLogs () {
     const logs = this.state.cache.get('logs') || []
     const cacheUrl = this.state.cache.get('url')
-    const key = Object.keys(cacheConf.logUrl).find(key => cacheUrl.indexOf(key) > -1)
-    const logUrl = cacheConf.logUrl[key].replace('{id}', this.state.cache.get('id'))
+    let logUrl
+    if (this.state.cache.get('id')) {
+      const key = Object.keys(cacheConf.logUrl).find(key => cacheUrl.indexOf(key) > -1)
+      logUrl = cacheConf.logUrl[key].replace('{id}', this.state.cache.get('id'))
+    } else {
+      logUrl = cacheUrl
+    }
 
     return `
       <ul class="list-group mb-3">
@@ -105,7 +110,7 @@ class GeocacheInfo extends Component {
             </b>
             <b>${log.finder}</b>
             <br/>
-            ${parseCoords(log.text)}
+            ${parseCoords(log.text || '')}
           </li>`).join('')}
       </ul>`
   }

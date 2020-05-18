@@ -113,6 +113,7 @@ class GeocacheLoader extends Component {
     return content
       .replace('Männiku "NAVY"', 'Männiku &quot;NAVY&quot;')
       .replace('Seikluse "Pärnu villad" boonusaare', 'Seikluse &quot;Pärnu villad&quot; boonusaare')
+      .replace('SPA 36: "Inetu kuusepoeg"', 'SPA 36: &quot;Inetu kuusepoeg&quot;')
   }
   createLayer (geojson) {
     const color = '#000000'

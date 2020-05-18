@@ -21,7 +21,13 @@ export default {
       }
       if (typeof feature.get('isCache') === 'undefined') {
         // type
-        feature.set('type', opts.mapping.type[feature.get('type')] || feature.get('type'))
+        let type = opts.mapping.type[feature.get('type')] || feature.get('type')
+        const name = feature.get('name')
+        // CHALLENGE cache type
+        if (type === 'Geocache|Unknown Cache' && name && name.toLowerCase().includes('challenge')) {
+          type = 'Geocache|Unknown Cache|Challenge'
+        }
+        feature.set('type', type)
         feature.set('isCache', feature.get('type').substring(0, 8) === 'Geocache')
         // fstatus
         feature.set('fstatus', opts.mapping.fstatusJSON[feature.get('fstatus')] || feature.get('fstatus'))

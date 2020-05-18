@@ -78,7 +78,8 @@ export const geocache = {
   cacheUrl: 'https://geopeitus.ee/aare/',
   logUrl: {
     'geopeitus.ee': 'https://www.geopeitus.ee/logs/new/c/{id}',
-    'geocaching.com': 'https://www.geocaching.com/seek/log.aspx?ID={id}&lcn=1'
+    'geocaching.com': 'https://www.geocaching.com/seek/log.aspx?ID={id}&lcn=1',
+    'coord.info': 'https://www.geocaching.com/play/geocache/{id}/log'
   },
   radiusStyle: {
     maxResolution: 30,
@@ -107,6 +108,7 @@ export const geocache = {
       'Sündmusaare': 'Geocache|Event Cache',
       'Asukohata (tagurpidi) aare': 'Geocache|Locationless Cache',
       'Mõistatusaare': 'Geocache|Unknown Cache',
+      'Väljakutse-aare': 'Geocache|Unknown Cache|Challenge',
       'Kirjakastiaare': 'Geocache|Letterbox Hybrid',
       'KusMaLäen': 'Geocache|Wherigo Cache',
       'Maa-aare': 'Geocache|Earthcache'
@@ -182,6 +184,11 @@ export const geocache = {
       'Geocache|Unknown Cache': {
         text: '\uf059',
         class: 'fa fa-question-circle',
+        font: '900 13px "Font Awesome 5 Free"'
+      },
+      'Geocache|Unknown Cache|Challenge': {
+        text: '\uf06a',
+        class: 'fa fa-exclamation-circle',
         font: '900 13px "Font Awesome 5 Free"'
       },
       'Geocache|Letterbox Hybrid': {

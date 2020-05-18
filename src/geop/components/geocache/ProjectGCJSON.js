@@ -16,10 +16,17 @@ export default {
       const content = $(feature.get('content'))
       const icon = feature.get('icon')
       const info = $(content[2]).text().split(' / ').map(i => i.trim())
-      // id
+      const name = $(content[0]).text()
+
       feature.set('isCache', true)
+      let type = 'Geocache|' + info[0]
+      // CHALLENGE cache type
+      if (type === 'Geocache|Unknown Cache' && name && name.toLowerCase().includes('challenge')) {
+        type = 'Geocache|Unknown Cache|Challenge'
+      }
       // type
-      feature.set('type', 'Geocache|' + info[0])
+      feature.set('type', type)
+
       // owner
       feature.set('owner', '')
       // fstatus
@@ -32,10 +39,13 @@ export default {
       // status
       const status = icon.endsWith('&fade') ? 'Unavailable' : 'Available'
       feature.set('status', status)
+      const url = $(content[0]).attr('href')
+      // id
+      feature.set('id', url ? url.split('/').pop() : null)
       // name
-      feature.set('name', $(content[0]).text())
+      feature.set('name', name)
       // url
-      feature.set('url', $(content[0]).attr('href'))
+      feature.set('url', url)
       // container
       feature.set('container', info[1])
       // difficulty
