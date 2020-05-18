@@ -103,15 +103,15 @@ export const geocache = {
     type: {
       'Tavaline aare': 'Geocache|Traditional Cache',
       'Multiaare': 'Geocache|Multi-cache',
-      'Veebikaamera': 'Geocache|Webcam Cache',
-      'Virtuaalne aare': 'Geocache|Virtual Cache',
-      'Sündmusaare': 'Geocache|Event Cache',
-      'Asukohata (tagurpidi) aare': 'Geocache|Locationless Cache',
       'Mõistatusaare': 'Geocache|Unknown Cache',
       'Väljakutse-aare': 'Geocache|Unknown Cache|Challenge',
       'Kirjakastiaare': 'Geocache|Letterbox Hybrid',
+      'Virtuaalne aare': 'Geocache|Virtual Cache',
+      'Veebikaamera': 'Geocache|Webcam Cache',
+      'Asukohata (tagurpidi) aare': 'Geocache|Locationless Cache',
       'KusMaLäen': 'Geocache|Wherigo Cache',
-      'Maa-aare': 'Geocache|Earthcache'
+      'Maa-aare': 'Geocache|Earthcache',
+      'Sündmusaare': 'Geocache|Event Cache'
     },
     container: {
       'mikro': 'Micro',
