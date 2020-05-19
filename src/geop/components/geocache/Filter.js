@@ -51,7 +51,19 @@ class Filter extends Component {
       e.stopPropagation()
       const visible = $(e.target).is(':checked')
       this.state.layer.getSource().forEachFeature(f => {
-        f.set('radiusVisible', visible)
+        if (f.get('isCache')) {
+          f.set('radiusVisible', visible)
+        }
+      })
+      this.filter()
+    })
+    this.el.find('input[name=hidePoints]').on('change', e => {
+      e.stopPropagation()
+      const hide = $(e.target).is(':checked')
+      this.state.layer.getSource().forEachFeature(f => {
+        if (!f.get('isCache')) {
+          f.set('hidden', hide)
+        }
       })
       this.filter()
     })
@@ -63,16 +75,24 @@ class Filter extends Component {
     return `
       <li class="list-group-item">
         <label>
-          <input type="checkbox" name="radiusStyle" value="0"> ${t('Show 160m radius')}
+          <input type="checkbox" name="radiusStyle" value="160" ${storedFilter['radiusStyle'] && storedFilter['radiusStyle'].indexOf('160') > -1 ? 'checked="true"' : ''}> ${t('Show 160m radius')}
+        </label>
+        <label>
+          <input type="checkbox" name="hidePoints" value="off" ${storedFilter['hidePoints'] && storedFilter['hidePoints'].indexOf('off') > -1 ? 'checked="true"' : ''}> ${t('Hide additional points')}
         </label>
       </li>
       ${Object.keys(filter).map(group => {
-    const list = Object.keys(filter[group]).map(item => {
+    const sortingArr = this.state.conf[group]
+    const ordered = {}
+    Object.keys(filter[group]).sort((a, b) => sortingArr.indexOf(a) - sortingArr.indexOf(b)).forEach(key => {
+      ordered[key] = filter[group][key]
+    })
+    const list = Object.keys(ordered).map(item => {
       const checked = storedFilter[group] && storedFilter[group].indexOf(item) > -1 ? 'checked="true"' : ''
       return `<label>
-            <input type="checkbox" name="${group}" data-filter="${group}" value="${item}" ${checked}>
-            ${t(filter[group][item])}
-          </label>`
+                <input type="checkbox" name="${group}" data-filter="${group}" value="${item}" ${checked}>
+                ${t(filter[group][item])}
+              </label>`
     })
     return '<li class="list-group-item">' + list.join('') + '</li>'
   }).join('')}`
@@ -113,22 +133,24 @@ class Filter extends Component {
     return filter
   }
   filter () {
-    const params = this.getChecked()
+    const params = this.getChecked('input[data-filter]')
     this.state.layer.getSource().forEachFeature(f => {
-      if (f.get('isCache') && params.count) {
-        const props = f.getProperties()
-        const valid = Object.keys(params.query).filter(i => {
-          return (i in props && params.query[i].indexOf(props[i]) > -1)
-        })
-        f.set('hidden', valid.length !== Object.keys(params.query).length)
-      } else {
-        f.set('hidden', false)
+      if (f.get('isCache')) {
+        if (params.count) {
+          const props = f.getProperties()
+          const valid = Object.keys(params.query).filter(i => {
+            return (i in props && params.query[i].indexOf(props[i]) > -1)
+          })
+          f.set('hidden', valid.length !== Object.keys(params.query).length)
+        } else {
+          f.set('hidden', false)
+        }
       }
     })
-    setState('geocache/filter', params, true)
+    setState('geocache/filter', this.getChecked('input'), true)
   }
-  getChecked () {
-    const checked = this.el.find('input[data-filter]').serializeArray()
+  getChecked (selector) {
+    const checked = this.el.find(selector).serializeArray()
     const params = {
       query: {},
       count: 0

@@ -66,8 +66,10 @@ class GeocacheLoader extends Component {
     this.el.find('textarea').on('keyup', e => {
       if (e.keyCode === 13) {
         const txt = this.el.find('textarea')
-        this.addCaches(txt.val().trim())
-        txt.val('').trigger('input')
+        if (txt.val().trim().length > '{"type":"Feature"}'.length) {
+          this.addCaches(txt.val().trim())
+          txt.val('').trigger('input')
+        }
       }
     })
     this.el.on('click', 'button.confirm', e => {
@@ -111,6 +113,7 @@ class GeocacheLoader extends Component {
     return content
       .replace('Männiku "NAVY"', 'Männiku &quot;NAVY&quot;')
       .replace('Seikluse "Pärnu villad" boonusaare', 'Seikluse &quot;Pärnu villad&quot; boonusaare')
+      .replace('SPA 36: "Inetu kuusepoeg"', 'SPA 36: &quot;Inetu kuusepoeg&quot;')
   }
   createLayer (geojson) {
     const color = '#000000'

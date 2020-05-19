@@ -63,6 +63,7 @@ class Config extends Component {
         <input type="text"
           class="form-control"
           id="settings-account"
+          tabindex="-1"
           placeholder="${t('Username')}"
           value="${getState('app/account') || ''}"/>
       </div>
@@ -74,6 +75,7 @@ class Config extends Component {
         <input type="text"
           class="form-control"
           id="settings-search"
+          tabindex="-1"
           placeholder="${t('Country codes')}"
           value="${getState('app/nominatimCountries') || ''}"/>
       </div>
@@ -83,6 +85,7 @@ class Config extends Component {
       <h5>${t('Routing')}</h5>
       <div class="form-group">
         <select
+          tabindex="-1"
           class="form-control"
           id="settings-routing">
           <option value="" ${routingProfile === '' ? 'selected' : ''}>${t('Disabled')}</option>

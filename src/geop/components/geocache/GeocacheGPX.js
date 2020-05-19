@@ -26,7 +26,16 @@ export default {
         // id
         feature.set('id', cacheData['@id'])
         // type
-        feature.set('isCache', feature.get('type').substring(0, 8) === 'Geocache')
+        const type = feature.get('type')
+        feature.set('isCache', type.substring(0, 8) === 'Geocache')
+        // CHALLENGE cache type
+        if (
+          type === 'Geocache|Unknown Cache' &&
+          cacheData.name &&
+          cacheData.name.toLowerCase().includes('challenge')
+        ) {
+          feature.set('type', 'Geocache|Unknown Cache|Challenge')
+        }
         // fstatus
         let fstatus = feature.get('sym')
         if (opts.user && opts.user === cacheData.owner) {
@@ -34,8 +43,9 @@ export default {
         }
         feature.set('fstatus', opts.mapping.fstatusGPX[fstatus] || fstatus)
         // status
-        let status = cacheData['@available'] === 'True' ? 'Available' : 'Unavailable'
-        if (cacheData['@archived'] === 'True') {
+        let status = cacheData['@available'] && cacheData['@available'].toLowerCase() === 'true'
+          ? 'Available' : 'Unavailable'
+        if (cacheData['@archived'] && cacheData['@archived'].toLowerCase() === 'true') {
           status = 'Archived'
         }
         feature.set('status', status)

@@ -251,7 +251,12 @@ export function closestFeatureTo (map, px, coord) {
     (feature, layer) => {
       if (feature.getGeometry().getCoordinates()) {
         const distance = getDistance(toLonLat(coord), toLonLat(feature.getGeometry().getCoordinates()))
-        if (!isNaN(distance) && layer && distance < closest.distance) {
+        // cache priority
+        if (!isNaN(distance) && layer && feature.get('isCache') && distance === closest.distance) {
+          closest.feature = feature
+          closest.layer = layer
+          closest.distance = distance
+        } else if (!isNaN(distance) && layer && distance < closest.distance) {
           closest.feature = feature
           closest.layer = layer
           closest.distance = distance

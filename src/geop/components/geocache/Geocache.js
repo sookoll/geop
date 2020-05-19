@@ -135,8 +135,11 @@ class Geocache extends Component {
         const inTrip = geotrip && geotrip.getArray().indexOf(f) > -1
         const styleType = state.styleConfig.text[f.get('type')]
         if (f.get('isCache')) {
+          // FIXME: all other attributes but class are removed on popup. Why and where?
           return `
-            <i class="${styleType ? styleType.class : state.styleConfig.base.class} ${f.get('status') !== 'Available' ? 'unavailable' : ''}"></i>
+            <i
+              class="fstatus ${styleType ? styleType.class : state.styleConfig.base.class} ${f.get('status') !== 'Available' ? 'unavailable' : ''}"
+              style="color:${state.styleConfig.color[f.get('fstatus')].fill.color}"></i>
             <a href="${f.get('url')}" target="_blank" class="${f.get('status') === 'Archived' ? 'archived' : ''}">${t(f.get('name'))}</a>
             <div class="tools">
               <a href="#" class="cache-toggle" data-id="${f.getId()}" title="${t('Add to geotrip')}">
@@ -179,10 +182,13 @@ class Geocache extends Component {
         }
       },
       onShow: (f, pop) => {
+        const fstatus = f[1].get('fstatus')
+        // FIXME: Workaround for removed style attribute in popup
+        $(pop).find('h3 i.fstatus').css('color', state.styleConfig.color[fstatus].fill.color)
         const geotrip = getState('geocache/trip')
         $(pop).on('click', '.toggle-found', e => {
           const inTrip = geotrip && geotrip.getArray().indexOf(f[1]) > -1
-          const found = f[1].get('fstatus') === 'Found'
+          const found = fstatus === 'Found'
           $(e.currentTarget).find('i').removeClass(state.stat[f[1].get('fstatus')])
           f[1].set('fstatus', found ? 'Not Found' : 'Found')
           f[1].set('fstatus_timestamp', !found ? Date.now() : null)
@@ -255,7 +261,16 @@ function styleGeocache (feature, resolution) {
       zIndex: feature.get('isCache') ? 2 : 1
     }, true)
   }
-  if (feature.get('isCache') && feature.get('radiusVisible') && resolution <= cacheConf.radiusStyle.maxResolution) {
+  if (
+    feature.get('isCache') && feature.get('radiusVisible') &&
+    type !== 'Geocache|Locationless Cache' &&
+    type !== 'Geocache|Virtual Cache' &&
+    type !== 'Geocache|Webcam Cache' &&
+    type !== 'Geocache|Event Cache' &&
+    type !== 'Geocache|Earthcache' &&
+    status !== 'Archived' &&
+    resolution <= cacheConf.radiusStyle.maxResolution
+  ) {
     if (!state.styleCache.radiusStyle) {
       state.styleCache.radiusStyle = createStyle(
         state.styleConfig.radiusStyle,
