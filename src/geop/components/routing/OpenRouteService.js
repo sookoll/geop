@@ -3,13 +3,14 @@ import { getState } from 'Utilities/store'
 import Provider from 'Geop/Provider'
 import Polyline from 'ol/format/Polyline'
 import { t } from 'Utilities/translate'
-import $ from 'jquery'
+import { fetch } from 'Utilities/util'
+
+const xhr = fetch()
 
 class OpenRouteService extends Provider {
   constructor () {
     super()
     this.title = 'OpenRouteService'
-    this.xhr = null
     this.profiles = {
       driving: 'driving-car',
       hiking: 'foot-hiking'
@@ -35,21 +36,17 @@ class OpenRouteService extends Provider {
       this.clear()
       if (routingProfile in this.profiles) {
         const radiuses = coordinates.map(coord => 5000)
-        this.xhr = $.ajax({
-          type: 'POST',
-          crossDomain: true,
-          url: apiUrls.openrouteservice.directions + this.profiles[routingProfile],
+        xhr.post(apiUrls.openrouteservice.directions + this.profiles[routingProfile], {
           headers: {
-            Authorization: apiUrls.openrouteservice.key
+            'Content-Type': 'application/json',
+            'Authorization': apiUrls.openrouteservice.key
           },
-          data: JSON.stringify({
+          body: JSON.stringify({
             coordinates,
             radiuses
-          }),
-          contentType: 'application/json',
-          dataType: 'json'
+          })
         })
-          .done(response => {
+          .then(response => {
             if (response && response.routes && response.routes.length) {
               const feature = this.format(response.routes[0].geometry)
               feature.set('distance', response.routes[0].summary.distance)
@@ -59,11 +56,9 @@ class OpenRouteService extends Provider {
               reject(new Error(t('Unable to find route') + ': ' + JSON.stringify(response)))
             }
           })
-          .fail(function (request) {
-            if (request.statusText === 'abort') {
-              return
-            }
-            reject(new Error(t('Unable to find route') + ': ' + t(request.responseJSON ? request.responseJSON.message : request.statusText)))
+          .catch(err => {
+            console.error(err)
+            reject(new Error(t('Unable to find route') + ': ' + t(err.responseJSON ? err.responseJSON.message : err.statusText)))
           })
       } else {
         reject(new Error(t('Routing disabled')))
@@ -88,32 +83,26 @@ class OpenRouteService extends Provider {
         }
       })
       if (routingProfile in this.profiles) {
-        this.xhr = $.ajax({
-          type: 'POST',
-          crossDomain: true,
-          url: apiUrls.openrouteservice.optimize,
+        xhr.post(apiUrls.openrouteservice.optimize, {
           headers: {
-            Authorization: apiUrls.openrouteservice.key
+            'Content-Type': 'application/json',
+            'Authorization': apiUrls.openrouteservice.key
           },
-          data: JSON.stringify({
+          body: JSON.stringify({
             jobs,
             vehicles
-          }),
-          contentType: 'application/json',
-          dataType: 'json'
+          })
         })
-          .done(response => {
+          .then(response => {
             if (response && response.routes && response.routes.length) {
               resolve(response.routes[0])
             } else {
               reject(new Error(t('Unable to find route') + ': ' + JSON.stringify(response)))
             }
           })
-          .fail(function (request) {
-            if (request.statusText === 'abort') {
-              return
-            }
-            reject(new Error(t('Unable to find route') + ': ' + t(request.responseJSON ? request.responseJSON.message : request.statusText)))
+          .catch(err => {
+            console.error(err)
+            reject(new Error(t('Unable to find route') + ': ' + t(err.responseJSON ? err.responseJSON.message : err.statusText)))
           })
       } else {
         reject(new Error(t('Routing disabled')))

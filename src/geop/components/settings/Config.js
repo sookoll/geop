@@ -5,7 +5,7 @@ import { set as setPermalink } from 'Utilities/permalink'
 import log from 'Utilities/log'
 import { reloadApp } from 'Root'
 import Component from 'Geop/Component'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 import saveAs from 'file-saver'
 import './Config.styl'
 
@@ -14,7 +14,7 @@ class Config extends Component {
     super(target)
     this.id = 'settings-tab'
     this.icon = 'fa fa-cog'
-    this.el = $(`
+    this.el = $.create(`
       <div
         class="tab-pane fade ${this.id === getState('app/settingsTabOpen') ? 'show active' : ''}"
         id="${this.id}"
@@ -23,16 +23,10 @@ class Config extends Component {
     `)
     this.create()
   }
-  create () {
-    if (this.target && this.el) {
-      this.target.append(this.el)
-      this.render()
-    }
-  }
   render () {
     const routingProfile = (typeof getState('routing/profile') !== 'undefined')
       ? getState('routing/profile') : getState('app/routing').profile
-    this.el.html(`
+    $.html(this.el, `
       <div class="install mb-3">
         <button
           id="install"
@@ -188,20 +182,23 @@ class Config extends Component {
       ` : ''}
     `)
     // language change
-    this.el.find('button.set-locale-btn').on('click', e => {
-      changeLocale($(e.currentTarget).data('locale'))
-      this.el.find('button.set-locale-btn').removeClass('active')
-      $(e.currentTarget).addClass('active')
-      log('warning', t('Language changed, page will reload!'), () => {
-        reloadApp()
+    $.get('button.set-locale-btn', this.el, true).forEach(el => {
+      $.on('click', el, e => {
+        changeLocale(e.currentTarget.dataList.locale)
+        $.get('button.set-locale-btn', this.el, true).forEach(elem => {
+          elem.classList.remove('active')
+        })
+        e.currentTarget.classList.add('active')
+        log('warning', t('Language changed, page will reload!'), () => {
+          reloadApp()
+        })
+        if (getState('app/debug')) {
+          console.debug(`Config.render: Locale changed to ${$(e.currentTarget).data('locale')}`)
+        }
       })
-      if (getState('app/debug')) {
-        console.debug(`Config.render: Locale changed to ${$(e.currentTarget).data('locale')}`)
-      }
     })
     // account name
-    this.el.find('#settings-account').on('blur', e => {
-      // blur will trigger accidently when using tab to blur measure inputs
+    $.on('blur', $.get('#settings-account', this.el), e => {
       if (getState('app/settingsTabOpen') && e.target.value.trim() !== getState('app/account')) {
         setState('app/account', e.target.value.trim(), true)
         log('warning', t('Account changed, page will reload!'), () => {
@@ -213,8 +210,7 @@ class Config extends Component {
       }
     })
     // search limit
-    this.el.find('#settings-search').on('blur', e => {
-      // blur will trigger accidently when using tab to blur measure inputs
+    $.on('blur', $.get('#settings-search', this.el), e => {
       if (getState('app/settingsTabOpen') && e.target.value.trim() !== getState('app/nominatimCountries')) {
         setState('app/nominatimCountries', e.target.value.trim(), true)
         if (getState('app/debug')) {
@@ -223,7 +219,7 @@ class Config extends Component {
       }
     })
     // routing
-    this.el.find('#settings-routing').on('change', e => {
+    $.on('change', $.get('#settings-routing', this.el), e => {
       const routingProfile = (typeof getState('routing/profile') !== 'undefined')
         ? getState('routing/profile') : getState('app/routing').profile
       if (e.target.value.trim() !== routingProfile) {
@@ -234,25 +230,37 @@ class Config extends Component {
       }
     })
     // routing
-    this.el.find('button.set-route-btn').on('click', e => {
-      setState('routing/infoFromRoute', $(e.currentTarget).data('share') === 'on', true)
-      this.el.find('button.set-route-btn').removeClass('active')
-      $(e.currentTarget).addClass('active')
+    $.get('button.set-locale-btn', this.el, true).forEach(el => {
+      $.on('click', el, e => {
+        setState('routing/infoFromRoute', e.currentTarget.dataList.share === 'on', true)
+        $.get('button.set-locale-btn', this.el, true).forEach(elem => {
+          elem.classList.remove('active')
+        })
+        e.currentTarget.classList.add('active')
+      })
     })
     // cache import
-    this.el.find('button.set-cacheimport-btn').on('click', e => {
-      setState('cache/import/appendLayer', $(e.currentTarget).data('import') === 'append', true)
-      this.el.find('button.set-cacheimport-btn').removeClass('active')
-      $(e.currentTarget).addClass('active')
+    $.get('button.set-cacheimport-btn', this.el, true).forEach(el => {
+      $.on('click', el, e => {
+        setState('cache/import/appendLayer', e.currentTarget.dataList.import === 'append', true)
+        $.get('button.set-cacheimport-btn', this.el, true).forEach(elem => {
+          elem.classList.remove('active')
+        })
+        e.currentTarget.classList.add('active')
+      })
     })
     // share change
-    this.el.find('button.set-share-btn').on('click', e => {
-      setState('app/shareOnlyTripFeatures', $(e.currentTarget).data('share') === 'on', true)
-      this.el.find('button.set-share-btn').removeClass('active')
-      $(e.currentTarget).addClass('active')
+    $.get('button.set-share-btn', this.el, true).forEach(el => {
+      $.on('click', el, e => {
+        setState('app/shareOnlyTripFeatures', e.currentTarget.dataList.share === 'on', true)
+        $.get('button.set-share-btn', this.el, true).forEach(elem => {
+          elem.classList.remove('active')
+        })
+        e.currentTarget.classList.add('active')
+      })
     })
     // reset app
-    this.el.find('#settings-reset').on('click', e => {
+    $.on('click', $.get('#settings-reset', this.el), e => {
       clearState()
       log('warning', t('App resetted, page will reload!'), () => {
         setPermalink(null)
@@ -263,31 +271,37 @@ class Config extends Component {
       }
     })
     // debug change
-    this.el.find('button.set-debug-btn').on('click', e => {
-      setState('app/debug', $(e.currentTarget).data('debug') === 'on', true)
-      this.el.find('button.set-debug-btn').removeClass('active')
-      $(e.currentTarget).addClass('active')
-      log('warning', t('Debug changed, app will reload!'), () => {
-        reloadApp()
+    $.get('button.set-debug-btn', this.el, true).forEach(el => {
+      $.on('click', el, e => {
+        setState('app/debug', e.currentTarget.dataList.debug === 'on', true)
+        $.get('button.set-debug-btn', this.el, true).forEach(elem => {
+          elem.classList.remove('active')
+        })
+        e.currentTarget.classList.add('active')
+        log('warning', t('Debug changed, app will reload!'), () => {
+          reloadApp()
+        })
+        if (getState('app/debug')) {
+          console.debug(`Config.render: Debug changed to ${e.currentTarget.dataList.debug}`)
+        }
       })
-      if (getState('app/debug')) {
-        console.debug(`Config.render: Debug changed to ${$(e.currentTarget).data('debug')}`)
-      }
     })
     // download debug log file
-    this.el.find('#download-log').on('click', e => {
-      const logs = getDebugStore()
-      const blob = new window.Blob([logs.join('\n')], { type: 'text/plain;charset=utf-8' })
-      saveAs(blob, getState('app/debugFile'))
-    })
+    if (getState('app/debug')) {
+      $.on('click', $.get('#download-log', this.el), e => {
+        const logs = getDebugStore()
+        const blob = new window.Blob([logs.join('\n')], { type: 'text/plain;charset=utf-8' })
+        saveAs(blob, getState('app/debugFile'))
+      })
+    }
     let deferredPrompt
     window.addEventListener('beforeinstallprompt', e => {
       e.preventDefault()
       deferredPrompt = e
-      this.el.find('.install').show()
+      $.show($.get('.install', this.el))
     })
-    this.el.find('#install').on('click', e => {
-      this.el.find('.install').hide()
+    $.on('click', $.get('#install', this.el), e => {
+      $.hide($.get('.install', this.el))
       deferredPrompt.prompt()
       deferredPrompt.userChoice
         .then(choiceResult => {

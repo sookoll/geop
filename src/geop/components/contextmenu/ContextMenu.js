@@ -4,13 +4,13 @@ import { closestFeatureTo } from 'Components/map/MapEngine'
 import Overlay from 'ol/Overlay'
 import Point from 'ol/geom/Point'
 import Popper from 'popper.js'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 import './ContextMenu.styl'
 
 class ContextMenu extends Component {
   constructor (target) {
     super(target)
-    this.el = $('<div id="contextmenu-map"></div>')
+    this.el = $.create('<div id="contextmenu-map"></div>')
     let items = getState('map/contextmenu')
     if (!items) {
       items = []
@@ -48,6 +48,7 @@ class ContextMenu extends Component {
       if (e.originalEvent.ctrlKey || this.state.disableClick) {
         return
       }
+      // FIXME
       this.el.popover('dispose')
     })
     map.getViewport().addEventListener('contextmenu', e => {
@@ -64,6 +65,7 @@ class ContextMenu extends Component {
     })
   }
   open (coord, popContent) {
+    // FIXME
     Popper.Defaults.modifiers.preventOverflow.enabled = false
     Popper.Defaults.modifiers.hide.enabled = false
     this.el.popover('dispose')
@@ -101,25 +103,27 @@ class ContextMenu extends Component {
           </div>`
       },
       'onShow': pop => {
-        $(pop).on('contextmenu', e => {
+        $.on('contextmenu', pop, e => {
           e.stopPropagation()
         })
         this.state.items.forEach((item, i) => {
           if (typeof item.onClick === 'function') {
-            $(pop).on('click', '.item-' + i, e => {
+            $.on('click', $.get('.item-' + i, pop), e => {
               e.preventDefault()
               item.onClick(e, coord, feature)
               if (item.closeOnClick) {
+                // FIXME
                 this.el.popover('dispose')
               }
             })
           }
           if (typeof item.onBtnClick === 'function') {
-            $(pop).on('click', `.item-${i} .context-item-btn`, e => {
+            $.on('click', $.get(`.item-${i} .context-item-btn`, pop), e => {
               e.preventDefault()
               e.stopPropagation()
               item.onBtnClick(e, coord, feature)
               if (item.closeOnClick) {
+                // FIXME
                 this.el.popover('dispose')
               }
             })

@@ -3,6 +3,7 @@ import randomColor from 'randomcolor'
 import { getLength, getArea } from 'ol/sphere'
 import GPX from 'ol/format/GPX'
 import { b64encode } from './b64encode'
+import Fetch from './fetch'
 
 const noSleep = new NoSleep()
 const debugStore = []
@@ -336,4 +337,43 @@ export function getBearing (from, to) {
     angle = 360 + angle
   }
   return angle
+}
+
+export function fetch () {
+  return new Fetch({
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    mode: 'cors'
+  })
+}
+
+export function serializeArray (form) {
+  const arr = []
+  form.forEach(field => {
+    if (!field.name || field.disabled || ['file', 'reset', 'submit', 'button'].indexOf(field.type) > -1) {
+      return
+    }
+    if (field.type === 'select-multiple') {
+      Array.prototype.slice.call(field.options).forEach(option => {
+        if (!option.selected) {
+          return
+        }
+        arr.push({
+          name: field.name,
+          value: option.value
+        })
+      })
+      return
+    }
+    if (['checkbox', 'radio'].indexOf(field.type) > -1 && !field.checked) {
+      return
+    }
+    arr.push({
+      name: field.name,
+      value: field.value
+    })
+  })
+  return arr
 }

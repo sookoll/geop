@@ -1,35 +1,36 @@
 import Component from 'Geop/Component'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 import './Alert.styl'
 
 class Alert extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`
-      <div class="alert small alert-warning alert-dismissible tool-results routing" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <i class="fa fa-times"></i>
-        </button>
-        <div class=""></div>
-      </div>
-    `)
+    this.el = $.create(`<div
+      class="alert small alert-warning alert-dismissible tool-results routing"
+      role="alert">
+    </div>`)
     this.create()
   }
   render () {
-
+    $.html(this.el, `<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <i class="fa fa-times"></i>
+    </button>
+    <div class=""></div>`)
   }
   close () {
-    this.el.alert('close')
+    // FIXME alert
+    //this.el.alert('close')
   }
   open (content, onclose) {
-    this.el.find('div').html(content)
-    $('body').append(this.el)
-    this.el.on('closed.bs.alert', () => {
-      onclose()
-    })
+    this.update(content)
+    $.append($.get('body'), this.el)
+    // FIXME alert
+    //this.el.on('closed.bs.alert', () => {
+    //  onclose()
+    //})
   }
   update (content) {
-    this.el.find('div').html(content)
+    $.get('div', this.el).innerHTML = content
   }
 }
 

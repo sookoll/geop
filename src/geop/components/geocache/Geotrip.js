@@ -14,7 +14,7 @@ import Feature from 'ol/Feature'
 import { toLonLat } from 'ol/proj'
 import { getLength } from 'ol/sphere'
 import lineSliceAlong from '@turf/line-slice-along'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 import './Geotrip.styl'
 
 class Geotrip extends Component {
@@ -23,13 +23,11 @@ class Geotrip extends Component {
     this.id = 'tab-geotrip'
     this.icon = 'fa fa-thumbtack'
     this.btnTextVisible = true
-    this.el = $(`
-      <div
-        class="tab-pane fade"
-        id="${this.id}"
-        role="tabpanel">
-      </div>
-    `)
+    this.el = $.create(`<div
+      class="tab-pane fade"
+      id="${this.id}"
+      role="tabpanel">
+    </div>`)
     this.state = {
       tab: null,
       routeLayer: null,
@@ -79,7 +77,7 @@ class Geotrip extends Component {
     const found = this.state.collection.getArray().filter(f => {
       return !!f.get('fstatus_timestamp') && f.get('fstatus') === 'Found'
     })
-    this.el.html(`
+    $.html(this.el, `
       <ul class="list-group mb-3">
       ${this.state.collection.getLength()
     ? this.renderTrip(this.state.collection)
@@ -115,7 +113,9 @@ class Geotrip extends Component {
           </button>
         </div>` : ''}
     `)
-    this.state.tab && this.state.tab.find('span').html(this.state.collection.getLength() || t('Geotrip'))
+    if (this.state.tab) {
+      $.html($.get('span', this.state.tab), this.state.collection.getLength() || t('Geotrip'))
+    }
     if (this.state.collection.getLength()) {
       // route
       if (!this.state.routeLayer) {
@@ -138,7 +138,7 @@ class Geotrip extends Component {
         })
       }
       // sortable
-      Sortable.create(this.el.find('ul')[0], {
+      Sortable.create($.get('ul', this.el), {
         draggable: 'li.sort-item',
         handle: '.badge',
         onUpdate: e => {
@@ -181,40 +181,54 @@ class Geotrip extends Component {
   }
   initEvents () {
     // remove element
-    this.el.on('click', 'li button.close', e => {
-      e.preventDefault()
-      this.remove($(e.currentTarget).closest('li').data('id'))
+    $.get('li button.close', this.el, true).forEach(el => {
+      $.on('click', el, e => {
+        e.preventDefault()
+        this.remove(e.currentTarget.closest('li').dataList.id)
+      })
     })
     // zoom to
-    this.el.on('click', 'li a', e => {
-      e.preventDefault()
-      this.zoomTo($(e.currentTarget).closest('li').data('id'))
+    $.get('li a', this.el, true).forEach(el => {
+      $.on('click', el, e => {
+        e.preventDefault()
+        this.zoomTo(e.currentTarget.closest('li').dataList.id)
+      })
     })
     // clear trip
-    this.el.on('click', 'button.clear', e => {
-      e.preventDefault()
-      this.clearTrip()
-    })
+    if ($.get('button.clear', this.el)) {
+      $.on('click', $.get('button.clear', this.el), e => {
+        e.preventDefault()
+        this.clearTrip()
+      })
+    }
     // export trip
-    this.el.on('click', 'a.export', e => {
-      e.preventDefault()
-      this.export()
-    })
+    if ($.get('a.export', this.el)) {
+      $.on('click', $.get('a.export', this.el), e => {
+        e.preventDefault()
+        this.export()
+      })
+    }
     // order trip by found date
-    this.el.on('click', 'a.sortby-found', e => {
-      e.preventDefault()
-      this.sortByFound()
-    })
+    if ($.get('a.sortby-found', this.el)) {
+      $.on('click', $.get('a.sortby-found', this.el), e => {
+        e.preventDefault()
+        this.sortByFound()
+      })
+    }
     // order trip by routing
-    this.el.on('click', 'a.sortby-routing', e => {
-      e.preventDefault()
-      this.sortByRouting()
-    })
+    if ($.get('a.sortby-routing', this.el)) {
+      $.on('click', $.get('a.sortby-routing', this.el), e => {
+        e.preventDefault()
+        this.sortByRouting()
+      })
+    }
     // routing
-    this.el.on('click', 'button.routing', e => {
-      e.preventDefault()
-      this.routing()
-    })
+    if ($.get('button.routing', this.el)) {
+      $.on('click', $.get('button.routing', this.el), e => {
+        e.preventDefault()
+        this.routing()
+      })
+    }
   }
   reorderCollection (collection, order) {
     for (let i = 0, len = order.length; i < len; i++) {
@@ -227,8 +241,8 @@ class Geotrip extends Component {
   }
   reorderTrip () {
     const order = []
-    this.el.find('li.sort-item').each((i, li) => {
-      order.push($(li).data('id'))
+    $.get('li.sort-item', this.el).forEach(el => {
+      order.push(el.dataList.id)
     })
     this.reorderCollection(this.state.collection, order)
   }

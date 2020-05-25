@@ -1,15 +1,14 @@
 import Component from 'Geop/Component'
 import { t } from 'Utilities/translate'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 
 class FullScreen extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`<button type="button"
+    this.el = $.create(`<button type="button"
       title="${t('Toggle fullscreen')}"
       disabled
       class="btn btn-secondary">
-      <i class="fa fa-expand-arrows-alt"></i>
     </button>`)
     this.state = {
       active: false
@@ -17,18 +16,16 @@ class FullScreen extends Component {
     this.create()
   }
   render () {
+    this.el.innerHTML = '<i class="fa fa-expand-arrows-alt"></i>'
     if (this.test()) {
-      this.el.prop('disabled', false)
-      this.el.on('click', e => {
+      this.el.disabled = false
+      $.on('click', this.el, e => {
         e.preventDefault()
         this.toggle()
       })
-      $(document).on(
-        'webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange',
-        e => {
-          this.toggleState()
-        }
-      )
+      $.on('fullscreenchange', document, e => {
+        this.toggleState()
+      })
     }
   }
   test () {
@@ -53,10 +50,11 @@ class FullScreen extends Component {
       document.mozFullScreenElement ||
       document.webkitFullscreenElement) {
       this.state.active = true
-      this.el.addClass('active')
+
+      this.el.classList.add('active')
     } else {
       this.state.active = false
-      this.el.removeClass('active')
+      this.el.classList.remove('active')
     }
   }
   on () {

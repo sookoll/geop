@@ -10,11 +10,11 @@ import 'bootstrap/js/dist/button'
 import 'bootstrap/js/dist/popover'
 import 'bootstrap/js/dist/alert'
 import { initServiceWorker } from 'Utilities/util'
+import $ from 'Utilities/dom'
 import Geop from 'Geop/Geop'
-import $ from 'jquery'
 
 let app = null
-const el = $('#geop')
+const el = $.get('#geop')
 
 function createApp () {
   initConf().then(conf => {
@@ -27,7 +27,7 @@ export function reloadApp () {
   if (app) {
     app.destroy()
     app = null
-    el.html('')
+    $.html(el, '')
   }
   // createApp()
   window.location.reload()

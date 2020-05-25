@@ -11,7 +11,7 @@ import LineString from 'ol/geom/LineString'
 import Feature from 'ol/Feature'
 import Geolocation from 'ol/Geolocation'
 import { toLonLat } from 'ol/proj'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 import './GeoLocation.styl'
 
 const longPress = 800
@@ -19,9 +19,8 @@ const longPress = 800
 class GeoLocation extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`
+    this.el = $.create(`
       <button id="geolocation" class="btn btn-link" disabled title="${t('My location')}">
-        <i class="fa fa-location-arrow"></i>
       </button>
     `)
     this.state = {
@@ -48,7 +47,37 @@ class GeoLocation extends Component {
       lastHeading: null,
       minAccuracy: 100,
       pressStart: null,
-      pressTimer: null
+      pressTimer: null,
+      eventHandlers: {
+        down: e => {
+          e.preventDefault()
+          this.state.pressStart = new Date().getTime()
+          this.state.pressTimer = setTimeout(() => {
+            this.disable()
+            e.currentTarget.classList.remove(...this.state.status)
+          }, longPress)
+        },
+        up: e => {
+          e.preventDefault()
+          if (new Date().getTime() < (this.state.pressStart + longPress)) {
+            clearTimeout(this.state.pressTimer)
+            this.state.active = (this.state.active + 1 >= this.state.status.length)
+              ? 0 : this.state.active + 1
+            if (this.state.active === 0) {
+              this.disable()
+              e.currentTarget.classList.remove(...this.state.status)
+            } else {
+              this.enable()
+              e.currentTarget.classList.add(this.state.status[this.state.active])
+            }
+          }
+        },
+        leave: e => {
+          e.preventDefault()
+          this.state.pressStart = 0
+          clearTimeout(this.state.pressTimer)
+        }
+      }
     }
     this.handlers = {
       updateView: e => {
@@ -65,36 +94,19 @@ class GeoLocation extends Component {
     }
   }
   render () {
-    this.el.prop('disabled', false)
-    this.el.on('click contextmenu', e => {
+    this.el.innerHTML = '<i class="fa fa-location-arrow"></i>'
+    this.el.disabled = false
+    $.on('click', this.el, e => {
       e.preventDefault()
     })
-    this.el.on('mousedown touchstart', e => {
+    $.on('contextmenu', this.el, e => {
       e.preventDefault()
-      this.state.pressStart = new Date().getTime()
-      this.state.pressTimer = setTimeout(() => {
-        this.disable()
-        $(e.currentTarget).removeClass(this.state.status.join(' '))
-      }, longPress)
-    }).on('mouseleave', e => {
-      e.preventDefault()
-      this.state.pressStart = 0
-      clearTimeout(this.state.pressTimer)
-    }).on('mouseup touchend', e => {
-      e.preventDefault()
-      if (new Date().getTime() < (this.state.pressStart + longPress)) {
-        clearTimeout(this.state.pressTimer)
-        this.state.active = (this.state.active + 1 >= this.state.status.length)
-          ? 0 : this.state.active + 1
-        if (this.state.active === 0) {
-          this.disable()
-          $(e.currentTarget).removeClass(this.state.status.join(' '))
-        } else {
-          this.enable()
-          $(e.currentTarget).addClass(this.state.status[this.state.active])
-        }
-      }
     })
+    $.on('mousedown', this.el, e => this.eventHandlers.down(e))
+    $.on('touchstart', this.el, e => this.eventHandlers.down(e))
+    $.on('mouseup', this.el, e => this.eventHandlers.up(e))
+    $.on('touchend', this.el, e => this.eventHandlers.up(e))
+    $.on('mouseleave', this.el, e => this.eventHandlers.leave(e))
   }
   test () {
     return !!navigator.geolocation
@@ -122,7 +134,7 @@ class GeoLocation extends Component {
   }
   error (e) {
     this.disable()
-    this.el.removeClass(this.state.status.join(' '))
+    this.el.classList.remove(...this.state.status)
     let errorText = t('Unable to find location.')
     switch (e.code) {
       case e.PERMISSION_DENIED:
@@ -175,19 +187,19 @@ class GeoLocation extends Component {
     const map = getState('map')
     map.un('pointerdrag', this.handlers.disableTracking)
     setState('map/anchor', null)
-    this.el.removeClass(this.state.status[this.state.active])
+    this.el.classList.remove(this.state.status[this.state.active])
     this.state.active = this.state.status.indexOf('active')
   }
   searchStart () {
-    this.el.find('i')
-      .removeClass('fa-location-arrow')
-      .addClass('fa-spinner fa-pulse')
+    const i = $.get('i', this.el)
+    i.classList.remove('fa-location-arrow')
+    i.classList.add('fa-spinner', 'fa-pulse')
   }
 
   searchEnd () {
-    this.el.find('i')
-      .removeClass('fa-spinner fa-pulse')
-      .addClass('fa-location-arrow')
+    const i = $.get('i', this.el)
+    i.classList.remove('fa-spinner', 'fa-pulse')
+    i.classList.add('fa-location-arrow')
   }
   isValid (accuracy) {
     return accuracy <= this.state.minAccuracy

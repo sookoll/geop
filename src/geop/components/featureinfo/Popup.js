@@ -1,6 +1,6 @@
 import Component from 'Geop/Component'
 import { t } from 'Utilities/translate'
-import { formatLength, formatArea, makeLink } from 'Utilities/util'
+import { formatLength, formatArea, makeLink, fetch } from 'Utilities/util'
 import { getState, setState } from 'Utilities/store'
 import { findRoute } from 'Components/routing/Routing'
 import { closestFeatureTo } from 'Components/map/MapEngine'
@@ -9,13 +9,15 @@ import Overlay from 'ol/Overlay'
 import Point from 'ol/geom/Point'
 import GeoJSONFormat from 'ol/format/GeoJSON'
 import { toLonLat } from 'ol/proj'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 import './Popup.styl'
+
+const xhr = fetch()
 
 class Popup extends Component {
   constructor (target) {
     super(target)
-    this.el = $('<div id="popup-map"></div>')
+    this.el = $.create('<div id="popup-map"></div>')
     this.state = {
       overlay: null,
       infoStore: [],
@@ -73,6 +75,7 @@ class Popup extends Component {
   }
   show (e, coords, hit, popContent) {
     this.state.overlay.setPosition(coords)
+    // FIXME
     this.el.popover(popContent.definition)
     // when popover's content is shown
     this.el.on('shown.bs.popover', evt => {
@@ -93,9 +96,10 @@ class Popup extends Component {
   }
   open (e) {
     let coords = e.coordinate
-    // FIXME: multiple results
+    // TODO: multiple results
     const hit = closestFeatureTo(this.state.map, e.pixel, coords)
     if (this.state.open) {
+      // FIXME
       this.el.popover('dispose')
       this.state.open = false
       if (!hit) {
@@ -189,6 +193,7 @@ class Popup extends Component {
         content += `<div class="distance"><i class="fas fa-location-arrow"></i>
           ${formatLength(null, distance)}</div>`
       }
+      // FIXME
       return {
         definition: {
           container: this.el,
@@ -206,22 +211,24 @@ class Popup extends Component {
         },
         'onShow': (f, pop) => {
           const geotrip = getState('geocache/trip')
-          $(pop).on('contextmenu', e => {
+          $.on('contextmenu', pop, e => {
             e.stopPropagation()
           })
-          $(pop).on('click', '.remove-marker', e => {
+          $.on('click', $.get('.remove-marker', pop), e => {
             e.preventDefault()
             if (f && f[0]) {
               f[0].getSource().removeFeature(f[1])
               if (geotrip) {
                 geotrip.remove(f[1])
               }
+              // FIXME
               this.el.popover('dispose')
             }
           })
-          $(pop).on('click', '.cache-toggle', e => {
+          $.on('click', $.get('.cache-toggle', pop), e => {
             e.preventDefault()
-            $(e.currentTarget).find('i').toggleClass('fa-thumbtack fa-minus-square')
+            $.get('i', e.currentTarget).classList.toggle('fa-thumbtack')
+            $.get('i', e.currentTarget).classList.toggle('fa-minus-square')
             if (geotrip) {
               if (geotrip.getArray().indexOf(f[1]) > -1) {
                 geotrip.remove(f[1])
@@ -230,7 +237,7 @@ class Popup extends Component {
               }
             }
           })
-          $(pop).on('click', '.distance', e => {
+          $.on('click', $.get('.distance', pop), e => {
             e.preventDefault()
             const coords = [
               toLonLat(getState('map/geolocation/position')),
@@ -254,15 +261,10 @@ class Popup extends Component {
     }
   }
   getWMSFeatureInfo (url, cb) {
-    $.ajax({
-      type: 'GET',
-      crossDomain: true,
-      url: url,
-      dataType: 'json',
-      context: this
-    })
-      .done(cb)
-      .fail(function (request) {
+    xhr.get(url)
+      .then(cb)
+      .catch(err => {
+        console.error(err)
         cb(null)
       })
   }

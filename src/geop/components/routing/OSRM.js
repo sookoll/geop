@@ -3,13 +3,14 @@ import { getState } from 'Utilities/store'
 import Provider from 'Geop/Provider'
 import { t } from 'Utilities/translate'
 import Polyline from 'ol/format/Polyline'
-import $ from 'jquery'
+import { fetch } from 'Utilities/util'
+
+const xhr = fetch()
 
 class OSRM extends Provider {
   constructor () {
     super()
     this.title = 'OSRM'
-    this.xhr = null
     this.profiles = {
       driving: 'driving'
     }
@@ -25,27 +26,21 @@ class OSRM extends Provider {
   directions (coords) {
     return new Promise((resolve, reject) => {
       this.clear()
-      this.xhr = $.ajax({
-        type: 'GET',
-        crossDomain: true,
-        url: apiUrls.osrm.directions + this.profiles.driving + '/' + coords.join(';'),
-        data: {
+      xhr.get(apiUrls.osrm.directions + this.profiles.driving + '/' + coords.join(';'), {
+        params: {
           overview: 'full'
-        },
-        dataType: 'json'
+        }
       })
-        .done(response => {
+        .then(response => {
           if (response.code === 'Ok') {
             resolve(this.format(response.routes[0].geometry))
           } else {
             reject(new Error(t('Unable to find route') + ': ' + response.code))
           }
         })
-        .fail(function (request) {
-          if (request.statusText === 'abort') {
-            return
-          }
-          reject(new Error(t('Unable to find route') + ': ' + t(request.responseJSON ? request.responseJSON.message : request.statusText)))
+        .catch(err => {
+          console.error(err)
+          reject(new Error(t('Unable to find route') + ': ' + t(err.responseJSON ? err.responseJSON.message : err.statusText)))
         })
     })
   }

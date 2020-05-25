@@ -12,20 +12,14 @@ import Collection from 'ol/Collection'
 import { toLonLat, fromLonLat } from 'ol/proj'
 import { never, always, doubleClick } from 'ol/events/condition'
 import { getLength } from 'ol/sphere'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 import './Measure.styl'
 
 class Measure extends Component {
   constructor (target, opts) {
     super(target)
     this.id = 'measure'
-    this.el = $(`<span class="text-center d-none">
-      <i class="fa fa-ruler-combined"></i>
-      <span></span>
-      <button class="btn btn-link">
-        <i class="fas fa-times"></i>
-      </button>
-    </span>`)
+    this.el = $.create(`<span class="text-center d-none"></span>`)
     this.state = {
       map: null,
       measureType: null,
@@ -74,14 +68,31 @@ class Measure extends Component {
       })
     }
     this.handlers = {
-      onmodify: (e) => {
+      onmodify: e => {
         this.onmodify(e)
       },
-      clicked: (e) => {
+      clicked: e => {
         this.clicked(e)
       },
-      mousemoved: (e) => {
+      mousemoved: e => {
         this.mousemoved(e)
+      },
+      keydown: e => {
+        if (e.keyCode === 9) { // tab pressed
+          e.preventDefault()
+          const el = $.get('span', this.el)
+          const a = $.get('input[name=angle]', el).value
+          const r = $.get('input[name=radius]', el).value
+          const coords = this.state.drawing.getGeometry().getCoordinates()
+          const coord2 = this.getCoordinateByAngleDistance(coords[0], Number(a), Number(r))
+          this.state.drawing.getGeometry().setCoordinates([coords[0], coord2])
+          this.interaction.modify.setActive(true)
+          if (e.target.name === 'radius') {
+            $.get('input[name=angle]', el).focus()
+          } else {
+            $.get('input[name=radius]', el).focus()
+          }
+        }
       }
     }
     // set contextmenu
@@ -172,34 +183,26 @@ class Measure extends Component {
     return createLayer(conf)
   }
   render () {
-    this.el.on('click', 'button', e => {
+    this.el.innerHTML = `<i class="fa fa-ruler-combined"></i>
+      <span></span>
+      <button class="btn btn-link">
+        <i class="fas fa-times"></i>
+      </button>`
+    $.on('click', $.get('button', this.el), e => {
       this.reset()
     })
-    const el = this.el.find('span')
-    el.html(this.renderResults())
+    const el = $.get('span', this.el)
+    $.html(el, this.renderResults())
     if (this.state.measureType === 'circle') {
-      el.on('focus', 'input', e => {
-        this.interaction.modify.setActive(false)
-      })
-      $(document).on('keydown', e => {
-        if (e.keyCode === 9) { // tab pressed
-          e.preventDefault()
-          const a = el.find('input[name=angle]').val()
-          const r = el.find('input[name=radius]').val()
-          const coords = this.state.drawing.getGeometry().getCoordinates()
-          const coord2 = this.getCoordinateByAngleDistance(coords[0], Number(a), Number(r))
-          this.state.drawing.getGeometry().setCoordinates([coords[0], coord2])
-          this.interaction.modify.setActive(true)
-          if (e.target.name === 'radius') {
-            el.find('input[name=angle]').focus()
-          } else {
-            el.find('input[name=radius]').focus()
-          }
-        }
-      })
-      el.on('blur', 'input', e => {
+      $.get('input', el, true).forEach(input => {
+        $.on('focus', input, e => {
+          this.interaction.modify.setActive(false)
+        })
+        $.on('blur', input, e => {
 
+        })
       })
+      $.on('keydown', document, this.handlers.keydown)
     }
   }
   renderResults () {
@@ -230,12 +233,12 @@ class Measure extends Component {
       if (coords[0][0] === coords[coords.length - 1][0] && coords[0][1] === coords[coords.length - 1][1]) {
         area = formatArea(new Polygon([coords]), null, [2, 2], true)
       }
-      const el = this.el.find('span')
-      el.find('input[name=length]').val(len[0])
-      el.find('b.length-unit').html(len[1])
+      const el = $.get('span', this.el)
+      $.get('input[name=length]', el).value = len[0]
+      $.html($.get('b.length-unit', el), len[1])
       if (area) {
-        el.find('input[name=area]').val(area[0])
-        el.find('b.area-unit').html(area[1])
+        $.get('input[name=area]', el).value = len[0]
+        $.html($.get('b.area-unit', el), len[1])
       }
     }
   }
@@ -253,14 +256,15 @@ class Measure extends Component {
       angle = 360 + angle
     }
     const radius = getLength(g)
-    const el = this.el.find('span')
-    el.find('input[name=angle]').val(Math.round((angle + 0.00001) * 100) / 100)
-    el.find('input[name=radius]').val(Math.round((radius + 0.00001) * 100) / 100)
+    const el = $.get('span', this.el)
+    $.get('input[name=angle]', el).value = Math.round((angle + 0.00001) * 100) / 100
+    $.get('input[name=radius]', el).value = Math.round((radius + 0.00001) * 100) / 100
   }
   reset () {
     this.toggleFn(this.state.prev)
-    this.el.addClass('d-none')
-    this.el.find('span').html('')
+    this.el.classList.add('d-none')
+    $.get('span', this.el)
+    $.html($.get('span', this.el), '')
     this.state.drawing.getGeometry().un('change', this.handlers.onmodify)
     this.state.map.removeInteraction(this.interaction.modify)
     this.state.map.removeInteraction(this.interaction.snap)
@@ -278,7 +282,7 @@ class Measure extends Component {
         interaction.setActive(true)
       }
     })
-    $(document).off('keydown')
+    $.off('keydown', document, this.handlers.keydown)
   }
   enableClick () {
     this.state.map.on('click', this.handlers.clicked)
@@ -299,7 +303,9 @@ class Measure extends Component {
     if (this.state.measureType === 'circle') {
       const coord1 = coords[0]
       this.state.drawing.getGeometry().setCoordinates([coord1, coord2])
-      this.el.find('input[name=angle],input[name=radius]').prop('disabled', false)
+      $.get('input[name=angle],input[name=radius]', this.el, true).forEach(el => {
+        el.disabled = false
+      })
       this.finish()
     } else {
       if (coords.length > 1 && coords[0][0] === coord2[0] && coords[0][1] === coord2[1]) {

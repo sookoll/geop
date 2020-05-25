@@ -10,7 +10,7 @@ import { createMarker } from 'Components/mouseposition/MousePosition'
 import { createLayer } from 'Components/layer/LayerCreator'
 import { toLonLat, fromLonLat } from 'ol/proj'
 import { getDistance } from 'ol/sphere'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 
 const providers = {
   osrm: new OSRMProvider(),
@@ -52,7 +52,10 @@ class Routing extends Component {
           onBtnClick: (e, coord, feature) => {
             e.preventDefault()
             const formatted = toLonLat(coord).slice(0, 2).reverse().join(',')
-            $('<a>').attr('href', apiUrls.google.directions + formatted).attr('target', '_blank')[0].click()
+            const a = $.create('<a>')
+            a.href = apiUrls.google.directions + formatted
+            a.target = '_blank'
+            a.click()
           }
         },
         done: {

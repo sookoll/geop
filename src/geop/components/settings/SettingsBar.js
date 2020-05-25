@@ -3,18 +3,17 @@ import Component from 'Geop/Component'
 import Sidebar from 'Components/sidebar/Sidebar'
 import Info from './Info'
 import Config from './Config'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 
 class SettingsBar extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`<button type="button"
+    this.el = $.create(`<button type="button"
       class="btn btn-secondary">
-      <i class="fa fa-ellipsis-h"></i>
     </button>`)
     this.create()
     this.sidebar = new Sidebar({
-      target: $('#geop'),
+      target: $.get('#geop'),
       trigger: this.el,
       position: 'left',
       components: {
@@ -27,11 +26,13 @@ class SettingsBar extends Component {
   }
   create () {
     if (this.target && this.el) {
-      this.target.append(this.el)
-      $('body')
-        .append(this.sidebar)
-        .append(this.shadow)
+      $.append(this.target, this.el)
+      $.append($.get('body'), this.sidebar)
+      $.append($.get('body'), this.shadow)
     }
+  }
+  render () {
+    $.html(this.el, '<i class="fa fa-ellipsis-h"></i>')
   }
 }
 

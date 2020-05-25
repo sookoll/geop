@@ -7,7 +7,7 @@ import { createMarker } from 'Components/mouseposition/MousePosition'
 import { fromLonLat } from 'ol/proj'
 import Component from 'Geop/Component'
 import './GeocacheInfo.styl'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 
 class GeocacheInfo extends Component {
   constructor (target) {
@@ -15,13 +15,11 @@ class GeocacheInfo extends Component {
     this.id = 'tab-cacheinfo'
     this.icon = 'fa fa-cube'
     this.btnTextVisible = true
-    this.el = $(`
-      <div
-        class="tab-pane fade"
-        id="${this.id}"
-        role="tabpanel">
-      </div>
-    `)
+    this.el = $.create(`<div
+      class="tab-pane fade"
+      id="${this.id}"
+      role="tabpanel">
+    </div>`)
     this.state = {
       layer: null,
       cache: null,
@@ -43,7 +41,7 @@ class GeocacheInfo extends Component {
     })
   }
   render () {
-    this.el.html(`
+    $.html(this.el, `
       <ul class="list-group mb-3">
       ${(this.state.layer && this.state.layer.get('_featureInfo') && this.state.cache)
     ? this.renderCacheInfo()
@@ -56,17 +54,20 @@ class GeocacheInfo extends Component {
     ? this.renderLogs() : ''}
     `)
     // fix all images
-    this.el.find('img').addClass('img-fluid').css('height', 'auto')
-    // fix coords links color, if parent have it (https://www.geopeitus.ee/aare/2583)
-    this.el.find('a.createMarker').each((i, el) => {
-      if ($(el).parent().attr('style')) {
-        $(el).attr('style', $(el).parent().attr('style'))
-      }
+    $.get('img', this.el, true).forEach(el => {
+      el.classList.add('img-fluid')
+      $.css(el, { 'height': 'auto' })
     })
-    // click on coords
-    this.el.find('a.createMarker').on('click', e => {
-      e.preventDefault()
-      this.mapCoordinates($(e.target).data('coordinates'), $(e.target).text())
+    // fix coords links color, if parent have it (https://www.geopeitus.ee/aare/2583)
+    $.get('a.createMarker', this.el, true).forEach(el => {
+      if (el.parentElement.style) {
+        el.style = el.parentElement.style
+      }
+      // click on coords
+      $.on('click', el, e => {
+        e.preventDefault()
+        this.mapCoordinates(e.target.dataList.coordinates, e.target.textContent)
+      })
     })
   }
   renderCacheInfo () {

@@ -1,5 +1,9 @@
+import $ from 'Utilities/dom'
+
 class Component {
   constructor (target, opts = {}) {
+    // set dom manipulator
+    this.$ = $
     // set target and element
     this.target = target
     this.el = null
@@ -12,7 +16,7 @@ class Component {
   }
   create () {
     if (this.target && this.el) {
-      this.target.append(this.el)
+      $.append(this.target, this.el)
       this.render()
     }
   }

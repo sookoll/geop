@@ -1,13 +1,12 @@
 import { t } from 'Utilities/translate'
 import { getState } from 'Utilities/store'
 import Component from 'Geop/Component'
-import $ from 'jquery'
 import './Compass.styl'
 
 class Compass extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`
+    this.el = this.$.create(`
       <button id="compass" class="btn btn-link" title="${t('North up!')}">
         <i class="icon"></i>
       </button>
@@ -26,7 +25,7 @@ class Compass extends Component {
   }
 
   render () {
-    this.el.on('click', e => {
+    this.$.on('click', this.el, e => {
       const view = getState('map').getView()
       view.animate({
         rotation: 0,
@@ -42,17 +41,18 @@ class Compass extends Component {
       this.create()
       this.state.removed = false
     } else if (viewRotation === 0) {
-      this.el.fadeOut(400, () => {
+      this.$.fadeOut(this.el, 400, () => {
         this.el.remove()
-        this.el.show()
         this.state.removed = true
       })
     }
-    this.el.find('.icon').css({
-      '-webkit-transform': `rotate(${viewRotation}rad)`,
-      '-moz-transform': `rotate(${viewRotation}rad)`,
-      'transform': `rotate(${viewRotation}rad)`
-    })
+    if (this.el) {
+      this.$.css(this.$.get('.icon', this.el), {
+        '-webkit-transform': `rotate(${viewRotation}rad)`,
+        '-moz-transform': `rotate(${viewRotation}rad)`,
+        'transform': `rotate(${viewRotation}rad)`
+      })
+    }
   }
 }
 

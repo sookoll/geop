@@ -2,13 +2,13 @@ import { apiUrls } from 'Conf/settings'
 import { getState } from 'Utilities/store'
 import Provider from 'Geop/Provider'
 import { t } from 'Utilities/translate'
-import $ from 'jquery'
+import { fetch } from 'Utilities/util'
 
 class Coordinate extends Provider {
   constructor () {
     super()
     this.title = 'Addresses'
-    this.xhr = null
+    this.xhr = fetch()
   }
   test (query) {
     return (query.length >= 3)
@@ -31,24 +31,17 @@ class Coordinate extends Provider {
 
   geocode (query, cb) {
     this.clear()
-    this.xhr = $.ajax({
-      type: 'GET',
-      crossDomain: true,
-      url: apiUrls.nominatim + '/search/',
-      data: {
+    this.xhr.get(apiUrls.nominatim + '/search/', {
+      params: {
         q: query,
         countrycodes: getState('app/nominatimCountries') || '',
         format: 'json'
-      },
-      dataType: 'json',
-      context: this
+      }
     })
-      .done(cb)
-      .fail(function (request) {
+      .then(cb)
+      .catch(err => {
+        console.error(err)
         cb(null)
-        if (request.statusText === 'abort') {
-
-        }
       })
   }
 

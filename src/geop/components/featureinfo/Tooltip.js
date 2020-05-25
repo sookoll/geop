@@ -2,13 +2,13 @@ import Component from 'Geop/Component'
 import { getState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
 import Overlay from 'ol/Overlay'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 import './Tooltip.styl'
 
 class Tooltip extends Component {
   constructor (target) {
     super(target)
-    this.el = $('<div id="tooltip"></div>')
+    this.el = $.create('<div id="tooltip"></div>')
     this.state = {
       tooltipVisible: false,
       overlay: null,
@@ -49,7 +49,7 @@ class Tooltip extends Component {
   open (e, map) {
     // if !px then remove tooltip and return false
     if (!e) {
-      this.el.html('')
+      this.$.html(this.el, '')
       this.state.overlay.setPosition(undefined)
       this.state.currentFeature = null
       return false
@@ -66,7 +66,7 @@ class Tooltip extends Component {
       if (feature.getGeometry().getType() === 'Point') {
         coord = feature.getGeometry().getCoordinates()
       }
-      this.el.html(t(feature.get('name') || feature.get('title')))
+      this.$.html(this.el, t(feature.get('name') || feature.get('title')))
       this.state.overlay.setPosition(coord)
       this.state.currentFeature = feature
     }

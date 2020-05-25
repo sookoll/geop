@@ -3,43 +3,48 @@ import { apiUrls } from 'Conf/settings'
 import { getSessionState } from 'Utilities/session'
 import { getState, setState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
-import { copy, uid, deepCopy } from 'Utilities/util'
+import { copy, uid, deepCopy, fetch } from 'Utilities/util'
 import { get as getPermalink, onchange as onPermalinkChange } from 'Utilities/permalink'
 import log from 'Utilities/log'
 import { reloadApp } from 'Root'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 import JSONP from 'jsonpack'
 import QRious from 'qrious'
 import './Bookmark.styl'
 
+const xhr = fetch()
+
 class Bookmark extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`
-      <div class="btn-group"></div>
-    `)
-    this.modal = $('#modal_bookmark')
+    this.el = $.create(`<div class="btn-group"></div>`)
+    this.modal = $.get('#modal_bookmark')
     this.state = {
       bookmarks: getState('app/bookmarks') || [],
       bookmark: getPermalink('b')
     }
-
     this.create()
-    this.el.on('click', 'button.share', e => {
+    $.on('click', $.get('button.share', this.el), e => {
       e.preventDefault()
       this.share()
     })
-    this.el.on('click', 'li', e => {
-      e.preventDefault()
-      this.openModal($(e.currentTarget).data('id'))
+    $.get('li', this.el, true).forEach(el => {
+      $.on('click', el, e => {
+        e.preventDefault()
+        this.openModal(e.currentTarget.dataset.id)
+      })
     })
-    this.el.on('click', 'li .tools a.remove', e => {
-      e.preventDefault()
-      e.stopPropagation()
-      this.delete($(e.currentTarget).closest('li').data('id'))
+    $.get('li .tools a.remove', this.el, true).forEach(el => {
+      $.on('click', el, e => {
+        e.preventDefault()
+        e.stopPropagation()
+        this.delete(e.currentTarget.closest('li').dataset.id)
+      })
     })
-    this.modal.on('click', 'button.copy', e => {
-      this.copy($(e.target).closest('.modal').find('input').val())
+
+    $.on('click', $.get('button.copy', this.modal), e => {
+      e.preventDefault()
+      this.copy($.get('input', e.target.closest('.modal')).value)
     })
     onPermalinkChange(permalink => {
       if (this.state.bookmark !== permalink.b) {
@@ -49,46 +54,44 @@ class Bookmark extends Component {
   }
   render () {
     if (!this.modal || this.modal.length === 0) {
-      this.modal = $(`
-        <div class="modal fade"
-          id="modal_bookmark">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h4 class="modal-title">${t('Share bookmark')}</h4>
-                <button type="button"
-                  class="close"
-                  data-dismiss="modal"
-                  aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
+      this.modal = $.create(`<div class="modal fade"
+        id="modal_bookmark">
+      </div>`)
+      $.html(this.modal, `<div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">${t('Share bookmark')}</h4>
+            <button type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body text-muted">
+            <div class="input-group mb-5">
+              <input type="text" class="form-control" name="bookmark" readonly>
+              <div class="input-group-append">
+                <button class="btn btn-secondary copy" type="button">
+                  <i class="far fa-clone"></i>
                 </button>
+                <a class="btn btn-secondary go" href="#" target="_blank">
+                  <i class="fas fa-link"></i>
+                </a>
               </div>
-              <div class="modal-body text-muted">
-                <div class="input-group mb-5">
-                  <input type="text" class="form-control" name="bookmark" readonly>
-                  <div class="input-group-append">
-                    <button class="btn btn-secondary copy" type="button">
-                      <i class="far fa-clone"></i>
-                    </button>
-                    <a class="btn btn-secondary go" href="#" target="_blank">
-                      <i class="fas fa-link"></i>
-                    </a>
-                  </div>
-                </div>
-                <div class="mb-5 text-center display-4">
-                  ${t('or')}
-                </div>
-                <div class="mb-5 text-center">
-                  <canvas class="rounded mx-auto d-block img-thumbnail"></canvas>
-                </div>
-              </div>
+            </div>
+            <div class="mb-5 text-center display-4">
+              ${t('or')}
+            </div>
+            <div class="mb-5 text-center">
+              <canvas class="rounded mx-auto d-block img-thumbnail"></canvas>
             </div>
           </div>
         </div>
-      `)
-      $('body').append(this.modal)
+      </div>`)
+      $.append($.get('body'), this.modal)
     }
-    this.el.html(`
+    $.html(this.el, `
       <div class="btn-group dropup">
         <button type="button" class="btn btn-secondary share" title="${t('Share')}">
           <i class="fas fa-share-alt"></i>
@@ -178,24 +181,24 @@ class Bookmark extends Component {
     return window.location.origin + window.location.pathname + '#b=' + hash
   }
   openModal (bookmark) {
-    this.modal.find('input').val(this.bookmarkUrl(bookmark))
-    this.modal.find('a.go').attr('href', this.bookmarkUrl(bookmark))
+    $.get('input', this.modal).value = this.bookmarkUrl(bookmark)
+    $.get('a.go', this.modal).href = this.bookmarkUrl(bookmark)
     const qr = new QRious({
-      element: this.modal.find('canvas')[0],
+      element: $.get('canvas', this.modal),
       size: 200
     })
     qr.value = this.bookmarkUrl(bookmark)
-    this.modal.modal()
+    // FIXME
+    // this.modal.modal()
   }
   destroy () {
-    this.modal.modal('dispose')
-    this.modal.remove()
+    // FIXME
+    // this.modal.modal('dispose')
+    // this.modal.remove()
     this.modal = null
     super.destroy()
   }
 }
-
-let xhr = null
 
 function formatState (type = 'down', data = {}, hash = null) {
   let state = {}
@@ -241,94 +244,54 @@ function formatState (type = 'down', data = {}, hash = null) {
 
 function setBookmarkState (data) {
   return new Promise((resolve, reject) => {
-    if (xhr && typeof xhr.abort === 'function') {
-      xhr.abort()
-    }
+    // abort ongoing
+    xhr.abort()
     const hash = uid()
 
-    xhr = $.ajax({
-      type: 'POST',
-      crossDomain: true,
-      url: apiUrls.jsonstore + '/' + hash,
-      data: JSON.stringify({
-        state: JSON.stringify(JSONP.pack(formatState('up', data)))
-      }),
-      dataType: 'json',
-      contentType: 'application/json; charset=utf-8'
+    xhr.post(apiUrls.jsonstore + '/' + hash, {
+      body: JSON.stringify({
+        state: JSONP.pack(formatState('up', data))
+      })
     })
-      .done(data => {
-        if (data && data.ok) {
+      .then(response => {
+        if (response && response.ok) {
           resolve(hash)
         } else {
           reject(new Error('Unable to save bookmark'))
         }
       })
-      .fail(request => {
-        if (request.statusText === 'abort') {
-          resolve(null)
-        } else {
-          reject(new Error('Unable to save bookmark'))
-        }
-      })
+      .catch(err => reject(err))
   })
 }
 
 export function getBookmarkState (hash) {
   return new Promise((resolve, reject) => {
-    if (xhr && typeof xhr.abort === 'function') {
-      xhr.abort()
-    }
-    xhr = $.ajax({
-      type: 'GET',
-      crossDomain: true,
-      url: apiUrls.jsonstore + '/' + hash,
-      dataType: 'json',
-      contentType: 'application/json; charset=utf-8'
-    })
-      .done(data => {
-        if (data && data.ok && data.result && data.result.state) {
-          const state = formatState('down', JSONP.unpack(data.result.state), hash)
+    xhr.abort()
+    xhr.get(apiUrls.jsonstore + '/' + hash)
+      .then(response => {
+        if (response && response.ok && response.result && response.result.state) {
+          const state = formatState('down', JSONP.unpack(response.result.state), hash)
           resolve(state)
         } else {
           reject(new Error('Unable to load bookmark'))
         }
       })
-      .fail(request => {
-        if (request.statusText === 'abort') {
-          resolve(null)
-        } else {
-          reject(new Error('Unable to load bookmark'))
-        }
-      })
+      .catch(err => reject(err))
   })
 }
 
 function deleteBookmarkState (hash) {
   return new Promise((resolve, reject) => {
-    if (xhr && typeof xhr.abort === 'function') {
-      xhr.abort()
-    }
-    xhr = $.ajax({
-      type: 'DELETE',
-      crossDomain: true,
-      url: apiUrls.jsonstore + '/' + hash,
-      dataType: 'json',
-      contentType: 'application/json; charset=utf-8'
-    })
-      .done(data => {
-        if (data && data.ok) {
+    xhr.abort()
+    xhr.delete(apiUrls.jsonstore + '/' + hash)
+      .then(response => {
+        if (response && response.ok) {
           resolve()
         } else {
           reject(new Error('Unable to delete bookmark'))
         }
       })
-      .fail(request => {
-        if (request.statusText === 'abort') {
-          resolve(null)
-        } else {
-          reject(new Error('Unable to delete bookmark'))
-        }
-      })
+      .catch(err => reject(err))
   })
 }
 

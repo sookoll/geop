@@ -12,7 +12,7 @@ import { modulo } from 'ol/math'
 import { padNumber } from 'ol/string'
 import mgrs from 'mgrs'
 import { transform } from 'ol/proj'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 import './MousePosition.styl'
 
 const coordFormats = [
@@ -56,10 +56,8 @@ const coordFormats = [
 class MousePosition extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`
-      <span class="mouse-position"></span>
-    `)
-    this.animationEl = $(`
+    this.el = $.create(`<span class="mouse-position"></span>`)
+    this.animationEl = $.create(`
       <svg width="20" height="20"></svg>`)
 
     this.state = {
@@ -68,7 +66,7 @@ class MousePosition extends Component {
       lock: false,
       lastCoord: null,
       overlay: new Overlay({
-        element: this.animationEl[0],
+        element: this.animationEl,
         positioning: 'center-center'
       })
     }
@@ -101,7 +99,7 @@ class MousePosition extends Component {
     })
   }
   render () {
-    this.el.html(`
+    $.html(this.el, `
       <div class="btn-group dropup float-left">
         <button type="button" class="btn btn-secondary lock">
           <i class="fa fa-${this.state.lock ? 'lock' : 'lock-open'}"></i>
@@ -124,29 +122,34 @@ class MousePosition extends Component {
         <i class="far fa-clone"></i>
       </button>
     `)
-    this.el.on('click', '.lock', e => {
+    $.on('click', $.get('.lock', this.el), e => {
       this.state.lock = !this.state.lock
       this.activate(getState('map'))
-      $(e.currentTarget).find('i').toggleClass('fa-lock fa-lock-open')
+      $.get('i', e.currentTarget).classList.toggle('fa-lock')
+      $.get('i', e.currentTarget).classList.toggle('fa-lock-open')
     })
-    this.el.on('click', '.copy', e => {
-      const coords = this.el.find('.coords').html()
+    $.on('click', $.get('.copy', this.el), e => {
+      const coords = $.get('.coords', this.el).innerHTML
       this.copy(coords)
     })
-    this.el.on('click', 'a[data-format]', e => {
-      this.state.format = $(e.currentTarget).data('format')
-      setState('map/coordinateFormat', this.state.format, true)
-      this.state.control.setProjection(coordFormats[this.state.format].projection)
-      this.state.control.setCoordinateFormat(coordFormats[this.state.format].coordinateFormat)
-      this.el.find('a[data-format] i').removeClass('fa-dot-circle').addClass('fa-circle')
-      $(e.currentTarget).find('i').removeClass('fa-circle').addClass('fa-dot-circle')
+    $.get('a[data-format]', this.el, true).forEach(el => {
+      $.on('click', el, e => {
+        this.state.format = e.currentTarget.dataList.format
+        setState('map/coordinateFormat', this.state.format, true)
+        this.state.control.setProjection(coordFormats[this.state.format].projection)
+        this.state.control.setCoordinateFormat(coordFormats[this.state.format].coordinateFormat)
+        $.get('a[data-format] i', this.el).classList.remove('fa-dot-circle')
+        $.get('a[data-format] i', this.el).classList.add('fa-circle')
+        $.get('i', e.currentTarget).classList.remove('fa-circle')
+        $.get('i', e.currentTarget).classList.add('fa-dot-circle')
+      })
     })
     if (!this.state.control) {
       this.state.control = new MousePositionControl({
         coordinateFormat: coordFormats[this.state.format].coordinateFormat,
         projection: coordFormats[this.state.format].projection,
         className: 'float-left coords',
-        target: this.el[0],
+        target: this.el,
         undefinedHTML: ''
       })
       const map = getState('map')
@@ -166,16 +169,18 @@ class MousePosition extends Component {
     map.on('singleclick', this.handlers.animate)
     if (this.state.lock) {
       map.removeControl(this.state.control)
-      this.el.append('<div class="float-left coords"></div>')
+      $.append(this.el, '<div class="float-left coords"></div>')
       map.on('click', this.handlers.onclick)
     } else {
-      this.el.find('.coords').remove()
+      if ($.get('.coords', this.el)) {
+        $.get('.coords', this.el).remove()
+      }
       map.un('click', this.handlers.onclick)
       map.addControl(this.state.control)
     }
   }
   clicked (e) {
-    this.el.find('.coords').html(formatCoordinate(e.coordinate))
+    $.html($.get('.coords', this.el), formatCoordinate(e.coordinate))
   }
   copy (content) {
     copy(content)
@@ -189,10 +194,10 @@ class MousePosition extends Component {
   animate (e) {
     const coord = e.coordinate
     this.state.overlay.setPosition(coord)
-    this.animationEl.html(`<circle id="map-click-animation" cx="10" cy="10" r="0" fill="#000" opacity="0.5"/>`)
+    $.html(this.animationEl, `<circle id="map-click-animation" cx="10" cy="10" r="0" fill="#000" opacity="0.5"/>`)
     setTimeout(() => {
       this.state.overlay.setPosition(undefined)
-      this.animationEl.html('')
+      $.html(this.animationEl, '')
     }, 500)
   }
 }

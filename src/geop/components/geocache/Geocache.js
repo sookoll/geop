@@ -17,7 +17,7 @@ import geopeitusJSON from './GeopeitusJSON'
 import projectGCJSON from './ProjectGCJSON'
 import geocacheGPX from './GeocacheGPX'
 import './Geocache.styl'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 
 const cacheFormatParsers = [
   geopeitusJSON,
@@ -42,16 +42,7 @@ const state = {
 class Geocache extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`
-      <div id="geocache" class="btn-group">
-        <button
-          class="btn btn-secondary"
-          title="${t('Caches')}">
-          <i class="fa fa-cube"></i>
-          <span>${t('Caches')}</span>
-        </button>
-      </div>
-    `)
+    this.el = $.create(`<div id="geocache" class="btn-group"></div>`)
     // radiusStyle geometry function
     state.styleConfig.radiusStyle.geometry = feature => {
       const coordinates = feature.getGeometry().getCoordinates()
@@ -61,8 +52,8 @@ class Geocache extends Component {
     }
     this.create()
     this.sidebar = new Sidebar({
-      target: $('#geop'),
-      trigger: this.el.find('button'),
+      target: $.get('#geop'),
+      trigger: $.get('button', this.el),
       position: 'left',
       components: {
         GeocacheLoader,
@@ -75,8 +66,8 @@ class Geocache extends Component {
     })
     const listenLayer = e => {
       let featureCount = getCacheCount()
-      this.el.find('button > span').html(featureCount || t('Caches'))
-      this.sidebar.getComponent('Filter').get('tab').find('span').html(featureCount || t('Filter'))
+      $.html($.get('button > span', this.el), featureCount || t('Caches'))
+      $.html($.get('span', this.sidebar.getComponent('Filter').get('tab')), featureCount || t('Filter'))
     }
     const layers = getState('map/layer/layers')
     // initial cache layer
@@ -119,6 +110,14 @@ class Geocache extends Component {
       setState('layerchange', ['layers', state.layer.get('id')])
     })
     listenLayer()
+  }
+  render () {
+    this.el.innerHTML = `<button
+      class="btn btn-secondary"
+      title="${t('Caches')}">
+      <i class="fa fa-cube"></i>
+      <span>${t('Caches')}</span>
+    </button>`
   }
   createLayer (layer = null) {
     if (!layer) {
@@ -183,17 +182,17 @@ class Geocache extends Component {
       },
       onShow: (f, pop) => {
         const fstatus = f[1].get('fstatus')
-        // FIXME: Workaround for removed style attribute in popup
-        $(pop).find('h3 i.fstatus').css('color', state.styleConfig.color[fstatus].fill.color)
+        // Workaround for removed style attribute in popup
+        $.css($.get('h3 i.fstatus', pop), { color: state.styleConfig.color[fstatus].fill.color })
         const geotrip = getState('geocache/trip')
-        $(pop).on('click', '.toggle-found', e => {
+        $.on('click', $.get('.toggle-found', pop), e => {
           const inTrip = geotrip && geotrip.getArray().indexOf(f[1]) > -1
           const found = fstatus === 'Found'
-          $(e.currentTarget).find('i').removeClass(state.stat[f[1].get('fstatus')])
+          $.get('i', e.currentTarget).classList.remove(state.stat[f[1].get('fstatus')])
           f[1].set('fstatus', found ? 'Not Found' : 'Found')
           f[1].set('fstatus_timestamp', !found ? Date.now() : null)
-          $(e.currentTarget).find('span').html(t(f[1].get('fstatus')))
-          $(e.currentTarget).find('i').addClass(state.stat[f[1].get('fstatus')])
+          $.html($.get('span', e.currentTarget), t(f[1].get('fstatus')))
+          $.get('i', e.currentTarget).classList.add(state.stat[f[1].get('fstatus')])
           if (!inTrip && !found) {
             geotrip.push(f[1])
           }
@@ -202,6 +201,7 @@ class Geocache extends Component {
             geotrip.remove(f[1])
             geotrip.insertAt(idx, f[1])
           }
+          // FIXME
           $(pop).popover('dispose')
         })
       }

@@ -15,7 +15,6 @@ import { get as getProjection, fromLonLat, toLonLat } from 'ol/proj'
 import { getDistance } from 'ol/sphere'
 import { register } from 'ol/proj/proj4'
 import proj4 from 'proj4'
-import $ from 'jquery'
 import 'ol/ol.css'
 import './MapEngine.styl'
 
@@ -30,7 +29,7 @@ getProjection('EPSG:3067').setExtent([-2097152.0, 1601644.86, 848181.26, 9437184
 class MapEngine extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`<div id="${getState('map/el').slice(1)}"></div>`)
+    this.el = this.$.create(`<div id="${getState('map/el').slice(1)}"></div>`)
     this.create()
     this.map = null
     this.layers = {

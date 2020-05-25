@@ -1,8 +1,9 @@
 import { geocache as cacheConf } from 'Conf/settings'
 import { t } from 'Utilities/translate'
 import { getState, setState, onchange } from 'Utilities/store'
+import { serializeArray } from 'Utilities/util'
 import Component from 'Geop/Component'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 import './Filter.styl'
 
 class Filter extends Component {
@@ -11,13 +12,11 @@ class Filter extends Component {
     this.id = 'tab-filter'
     this.icon = 'fa fa-filter'
     this.btnTextVisible = true
-    this.el = $(`
-      <div
-        class="tab-pane fade"
-        id="${this.id}"
-        role="tabpanel">
-      </div>
-    `)
+    this.el = $.create(`<div
+      class="tab-pane fade"
+      id="${this.id}"
+      role="tabpanel">
+    </div>`)
     this.state = {
       tab: null,
       conf: this.createConf(),
@@ -33,7 +32,7 @@ class Filter extends Component {
   render () {
     this.state.filter = this.buildPropertyList(this.state.layer)
     const storedFilter = getState('geocache/filter')
-    this.el.html(`
+    $.html(this.el, `
       <ul class="list-group mb-3">
       ${Object.keys(this.state.filter).length
     ? this.renderFilter(this.state.filter, storedFilter ? storedFilter['query'] : {})
@@ -43,30 +42,34 @@ class Filter extends Component {
         </li>`}
       </ul>
     `)
-    this.el.find('input[data-filter]').on('change', e => {
-      e.stopPropagation()
-      this.filter()
-    })
-    this.el.find('input[name=radiusStyle]').on('change', e => {
-      e.stopPropagation()
-      const visible = $(e.target).is(':checked')
-      this.state.layer.getSource().forEachFeature(f => {
-        if (f.get('isCache')) {
-          f.set('radiusVisible', visible)
-        }
+    $.get('input[data-filter]', this.el, true).forEach(el => {
+      $.on('change', el, e => {
+        e.stopPropagation()
+        this.filter()
       })
-      this.filter()
     })
-    this.el.find('input[name=hidePoints]').on('change', e => {
-      e.stopPropagation()
-      const hide = $(e.target).is(':checked')
-      this.state.layer.getSource().forEachFeature(f => {
-        if (!f.get('isCache')) {
-          f.set('hidden', hide)
-        }
+    if ($.get('input[name=radiusStyle]', this.el)) {
+      $.on('change', $.get('input[name=radiusStyle]', this.el), e => {
+        e.stopPropagation()
+        this.state.layer.getSource().forEachFeature(f => {
+          if (f.get('isCache')) {
+            f.set('radiusVisible', e.target.checked)
+          }
+        })
+        this.filter()
       })
-      this.filter()
-    })
+    }
+    if ($.get('input[name=hidePoints]', this.el)) {
+      $.on('change', $.get('input[name=hidePoints]', this.el), e => {
+        e.stopPropagation()
+        this.state.layer.getSource().forEachFeature(f => {
+          if (!f.get('isCache')) {
+            f.set('hidden', e.target.checked)
+          }
+        })
+        this.filter()
+      })
+    }
     if (Object.keys(this.state.filter).length && storedFilter && storedFilter['count']) {
       this.filter()
     }
@@ -150,7 +153,7 @@ class Filter extends Component {
     setState('geocache/filter', this.getChecked('input'), true)
   }
   getChecked (selector) {
-    const checked = this.el.find(selector).serializeArray()
+    const checked = serializeArray($.get(selector, this.el, true))
     const params = {
       query: {},
       count: 0

@@ -5,13 +5,13 @@ import { getState } from 'Utilities/store'
 import log from 'Utilities/log'
 import Component from 'Geop/Component'
 import { createLayer } from './LayerCreator'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 
 class LayerFromService extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`<li />`)
-    this.modal = $('#modal_wmslayer')
+    this.el = $.create(`<li />`)
+    this.modal = $.get('#modal_wmslayer')
     this.isRow = true
     this.layer_conf = {
       TileWMS: {
@@ -50,84 +50,86 @@ class LayerFromService extends Component {
           ${title}
         </a>`
       })
-      this.modal = $(`
-        <div class="modal fade"
-          id="modal_wmslayer"
-          tabindex="-1"
-          role="dialog"
-          aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h4 class="modal-title">${t('Add WMS layer')}</h4>
-                <button type="button"
-                  class="close"
-                  data-dismiss="modal"
-                  aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
+      this.modal = $.create(`<div class="modal fade"
+        id="modal_wmslayer"
+        tabindex="-1"
+        role="dialog"
+        aria-hidden="true">
+      </div>`)
+      $.html(this.modal, `<div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">${t('Add WMS layer')}</h4>
+            <button type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="text-muted">
+              ${t('Insert WMS/WMTS URL')}
+            </div>
+            <textarea class="form-control" rows="3"></textarea>
+            <input name="id" type="hidden" />
+            <div class="form-inline py-2">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="group" id="group1" value="base">
+                <label class="form-check-label" for="group1">${t('Add as base map')}</label>
               </div>
-              <div class="modal-body">
-                <div class="text-muted">
-                  ${t('Insert WMS/WMTS URL')}
-                </div>
-                <textarea class="form-control" rows="3"></textarea>
-                <input name="id" type="hidden" />
-                <div class="form-inline py-2">
-                  <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="group" id="group1" value="base">
-                    <label class="form-check-label" for="group1">${t('Add as base map')}</label>
-                  </div>
-                  <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="group" id="group2" value="layers" checked>
-                    <label class="form-check-label" for="group2">${t('Add as overlay')}</label>
-                  </div>
-                </div>
-                <div class="small examples">
-                  ${examples.length ? '<b>Näited:</b><br>' : ''}
-                  ${examples.join('<br/>')}
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary confirm">${t('Add')}</button>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="group" id="group2" value="layers" checked>
+                <label class="form-check-label" for="group2">${t('Add as overlay')}</label>
               </div>
             </div>
+            <div class="small examples">
+              ${examples.length ? '<b>Näited:</b><br>' : ''}
+              ${examples.join('<br/>')}
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary confirm">${t('Add')}</button>
           </div>
         </div>
-      `)
-      this.modal.on('click', 'button.confirm', e => {
+      </div>`)
+      $.on('click', $.get('button.confirm', this.modal), e => {
         e.preventDefault()
-        if (this.modal.find('textarea').val().length < 10) {
+        if ($.get('textarea', this.modal).value.length < 10) {
           return
         }
-        const groupId = this.modal.find('input[name=group]:checked').val()
+        const groupId = $.get('input[name=group]:checked', this.modal).value
         const group = getState('map/layer/' + groupId)
         let idx = group.getLength()
         // edit
-        if (this.modal.find('input[name=id]').val().length) {
+        const idField = $.get('input[name=id]', this.modal)
+        const textarea = $.get('textarea', this.modal)
+        if (idField.value.length) {
           // get old index
           const oldLayer = group.getArray()
-            .filter(layer => layer.get('id') === this.modal.find('input[name=id]').val())
+            .filter(layer => layer.get('id') === idField.value)
           if (oldLayer.length) {
             idx = group.getArray().indexOf(oldLayer[0])
             // remove old layer
             group.remove(oldLayer[0])
           }
         }
-        const layer = this.createLayer(this.modal.find('textarea').val().trim(), (groupId === 'base'))
+        const layer = this.createLayer(textarea.value.trim(), (groupId === 'base'))
         if (layer) {
           group.insertAt(idx, layer)
-          this.modal.find('textarea, input[name=id]').val('')
+          textarea.value = ''
+          idField.value = ''
+          // FIXME
           this.modal.modal('hide')
         }
       })
-      this.modal.on('click', '.examples a', e => {
+      $.on('click', $.get('.examples a', this.modal), e => {
         e.preventDefault()
-        this.modal.find('textarea').val(decodeURIComponent(e.target.href))
+        $.get('textarea', this.modal).value = decodeURIComponent(e.target.href)
       })
-      $('body').append(this.modal)
+      $.append($.get('body'), this.modal)
     }
-    this.el.html(`
+    $.html(this.el, `
       <a href="#"
         id="add-wms-layer"
         class="dropdown-item"
@@ -209,6 +211,7 @@ class LayerFromService extends Component {
     return null
   }
   destroy () {
+    // FIXME
     this.modal.modal('dispose')
     this.modal.remove()
     this.modal = null

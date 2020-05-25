@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import FileLayer, { getFileLayerStyleConf } from './FileLayer'
 import { createStyle } from './StyleBuilder'
 import { getState, setState } from 'Utilities/store'
@@ -15,12 +14,13 @@ import OSMEdit from 'Components/osmedit/OSMEdit'
 import LayerFromService from './LayerFromService'
 import UrlLayer from './UrlLayer'
 import Sortable from 'sortablejs'
+import $ from 'Utilities/dom'
 import './LayerManager.styl'
 
 class LayerManager extends Component {
   constructor (target) {
     super(target)
-    this.el = $(`<div class="btn-group float-right" id="layermanager"></div>`)
+    this.el = $.create(`<div class="btn-group float-right" id="layermanager"></div>`)
     this.state = {
       activeBaseLayer: null,
       base: getState('map/layer/base'),
@@ -59,7 +59,7 @@ class LayerManager extends Component {
       wms: LayerFromService,
       file: FileLayer
     }
-    this.renderComponents(this.el.find('.dropdown-menu'))
+    this.renderComponents($.get('.dropdown-menu', this.el))
     // register layer from url
     this.urlLayer = new UrlLayer()
     // listen permalink change
@@ -72,17 +72,11 @@ class LayerManager extends Component {
       }
     })
   }
-
   create () {
     super.create()
-    // events
-    if (this.target && this.el) {
-
-    }
   }
-
   render () {
-    this.el.html(`
+    $.html(this.el, `
       <button type="button"
         class="btn btn-secondary toggle-btn dropdown-toggle no-caret"
         data-toggle="dropdown"
@@ -127,74 +121,98 @@ class LayerManager extends Component {
         ${this.renderLayerGroup('overlays', this.state.overlays)}
         ${this.renderLayerGroup('layers', this.state.layers, true)}
       </ul>`)
-    const ul = this.el.find('.dropdown-menu')
+    const ul = $.get('.dropdown-menu', this.el)
     this.renderComponents(ul)
     if (this.state.open) {
+      // FIXME
       this.el.find('button.toggle-btn').dropdown('toggle')
       this.state.open = false
     }
-    ul.on('click', '.baselayer label', e => {
-      e.preventDefault()
-      e.stopPropagation()
-      const id = $(e.currentTarget).closest('li').data('id')
-      if (this.state.activeBaseLayer && id === this.state.activeBaseLayer.get('id')) {
-        this.toggleLayer('base', id)
-      } else {
-        if (this.changeBaseLayer(id)) {
-          setPermalink({
-            view: viewConfToPermalink({
-              center: getState('map/center'),
-              zoom: getState('map/zoom'),
-              rotation: getState('map/rotation'),
-              baseLayer: id
+    $.get('.baselayer label', ul, true).forEach(el => {
+      $.on('click', el, e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const id = e.currentTarget.closest('li').dataList.id
+        if (this.state.activeBaseLayer && id === this.state.activeBaseLayer.get('id')) {
+          this.toggleLayer('base', id)
+        } else {
+          if (this.changeBaseLayer(id)) {
+            setPermalink({
+              view: viewConfToPermalink({
+                center: getState('map/center'),
+                zoom: getState('map/zoom'),
+                rotation: getState('map/rotation'),
+                baseLayer: id
+              })
             })
-          })
+          }
         }
-      }
+      })
     })
-    ul.on('click', '.layer label', e => {
-      e.preventDefault()
-      e.stopPropagation()
-      this.toggleLayer($(e.currentTarget).closest('li').data('group'), $(e.currentTarget).closest('li').data('id'))
+    $.get('.layer label', ul, true).forEach(el => {
+      $.on('click', el, e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const data = e.currentTarget.closest('li').dataList
+        this.toggleLayer(data.group, data.id)
+      })
     })
-    ul.on('click', '.tools a', e => {
-      e.preventDefault()
-      e.stopPropagation()
+    $.get('.tools a', ul, true).forEach(el => {
+      $.on('click', el, e => {
+        e.preventDefault()
+        e.stopPropagation()
+      })
     })
-    ul.on('click', 'a.fit-layer', e => {
-      e.preventDefault()
-      e.stopPropagation()
-      this.fitTo($(e.currentTarget).closest('li').data('group'), $(e.currentTarget).closest('li').data('id'))
+    $.get('a.fit-layer', ul, true).forEach(el => {
+      $.on('click', el, e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const data = e.currentTarget.closest('li').dataList
+        this.fitTo(data.group, data.id)
+      })
     })
-    ul.on('click', 'a.remove-layer', e => {
-      e.preventDefault()
-      e.stopPropagation()
-      this.removeLayer($(e.currentTarget).closest('li').data('group'), $(e.currentTarget).closest('li').data('id'))
+    $.get('a.remove-layer', ul, true).forEach(el => {
+      $.on('click', el, e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const data = e.currentTarget.closest('li').dataList
+        this.removeLayer(data.group, data.id)
+      })
     })
-    ul.on('change', 'input[type=color]', e => {
-      this.setLayerColor($(e.currentTarget).closest('li').data('group'), $(e.currentTarget).closest('li').data('id'), e.target.value)
-      $(e.currentTarget).closest('.color').find('.dot').css('background', e.target.value)
+    $.get('input[type=color]', ul, true).forEach(el => {
+      $.on('change', el, e => {
+        const data = e.currentTarget.closest('li').dataList
+        this.setLayerColor(data.group, data.id)
+        $.get('.dot', e.currentTarget.closest('.color')).css({ 'background': e.target.value })
+      })
     })
-    ul.on('click', '.colorpicker', e => {
-      e.preventDefault()
-      e.stopPropagation()
-      $(e.currentTarget).closest('.color').find('input[type=color]').click()
+    $.get('.colorpicker', ul, true).forEach(el => {
+      $.on('click', el, e => {
+        e.preventDefault()
+        e.stopPropagation()
+        $.trigger('click', $.get('input[type=color]', e.currentTarget.closest('.color')))
+      })
     })
-    ul.on('click', 'a.edit-layer', e => {
-      e.preventDefault()
-      e.stopPropagation()
-      const id = $(e.currentTarget).closest('li').data('id')
-      const group = $(e.currentTarget).closest('li').data('group')
-      const url = this.getWMSUrl(group, id)
-      if (url) {
-        $($(e.currentTarget).data('target')).modal()
-        $($(e.currentTarget).data('target')).find('textarea').val(url)
-        $($(e.currentTarget).data('target')).find('input[name=id]').val(id)
-        $($(e.currentTarget).data('target')).find('input[type=radio]').filter(`[value=${group}]`).prop('checked', true)
-      }
+
+    $.get('a.edit-layer', ul, true).forEach(el => {
+      $.on('click', el, e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const data = e.currentTarget.closest('li').dataList
+        const url = this.getWMSUrl(data.group, data.id)
+        const target = $.get(e.currentTarget.dataList.target)
+        if (url) {
+          // FIXME
+          $($(e.currentTarget).data('target')).modal()
+
+          $.get('textarea', target).value = url
+          $.get('input[name=id]', target).value = data.id
+          $.get(`input[type=radio][value=${data.group}]`, target).checked = true
+        }
+      })
     })
     // sortable
-    Sortable.create(ul[0], {
+    Sortable.create(ul, {
       draggable: 'li.sort-item',
       handle: '.sort-handle',
       onUpdate: e => {
@@ -301,8 +319,8 @@ class LayerManager extends Component {
 
   reorderLayers (e) {
     if (e.oldDraggableIndex !== e.newDraggableIndex) {
-      const layerId = $(e.item).data('id')
-      const groupId = $(e.item).data('group')
+      const layerId = e.item.dataList.id
+      const groupId = e.item.dataList.group
       this.state[groupId].forEach(layer => {
         if (layer.get('id') === layerId) {
           // store reordering state
@@ -345,7 +363,8 @@ class LayerManager extends Component {
     Object.keys(this.components).forEach((i) => {
       const plug = new this.components[i](target)
       if (plug && plug.isRow && !dividerAdded) {
-        target.append('<div class="dropdown-divider"></div>')
+        console.log(target)
+        $.append(target, '<div class="dropdown-divider"></div>')
         dividerAdded = true
       }
       plug.create()

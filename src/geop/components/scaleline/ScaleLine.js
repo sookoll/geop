@@ -6,17 +6,16 @@ import './ScaleLine.styl'
 class ScaleLine extends Component {
   constructor (target) {
     super(target)
-    this.el = target
     this.state = {
       control: null
     }
-    this.create()
+    this.render()
   }
   render () {
     if (!this.state.control) {
       this.state.control = new ScaleLineControl({
         className: 'ol-scale-line',
-        target: this.el[0]
+        target: this.target
       })
       const map = getState('map')
       if (map) {

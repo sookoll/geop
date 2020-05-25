@@ -1,14 +1,14 @@
 import Component from 'Geop/Component'
 import { setState, onchange } from 'Utilities/store'
 import { clear } from './Routing'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 import './RoutingInfo.styl'
 
 class Navigation extends Component {
   constructor (target, opts) {
     super(target, opts)
     this.id = 'routinginfo'
-    this.el = $(`<span class="text-center d-none">
+    this.el = $.create(`<span class="text-center d-none">
       <i class="fas fa-location-arrow"></i>
       <span></span>
       <button class="btn btn-link">
@@ -28,12 +28,12 @@ class Navigation extends Component {
       if (!data) {
         this.deactivate()
       } else {
-        this.el.find('span').html(data)
+        $.html($.get('span', this.el), data)
       }
     })
   }
   render () {
-    this.el.on('click', 'button', e => {
+    $.on('click', $.get('button', this.el), e => {
       clear()
       setState('routing/stops', [])
       setState('routing/info', null)
@@ -42,13 +42,13 @@ class Navigation extends Component {
   }
   activate (feature) {
     this.state.prev = this.toggleFn(this.id)
-    this.el.removeClass('d-none')
+    this.el.classList.remove('d-none')
     this.state.active = true
   }
   deactivate () {
     this.toggleFn(this.state.prev)
-    this.el.addClass('d-none')
-    this.el.find('span').html('')
+    this.el.classList.add('d-none')
+    $.html($.get('span', this.el), '')
     this.state.active = false
   }
 }

@@ -3,7 +3,6 @@ import { getState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
 import Component from 'Geop/Component'
 import { toLonLat } from 'ol/proj'
-import $ from 'jquery'
 
 class StreetView extends Component {
   constructor (target) {
@@ -14,7 +13,10 @@ class StreetView extends Component {
       content: `<i class="fa fa-street-view size-1_1"></i> ${t('Street view')}`,
       onClick: (e, coord) => {
         const formatted = toLonLat(coord).slice(0, 2).reverse().join(',')
-        $('<a>').attr('href', apiUrls.google.streetview + formatted).attr('target', '_blank')[0].click()
+        const el = this.$.create('<a />')
+        el.href = apiUrls.google.streetview + formatted
+        el.target = '_blank'
+        el.click()
       }
     })
   }

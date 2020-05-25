@@ -6,24 +6,22 @@ import { uid, hexToRgbA } from 'Utilities/util'
 import { createLayer } from 'Components/layer/LayerCreator'
 import { checkCaches, importCaches } from 'Components/geocache/Geocache'
 import Component from 'Geop/Component'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 
 class GeocacheLoader extends Component {
   constructor (target) {
     super(target)
     this.id = 'tab-loader'
     this.icon = 'fa fa-cloud-download-alt'
-    this.el = $(`
-      <div
-        class="tab-pane fade show active"
-        id="${this.id}"
-        role="tabpanel">
-      </div>
-    `)
+    this.el = $.create(`<div
+      class="tab-pane fade show active"
+      id="${this.id}"
+      role="tabpanel">
+    </div>`)
     this.create()
   }
   render () {
-    this.el.html(`
+    $.html(this.el, `
       <ul class="list-group mb-3">
         <li class="list-group-item">
           <span class="badge badge-pill badge-secondary">1</span>
@@ -59,23 +57,24 @@ class GeocacheLoader extends Component {
         ${t('Add geocaches to map')}
       </button>
     `)
-    this.el.find('textarea').on('input', e => {
-      const val = this.el.find('textarea').val().trim()
-      this.el.find('button.confirm').prop('disabled', val.length === 0)
+    const textarea = $.get('textarea', this.el)
+    $.on('input', textarea, e => {
+      const val = e.target.value.trim()
+      $.get('button.confirm', this.el).disabled = val.length === 0
     })
-    this.el.find('textarea').on('keyup', e => {
+    $.on('keyup', textarea, e => {
       if (e.keyCode === 13) {
-        const txt = this.el.find('textarea')
-        if (txt.val().trim().length > '{"type":"Feature"}'.length) {
-          this.addCaches(txt.val().trim())
-          txt.val('').trigger('input')
+        if (e.target.value.trim().length > '{"type":"Feature"}'.length) {
+          this.addCaches(e.target.value.trim())
+          e.target.value = ''
+          $.trigger('input', e.target)
         }
       }
     })
-    this.el.on('click', 'button.confirm', e => {
-      const txt = this.el.find('textarea')
-      this.addCaches(txt.val().trim())
-      txt.val('').trigger('input')
+    $.on('click', $.get('button.confirm', this.el), e => {
+      this.addCaches(textarea.value.trim())
+      textarea.value = ''
+      $.trigger('input', textarea)
     })
   }
   addCaches (content) {

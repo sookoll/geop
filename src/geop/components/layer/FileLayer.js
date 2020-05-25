@@ -9,7 +9,7 @@ import GPXFormat from 'Utilities/GPXFormat'
 import GeoJSONFormat from 'ol/format/GeoJSON'
 import KMLFormat from 'ol/format/KML'
 import DragAndDrop from 'ol/interaction/DragAndDrop'
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 
 class FileLayer extends Component {
   constructor (target) {
@@ -17,7 +17,7 @@ class FileLayer extends Component {
     if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
       return
     }
-    this.el = $(`<li />`)
+    this.el = $.create(`<li />`)
     this.isRow = true
     this.fileTypes = {
       gpx: new GPXFormat(),
@@ -34,7 +34,7 @@ class FileLayer extends Component {
   }
   render () {
     const debug = getState('app/debug')
-    this.el.html(`
+    $.html(this.el, `
       <a href="#"
         id="add-file-layer"
         class="dropdown-item">
@@ -43,12 +43,12 @@ class FileLayer extends Component {
       </a>
       <input type="file" style="display:none;" />
     `)
-    this.el.on('click', 'a#add-file-layer', e => {
+    $.on('click', $.get('a#add-file-layer', this.el), e => {
       e.preventDefault()
       e.stopPropagation()
-      $(e.target).closest('li').find('input').trigger('click')
+      $.trigger('click', $.get('input', e.target.closest('li')))
     })
-    this.el.on('change', 'input', e => {
+    $.on('change', $.get('input', this.el), e => {
       const files = e.target.files
       if (files && files[0]) {
         const filename = files[0].name
