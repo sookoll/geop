@@ -1,4 +1,4 @@
-import $ from 'jquery'
+import $ from 'Utilities/dom'
 
 export default {
   test: features => {
@@ -13,10 +13,10 @@ export default {
   },
   formatFeatures: opts => {
     opts.features.forEach(feature => {
-      const content = $(feature.get('content'))
+      const content = this.$.create(feature.get('content'))
       const icon = feature.get('icon')
-      const info = $(content[2]).text().split(' / ').map(i => i.trim())
-      const name = $(content[0]).text()
+      const info = content[2].textContent.split(' / ').map(i => i.trim())
+      const name = content[0].textContent
 
       feature.set('isCache', true)
       let type = 'Geocache|' + info[0]

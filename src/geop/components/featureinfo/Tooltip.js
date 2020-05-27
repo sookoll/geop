@@ -2,28 +2,22 @@ import Component from 'Geop/Component'
 import { getState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
 import Overlay from 'ol/Overlay'
-import $ from 'Utilities/dom'
 import './Tooltip.styl'
 
 class Tooltip extends Component {
-  constructor (target) {
-    super(target)
-    this.el = $.create('<div id="tooltip"></div>')
+  create () {
+    this.el = this.$.create('<div id="tooltip"></div>')
     this.state = {
+      overlay: new Overlay({
+        element: this.el,
+        autoPan: false,
+        positioning: 'center-center',
+        offset: [0, -14],
+        stopEvent: false
+      }),
       tooltipVisible: false,
-      overlay: null,
       currentFeature: null
     }
-    this.create()
-  }
-  render () {
-    this.state.overlay = new Overlay({
-      element: this.el[0],
-      autoPan: false,
-      positioning: 'center-center',
-      offset: [0, -14],
-      stopEvent: false
-    })
     const map = getState('map')
     if (map) {
       this.init(map)
@@ -34,6 +28,7 @@ class Tooltip extends Component {
       })
     }
   }
+
   init (map) {
     map.addOverlay(this.state.overlay)
     map.on('pointermove', e => {
@@ -46,6 +41,7 @@ class Tooltip extends Component {
       this.state.tooltipVisible = this.open(hit ? e.originalEvent : false, map)
     })
   }
+
   open (e, map) {
     // if !px then remove tooltip and return false
     if (!e) {

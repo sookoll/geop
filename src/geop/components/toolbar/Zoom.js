@@ -3,17 +3,16 @@ import { t } from 'Utilities/translate'
 import Component from 'Geop/Component'
 
 class Zoom extends Component {
-  constructor (target) {
-    super(target)
+  create () {
     this.elPlus = this.$.create(`
       <button class="btn btn-link" title="${t('Zoom in')}"><i class="fa fa-plus"></i></button>
     `)
     this.elMinus = this.$.create(`
       <button class="btn btn-link" title="${t('Zoom out')}"><i class="fa fa-minus"></i></button>
     `)
-    this.create()
   }
-  create () {
+
+  render () {
     if (this.target && this.elPlus) {
       this.$.append(this.target, this.elPlus)
       this.$.on('click', this.elPlus, e => {
@@ -31,6 +30,7 @@ class Zoom extends Component {
       })
     }
   }
+
   zoomTo (view, zoom) {
     view.animate({
       zoom: zoom,

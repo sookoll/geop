@@ -14,13 +14,11 @@ import OSMEdit from 'Components/osmedit/OSMEdit'
 import LayerFromService from './LayerFromService'
 import UrlLayer from './UrlLayer'
 import Sortable from 'sortablejs'
-import $ from 'Utilities/dom'
 import './LayerManager.styl'
 
 class LayerManager extends Component {
-  constructor (target) {
-    super(target)
-    this.el = $.create(`<div class="btn-group float-right" id="layermanager"></div>`)
+  create () {
+    this.el = this.$.create('<div class="btn-group float-right" id="layermanager"></div>')
     this.state = {
       activeBaseLayer: null,
       base: getState('map/layer/base'),
@@ -52,14 +50,12 @@ class LayerManager extends Component {
     this.state.layers.on('remove', this.handlers.onchange)
     this.state.overlays.on('add', this.handlers.onchange)
     this.state.overlays.on('remove', this.handlers.onchange)
-    this.create()
-    // do not init here
-    this.components = {
+
+    this.componentsConfiguration = {
       osm: OSMEdit,
       wms: LayerFromService,
       file: FileLayer
     }
-    this.renderComponents($.get('.dropdown-menu', this.el))
     // register layer from url
     this.urlLayer = new UrlLayer()
     // listen permalink change
@@ -72,11 +68,9 @@ class LayerManager extends Component {
       }
     })
   }
-  create () {
-    super.create()
-  }
+
   render () {
-    $.html(this.el, `
+    this.$.html(this.el, `
       <button type="button"
         class="btn btn-secondary toggle-btn dropdown-toggle no-caret"
         data-toggle="dropdown"
@@ -121,15 +115,15 @@ class LayerManager extends Component {
         ${this.renderLayerGroup('overlays', this.state.overlays)}
         ${this.renderLayerGroup('layers', this.state.layers, true)}
       </ul>`)
-    const ul = $.get('.dropdown-menu', this.el)
+    const ul = this.$.get('.dropdown-menu', this.el)
     this.renderComponents(ul)
     if (this.state.open) {
       // FIXME
       this.el.find('button.toggle-btn').dropdown('toggle')
       this.state.open = false
     }
-    $.get('.baselayer label', ul, true).forEach(el => {
-      $.on('click', el, e => {
+    this.$.get('.baselayer label', ul, true).forEach(el => {
+      this.$.on('click', el, e => {
         e.preventDefault()
         e.stopPropagation()
         const id = e.currentTarget.closest('li').dataList.id
@@ -149,65 +143,65 @@ class LayerManager extends Component {
         }
       })
     })
-    $.get('.layer label', ul, true).forEach(el => {
-      $.on('click', el, e => {
+    this.$.get('.layer label', ul, true).forEach(el => {
+      this.$.on('click', el, e => {
         e.preventDefault()
         e.stopPropagation()
         const data = e.currentTarget.closest('li').dataList
         this.toggleLayer(data.group, data.id)
       })
     })
-    $.get('.tools a', ul, true).forEach(el => {
-      $.on('click', el, e => {
+    this.$.get('.tools a', ul, true).forEach(el => {
+      this.$.on('click', el, e => {
         e.preventDefault()
         e.stopPropagation()
       })
     })
-    $.get('a.fit-layer', ul, true).forEach(el => {
-      $.on('click', el, e => {
+    this.$.get('a.fit-layer', ul, true).forEach(el => {
+      this.$.on('click', el, e => {
         e.preventDefault()
         e.stopPropagation()
         const data = e.currentTarget.closest('li').dataList
         this.fitTo(data.group, data.id)
       })
     })
-    $.get('a.remove-layer', ul, true).forEach(el => {
-      $.on('click', el, e => {
+    this.$.get('a.remove-layer', ul, true).forEach(el => {
+      this.$.on('click', el, e => {
         e.preventDefault()
         e.stopPropagation()
         const data = e.currentTarget.closest('li').dataList
         this.removeLayer(data.group, data.id)
       })
     })
-    $.get('input[type=color]', ul, true).forEach(el => {
-      $.on('change', el, e => {
+    this.$.get('input[type=color]', ul, true).forEach(el => {
+      this.$.on('change', el, e => {
         const data = e.currentTarget.closest('li').dataList
         this.setLayerColor(data.group, data.id)
-        $.get('.dot', e.currentTarget.closest('.color')).css({ 'background': e.target.value })
+        this.$.get('.dot', e.currentTarget.closest('.color')).css({ background: e.target.value })
       })
     })
-    $.get('.colorpicker', ul, true).forEach(el => {
-      $.on('click', el, e => {
+    this.$.get('.colorpicker', ul, true).forEach(el => {
+      this.$.on('click', el, e => {
         e.preventDefault()
         e.stopPropagation()
-        $.trigger('click', $.get('input[type=color]', e.currentTarget.closest('.color')))
+        this.$.trigger('click', this.$.get('input[type=color]', e.currentTarget.closest('.color')))
       })
     })
 
-    $.get('a.edit-layer', ul, true).forEach(el => {
-      $.on('click', el, e => {
+    this.$.get('a.edit-layer', ul, true).forEach(el => {
+      this.$.on('click', el, e => {
         e.preventDefault()
         e.stopPropagation()
         const data = e.currentTarget.closest('li').dataList
         const url = this.getWMSUrl(data.group, data.id)
-        const target = $.get(e.currentTarget.dataList.target)
+        const target = this.$.get(e.currentTarget.dataList.target)
         if (url) {
           // FIXME
-          $($(e.currentTarget).data('target')).modal()
+          // $($(e.currentTarget).data('target')).modal()
 
-          $.get('textarea', target).value = url
-          $.get('input[name=id]', target).value = data.id
-          $.get(`input[type=radio][value=${data.group}]`, target).checked = true
+          this.$.get('textarea', target).value = url
+          this.$.get('input[name=id]', target).value = data.id
+          this.$.get(`input[type=radio][value=${data.group}]`, target).checked = true
         }
       })
     })
@@ -221,9 +215,29 @@ class LayerManager extends Component {
     })
   }
 
+  createComponents () {
+    const target = this.$.get('.dropdown-menu', this.el)
+    const comps = this.componentsConfiguration
+    Object.keys(comps).forEach((key) => {
+      this.components[key] = new comps[key]({ target })
+    })
+  }
+
+  renderComponents () {
+    let dividerAdded = false
+    const target = this.$.get('.dropdown-menu', this.el)
+    Object.keys(this.components).forEach((i) => {
+      if (this.components[i].isRow && !dividerAdded) {
+        this.$.append(target, '<div class="dropdown-divider"></div>')
+        dividerAdded = true
+      }
+      this.components[i].create()
+    })
+  }
+
   renderLayerGroup (groupId, group, sortable = false) {
     return group.getLength() > 0
-      ? `<li class="dropdown-divider"></li>` +
+      ? '<li class="dropdown-divider"></li>' +
       group.getArray().map(layer => {
         const colorpicker = layer.get('conf').color && !layer.get('_cacheFormatParser')
           ? `<span class="color">
@@ -336,7 +350,7 @@ class LayerManager extends Component {
   }
 
   fitTo (groupId, id) {
-    for (let layer of this.state[groupId].getArray()) {
+    for (const layer of this.state[groupId].getArray()) {
       if (layer && layer.get('id') === id) {
         this.state.open = true
         const bbox = layer.getSource().getExtent
@@ -358,19 +372,6 @@ class LayerManager extends Component {
     }
   }
 
-  renderComponents (target) {
-    let dividerAdded = false
-    Object.keys(this.components).forEach((i) => {
-      const plug = new this.components[i](target)
-      if (plug && plug.isRow && !dividerAdded) {
-        console.log(target)
-        $.append(target, '<div class="dropdown-divider"></div>')
-        dividerAdded = true
-      }
-      plug.create()
-    })
-  }
-
   setLayerColor (groupId, id, color) {
     this.state[groupId].forEach(layer => {
       if (layer && layer.get('id') === id) {
@@ -386,7 +387,7 @@ class LayerManager extends Component {
   }
 
   getWMSUrl (groupId, id) {
-    for (let layer of this.state[groupId].getArray()) {
+    for (const layer of this.state[groupId].getArray()) {
       if (layer && layer.get('id') === id) {
         const conf = layer.get('conf')
         const urlComponents = parseURL(conf.url)

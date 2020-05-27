@@ -9,15 +9,17 @@ import GPXFormat from 'Utilities/GPXFormat'
 import GeoJSONFormat from 'ol/format/GeoJSON'
 import KMLFormat from 'ol/format/KML'
 import DragAndDrop from 'ol/interaction/DragAndDrop'
-import $ from 'Utilities/dom'
 
 class FileLayer extends Component {
-  constructor (target) {
-    super(target)
+  constructor (opts = {}) {
     if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
-      return
+      return false
     }
-    this.el = $.create(`<li />`)
+    super(opts)
+  }
+
+  create () {
+    this.el = this.$.create('<li />')
     this.isRow = true
     this.fileTypes = {
       gpx: new GPXFormat(),
@@ -30,11 +32,11 @@ class FileLayer extends Component {
       layers: getState('map/layer/layers')
     }
     this.addDragNDrop()
-    // create is called from parent
   }
+
   render () {
     const debug = getState('app/debug')
-    $.html(this.el, `
+    this.$.html(this.el, `
       <a href="#"
         id="add-file-layer"
         class="dropdown-item">
@@ -43,12 +45,12 @@ class FileLayer extends Component {
       </a>
       <input type="file" style="display:none;" />
     `)
-    $.on('click', $.get('a#add-file-layer', this.el), e => {
+    this.$.on('click', this.$.get('a#add-file-layer', this.el), e => {
       e.preventDefault()
       e.stopPropagation()
-      $.trigger('click', $.get('input', e.target.closest('li')))
+      this.$.trigger('click', this.$.get('input', e.target.closest('li')))
     })
-    $.on('change', $.get('input', this.el), e => {
+    this.$.on('change', this.$.get('input', this.el), e => {
       const files = e.target.files
       if (files && files[0]) {
         const filename = files[0].name
@@ -60,7 +62,7 @@ class FileLayer extends Component {
           const reader = new window.FileReader()
           reader.onload = (e) => {
             const parser = this.fileTypes[ext]
-            let features = parser.readFeatures(e.target.result)
+            const features = parser.readFeatures(e.target.result)
             this.addLayer(filename, features)
           }
           reader.readAsText(files[0])
@@ -73,6 +75,7 @@ class FileLayer extends Component {
       }
     })
   }
+
   addDragNDrop () {
     // add only once to map
     const map = getState('map')
@@ -107,6 +110,7 @@ class FileLayer extends Component {
       }
     }
   }
+
   createLayer (conf) {
     if (conf.features.length > 0) {
       const color = getRandomColor({
@@ -134,6 +138,7 @@ class FileLayer extends Component {
       }
     }
   }
+
   addLayer (title, features) {
     const debug = getState('app/debug')
     const conf = this.fileTypes.geojson.writeFeaturesObject(features)

@@ -19,8 +19,8 @@ export default {
         const cacheData = {}
         Object.keys(wpt['groundspeak:cache']).forEach(i => {
           if (i !== '_text') {
-            cacheData[i.replace('groundspeak:', '')] = wpt['groundspeak:cache'][i]['_text']
-              ? wpt['groundspeak:cache'][i]['_text'] : wpt['groundspeak:cache'][i]
+            cacheData[i.replace('groundspeak:', '')] = wpt['groundspeak:cache'][i]._text
+              ? wpt['groundspeak:cache'][i]._text : wpt['groundspeak:cache'][i]
           }
         })
         // id
@@ -50,11 +50,11 @@ export default {
         }
         feature.set('status', status)
         // time
-        feature.set('time', wpt.time['_text'])
+        feature.set('time', wpt.time._text)
         // name
         feature.set('name', cacheData.name)
         // url
-        feature.set('url', wpt.url['_text'])
+        feature.set('url', wpt.url._text)
         // owner
         feature.set('owner', cacheData.owner)
         // container
@@ -83,10 +83,10 @@ export default {
           }
           feature.set('logs', cacheData.logs['groundspeak:log'].map(log => {
             return {
-              type: log['groundspeak:type']['_text'],
-              date: log['groundspeak:date']['_text'],
-              finder: log['groundspeak:finder']['_text'],
-              text: log['groundspeak:text']['_text']
+              type: log['groundspeak:type']._text,
+              date: log['groundspeak:date']._text,
+              finder: log['groundspeak:finder']._text,
+              text: log['groundspeak:text']._text
             }
           }))
         }
@@ -99,7 +99,7 @@ export default {
         // name
         feature.set('name', feature.get('type'))
         // url
-        feature.set('url', wpt.url['_text'])
+        feature.set('url', wpt.url._text)
         feature.set('isCachePoint', true)
       }
       if (!feature.getId()) {

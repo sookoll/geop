@@ -10,25 +10,30 @@ class Fetch {
     this.options = Object.assign({}, defaults, options)
     this.abortController = null
   }
+
   get (url, options = {}) {
     options = Object.assign({}, this.options, options)
     return this.fetch(url, options)
   }
+
   post (url, options = {}) {
     options = Object.assign({}, this.options, options)
     options.method = 'POST'
     return this.fetch(url, options)
   }
+
   delete (url, options = {}) {
     options = Object.assign({}, this.options, options)
     options.method = 'DELETE'
     return this.fetch(url, options)
   }
+
   abort () {
     if (this.abortController && typeof this.abortController.abort === 'function') {
       this.abortController.abort()
     }
   }
+
   fetch (url, options = {}) {
     url = this.formatURL(url, options)
     this.abortController = new window.AbortController()
@@ -56,6 +61,7 @@ class Fetch {
         })
     })
   }
+
   formatUrl (url, options = {}) {
     url = new URL(url)
     if ('params' in options) {

@@ -1,11 +1,9 @@
 import Component from 'Geop/Component'
 import { t } from 'Utilities/translate'
-import $ from 'Utilities/dom'
 
 class FullScreen extends Component {
-  constructor (target) {
-    super(target)
-    this.el = $.create(`<button type="button"
+  create () {
+    this.el = this.$.create(`<button type="button"
       title="${t('Toggle fullscreen')}"
       disabled
       class="btn btn-secondary">
@@ -13,21 +11,22 @@ class FullScreen extends Component {
     this.state = {
       active: false
     }
-    this.create()
   }
+
   render () {
     this.el.innerHTML = '<i class="fa fa-expand-arrows-alt"></i>'
     if (this.test()) {
       this.el.disabled = false
-      $.on('click', this.el, e => {
+      this.$.on('click', this.el, e => {
         e.preventDefault()
         this.toggle()
       })
-      $.on('fullscreenchange', document, e => {
+      this.$.on('fullscreenchange', document, e => {
         this.toggleState()
       })
     }
   }
+
   test () {
     if (document.fullscreenEnabled ||
       document.webkitFullscreenEnabled ||
@@ -37,6 +36,7 @@ class FullScreen extends Component {
     }
     return false
   }
+
   toggle () {
     if (!this.state.active) {
       this.on()
@@ -44,6 +44,7 @@ class FullScreen extends Component {
       this.off()
     }
   }
+
   toggleState () {
     if (document.fullscreenElement ||
       document.msFullscreenElement ||
@@ -57,6 +58,7 @@ class FullScreen extends Component {
       this.el.classList.remove('active')
     }
   }
+
   on () {
     if (document.documentElement.requestFullscreen) {
       document.documentElement.requestFullscreen()
@@ -68,6 +70,7 @@ class FullScreen extends Component {
       document.documentElement.webkitRequestFullscreen(window.Element.ALLOW_KEYBOARD_INPUT)
     }
   }
+
   off () {
     if (document.exitFullscreen) {
       document.exitFullscreen()

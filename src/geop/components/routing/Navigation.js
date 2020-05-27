@@ -9,8 +9,7 @@ import Feature from 'ol/Feature'
 import LineString from 'ol/geom/LineString'
 
 class Navigation extends Component {
-  constructor (target) {
-    super(target)
+  create () {
     this.el = null
     this.state = {
       active: false,
@@ -36,6 +35,7 @@ class Navigation extends Component {
       }
     })
   }
+
   update () {
     // calculate distance from current location to feature
     const from = getState('map/geolocation/position')
@@ -48,12 +48,14 @@ class Navigation extends Component {
     `)
     this.state.route.getGeometry().setCoordinates([from, to])
   }
+
   activate (feature) {
     this.state.to = feature
     getLayer().getSource().addFeature(this.state.route)
     this.state.active = true
     this.update()
   }
+
   deactivate () {
     // clear()
     this.state.route.getGeometry().setCoordinates([])

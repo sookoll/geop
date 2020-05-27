@@ -73,7 +73,8 @@ module.exports = {
       Components: path.join(__dirname, 'src', 'geop', 'components'),
       Geop: path.join(__dirname, 'src', 'geop'),
       Conf: path.join(__dirname, 'src', 'config'),
-      Root: path.join(__dirname, 'src')
+      Root: path.join(__dirname, 'src'),
+      Build:  path.join(__dirname, 'src', 'build')
     },
     extensions: ['*', '.js', '.json']
   },

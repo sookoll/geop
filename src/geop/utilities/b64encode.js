@@ -36,14 +36,14 @@ function base64EncArr (aBytes) {
     (nMod3 === 2 ? '' : nMod3 === 1 ? '=' : '==')
 }
 function strToUTF8Arr (sDOMStr) {
-  let aBytes; let nChr; let nStrLen = sDOMStr.length
+  let nChr; const nStrLen = sDOMStr.length
   let nArrLen = 0
   /* mapping... */
   for (let nMapIdx = 0; nMapIdx < nStrLen; nMapIdx++) {
     nChr = sDOMStr.charCodeAt(nMapIdx)
     nArrLen += nChr < 0x80 ? 1 : nChr < 0x800 ? 2 : nChr < 0x10000 ? 3 : nChr < 0x200000 ? 4 : nChr < 0x4000000 ? 5 : 6
   }
-  aBytes = new Uint8Array(nArrLen)
+  const aBytes = new Uint8Array(nArrLen)
   /* transcription... */
   for (let nIdx = 0, nChrIdx = 0; nIdx < nArrLen; nChrIdx++) {
     nChr = sDOMStr.charCodeAt(nChrIdx)

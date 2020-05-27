@@ -16,7 +16,7 @@ import Navigation from 'Components/routing/Navigation'
 import './Geop.styl'
 
 class Geop extends Component {
-  render () {
+  create () {
     // debug
     const debug = getState('app/debug')
     if (debug) {
@@ -28,19 +28,22 @@ class Geop extends Component {
     if (debug) {
       console.debug('Locale: ' + getState('app/locale'))
     }
+  }
 
+  createComponents () {
+    const target = this.target
     // components
     this.components = {
-      map: new MapEngine(this.target),
-      contextmenu: new ContextMenu(this.target),
-      header: new Header(this.target),
-      statusbar: new StatusBar(this.target),
-      toolbar: new ToolBar(this.target),
-      streetview: getState('app/streetView') && new StreetView(this.target),
-      tooltip: getState('app/tooltip') && new Tooltip(this.target),
-      popup: getState('app/featureInfo') && new Popup(this.target),
-      routing: getState('app/routing') && new Routing(this.target),
-      navigation: getState('app/routing') && new Navigation(this.target)
+      map: new MapEngine({ target }),
+      contextmenu: new ContextMenu({ target }),
+      header: new Header({ target }),
+      statusbar: new StatusBar({ target }),
+      toolbar: new ToolBar({ target }),
+      streetview: getState('app/streetView') && new StreetView({ target }),
+      tooltip: getState('app/tooltip') && new Tooltip({ target }),
+      popup: getState('app/featureInfo') && new Popup({ target }),
+      routing: getState('app/routing') && new Routing({ target }),
+      navigation: getState('app/routing') && new Navigation({ target })
     }
     this.components.map.init()
   }

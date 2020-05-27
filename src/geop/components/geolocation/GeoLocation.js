@@ -11,15 +11,13 @@ import LineString from 'ol/geom/LineString'
 import Feature from 'ol/Feature'
 import Geolocation from 'ol/Geolocation'
 import { toLonLat } from 'ol/proj'
-import $ from 'Utilities/dom'
 import './GeoLocation.styl'
 
 const longPress = 800
 
 class GeoLocation extends Component {
-  constructor (target) {
-    super(target)
-    this.el = $.create(`
+  create () {
+    this.el = this.$.create(`
       <button id="geolocation" class="btn btn-link" disabled title="${t('My location')}">
       </button>
     `)
@@ -89,28 +87,30 @@ class GeoLocation extends Component {
     }
     if (this.test()) {
       window.geopLocator = this.state.locator
-      this.create()
       this.init()
     }
   }
+
   render () {
     this.el.innerHTML = '<i class="fa fa-location-arrow"></i>'
     this.el.disabled = false
-    $.on('click', this.el, e => {
+    this.$.on('click', this.el, e => {
       e.preventDefault()
     })
-    $.on('contextmenu', this.el, e => {
+    this.$.on('contextmenu', this.el, e => {
       e.preventDefault()
     })
-    $.on('mousedown', this.el, e => this.eventHandlers.down(e))
-    $.on('touchstart', this.el, e => this.eventHandlers.down(e))
-    $.on('mouseup', this.el, e => this.eventHandlers.up(e))
-    $.on('touchend', this.el, e => this.eventHandlers.up(e))
-    $.on('mouseleave', this.el, e => this.eventHandlers.leave(e))
+    this.$.on('mousedown', this.el, e => this.eventHandlers.down(e))
+    this.$.on('touchstart', this.el, e => this.eventHandlers.down(e))
+    this.$.on('mouseup', this.el, e => this.eventHandlers.up(e))
+    this.$.on('touchend', this.el, e => this.eventHandlers.up(e))
+    this.$.on('mouseleave', this.el, e => this.eventHandlers.leave(e))
   }
+
   test () {
     return !!navigator.geolocation
   }
+
   init () {
     this.state.layer.getSource().addFeatures([
       this.state.track,
@@ -132,6 +132,7 @@ class GeoLocation extends Component {
       this.error(e)
     })
   }
+
   error (e) {
     this.disable()
     this.el.classList.remove(...this.state.status)
@@ -155,6 +156,7 @@ class GeoLocation extends Component {
       console.error('geolocation error', JSON.stringify(e))
     }
   }
+
   enable () {
     const map = getState('map')
     if (this.state.status[this.state.active] === 'tracking') {
@@ -171,6 +173,7 @@ class GeoLocation extends Component {
     }
     setState('map/geolocation', true)
   }
+
   disable () {
     this.disableTracking()
     this.searchEnd()
@@ -183,6 +186,7 @@ class GeoLocation extends Component {
     this.state.active = this.state.status.indexOf('')
     setState('map/geolocation', false)
   }
+
   disableTracking () {
     const map = getState('map')
     map.un('pointerdrag', this.handlers.disableTracking)
@@ -190,20 +194,23 @@ class GeoLocation extends Component {
     this.el.classList.remove(this.state.status[this.state.active])
     this.state.active = this.state.status.indexOf('active')
   }
+
   searchStart () {
-    const i = $.get('i', this.el)
+    const i = this.$.get('i', this.el)
     i.classList.remove('fa-location-arrow')
     i.classList.add('fa-spinner', 'fa-pulse')
   }
 
   searchEnd () {
-    const i = $.get('i', this.el)
+    const i = this.$.get('i', this.el)
     i.classList.remove('fa-spinner', 'fa-pulse')
     i.classList.add('fa-location-arrow')
   }
+
   isValid (accuracy) {
     return accuracy <= this.state.minAccuracy
   }
+
   positionChanged (e) {
     const coordinate = this.state.locator.getPosition()
     if (coordinate) {
@@ -224,6 +231,7 @@ class GeoLocation extends Component {
     }
     this.updateView()
   }
+
   headingChanged (e) {
     const heading = this.state.locator.getHeading()
     if (typeof heading !== 'undefined') {
@@ -232,6 +240,7 @@ class GeoLocation extends Component {
     }
     this.updateView()
   }
+
   accuracyChanged (e) {
     const radius = this.state.locator.getAccuracy()
     if (typeof radius !== 'undefined') {
@@ -239,6 +248,7 @@ class GeoLocation extends Component {
     }
     this.updateView()
   }
+
   speedChanged (e) {
     const speed = this.state.locator.getSpeed() || 0
     this.state.position.set('speed', speed)
@@ -256,6 +266,7 @@ class GeoLocation extends Component {
       position[1] + Math.cos(rotation) * size[1] * resolution * 1 / 4
     ]
   }
+
   updateView () {
     if (getState('app/debug')) {
       console.debug(`updateView: ${JSON.stringify(this.state.lastPosition)}; heading: ${this.state.lastHeading}; accuracy: ${this.state.locator.getAccuracy()}`)
@@ -272,6 +283,7 @@ class GeoLocation extends Component {
       }
     }
   }
+
   createLayer () {
     const positionStyle = createStyle({
       icon: {

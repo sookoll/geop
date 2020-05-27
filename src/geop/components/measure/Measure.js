@@ -12,14 +12,17 @@ import Collection from 'ol/Collection'
 import { toLonLat, fromLonLat } from 'ol/proj'
 import { never, always, doubleClick } from 'ol/events/condition'
 import { getLength } from 'ol/sphere'
-import $ from 'Utilities/dom'
 import './Measure.styl'
 
 class Measure extends Component {
-  constructor (target, opts) {
-    super(target)
+  constructor (opts) {
+    super(opts)
+    this.toggleFn = opts.toggle
+  }
+
+  create () {
     this.id = 'measure'
-    this.el = $.create(`<span class="text-center d-none"></span>`)
+    this.el = this.$.create('<span class="text-center d-none"></span>')
     this.state = {
       map: null,
       measureType: null,
@@ -37,8 +40,6 @@ class Measure extends Component {
       measureLine: new LineString([]),
       prev: null
     }
-    this.toggleFn = opts.toggle
-    this.create()
     this.interaction = {
       snap: null,
       modify: new Modify({
@@ -80,17 +81,17 @@ class Measure extends Component {
       keydown: e => {
         if (e.keyCode === 9) { // tab pressed
           e.preventDefault()
-          const el = $.get('span', this.el)
-          const a = $.get('input[name=angle]', el).value
-          const r = $.get('input[name=radius]', el).value
+          const el = this.$.get('span', this.el)
+          const a = this.$.get('input[name=angle]', el).value
+          const r = this.$.get('input[name=radius]', el).value
           const coords = this.state.drawing.getGeometry().getCoordinates()
           const coord2 = this.getCoordinateByAngleDistance(coords[0], Number(a), Number(r))
           this.state.drawing.getGeometry().setCoordinates([coords[0], coord2])
           this.interaction.modify.setActive(true)
           if (e.target.name === 'radius') {
-            $.get('input[name=angle]', el).focus()
+            this.$.get('input[name=angle]', el).focus()
           } else {
-            $.get('input[name=radius]', el).focus()
+            this.$.get('input[name=radius]', el).focus()
           }
         }
       }
@@ -110,6 +111,7 @@ class Measure extends Component {
       closeOnClick: true
     })
   }
+
   init (coord, type = 'distance') {
     if (!this.state.map) {
       this.state.map = getState('map')
@@ -145,6 +147,7 @@ class Measure extends Component {
     this.state.prev = this.toggleFn(this.id)
     this.el.removeClass('d-none')
   }
+
   createLayer () {
     const conf = {
       type: 'FeatureCollection',
@@ -182,29 +185,31 @@ class Measure extends Component {
     }
     return createLayer(conf)
   }
+
   render () {
     this.el.innerHTML = `<i class="fa fa-ruler-combined"></i>
       <span></span>
       <button class="btn btn-link">
         <i class="fas fa-times"></i>
       </button>`
-    $.on('click', $.get('button', this.el), e => {
+    this.$.on('click', this.$.get('button', this.el), e => {
       this.reset()
     })
-    const el = $.get('span', this.el)
-    $.html(el, this.renderResults())
+    const el = this.$.get('span', this.el)
+    this.$.html(el, this.renderResults())
     if (this.state.measureType === 'circle') {
-      $.get('input', el, true).forEach(input => {
-        $.on('focus', input, e => {
+      this.$.get('input', el, true).forEach(input => {
+        this.$.on('focus', input, e => {
           this.interaction.modify.setActive(false)
         })
-        $.on('blur', input, e => {
+        this.$.on('blur', input, e => {
 
         })
       })
-      $.on('keydown', document, this.handlers.keydown)
+      this.$.on('keydown', document, this.handlers.keydown)
     }
   }
+
   renderResults () {
     let html = ''
     if (this.state.measureType === 'circle') {
@@ -222,6 +227,7 @@ class Measure extends Component {
     }
     return html
   }
+
   updateResults (geometry = null) {
     if (this.state.measureType === 'circle') {
       this.updateCircleResults()
@@ -233,15 +239,16 @@ class Measure extends Component {
       if (coords[0][0] === coords[coords.length - 1][0] && coords[0][1] === coords[coords.length - 1][1]) {
         area = formatArea(new Polygon([coords]), null, [2, 2], true)
       }
-      const el = $.get('span', this.el)
-      $.get('input[name=length]', el).value = len[0]
-      $.html($.get('b.length-unit', el), len[1])
+      const el = this.$.get('span', this.el)
+      this.$.get('input[name=length]', el).value = len[0]
+      this.$.html(this.$.get('b.length-unit', el), len[1])
       if (area) {
-        $.get('input[name=area]', el).value = len[0]
-        $.html($.get('b.area-unit', el), len[1])
+        this.$.get('input[name=area]', el).value = len[0]
+        this.$.html(this.$.get('b.area-unit', el), len[1])
       }
     }
   }
+
   updateCircleResults () {
     let g = this.state.sketch.getGeometry()
     let coords = g.getCoordinates()
@@ -256,15 +263,16 @@ class Measure extends Component {
       angle = 360 + angle
     }
     const radius = getLength(g)
-    const el = $.get('span', this.el)
-    $.get('input[name=angle]', el).value = Math.round((angle + 0.00001) * 100) / 100
-    $.get('input[name=radius]', el).value = Math.round((radius + 0.00001) * 100) / 100
+    const el = this.$.get('span', this.el)
+    this.$.get('input[name=angle]', el).value = Math.round((angle + 0.00001) * 100) / 100
+    this.$.get('input[name=radius]', el).value = Math.round((radius + 0.00001) * 100) / 100
   }
+
   reset () {
     this.toggleFn(this.state.prev)
     this.el.classList.add('d-none')
-    $.get('span', this.el)
-    $.html($.get('span', this.el), '')
+    this.$.get('span', this.el)
+    this.$.html(this.$.get('span', this.el), '')
     this.state.drawing.getGeometry().un('change', this.handlers.onmodify)
     this.state.map.removeInteraction(this.interaction.modify)
     this.state.map.removeInteraction(this.interaction.snap)
@@ -282,16 +290,19 @@ class Measure extends Component {
         interaction.setActive(true)
       }
     })
-    $.off('keydown', document, this.handlers.keydown)
+    this.$.off('keydown', document, this.handlers.keydown)
   }
+
   enableClick () {
     this.state.map.on('click', this.handlers.clicked)
     this.state.map.on('pointermove', this.handlers.mousemoved)
   }
+
   disableClick () {
     this.state.map.un('click', this.handlers.clicked)
     this.state.map.un('pointermove', this.handlers.mousemoved)
   }
+
   clicked (e) {
     this.state.sketch.getGeometry().setCoordinates([])
     const coords = this.state.drawing.getGeometry().getCoordinates()
@@ -303,7 +314,7 @@ class Measure extends Component {
     if (this.state.measureType === 'circle') {
       const coord1 = coords[0]
       this.state.drawing.getGeometry().setCoordinates([coord1, coord2])
-      $.get('input[name=angle],input[name=radius]', this.el, true).forEach(el => {
+      this.$.get('input[name=angle],input[name=radius]', this.el, true).forEach(el => {
         el.disabled = false
       })
       this.finish()
@@ -322,6 +333,7 @@ class Measure extends Component {
       }
     }
   }
+
   onmodify (e) {
     if (this.state.measureType === 'circle') {
       const coords = this.state.drawing.getGeometry().getCoordinates()
@@ -332,6 +344,7 @@ class Measure extends Component {
     }
     this.updateResults()
   }
+
   mousemoved (e) {
     const coords = this.state.drawing.getGeometry().getCoordinates()
     const coord1 = this.state.measureType === 'circle'
@@ -354,6 +367,7 @@ class Measure extends Component {
       this.updateResults(this.state.measureLine)
     }
   }
+
   finish () {
     this.disableClick()
     this.state.sketch.getGeometry().setCoordinates([])
@@ -363,6 +377,7 @@ class Measure extends Component {
     this.state.map.addInteraction(this.interaction.snap)
     this.state.drawing.getGeometry().on('change', this.handlers.onmodify)
   }
+
   getSnappedCoordinate (needle, haystack, tolerance) {
     let coord = needle
     const calculatePxDistance = (c1, c2) => {
@@ -393,6 +408,7 @@ class Measure extends Component {
     }
     return coord
   }
+
   getCoordinateByAngleDistance (coord, bearing, distance) {
     // distance in KM, bearing in degrees
     const R = 6378137
@@ -406,11 +422,13 @@ class Measure extends Component {
     // Coords back to degrees and return
     return fromLonLat([radToDeg(lon), radToDeg(lat)])
   }
+
   getCoordinatesDistance (coord1, coord2) {
     const a = Math.abs(coord1[0] - coord2[0])
     const b = Math.abs(coord1[1] - coord2[1])
     return Math.sqrt(a * a + b * b)
   }
+
   getAllFeatures () {
     let fset = []
     getState('map/layer/layers').forEach(layer => {

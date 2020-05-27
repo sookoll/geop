@@ -9,37 +9,18 @@ import Bookmark from 'Components/bookmark/Bookmark'
 import RoutingInfo from 'Components/routing/RoutingInfo'
 import Measure from 'Components/measure/Measure'
 import { t } from 'Utilities/translate'
-import $ from 'Utilities/dom'
 import './StatusBar.styl'
 
 class StatusBar extends Component {
-  constructor (target) {
-    super(target)
+  create () {
     this.state = {
       visibleMobile: 'scaleline'
     }
-    this.toggleComponents = {}
-    this.el = $.create(`<footer id="statusbar" class="panel-bar"></footer>`)
-    this.create()
-    const opts = {
-      toggle: key => this.toggleMobileVisible(key)
-    }
-    this.toggleComponents = {
-      scaleline: getState('app/scaleLine') && new ScaleLine($.get('#scaleline', this.el), opts),
-      bookmark: getState('app/shareState') && new Bookmark($.get('#bookmark', this.el), opts),
-      mouseposition: getState('app/mousePosition') && new MousePosition($.get('#mouseposition', this.el), opts),
-      routinginfo: getState('app/routing') && new RoutingInfo($.get('#routinginfo', this.el), opts),
-      measure: getState('app/measureTool') && new Measure($.get('#measure', this.el), opts)
-    }
-    this.components = Object.assign({}, this.toggleComponents, {
-      settings: getState('app/settings') && new SettingsBar($.get('#settingsbar', this.el)),
-      screenlock: getState('app/screenLock') && new ScreenLock($.get('#screen', this.el)),
-      fullscreen: getState('app/fullScreen') && new FullScreen($.get('#screen', this.el))
-    })
-    this.renderComponents()
+    this.el = this.$.create('<footer id="statusbar" class="panel-bar"></footer>')
   }
+
   render () {
-    $.html(this.el, `<div id="settingsbar" class="slot btn-group float-left"></div>
+    this.$.html(this.el, `<div id="settingsbar" class="slot btn-group float-left"></div>
       <div id="mouseposition" class="slot slot-xs-block float-left d-none d-lg-block"></div>
       <div id="routinginfo" class="slot slot-xs-block float-left d-none d-lg-block"></div>
       <div id="measure" class="slot slot-xs-block float-left d-none d-lg-block"></div>
@@ -55,8 +36,27 @@ class StatusBar extends Component {
       <div id="bookmark" class="slot float-right d-none d-lg-block"></div>
       <div id="scaleline" class="slot float-right d-none d-lg-block"></div>`)
   }
+
+  createComponents () {
+    const opts = {
+      toggle: key => this.toggleMobileVisible(key)
+    }
+    this.toggleComponents = {
+      scaleline: getState('app/scaleLine') && new ScaleLine(this.$.get('#scaleline', this.el), opts),
+      bookmark: getState('app/shareState') && new Bookmark(this.$.get('#bookmark', this.el), opts),
+      mouseposition: getState('app/mousePosition') && new MousePosition(this.$.get('#mouseposition', this.el), opts),
+      routinginfo: getState('app/routing') && new RoutingInfo(this.$.get('#routinginfo', this.el), opts),
+      measure: getState('app/measureTool') && new Measure(this.$.get('#measure', this.el), opts)
+    }
+    this.components = Object.assign({}, this.toggleComponents, {
+      settings: getState('app/settings') && new SettingsBar(this.$.get('#settingsbar', this.el)),
+      screenlock: getState('app/screenLock') && new ScreenLock(this.$.get('#screen', this.el)),
+      fullscreen: getState('app/fullScreen') && new FullScreen(this.$.get('#screen', this.el))
+    })
+  }
+
   renderComponents () {
-    $.html($.get('#screen .dropdown-menu', this.el), `
+    this.$.html(this.$.get('#screen .dropdown-menu', this.el), `
       ${Object.keys(this.toggleComponents).map(key => {
     return `<a class="dropdown-item" href="#" data-visible="${key}">
           <i class="far ${key === this.state.visibleMobile ? 'fa-dot-circle' : 'fa-circle'}"></i>
@@ -64,25 +64,26 @@ class StatusBar extends Component {
         </a>`
   }).join('')}`)
     this.toggleMobileVisible(this.state.visibleMobile)
-    $.get('#screen a[data-visible]', this.el, true).forEach(el => {
-      $.on('click', el, e => {
+    this.$.get('#screen a[data-visible]', this.el, true).forEach(el => {
+      this.$.on('click', el, e => {
         this.toggleMobileVisible(e.currentTarget.dataList.visible)
       })
     })
   }
+
   toggleMobileVisible (key) {
     const old = this.state.visibleMobile
     this.state.visibleMobile = key
     Object.keys(this.toggleComponents).forEach(k => {
-      $.get(`#${k}`, this.el).classList.add('d-none', 'd-lg-block')
+      this.$.get(`#${k}`, this.el).classList.add('d-none', 'd-lg-block')
     })
-    $.get(`#${key}`, this.el).classList.remove('d-none', 'd-lg-block')
-    $.get('#screen a[data-visible] i', this.el, true).forEach(el => {
+    this.$.get(`#${key}`, this.el).classList.remove('d-none', 'd-lg-block')
+    this.$.get('#screen a[data-visible] i', this.el, true).forEach(el => {
       el.classList.remove('fa-dot-circle')
       el.classList.add('fa-circle')
     })
-    $.get(`#screen a[data-visible=${key}] i`, this.el).classList.remove('fa-circle')
-    $.get(`#screen a[data-visible=${key}] i`, this.el).classList.add('fa-dot-circle')
+    this.$.get(`#screen a[data-visible=${key}] i`, this.el).classList.remove('fa-circle')
+    this.$.get(`#screen a[data-visible=${key}] i`, this.el).classList.add('fa-dot-circle')
     return old
   }
 }

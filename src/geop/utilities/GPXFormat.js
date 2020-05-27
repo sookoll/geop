@@ -6,8 +6,10 @@ import Feature from 'ol/Feature'
 import { transformGeometryWithOptions } from 'ol/format/Feature'
 import GeometryLayout from 'ol/geom/GeometryLayout'
 import { includes } from 'ol/array'
-import { makeStructureNS, makeObjectPropertySetter, parseNode, pushParseAndPop,
-  makeArrayPusher } from 'ol/xml'
+import {
+  makeStructureNS, makeObjectPropertySetter, parseNode, pushParseAndPop,
+  makeArrayPusher
+} from 'ol/xml'
 import { readString, readDecimal, readNonNegativeInteger, readDateTime } from 'ol/format/xsd'
 import xml2js from 'Utilities/xml2'
 
@@ -27,8 +29,8 @@ const NAMESPACE_URIS = [
  */
 const LINK_PARSERS = makeStructureNS(
   NAMESPACE_URIS, {
-    'text': makeObjectPropertySetter(readString, 'linkText'),
-    'type': makeObjectPropertySetter(readString, 'linkType')
+    text: makeObjectPropertySetter(readString, 'linkText'),
+    type: makeObjectPropertySetter(readString, 'linkType')
   }
 )
 /**
@@ -37,9 +39,9 @@ const LINK_PARSERS = makeStructureNS(
  */
 const GPX_PARSERS = makeStructureNS(
   NAMESPACE_URIS, {
-    'rte': makeArrayPusher(readRte),
-    'trk': makeArrayPusher(readTrk),
-    'wpt': makeArrayPusher(readWpt)
+    rte: makeArrayPusher(readRte),
+    trk: makeArrayPusher(readTrk),
+    wpt: makeArrayPusher(readWpt)
   }
 )
 /**
@@ -48,25 +50,25 @@ const GPX_PARSERS = makeStructureNS(
  */
 const WPT_PARSERS = makeStructureNS(
   NAMESPACE_URIS, {
-    'ele': makeObjectPropertySetter(readDecimal),
-    'time': makeObjectPropertySetter(readDateTime),
-    'magvar': makeObjectPropertySetter(readDecimal),
-    'geoidheight': makeObjectPropertySetter(readDecimal),
-    'name': makeObjectPropertySetter(readString),
-    'cmt': makeObjectPropertySetter(readString),
-    'desc': makeObjectPropertySetter(readString),
-    'src': makeObjectPropertySetter(readString),
-    'link': parseLink,
-    'sym': makeObjectPropertySetter(readString),
-    'type': makeObjectPropertySetter(readString),
-    'fix': makeObjectPropertySetter(readString),
-    'sat': makeObjectPropertySetter(readNonNegativeInteger),
-    'hdop': makeObjectPropertySetter(readDecimal),
-    'vdop': makeObjectPropertySetter(readDecimal),
-    'pdop': makeObjectPropertySetter(readDecimal),
-    'ageofdgpsdata': makeObjectPropertySetter(readDecimal),
-    'dgpsid': makeObjectPropertySetter(readNonNegativeInteger),
-    'extensions': parseExtensions
+    ele: makeObjectPropertySetter(readDecimal),
+    time: makeObjectPropertySetter(readDateTime),
+    magvar: makeObjectPropertySetter(readDecimal),
+    geoidheight: makeObjectPropertySetter(readDecimal),
+    name: makeObjectPropertySetter(readString),
+    cmt: makeObjectPropertySetter(readString),
+    desc: makeObjectPropertySetter(readString),
+    src: makeObjectPropertySetter(readString),
+    link: parseLink,
+    sym: makeObjectPropertySetter(readString),
+    type: makeObjectPropertySetter(readString),
+    fix: makeObjectPropertySetter(readString),
+    sat: makeObjectPropertySetter(readNonNegativeInteger),
+    hdop: makeObjectPropertySetter(readDecimal),
+    vdop: makeObjectPropertySetter(readDecimal),
+    pdop: makeObjectPropertySetter(readDecimal),
+    ageofdgpsdata: makeObjectPropertySetter(readDecimal),
+    dgpsid: makeObjectPropertySetter(readNonNegativeInteger),
+    extensions: parseExtensions
   }
 )
 /**
@@ -75,15 +77,15 @@ const WPT_PARSERS = makeStructureNS(
  */
 const RTE_PARSERS = makeStructureNS(
   NAMESPACE_URIS, {
-    'name': makeObjectPropertySetter(readString),
-    'cmt': makeObjectPropertySetter(readString),
-    'desc': makeObjectPropertySetter(readString),
-    'src': makeObjectPropertySetter(readString),
-    'link': parseLink,
-    'number': makeObjectPropertySetter(readNonNegativeInteger),
-    'extensions': parseExtensions,
-    'type': makeObjectPropertySetter(readString),
-    'rtept': parseRtePt
+    name: makeObjectPropertySetter(readString),
+    cmt: makeObjectPropertySetter(readString),
+    desc: makeObjectPropertySetter(readString),
+    src: makeObjectPropertySetter(readString),
+    link: parseLink,
+    number: makeObjectPropertySetter(readNonNegativeInteger),
+    extensions: parseExtensions,
+    type: makeObjectPropertySetter(readString),
+    rtept: parseRtePt
   }
 )
 /**
@@ -92,15 +94,15 @@ const RTE_PARSERS = makeStructureNS(
  */
 const TRK_PARSERS = makeStructureNS(
   NAMESPACE_URIS, {
-    'name': makeObjectPropertySetter(readString),
-    'cmt': makeObjectPropertySetter(readString),
-    'desc': makeObjectPropertySetter(readString),
-    'src': makeObjectPropertySetter(readString),
-    'link': parseLink,
-    'number': makeObjectPropertySetter(readNonNegativeInteger),
-    'type': makeObjectPropertySetter(readString),
-    'extensions': parseExtensions,
-    'trkseg': parseTrkSeg
+    name: makeObjectPropertySetter(readString),
+    cmt: makeObjectPropertySetter(readString),
+    desc: makeObjectPropertySetter(readString),
+    src: makeObjectPropertySetter(readString),
+    link: parseLink,
+    number: makeObjectPropertySetter(readNonNegativeInteger),
+    type: makeObjectPropertySetter(readString),
+    extensions: parseExtensions,
+    trkseg: parseTrkSeg
   }
 )
 /**
@@ -109,8 +111,8 @@ const TRK_PARSERS = makeStructureNS(
  */
 const RTEPT_PARSERS = makeStructureNS(
   NAMESPACE_URIS, {
-    'ele': makeObjectPropertySetter(readDecimal),
-    'time': makeObjectPropertySetter(readDateTime)
+    ele: makeObjectPropertySetter(readDecimal),
+    time: makeObjectPropertySetter(readDateTime)
   }
 )
 /**
@@ -119,7 +121,7 @@ const RTEPT_PARSERS = makeStructureNS(
  */
 const TRKSEG_PARSERS = makeStructureNS(
   NAMESPACE_URIS, {
-    'trkpt': parseTrkPt
+    trkpt: parseTrkPt
   }
 )
 /**
@@ -128,8 +130,8 @@ const TRKSEG_PARSERS = makeStructureNS(
  */
 const TRKPT_PARSERS = makeStructureNS(
   NAMESPACE_URIS, {
-    'ele': makeObjectPropertySetter(readDecimal),
-    'time': makeObjectPropertySetter(readDateTime)
+    ele: makeObjectPropertySetter(readDecimal),
+    time: makeObjectPropertySetter(readDateTime)
   }
 )
 
@@ -137,6 +139,7 @@ export default class GPXFormat extends GPX {
   constructor (opts = {}) {
     super(opts)
   }
+
   /**
    * @inheritDoc
    */
@@ -166,7 +169,7 @@ function parseLink (node, objectStack) {
   const values = /** @type {Object} */ (objectStack[objectStack.length - 1])
   const href = node.getAttribute('href')
   if (href !== null) {
-    values['link'] = href
+    values.link = href
   }
   parseNode(LINK_PARSERS, node, objectStack)
 }
@@ -176,7 +179,7 @@ function parseLink (node, objectStack) {
  */
 function parseExtensions (node, objectStack) {
   const values = /** @type {Object} */ (objectStack[objectStack.length - 1])
-  values['extensionsNode_'] = node
+  values.extensionsNode_ = node
 }
 /**
  * @param {Element} node Node.
@@ -211,15 +214,15 @@ function appendCoordinate (flatCoordinates, layoutOptions, node, values) {
     parseFloat(node.getAttribute('lon')),
     parseFloat(node.getAttribute('lat')))
   if ('ele' in values) {
-    flatCoordinates.push(/** @type {number} */ (values['ele']))
-    delete values['ele']
+    flatCoordinates.push(/** @type {number} */ (values.ele))
+    delete values.ele
     layoutOptions.hasZ = true
   } else {
     flatCoordinates.push(0)
   }
   if ('time' in values) {
-    flatCoordinates.push(/** @type {number} */ (values['time']))
-    delete values['time']
+    flatCoordinates.push(/** @type {number} */ (values.time))
+    delete values.time
     layoutOptions.hasM = true
   } else {
     flatCoordinates.push(0)
@@ -276,17 +279,17 @@ function applyLayoutOptions (layoutOptions, flatCoordinates, ends) {
 function readRte (node, objectStack) {
   const options = /** @type {import("./Feature.js").ReadOptions} */ (objectStack[0])
   const values = pushParseAndPop({
-    'flatCoordinates': [],
-    'layoutOptions': {}
+    flatCoordinates: [],
+    layoutOptions: {}
   }, RTE_PARSERS, node, objectStack)
   if (!values) {
     return undefined
   }
   const flatCoordinates = /** @type {Array<number>} */
-      (values['flatCoordinates'])
-  delete values['flatCoordinates']
-  const layoutOptions = /** @type {LayoutOptions} */ (values['layoutOptions'])
-  delete values['layoutOptions']
+      (values.flatCoordinates)
+  delete values.flatCoordinates
+  const layoutOptions = /** @type {LayoutOptions} */ (values.layoutOptions)
+  delete values.layoutOptions
   const layout = applyLayoutOptions(layoutOptions, flatCoordinates)
   const geometry = new LineString(flatCoordinates, layout)
   transformGeometryWithOptions(geometry, false, options)
@@ -302,20 +305,20 @@ function readRte (node, objectStack) {
 function readTrk (node, objectStack) {
   const options = /** @type {import("./Feature.js").ReadOptions} */ (objectStack[0])
   const values = pushParseAndPop({
-    'flatCoordinates': [],
-    'ends': [],
-    'layoutOptions': {}
+    flatCoordinates: [],
+    ends: [],
+    layoutOptions: {}
   }, TRK_PARSERS, node, objectStack)
   if (!values) {
     return undefined
   }
   const flatCoordinates = /** @type {Array<number>} */
-      (values['flatCoordinates'])
-  delete values['flatCoordinates']
-  const ends = /** @type {Array<number>} */ (values['ends'])
-  delete values['ends']
-  const layoutOptions = /** @type {LayoutOptions} */ (values['layoutOptions'])
-  delete values['layoutOptions']
+      (values.flatCoordinates)
+  delete values.flatCoordinates
+  const ends = /** @type {Array<number>} */ (values.ends)
+  delete values.ends
+  const layoutOptions = /** @type {LayoutOptions} */ (values.layoutOptions)
+  delete values.layoutOptions
   const layout = applyLayoutOptions(layoutOptions, flatCoordinates, ends)
   const geometry = new MultiLineString(flatCoordinates, layout, ends)
   transformGeometryWithOptions(geometry, false, options)
@@ -331,8 +334,8 @@ function parseRtePt (node, objectStack) {
   const values = pushParseAndPop({}, RTEPT_PARSERS, node, objectStack)
   if (values) {
     const rteValues = /** @type {!Object} */ (objectStack[objectStack.length - 1])
-    const flatCoordinates = /** @type {Array<number>} */ (rteValues['flatCoordinates'])
-    const layoutOptions = /** @type {LayoutOptions} */ (rteValues['layoutOptions'])
+    const flatCoordinates = /** @type {Array<number>} */ (rteValues.flatCoordinates)
+    const layoutOptions = /** @type {LayoutOptions} */ (rteValues.layoutOptions)
     appendCoordinate(flatCoordinates, layoutOptions, node, values)
   }
 }
@@ -344,8 +347,8 @@ function parseTrkSeg (node, objectStack) {
   const values = /** @type {Object} */ (objectStack[objectStack.length - 1])
   parseNode(TRKSEG_PARSERS, node, objectStack)
   const flatCoordinates = /** @type {Array<number>} */
-      (values['flatCoordinates'])
-  const ends = /** @type {Array<number>} */ (values['ends'])
+      (values.flatCoordinates)
+  const ends = /** @type {Array<number>} */ (values.ends)
   ends.push(flatCoordinates.length)
 }
 /**
@@ -356,8 +359,8 @@ function parseTrkPt (node, objectStack) {
   const values = pushParseAndPop({}, TRKPT_PARSERS, node, objectStack)
   if (values) {
     const trkValues = /** @type {!Object} */ (objectStack[objectStack.length - 1])
-    const flatCoordinates = /** @type {Array<number>} */ (trkValues['flatCoordinates'])
-    const layoutOptions = /** @type {LayoutOptions} */ (trkValues['layoutOptions'])
+    const flatCoordinates = /** @type {Array<number>} */ (trkValues.flatCoordinates)
+    const layoutOptions = /** @type {LayoutOptions} */ (trkValues.layoutOptions)
     appendCoordinate(flatCoordinates, layoutOptions, node, values)
   }
 }

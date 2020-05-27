@@ -37,7 +37,7 @@ function buildOLStyle (style) {
           break
         case 'image':
         case 'circle':
-          olStyle['image'] = new Circle({
+          olStyle.image = new Circle({
             fill: style[key].fill && new Fill(style[key].fill),
             stroke: style[key].stroke && new Stroke(style[key].stroke),
             radius: style[key].radius || 5
@@ -50,10 +50,10 @@ function buildOLStyle (style) {
           if (style[key].stroke) {
             style[key].stroke = new Stroke(style[key].stroke)
           }
-          olStyle['image'] = new RegularShape(style[key])
+          olStyle.image = new RegularShape(style[key])
           break
         case 'icon':
-          olStyle['image'] = new Icon(style[key])
+          olStyle.image = new Icon(style[key])
           break
         case 'text':
           if (style[key].fill) {

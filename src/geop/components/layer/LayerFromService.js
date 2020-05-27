@@ -5,13 +5,11 @@ import { getState } from 'Utilities/store'
 import log from 'Utilities/log'
 import Component from 'Geop/Component'
 import { createLayer } from './LayerCreator'
-import $ from 'Utilities/dom'
 
 class LayerFromService extends Component {
-  constructor (target) {
-    super(target)
-    this.el = $.create(`<li />`)
-    this.modal = $.get('#modal_wmslayer')
+  create () {
+    this.el = this.$.create('<li />')
+    this.modal = this.$.get('#modal_wmslayer')
     this.isRow = true
     this.layer_conf = {
       TileWMS: {
@@ -41,8 +39,8 @@ class LayerFromService extends Component {
       FORMAT: 'image/png',
       VERSION: '1.1.1'
     }
-    // create is called from parent
   }
+
   render () {
     if (!this.modal || this.modal.length === 0) {
       const examples = Object.keys(apiUrls.wmsexamples).map(title => {
@@ -50,13 +48,13 @@ class LayerFromService extends Component {
           ${title}
         </a>`
       })
-      this.modal = $.create(`<div class="modal fade"
+      this.modal = this.$.create(`<div class="modal fade"
         id="modal_wmslayer"
         tabindex="-1"
         role="dialog"
         aria-hidden="true">
       </div>`)
-      $.html(this.modal, `<div class="modal-dialog">
+      this.$.html(this.modal, `<div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">${t('Add WMS layer')}</h4>
@@ -93,17 +91,17 @@ class LayerFromService extends Component {
           </div>
         </div>
       </div>`)
-      $.on('click', $.get('button.confirm', this.modal), e => {
+      this.$.on('click', this.$.get('button.confirm', this.modal), e => {
         e.preventDefault()
-        if ($.get('textarea', this.modal).value.length < 10) {
+        if (this.$.get('textarea', this.modal).value.length < 10) {
           return
         }
-        const groupId = $.get('input[name=group]:checked', this.modal).value
+        const groupId = this.$.get('input[name=group]:checked', this.modal).value
         const group = getState('map/layer/' + groupId)
         let idx = group.getLength()
         // edit
-        const idField = $.get('input[name=id]', this.modal)
-        const textarea = $.get('textarea', this.modal)
+        const idField = this.$.get('input[name=id]', this.modal)
+        const textarea = this.$.get('textarea', this.modal)
         if (idField.value.length) {
           // get old index
           const oldLayer = group.getArray()
@@ -123,13 +121,13 @@ class LayerFromService extends Component {
           this.modal.modal('hide')
         }
       })
-      $.on('click', $.get('.examples a', this.modal), e => {
+      this.$.on('click', this.$.get('.examples a', this.modal), e => {
         e.preventDefault()
-        $.get('textarea', this.modal).value = decodeURIComponent(e.target.href)
+        this.$.get('textarea', this.modal).value = decodeURIComponent(e.target.href)
       })
-      $.append($.get('body'), this.modal)
+      this.$.append(this.$.get('body'), this.modal)
     }
-    $.html(this.el, `
+    this.$.html(this.el, `
       <a href="#"
         id="add-wms-layer"
         class="dropdown-item"
@@ -140,6 +138,7 @@ class LayerFromService extends Component {
       </a>
     `)
   }
+
   createLayer (url, isBase) {
     const debug = getState('app/debug')
     const urlComponents = parseURL(url)
@@ -210,6 +209,7 @@ class LayerFromService extends Component {
     }
     return null
   }
+
   destroy () {
     // FIXME
     this.modal.modal('dispose')
@@ -217,6 +217,7 @@ class LayerFromService extends Component {
     this.modal = null
     super.destroy()
   }
+
   pickService (params) {
     if ('matrixSet' in params) {
       return 'WMTS'

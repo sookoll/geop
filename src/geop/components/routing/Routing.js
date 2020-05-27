@@ -10,7 +10,6 @@ import { createMarker } from 'Components/mouseposition/MousePosition'
 import { createLayer } from 'Components/layer/LayerCreator'
 import { toLonLat, fromLonLat } from 'ol/proj'
 import { getDistance } from 'ol/sphere'
-import $ from 'Utilities/dom'
 
 const providers = {
   osrm: new OSRMProvider(),
@@ -23,8 +22,7 @@ const state = {
 let routeLayer = null
 
 class Routing extends Component {
-  constructor (target) {
-    super(target)
+  create () {
     this.el = null
     this.state = {
       contextmenu: {
@@ -52,7 +50,7 @@ class Routing extends Component {
           onBtnClick: (e, coord, feature) => {
             e.preventDefault()
             const formatted = toLonLat(coord).slice(0, 2).reverse().join(',')
-            const a = $.create('<a>')
+            const a = this.$.create('<a>')
             a.href = apiUrls.google.directions + formatted
             a.target = '_blank'
             a.click()
@@ -85,6 +83,7 @@ class Routing extends Component {
       this.handleContextMenuItems()
     })
   }
+
   handleContextMenuItems () {
     const contextMenuItems = getState('map/contextmenu')
     const routingProfile = (typeof getState('routing/profile') !== 'undefined')
@@ -111,6 +110,7 @@ class Routing extends Component {
       }
     }
   }
+
   findRoute () {
     const coords = getState('routing/stops')
     if (coords.filter(lonLat => !!lonLat).length > 1) {

@@ -11,14 +11,14 @@ import JSONP from 'jsonpack'
 // TODO: deprecated, remove or refactor
 
 class UrlLayer extends Component {
-  constructor (target) {
-    super(target)
+  create () {
     this.format = new GeoJSONFormat()
     this.state = {
       layers: getState('map/layer/layers')
     }
     this.init()
   }
+
   init () {
     const hash = getPermalink('hash')
     const view = getPermalink('view')
@@ -42,6 +42,7 @@ class UrlLayer extends Component {
       }
     }
   }
+
   fitTo (map, bbox) {
     map.getView().fit(bbox, {
       padding: [100, 100, 100, 100],
@@ -49,6 +50,7 @@ class UrlLayer extends Component {
       duration: 500
     })
   }
+
   loadFeaturesFromUrl (hash) {
     setPermalink({
       hash: null
@@ -84,6 +86,7 @@ class UrlLayer extends Component {
     }
     return null
   }
+
   addMarker (coordString) {
     const coords = coordString.split('/')
     if (coords && coords.length === 2) {
@@ -129,6 +132,7 @@ class UrlLayer extends Component {
     }
     return null
   }
+
   createLayer (title, features, style) {
     return createLayer({
       type: 'FeatureCollection',

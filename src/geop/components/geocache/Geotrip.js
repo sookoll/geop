@@ -14,16 +14,14 @@ import Feature from 'ol/Feature'
 import { toLonLat } from 'ol/proj'
 import { getLength } from 'ol/sphere'
 import lineSliceAlong from '@turf/line-slice-along'
-import $ from 'Utilities/dom'
 import './Geotrip.styl'
 
 class Geotrip extends Component {
-  constructor (target) {
-    super(target)
+  create () {
     this.id = 'tab-geotrip'
     this.icon = 'fa fa-thumbtack'
     this.btnTextVisible = true
-    this.el = $.create(`<div
+    this.el = this.$.create(`<div
       class="tab-pane fade"
       id="${this.id}"
       role="tabpanel">
@@ -61,8 +59,6 @@ class Geotrip extends Component {
       e.element.set('_inGeotrip', false)
       this.render()
     })
-    this.create()
-    this.initEvents()
     const map = getState('map')
     if (map) {
       this.loadState()
@@ -73,11 +69,12 @@ class Geotrip extends Component {
       })
     }
   }
+
   render () {
     const found = this.state.collection.getArray().filter(f => {
       return !!f.get('fstatus_timestamp') && f.get('fstatus') === 'Found'
     })
-    $.html(this.el, `
+    this.$.html(this.el, `
       <ul class="list-group mb-3">
       ${this.state.collection.getLength()
     ? this.renderTrip(this.state.collection)
@@ -114,7 +111,7 @@ class Geotrip extends Component {
         </div>` : ''}
     `)
     if (this.state.tab) {
-      $.html($.get('span', this.state.tab), this.state.collection.getLength() || t('Geotrip'))
+      this.$.html(this.$.get('span', this.state.tab), this.state.collection.getLength() || t('Geotrip'))
     }
     if (this.state.collection.getLength()) {
       // route
@@ -138,7 +135,7 @@ class Geotrip extends Component {
         })
       }
       // sortable
-      Sortable.create($.get('ul', this.el), {
+      Sortable.create(this.$.get('ul', this.el), {
         draggable: 'li.sort-item',
         handle: '.badge',
         onUpdate: e => {
@@ -146,6 +143,7 @@ class Geotrip extends Component {
           this.render()
         }
       })
+      this.initEvents()
     }
     if (this.state.init) {
       setState('geocache/trip/ids',
@@ -161,6 +159,7 @@ class Geotrip extends Component {
     }
     this.state.init = true
   }
+
   renderTrip (collection) {
     return collection.getArray().map((f, i) => {
       return `
@@ -179,57 +178,59 @@ class Geotrip extends Component {
         </li>`
     }).join('')
   }
+
   initEvents () {
     // remove element
-    $.get('li button.close', this.el, true).forEach(el => {
-      $.on('click', el, e => {
+    this.$.get('li button.close', this.el, true).forEach(el => {
+      this.$.on('click', el, e => {
         e.preventDefault()
         this.remove(e.currentTarget.closest('li').dataList.id)
       })
     })
     // zoom to
-    $.get('li a', this.el, true).forEach(el => {
-      $.on('click', el, e => {
+    this.$.get('li a', this.el, true).forEach(el => {
+      this.$.on('click', el, e => {
         e.preventDefault()
         this.zoomTo(e.currentTarget.closest('li').dataList.id)
       })
     })
     // clear trip
-    if ($.get('button.clear', this.el)) {
-      $.on('click', $.get('button.clear', this.el), e => {
+    if (this.$.get('button.clear', this.el)) {
+      this.$.on('click', this.$.get('button.clear', this.el), e => {
         e.preventDefault()
         this.clearTrip()
       })
     }
     // export trip
-    if ($.get('a.export', this.el)) {
-      $.on('click', $.get('a.export', this.el), e => {
+    if (this.$.get('a.export', this.el)) {
+      this.$.on('click', this.$.get('a.export', this.el), e => {
         e.preventDefault()
         this.export()
       })
     }
     // order trip by found date
-    if ($.get('a.sortby-found', this.el)) {
-      $.on('click', $.get('a.sortby-found', this.el), e => {
+    if (this.$.get('a.sortby-found', this.el)) {
+      this.$.on('click', this.$.get('a.sortby-found', this.el), e => {
         e.preventDefault()
         this.sortByFound()
       })
     }
     // order trip by routing
-    if ($.get('a.sortby-routing', this.el)) {
-      $.on('click', $.get('a.sortby-routing', this.el), e => {
+    if (this.$.get('a.sortby-routing', this.el)) {
+      this.$.on('click', this.$.get('a.sortby-routing', this.el), e => {
         e.preventDefault()
         this.sortByRouting()
       })
     }
     // routing
-    if ($.get('button.routing', this.el)) {
-      $.on('click', $.get('button.routing', this.el), e => {
+    if (this.$.get('button.routing', this.el)) {
+      this.$.on('click', this.$.get('button.routing', this.el), e => {
         e.preventDefault()
         this.routing()
       })
     }
   }
+
   reorderCollection (collection, order) {
     for (let i = 0, len = order.length; i < len; i++) {
       const feature = collection.getArray().filter(f => f.getId() === order[i])
@@ -239,13 +240,15 @@ class Geotrip extends Component {
       }
     }
   }
+
   reorderTrip () {
     const order = []
-    $.get('li.sort-item', this.el).forEach(el => {
+    this.$.get('li.sort-item', this.el).forEach(el => {
       order.push(el.dataList.id)
     })
     this.reorderCollection(this.state.collection, order)
   }
+
   sortByFound () {
     function compare (a, b) {
       if (a.timestamp < b.timestamp) { return -1 }
@@ -256,6 +259,7 @@ class Geotrip extends Component {
     found.sort(compare)
     this.reorderCollection(this.state.collection, found.map(item => item.id))
   }
+
   sortByRouting () {
     const routingProfile = (typeof getState('routing/profile') !== 'undefined')
       ? getState('routing/profile') : getState('app/routing').profile
@@ -263,7 +267,7 @@ class Geotrip extends Component {
       const position = getState('map/geolocation/position')
       const locations = this.state.collection.getArray().map(f => toLonLat(f.getGeometry().getCoordinates()))
       let start = locations[0]
-      let end = locations[locations.length - 1]
+      const end = locations[locations.length - 1]
       if (position) {
         start = toLonLat(position)
       }
@@ -286,6 +290,7 @@ class Geotrip extends Component {
       log('error', t('Routing disabled'))
     }
   }
+
   routing () {
     const routingProfile = (typeof getState('routing/profile') !== 'undefined')
       ? getState('routing/profile') : getState('app/routing').profile
@@ -304,6 +309,7 @@ class Geotrip extends Component {
       log('error', t('Routing disabled'))
     }
   }
+
   loadState () {
     const ids = getState('geocache/trip/ids')
     const found = getState('geocache/trip/found')
@@ -321,6 +327,7 @@ class Geotrip extends Component {
       this.reorderCollection(this.state.collection, ids)
     }
   }
+
   getTripFeaturesFromGroup (group, test, target) {
     group.getArray()
       .filter(l => {
@@ -334,16 +341,19 @@ class Geotrip extends Component {
         })
       })
   }
+
   clearTrip () {
     this.state.routeLayer && this.state.routeLayer.getSource().clear()
     this.state.collection.clear()
   }
+
   remove (id) {
     const feature = this.state.collection.getArray().filter(f => f.getId() === id)
     if (feature && feature[0]) {
       this.state.collection.remove(feature[0])
     }
   }
+
   zoomTo (id) {
     const feature = this.state.collection.getArray().filter(f => f.getId() === id)
     if (feature && feature[0]) {
@@ -354,8 +364,9 @@ class Geotrip extends Component {
       })
     }
   }
+
   export () {
-    let coords = []
+    const coords = []
     const features = this.state.collection.getArray().map(f => {
       const clone = f.clone()
       clone.getGeometry().transform(getState('map/projection'), 'EPSG:4326')
@@ -367,6 +378,7 @@ class Geotrip extends Component {
     }
     gpxExport(cacheConf.exportFileName, features)
   }
+
   createLayer () {
     const view = getState('map').getView()
     const proj = getState('map/projection')

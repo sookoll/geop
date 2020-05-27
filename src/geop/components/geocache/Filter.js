@@ -3,16 +3,14 @@ import { t } from 'Utilities/translate'
 import { getState, setState, onchange } from 'Utilities/store'
 import { serializeArray } from 'Utilities/util'
 import Component from 'Geop/Component'
-import $ from 'Utilities/dom'
 import './Filter.styl'
 
 class Filter extends Component {
-  constructor (target) {
-    super(target)
+  create () {
     this.id = 'tab-filter'
     this.icon = 'fa fa-filter'
     this.btnTextVisible = true
-    this.el = $.create(`<div
+    this.el = this.$.create(`<div
       class="tab-pane fade"
       id="${this.id}"
       role="tabpanel">
@@ -23,33 +21,33 @@ class Filter extends Component {
       layer: null,
       filter: {}
     }
-    this.create()
     onchange('geocache/loadend', layer => {
       this.state.layer = layer
       this.render()
     })
   }
+
   render () {
     this.state.filter = this.buildPropertyList(this.state.layer)
     const storedFilter = getState('geocache/filter')
-    $.html(this.el, `
+    this.$.html(this.el, `
       <ul class="list-group mb-3">
       ${Object.keys(this.state.filter).length
-    ? this.renderFilter(this.state.filter, storedFilter ? storedFilter['query'] : {})
+    ? this.renderFilter(this.state.filter, storedFilter ? storedFilter.query : {})
     : `<li class="list-group-item">
           <i class="fas fa-plus"></i>
           ${t('Add caches to map')}
         </li>`}
       </ul>
     `)
-    $.get('input[data-filter]', this.el, true).forEach(el => {
-      $.on('change', el, e => {
+    this.$.get('input[data-filter]', this.el, true).forEach(el => {
+      this.$.on('change', el, e => {
         e.stopPropagation()
         this.filter()
       })
     })
-    if ($.get('input[name=radiusStyle]', this.el)) {
-      $.on('change', $.get('input[name=radiusStyle]', this.el), e => {
+    if (this.$.get('input[name=radiusStyle]', this.el)) {
+      this.$.on('change', this.$.get('input[name=radiusStyle]', this.el), e => {
         e.stopPropagation()
         this.state.layer.getSource().forEachFeature(f => {
           if (f.get('isCache')) {
@@ -59,8 +57,8 @@ class Filter extends Component {
         this.filter()
       })
     }
-    if ($.get('input[name=hidePoints]', this.el)) {
-      $.on('change', $.get('input[name=hidePoints]', this.el), e => {
+    if (this.$.get('input[name=hidePoints]', this.el)) {
+      this.$.on('change', this.$.get('input[name=hidePoints]', this.el), e => {
         e.stopPropagation()
         this.state.layer.getSource().forEachFeature(f => {
           if (!f.get('isCache')) {
@@ -70,18 +68,19 @@ class Filter extends Component {
         this.filter()
       })
     }
-    if (Object.keys(this.state.filter).length && storedFilter && storedFilter['count']) {
+    if (Object.keys(this.state.filter).length && storedFilter && storedFilter.count) {
       this.filter()
     }
   }
+
   renderFilter (filter, storedFilter = {}) {
     return `
       <li class="list-group-item">
         <label>
-          <input type="checkbox" name="radiusStyle" value="160" ${storedFilter['radiusStyle'] && storedFilter['radiusStyle'].indexOf('160') > -1 ? 'checked="true"' : ''}> ${t('Show 160m radius')}
+          <input type="checkbox" name="radiusStyle" value="160" ${storedFilter.radiusStyle && storedFilter.radiusStyle.indexOf('160') > -1 ? 'checked="true"' : ''}> ${t('Show 160m radius')}
         </label>
         <label>
-          <input type="checkbox" name="hidePoints" value="off" ${storedFilter['hidePoints'] && storedFilter['hidePoints'].indexOf('off') > -1 ? 'checked="true"' : ''}> ${t('Hide additional points')}
+          <input type="checkbox" name="hidePoints" value="off" ${storedFilter.hidePoints && storedFilter.hidePoints.indexOf('off') > -1 ? 'checked="true"' : ''}> ${t('Hide additional points')}
         </label>
       </li>
       ${Object.keys(filter).map(group => {
@@ -100,6 +99,7 @@ class Filter extends Component {
     return '<li class="list-group-item">' + list.join('') + '</li>'
   }).join('')}`
   }
+
   createConf () {
     const conf = {}
     Object.keys(cacheConf.filter).forEach(f => {
@@ -111,8 +111,9 @@ class Filter extends Component {
     })
     return conf
   }
+
   buildPropertyList (layer) {
-    let filter = {}
+    const filter = {}
     if (layer && typeof layer.getSource === 'function') {
       layer.getSource().forEachFeature(f => {
         const props = f.getProperties()
@@ -135,6 +136,7 @@ class Filter extends Component {
     })
     return filter
   }
+
   filter () {
     const params = this.getChecked('input[data-filter]')
     this.state.layer.getSource().forEachFeature(f => {
@@ -152,8 +154,9 @@ class Filter extends Component {
     })
     setState('geocache/filter', this.getChecked('input'), true)
   }
+
   getChecked (selector) {
-    const checked = serializeArray($.get(selector, this.el, true))
+    const checked = serializeArray(this.$.get(selector, this.el, true))
     const params = {
       query: {},
       count: 0

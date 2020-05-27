@@ -27,10 +27,8 @@ getProjection('EPSG:3301').setExtent([40500, 5993000, 1064500, 7017000])
 getProjection('EPSG:3067').setExtent([-2097152.0, 1601644.86, 848181.26, 9437184.0])
 
 class MapEngine extends Component {
-  constructor (target) {
-    super(target)
+  create () {
     this.el = this.$.create(`<div id="${getState('map/el').slice(1)}"></div>`)
-    this.create()
     this.map = null
     this.layers = {
       base: createLayer({
@@ -140,6 +138,7 @@ class MapEngine extends Component {
       }
     })
   }
+
   permalinkToViewConf (permalink) {
     const parts = permalink ? permalink.split('/') : []
     return {
@@ -149,11 +148,12 @@ class MapEngine extends Component {
       baselayer: parts[4] || getState('map/baseLayer')
     }
   }
+
   createMap (viewConf) {
     return new Map({
       layers: Object.keys(this.layers).map(i => this.layers[i]),
       controls: [],
-      target: document.querySelector(getState('map/el')),
+      target: this.$.get(getState('map/el')),
       moveTolerance: 2,
       pixelRatio: 2,
       view: new View({
@@ -178,25 +178,31 @@ class MapEngine extends Component {
       }
     })
   }
+
   createLayers (layers) {
     layers.forEach(layer => {
       this.addLayer(createLayer(layer))
     })
   }
+
   createOverlays (layers) {
     layers.forEach(layer => {
       this.addOverlay(createLayer(layer))
     })
   }
+
   addBaseLayer (layer) {
     this.layers.base.getLayers().push(layer)
   }
+
   addLayer (layer) {
     this.layers.layers.getLayers().push(layer)
   }
+
   addOverlay (layer) {
     this.layers.overlays.getLayers().push(layer)
   }
+
   getLayer (group, id = null) {
     if (group in this.layers) {
       if (!id) {
@@ -210,14 +216,16 @@ class MapEngine extends Component {
     }
     return false
   }
+
   storeLayers (group) {
     const layerConfs = this.layers[group].getLayers().getArray().map(layer => {
       return layer.get('conf')
     })
     setState('layer/' + group, layerConfs, true)
   }
+
   updateStore (group, layerId) {
-    let layer = this.getLayer(group, layerId)
+    const layer = this.getLayer(group, layerId)
     if (layer) {
       const conf = layer.get('conf')
       if (conf.type === 'FeatureCollection') {
@@ -232,6 +240,7 @@ class MapEngine extends Component {
       this.storeLayers(group)
     }
   }
+
   destroy () {
     this.map.setTarget(null)
     this.map = null

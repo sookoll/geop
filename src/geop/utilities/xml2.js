@@ -1,5 +1,5 @@
 export default function xml2js (xml) {
-  let obj = {}
+  const obj = {}
   if (xml.nodeType === 1) {
     for (let j = 0, len = xml.attributes.length; j < len; j++) {
       const attribute = xml.attributes.item(j)

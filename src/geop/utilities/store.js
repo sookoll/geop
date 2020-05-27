@@ -3,7 +3,7 @@ import { deepCopy } from './util'
 
 const state = {}
 const events = {}
-let storeAvailable = !!window.indexedDB
+const storeAvailable = !!window.indexedDB
 
 export function getAppState () {
   return new Promise((resolve, reject) => {

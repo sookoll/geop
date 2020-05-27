@@ -84,7 +84,7 @@ class FeatureLayer extends LayerVector {
 export function createLayer (layerConf) {
   let layer
   switch (layerConf.type) {
-    case 'Group':
+    case 'Group': {
       const arr = layerConf.layers.map(conf => {
         const inputConf = deepCopy(conf)
         // add projection to sublayer
@@ -104,6 +104,7 @@ export function createLayer (layerConf) {
         layers: arr
       })
       break
+    }
     case 'XYZ':
     case 'TileWMS':
     case 'Bing':

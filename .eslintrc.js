@@ -13,5 +13,6 @@ module.exports = {
   plugins: [],
   rules: {
     'space-infix-ops': 'error'
-  }
+  },
+  ignorePatterns: [ 'src/build/*' ]
 }

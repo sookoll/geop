@@ -1,24 +1,18 @@
-import { initConf } from 'Utilities/session'
-import { activatePermalink } from 'Utilities/permalink'
 import 'bootstrap/dist/css/bootstrap.css'
 import '@fortawesome/fontawesome-free/css/all.css'
+import { initConf } from 'Utilities/session'
+import { activatePermalink } from 'Utilities/permalink'
 import './app.styl'
-import 'bootstrap/js/dist/dropdown'
-import 'bootstrap/js/dist/modal'
-import 'bootstrap/js/dist/tab'
-import 'bootstrap/js/dist/button'
-import 'bootstrap/js/dist/popover'
-import 'bootstrap/js/dist/alert'
 import { initServiceWorker } from 'Utilities/util'
 import $ from 'Utilities/dom'
 import Geop from 'Geop/Geop'
 
 let app = null
-const el = $.get('#geop')
+const target = $.get('#geop')
 
 function createApp () {
   initConf().then(conf => {
-    const app = new Geop(el)
+    const app = new Geop({ target })
     app.render()
   })
 }
@@ -27,7 +21,7 @@ export function reloadApp () {
   if (app) {
     app.destroy()
     app = null
-    $.html(el, '')
+    $.html(target, '')
   }
   // createApp()
   window.location.reload()

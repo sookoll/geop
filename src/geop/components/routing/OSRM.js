@@ -15,6 +15,7 @@ class OSRM extends Provider {
       driving: 'driving'
     }
   }
+
   test (coords) {
     const routingProfile = (typeof getState('routing/profile') !== 'undefined')
       ? getState('routing/profile') : getState('app/routing').profile
@@ -23,6 +24,7 @@ class OSRM extends Provider {
     }
     return !(coords.length < 2)
   }
+
   directions (coords) {
     return new Promise((resolve, reject) => {
       this.clear()
@@ -44,6 +46,7 @@ class OSRM extends Provider {
         })
     })
   }
+
   format (polyline) {
     return new Polyline({
       factor: 1e5

@@ -8,15 +8,17 @@ import { getBookmarkState } from 'Components/bookmark/Bookmark'
  * Init conf - merge static conf with saved store
  */
 export function initConf () {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const conf = {}
     const permalink = getPermalink('b')
     let storageState
     let bookmarkState
     try {
-      storageState = await getAppState()
-      bookmarkState = permalink && permalink.length
-        ? await getBookmarkState(permalink) : {}
+      // storageState = await getAppState()
+      storageState = Promise.resolve(() => getAppState())
+      // bookmarkState = permalink && permalink.length
+      //  ? await getBookmarkState(permalink) : {}
+      bookmarkState = Promise.resolve(() => getBookmarkState(permalink))
     } catch (e) {
       storageState = {}
       bookmarkState = {}

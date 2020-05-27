@@ -16,6 +16,7 @@ class OpenRouteService extends Provider {
       hiking: 'foot-hiking'
     }
   }
+
   test (coords) {
     const routingProfile = (typeof getState('routing/profile') !== 'undefined')
       ? getState('routing/profile') : getState('app/routing').profile
@@ -24,11 +25,13 @@ class OpenRouteService extends Provider {
     }
     return !(coords.length < 2)
   }
+
   formatInput (coords) {
     return coords.filter(lonLat => !!lonLat).map(lonLat => {
       return lonLat.slice(0, 2)
     })
   }
+
   directions (coordinates) {
     const routingProfile = (typeof getState('routing/profile') !== 'undefined')
       ? getState('routing/profile') : getState('app/routing').profile
@@ -39,7 +42,7 @@ class OpenRouteService extends Provider {
         xhr.post(apiUrls.openrouteservice.directions + this.profiles[routingProfile], {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': apiUrls.openrouteservice.key
+            Authorization: apiUrls.openrouteservice.key
           },
           body: JSON.stringify({
             coordinates,
@@ -65,6 +68,7 @@ class OpenRouteService extends Provider {
       }
     })
   }
+
   optimize (start, end, coords) {
     const routingProfile = (typeof getState('routing/profile') !== 'undefined')
       ? getState('routing/profile') : getState('app/routing').profile
@@ -86,7 +90,7 @@ class OpenRouteService extends Provider {
         xhr.post(apiUrls.openrouteservice.optimize, {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': apiUrls.openrouteservice.key
+            Authorization: apiUrls.openrouteservice.key
           },
           body: JSON.stringify({
             jobs,
@@ -109,6 +113,7 @@ class OpenRouteService extends Provider {
       }
     })
   }
+
   format (polyline) {
     return new Polyline({
       factor: 1e5

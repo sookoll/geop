@@ -5,8 +5,7 @@ import Component from 'Geop/Component'
 import { toLonLat } from 'ol/proj'
 
 class StreetView extends Component {
-  constructor (target) {
-    super(target)
+  create () {
     // set contextmenu
     const contextMenuItems = getState('map/contextmenu')
     contextMenuItems.push({

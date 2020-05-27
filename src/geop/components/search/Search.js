@@ -8,13 +8,11 @@ import FeatureProvider from './Feature'
 import { createLayer } from 'Components/layer/LayerCreator'
 import GeoJSONFormat from 'ol/format/GeoJSON'
 import { fromLonLat, transformExtent } from 'ol/proj'
-import $ from 'Utilities/dom'
 import './Search.styl'
 
 class Search extends Component {
-  constructor (target) {
-    super(target)
-    this.el = $.create(`<div id="search" class="float-right"></div>`)
+  create () {
+    this.el = this.$.create('<div id="search" class="float-right"></div>')
     this.input = null
     this.state = {
       results: [],
@@ -29,53 +27,10 @@ class Search extends Component {
     this.format = new GeoJSONFormat({
       featureProjection: getState('map/projection')
     })
-    this.create()
   }
-  create () {
-    super.create()
-    if (this.target && this.el) {
-      this.resultsEl = $.get('ul', this.el)
-      $.on('click', $.get('.toggle', this.el), e => {
-        $.get('>.toggle', this.el).classList.toggle('d-none')
-        $.get('>.toggle', this.el).classList.toggle('d-inline-block')
-        $.get('>div', this.el).classList.toggle('d-none')
-      })
-      const toggler = $.get('.dropdown-toggle', this.el)
-      this.input = $.get('input', this.el)
-      // FIXME: dropdown
-      /* this.el
-        .find('.dropdown-toggle')
-        .on('shown.bs.dropdown', () => {
-          this.state.open = true
-        })
-        .on('hidden.bs.dropdown', () => {
-          this.state.open = false
-        }) */
-      $.on('click', toggler, e => {
-        const val = this.input.value.trim()
-        if (this.query !== val) {
-          this.clear()
-          this.search(val)
-        }
-      })
-      $.on('keyup', this.input, e => {
-        const val = e.target.value.trim()
-        toggler.disabled = (val.length < 1)
-        // clear
-        if (!val.length) {
-          this.clear()
-        } else if (e.keyCode === 13) {
-          this.clear()
-          this.state.open = true
-          this.search(val)
-        }
-      })
-    }
-  }
+
   render () {
-    let provider = null
-    const htmlArr = []
-    this.el.innerHTML = `
+    this.$.html(this.el, `
       <button class="btn btn-secondary d-inline-block d-sm-none toggle" aria-label="${t('Search')}">
         <i class="fa fa-search"></i>
       </button>
@@ -93,7 +48,49 @@ class Search extends Component {
             <ul class="dropdown-menu dropdown-menu-right scrollable-menu" role="menu"></ul>
           </span>
         </div>
-      </div>`
+      </div>`)
+    this.resultsEl = this.$.get('ul', this.el)
+    this.$.on('click', this.$.get('.toggle', this.el), e => {
+      this.$.get(':scope > .toggle', this.el).classList.toggle('d-none')
+      this.$.get(':scope > .toggle', this.el).classList.toggle('d-inline-block')
+      this.$.get(':scope > div', this.el).classList.toggle('d-none')
+    })
+    const toggler = this.$.get('.dropdown-toggle', this.el)
+    this.input = this.$.get('input', this.el)
+    // FIXME: dropdown
+    /* this.el
+      .find('.dropdown-toggle')
+      .on('shown.bs.dropdown', () => {
+        this.state.open = true
+      })
+      .on('hidden.bs.dropdown', () => {
+        this.state.open = false
+      }) */
+    this.$.on('click', toggler, e => {
+      const val = this.input.value.trim()
+      if (this.query !== val) {
+        this.clear()
+        this.search(val)
+      }
+    })
+    this.$.on('keyup', this.input, e => {
+      const val = e.target.value.trim()
+      toggler.disabled = (val.length < 1)
+      // clear
+      if (!val.length) {
+        this.clear()
+      } else if (e.keyCode === 13) {
+        this.clear()
+        this.state.open = true
+        this.search(val)
+      }
+    })
+  }
+
+  renderResults () {
+    let provider = null
+    const htmlArr = []
+
     this.state.results.forEach(result => {
       if (provider !== result.properties.provider) {
         htmlArr.push(`<li class="dropdown-header">${t(result.properties.provider)}</li>`)
@@ -127,19 +124,19 @@ class Search extends Component {
     // FIXME: dropdown
     // this.el.find('.dropdown-toggle').dropdown('update')
     if (this.resultsEl) {
-      $.html(this.resultsEl, htmlArr.join(''))
+      this.$.html(this.resultsEl, htmlArr.join(''))
       if (this.state.open) {
         // FIXME: dropdown
         this.el.find('.dropdown-toggle').dropdown('toggle')
         this.state.open = false
       }
-      $.on('click', $.get('.clear', this.resultsEl), e => {
+      this.$.on('click', this.$.get('.clear', this.resultsEl), e => {
         this.clear()
         this.input.value = ''
-        $.trigger('keyup', this.input)
+        this.$.trigger('keyup', this.input)
       })
-      $.get('a', this.resultsEl).forEach(el => {
-        $.on('click', el, e => {
+      this.$.get('a', this.resultsEl).forEach(el => {
+        this.$.on('click', el, e => {
           e.preventDefault()
           e.stopPropagation()
           const map = getState('map')
@@ -166,6 +163,7 @@ class Search extends Component {
     }
     this.handleFeatures()
   }
+
   clear () {
     Object.keys(this.providers).forEach(key => {
       this.providers[key].clear()
@@ -174,6 +172,7 @@ class Search extends Component {
     this.query = null
     this.render()
   }
+
   search (query) {
     const debug = getState('app/debug')
     this.query = query
@@ -203,20 +202,21 @@ class Search extends Component {
         .finally(() => {
           counter--
           if (counter === 0) {
-            this.render()
+            this.renderResults()
             this.searchEnd()
           }
         })
     })
   }
+
   searchStart () {
-    const el = $.get('.dropdown-toggle i', this.el)
+    const el = this.$.get('.dropdown-toggle i', this.el)
     el.classList.remove('fa-search')
     el.classList.add('fa-spinner', 'fa-pulse')
   }
 
   searchEnd () {
-    const el = $.get('.dropdown-toggle i', this.el)
+    const el = this.$.get('.dropdown-toggle i', this.el)
     el.classList.add('fa-search')
     el.classList.remove('fa-spinner', 'fa-pulse')
   }

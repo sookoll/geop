@@ -6,22 +6,20 @@ import { uid, hexToRgbA } from 'Utilities/util'
 import { createLayer } from 'Components/layer/LayerCreator'
 import { checkCaches, importCaches } from 'Components/geocache/Geocache'
 import Component from 'Geop/Component'
-import $ from 'Utilities/dom'
 
 class GeocacheLoader extends Component {
-  constructor (target) {
-    super(target)
+  create () {
     this.id = 'tab-loader'
     this.icon = 'fa fa-cloud-download-alt'
-    this.el = $.create(`<div
+    this.el = this.$.create(`<div
       class="tab-pane fade show active"
       id="${this.id}"
       role="tabpanel">
     </div>`)
-    this.create()
   }
+
   render () {
-    $.html(this.el, `
+    this.$.html(this.el, `
       <ul class="list-group mb-3">
         <li class="list-group-item">
           <span class="badge badge-pill badge-secondary">1</span>
@@ -57,26 +55,27 @@ class GeocacheLoader extends Component {
         ${t('Add geocaches to map')}
       </button>
     `)
-    const textarea = $.get('textarea', this.el)
-    $.on('input', textarea, e => {
+    const textarea = this.$.get('textarea', this.el)
+    this.$.on('input', textarea, e => {
       const val = e.target.value.trim()
-      $.get('button.confirm', this.el).disabled = val.length === 0
+      this.$.get('button.confirm', this.el).disabled = val.length === 0
     })
-    $.on('keyup', textarea, e => {
+    this.$.on('keyup', textarea, e => {
       if (e.keyCode === 13) {
         if (e.target.value.trim().length > '{"type":"Feature"}'.length) {
           this.addCaches(e.target.value.trim())
           e.target.value = ''
-          $.trigger('input', e.target)
+          this.$.trigger('input', e.target)
         }
       }
     })
-    $.on('click', $.get('button.confirm', this.el), e => {
+    this.$.on('click', this.$.get('button.confirm', this.el), e => {
       this.addCaches(textarea.value.trim())
       textarea.value = ''
-      $.trigger('input', textarea)
+      this.$.trigger('input', textarea)
     })
   }
+
   addCaches (content) {
     let json = null
     content = this.fixme(content)
@@ -107,6 +106,7 @@ class GeocacheLoader extends Component {
       }
     }
   }
+
   fixme (content) {
     // FIXME: temporary hack to fix known json falses
     return content
@@ -114,6 +114,7 @@ class GeocacheLoader extends Component {
       .replace('Seikluse "Pärnu villad" boonusaare', 'Seikluse &quot;Pärnu villad&quot; boonusaare')
       .replace('SPA 36: "Inetu kuusepoeg"', 'SPA 36: &quot;Inetu kuusepoeg&quot;')
   }
+
   createLayer (geojson) {
     const color = '#000000'
     geojson.features && geojson.features.forEach(f => {

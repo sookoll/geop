@@ -3,17 +3,21 @@ import Component from 'Geop/Component'
 import Sidebar from 'Components/sidebar/Sidebar'
 import Info from './Info'
 import Config from './Config'
-import $ from 'Utilities/dom'
 
 class SettingsBar extends Component {
-  constructor (target) {
-    super(target)
-    this.el = $.create(`<button type="button"
+  create () {
+    this.el = this.$.create(`<button type="button"
       class="btn btn-secondary">
     </button>`)
-    this.create()
+  }
+
+  render () {
+    this.$.html(this.el, '<i class="fa fa-ellipsis-h"></i>')
+  }
+
+  createComponents () {
     this.sidebar = new Sidebar({
-      target: $.get('#geop'),
+      target: this.$.get('#geop'),
       trigger: this.el,
       position: 'left',
       components: {
@@ -23,16 +27,8 @@ class SettingsBar extends Component {
       activeComponent: getState('app/settingsTabOpen'),
       shadow: true
     })
-  }
-  create () {
-    if (this.target && this.el) {
-      $.append(this.target, this.el)
-      $.append($.get('body'), this.sidebar)
-      $.append($.get('body'), this.shadow)
-    }
-  }
-  render () {
-    $.html(this.el, '<i class="fa fa-ellipsis-h"></i>')
+    // this.$.append(this.$.get('body'), this.sidebar)
+    // this.$.append(this.$.get('body'), this.shadow)
   }
 }
 

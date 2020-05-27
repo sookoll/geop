@@ -14,6 +14,7 @@ class Feature extends Provider {
       dataProjection: 'EPSG:4326'
     })
   }
+
   test (query) {
     return (query.length >= 3)
   }

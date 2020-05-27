@@ -264,14 +264,15 @@ export function formatTime (input, unit = 'timestamp') {
     case 'timestamp':
       result = new Date(input).toTimeString().slice(0, 8)
       break
-    case 'seconds':
-      let h = Math.floor(input / 60 / 60)
-      let m = Math.floor((input / 60 / 60 - h) * 60)
-      let s = Math.floor(((input / 60 / 60 - h) * 60 - m) * 60)
+    case 'seconds': {
+      const h = Math.floor(input / 60 / 60)
+      const m = Math.floor((input / 60 / 60 - h) * 60)
+      const s = Math.floor(((input / 60 / 60 - h) * 60 - m) * 60)
       /* s = s < 10 ? `0${s}` : `${s}`
       m = m < 10 ? `0${m}` : `${m}`
       h = h < 10 ? `0${h}` : `${h}` */
       result = `${h}h ${m}m ${s}s`
+    }
   }
   return result
 }

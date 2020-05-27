@@ -7,15 +7,13 @@ import { createMarker } from 'Components/mouseposition/MousePosition'
 import { fromLonLat } from 'ol/proj'
 import Component from 'Geop/Component'
 import './GeocacheInfo.styl'
-import $ from 'Utilities/dom'
 
 class GeocacheInfo extends Component {
-  constructor (target) {
-    super(target)
+  create () {
     this.id = 'tab-cacheinfo'
     this.icon = 'fa fa-cube'
     this.btnTextVisible = true
-    this.el = $.create(`<div
+    this.el = this.$.create(`<div
       class="tab-pane fade"
       id="${this.id}"
       role="tabpanel">
@@ -29,7 +27,6 @@ class GeocacheInfo extends Component {
         'Needs Maintenance': 'problem'
       }
     }
-    this.create()
     onchange('geocache/loadend', layer => {
       this.state.layer = layer
     })
@@ -40,8 +37,9 @@ class GeocacheInfo extends Component {
       }
     })
   }
+
   render () {
-    $.html(this.el, `
+    this.$.html(this.el, `
       <ul class="list-group mb-3">
       ${(this.state.layer && this.state.layer.get('_featureInfo') && this.state.cache)
     ? this.renderCacheInfo()
@@ -54,22 +52,23 @@ class GeocacheInfo extends Component {
     ? this.renderLogs() : ''}
     `)
     // fix all images
-    $.get('img', this.el, true).forEach(el => {
+    this.$.get('img', this.el, true).forEach(el => {
       el.classList.add('img-fluid')
-      $.css(el, { 'height': 'auto' })
+      this.this.$.css(el, { height: 'auto' })
     })
     // fix coords links color, if parent have it (https://www.geopeitus.ee/aare/2583)
-    $.get('a.createMarker', this.el, true).forEach(el => {
+    this.$.get('a.createMarker', this.el, true).forEach(el => {
       if (el.parentElement.style) {
         el.style = el.parentElement.style
       }
       // click on coords
-      $.on('click', el, e => {
+      this.$.on('click', el, e => {
         e.preventDefault()
         this.mapCoordinates(e.target.dataList.coordinates, e.target.textContent)
       })
     })
   }
+
   renderCacheInfo () {
     const info = this.state.layer.get('_featureInfo')
     const title = typeof info.title === 'function' ? info.title(this.state.cache) : info.title
@@ -87,6 +86,7 @@ class GeocacheInfo extends Component {
           ${description}
         </li>` : ''}`
   }
+
   renderLogs () {
     const logs = this.state.cache.get('logs') || []
     const cacheUrl = this.state.cache.get('url')
@@ -115,6 +115,7 @@ class GeocacheInfo extends Component {
           </li>`).join('')}
       </ul>`
   }
+
   mapCoordinates (coords, name) {
     const map = getState('map')
     coords = fromLonLat(coords)

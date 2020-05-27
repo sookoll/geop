@@ -1,5 +1,6 @@
 dist/
 node_modules/
+src/build
 .ide/
 .brackets.json
 .DS_Store

@@ -10,6 +10,7 @@ class Coordinate extends Provider {
     this.title = 'Addresses'
     this.xhr = fetch()
   }
+
   test (query) {
     return (query.length >= 3)
   }

@@ -91,34 +91,34 @@ export const geocache = {
   exportFileName: 'geop.gpx',
   mapping: {
     fstatusJSON: {
-      '0': 'Not Found',
-      '1': 'Found',
-      '2': 'Owner'
+      0: 'Not Found',
+      1: 'Found',
+      2: 'Owner'
     },
     fstatusGPX: {
-      'Geocache': 'Not Found',
+      Geocache: 'Not Found',
       'Geocache Found': 'Found',
       'Geocache Owner': 'Owner'
     },
     type: {
       'Tavaline aare': 'Geocache|Traditional Cache',
-      'Multiaare': 'Geocache|Multi-cache',
-      'Mõistatusaare': 'Geocache|Unknown Cache',
+      Multiaare: 'Geocache|Multi-cache',
+      Mõistatusaare: 'Geocache|Unknown Cache',
       'Väljakutse-aare': 'Geocache|Unknown Cache|Challenge',
-      'Kirjakastiaare': 'Geocache|Letterbox Hybrid',
+      Kirjakastiaare: 'Geocache|Letterbox Hybrid',
       'Virtuaalne aare': 'Geocache|Virtual Cache',
-      'Veebikaamera': 'Geocache|Webcam Cache',
+      Veebikaamera: 'Geocache|Webcam Cache',
       'Asukohata (tagurpidi) aare': 'Geocache|Locationless Cache',
-      'KusMaLäen': 'Geocache|Wherigo Cache',
+      KusMaLäen: 'Geocache|Wherigo Cache',
       'Maa-aare': 'Geocache|Earthcache',
-      'Sündmusaare': 'Geocache|Event Cache'
+      Sündmusaare: 'Geocache|Event Cache'
     },
     container: {
-      'mikro': 'Micro',
-      'väike': 'Small',
-      'normaalne': 'Regular',
-      'suur': 'Large',
-      'muu': 'Unknown'
+      mikro: 'Micro',
+      väike: 'Small',
+      normaalne: 'Regular',
+      suur: 'Large',
+      muu: 'Unknown'
     }
   },
   filter: {
@@ -242,18 +242,18 @@ export const geocache = {
         font: '900 12px "Font Awesome 5 Free"'
       }
     },
-    color: {// leidmata - 0, leitud - 1, minu - 2
+    color: { // leidmata - 0, leitud - 1, minu - 2
       'Not Found': {
         fill: {
           color: '#444'
         }
       },
-      'Found': {
+      Found: {
         fill: {
           color: '#4c9900'
         }
       },
-      'Owner': {
+      Owner: {
         fill: {
           color: '#f00'
         }

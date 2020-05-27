@@ -4,8 +4,7 @@ import Component from 'Geop/Component'
 import './Compass.styl'
 
 class Compass extends Component {
-  constructor (target) {
-    super(target)
+  create () {
     this.el = this.$.create(`
       <button id="compass" class="btn btn-link" title="${t('North up!')}">
         <i class="icon"></i>
@@ -50,7 +49,7 @@ class Compass extends Component {
       this.$.css(this.$.get('.icon', this.el), {
         '-webkit-transform': `rotate(${viewRotation}rad)`,
         '-moz-transform': `rotate(${viewRotation}rad)`,
-        'transform': `rotate(${viewRotation}rad)`
+        transform: `rotate(${viewRotation}rad)`
       })
     }
   }

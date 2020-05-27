@@ -7,91 +7,34 @@ import { copy, uid, deepCopy, fetch } from 'Utilities/util'
 import { get as getPermalink, onchange as onPermalinkChange } from 'Utilities/permalink'
 import log from 'Utilities/log'
 import { reloadApp } from 'Root'
-import $ from 'Utilities/dom'
 import JSONP from 'jsonpack'
 import QRious from 'qrious'
+import Modal from 'bootstrap.native'
 import './Bookmark.styl'
 
 const xhr = fetch()
 
 class Bookmark extends Component {
-  constructor (target) {
-    super(target)
-    this.el = $.create(`<div class="btn-group"></div>`)
-    this.modal = $.get('#modal_bookmark')
+  create () {
+    this.el = this.$.create('<div class="btn-group"></div>')
+    this.modalEl = this.$.create(`
+      <div class="modal fade"
+        id="modal_bookmark">
+      </div>`)
+    this.modal = null
     this.state = {
       bookmarks: getState('app/bookmarks') || [],
       bookmark: getPermalink('b')
     }
-    this.create()
-    $.on('click', $.get('button.share', this.el), e => {
-      e.preventDefault()
-      this.share()
-    })
-    $.get('li', this.el, true).forEach(el => {
-      $.on('click', el, e => {
-        e.preventDefault()
-        this.openModal(e.currentTarget.dataset.id)
-      })
-    })
-    $.get('li .tools a.remove', this.el, true).forEach(el => {
-      $.on('click', el, e => {
-        e.preventDefault()
-        e.stopPropagation()
-        this.delete(e.currentTarget.closest('li').dataset.id)
-      })
-    })
-
-    $.on('click', $.get('button.copy', this.modal), e => {
-      e.preventDefault()
-      this.copy($.get('input', e.target.closest('.modal')).value)
-    })
     onPermalinkChange(permalink => {
       if (this.state.bookmark !== permalink.b) {
         reloadApp()
       }
     })
   }
+
   render () {
-    if (!this.modal || this.modal.length === 0) {
-      this.modal = $.create(`<div class="modal fade"
-        id="modal_bookmark">
-      </div>`)
-      $.html(this.modal, `<div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title">${t('Share bookmark')}</h4>
-            <button type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body text-muted">
-            <div class="input-group mb-5">
-              <input type="text" class="form-control" name="bookmark" readonly>
-              <div class="input-group-append">
-                <button class="btn btn-secondary copy" type="button">
-                  <i class="far fa-clone"></i>
-                </button>
-                <a class="btn btn-secondary go" href="#" target="_blank">
-                  <i class="fas fa-link"></i>
-                </a>
-              </div>
-            </div>
-            <div class="mb-5 text-center display-4">
-              ${t('or')}
-            </div>
-            <div class="mb-5 text-center">
-              <canvas class="rounded mx-auto d-block img-thumbnail"></canvas>
-            </div>
-          </div>
-        </div>
-      </div>`)
-      $.append($.get('body'), this.modal)
-    }
-    $.html(this.el, `
+    this.$.html(this.el, `
       <div class="btn-group dropup">
         <button type="button" class="btn btn-secondary share" title="${t('Share')}">
           <i class="fas fa-share-alt"></i>
@@ -119,28 +62,78 @@ class Bookmark extends Component {
         </div>
       </div>
     `)
+    this.$.on('click', this.$.get('button.share', this.el), e => {
+      e.preventDefault()
+      this.share()
+    })
+    this.$.get('li', this.el, true).forEach(el => {
+      this.$.on('click', el, e => {
+        e.preventDefault()
+        this.openModal(e.currentTarget.dataset.id)
+      })
+    })
+    this.$.get('li .tools a.remove', this.el, true).forEach(el => {
+      this.$.on('click', el, e => {
+        e.preventDefault()
+        e.stopPropagation()
+        this.delete(e.currentTarget.closest('li').dataset.id)
+      })
+    })
   }
+
+  renderComponents () {
+    this.$.html(this.modalEl, `<div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">${t('Share bookmark')}</h4>
+          <button type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body text-muted">
+          <div class="input-group mb-5">
+            <input type="text" class="form-control" name="bookmark" readonly>
+            <div class="input-group-append">
+              <button class="btn btn-secondary copy" type="button">
+                <i class="far fa-clone"></i>
+              </button>
+              <a class="btn btn-secondary go" href="#" target="_blank">
+                <i class="fas fa-link"></i>
+              </a>
+            </div>
+          </div>
+          <div class="mb-5 text-center display-4">
+            ${t('or')}
+          </div>
+          <div class="mb-5 text-center">
+            <canvas class="rounded mx-auto d-block img-thumbnail"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>`)
+    this.$.append(this.$.get('body'), this.modalEl)
+    this.$.on('click', this.$.get('button.copy', this.modalEl), e => {
+      e.preventDefault()
+      this.copy(this.$.get('input', e.target.closest('.modal')).value)
+    })
+  }
+
   // https://dev.to/bauripalash/building-a-simple-url-shortener-with-just-html-and-javascript-16o4
   share () {
     const debug = getState('app/debug')
     getSessionState()
-      .then(appState => {
-        setBookmarkState(appState)
-          .then(bookmark => {
-            this.state.bookmarks.push(bookmark)
-            setState('app/bookmarks', this.state.bookmarks, true)
-            this.render()
-            this.openModal(bookmark)
-            if (debug) {
-              console.debug('Bookmark saved: ' + bookmark)
-            }
-          })
-          .catch(e => {
-            log('error', t(e.message))
-            if (debug) {
-              console.error('Bookmark error [setBookmarkState]: ' + JSON.stringify(e))
-            }
-          })
+      .then(appState => setBookmarkState(appState))
+      .then(bookmark => {
+        this.state.bookmarks.push(bookmark)
+        setState('app/bookmarks', this.state.bookmarks, true)
+        this.render()
+        this.openModal(bookmark)
+        if (debug) {
+          console.debug('Bookmark saved: ' + bookmark)
+        }
       })
       .catch(e => {
         log('error', t(e.message))
@@ -149,6 +142,7 @@ class Bookmark extends Component {
         }
       })
   }
+
   copy (content) {
     copy(content)
       .then(() => {
@@ -158,6 +152,7 @@ class Bookmark extends Component {
         log('error', t('Unable to copy to clipboard'))
       })
   }
+
   delete (bookmark) {
     const debug = getState('app/debug')
     deleteBookmarkState(bookmark)
@@ -177,25 +172,26 @@ class Bookmark extends Component {
         }
       })
   }
+
   bookmarkUrl (hash) {
     return window.location.origin + window.location.pathname + '#b=' + hash
   }
+
   openModal (bookmark) {
-    $.get('input', this.modal).value = this.bookmarkUrl(bookmark)
-    $.get('a.go', this.modal).href = this.bookmarkUrl(bookmark)
+    this.$.get('input', this.modalEl).value = this.bookmarkUrl(bookmark)
+    this.$.get('a.go', this.modalEl).href = this.bookmarkUrl(bookmark)
     const qr = new QRious({
-      element: $.get('canvas', this.modal),
+      element: this.$.get('canvas', this.modalEl),
       size: 200
     })
     qr.value = this.bookmarkUrl(bookmark)
-    // FIXME
-    // this.modal.modal()
+    console.log(Modal)
+    this.modal = new Modal(this.modalEl)
+    this.modal.show()
   }
+
   destroy () {
-    // FIXME
-    // this.modal.modal('dispose')
-    // this.modal.remove()
-    this.modal = null
+    this.modal.hide()
     super.destroy()
   }
 }
@@ -243,11 +239,9 @@ function formatState (type = 'down', data = {}, hash = null) {
 }
 
 function setBookmarkState (data) {
+  console.log(data)
   return new Promise((resolve, reject) => {
-    // abort ongoing
-    xhr.abort()
     const hash = uid()
-
     xhr.post(apiUrls.jsonstore + '/' + hash, {
       body: JSON.stringify({
         state: JSONP.pack(formatState('up', data))
@@ -266,7 +260,6 @@ function setBookmarkState (data) {
 
 export function getBookmarkState (hash) {
   return new Promise((resolve, reject) => {
-    xhr.abort()
     xhr.get(apiUrls.jsonstore + '/' + hash)
       .then(response => {
         if (response && response.ok && response.result && response.result.state) {

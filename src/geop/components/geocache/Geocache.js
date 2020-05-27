@@ -17,7 +17,6 @@ import geopeitusJSON from './GeopeitusJSON'
 import projectGCJSON from './ProjectGCJSON'
 import geocacheGPX from './GeocacheGPX'
 import './Geocache.styl'
-import $ from 'Utilities/dom'
 
 const cacheFormatParsers = [
   geopeitusJSON,
@@ -33,16 +32,20 @@ const state = {
   cacheFormatParser: null,
   stat: {
     'Not Found': 'far fa-square',
-    'Found': 'far fa-check-square',
-    'Owner': 'fas fa-user'
+    Found: 'far fa-check-square',
+    Owner: 'fas fa-user'
   },
   featureCount: 0
 }
 
 class Geocache extends Component {
-  constructor (target) {
-    super(target)
-    this.el = $.create(`<div id="geocache" class="btn-group"></div>`)
+  constructor (opts) {
+    super(opts)
+    this.eventHandlers.listenLayer()
+  }
+
+  create () {
+    this.el = this.$.create('<div id="geocache" class="btn-group"></div>')
     // radiusStyle geometry function
     state.styleConfig.radiusStyle.geometry = feature => {
       const coordinates = feature.getGeometry().getCoordinates()
@@ -50,24 +53,12 @@ class Geocache extends Component {
       const scaleF = scaleFactor(lonlat)
       return new Circle(coordinates, (cacheConf.radiusStyle.radius * scaleF))
     }
-    this.create()
-    this.sidebar = new Sidebar({
-      target: $.get('#geop'),
-      trigger: $.get('button', this.el),
-      position: 'left',
-      components: {
-        GeocacheLoader,
-        GeocacheInfo,
-        Filter,
-        Geotrip
-      },
-      activeComponent: 'tab-loader',
-      shadow: false
-    })
-    const listenLayer = e => {
-      let featureCount = getCacheCount()
-      $.html($.get('button > span', this.el), featureCount || t('Caches'))
-      $.html($.get('span', this.sidebar.getComponent('Filter').get('tab')), featureCount || t('Filter'))
+    this.eventHandlers = {
+      listenLayer: e => {
+        const featureCount = getCacheCount()
+        this.$.html(this.$.get('button > span', this.el), featureCount || t('Caches'))
+        this.$.html(this.$.get('span', this.sidebar.getComponent('Filter').get('tab')), featureCount || t('Filter'))
+      }
     }
     const layers = getState('map/layer/layers')
     // initial cache layer
@@ -88,7 +79,7 @@ class Geocache extends Component {
         state.layer.getSource().clear()
         // run for onchange events
         setState('geocache/loadend', state.layer)
-        listenLayer()
+        this.eventHandlers.listenLayer()
         state.layerOnMap = false
       }
     })
@@ -99,26 +90,43 @@ class Geocache extends Component {
     state.layer.getSource().on('addfeature', e => {
       count++
       if (count >= state.featureCount) {
-        listenLayer()
+        this.eventHandlers.listenLayer()
         state.featureCount = 0
         count = 0
       }
     })
-    state.layer.getSource().on('clear', listenLayer)
+    state.layer.getSource().on('clear', this.eventHandlers.listenLayer)
     onchange('geocache/filter', () => {
-      listenLayer()
+      this.eventHandlers.listenLayer()
       setState('layerchange', ['layers', state.layer.get('id')])
     })
-    listenLayer()
   }
+
   render () {
-    this.el.innerHTML = `<button
+    this.$.html(this.el, `<button
       class="btn btn-secondary"
       title="${t('Caches')}">
       <i class="fa fa-cube"></i>
       <span>${t('Caches')}</span>
-    </button>`
+    </button>`)
   }
+
+  createComponents () {
+    this.sidebar = new Sidebar({
+      target: this.$.get('#geop'),
+      trigger: this.$.get('button', this.el),
+      position: 'left',
+      components: {
+        GeocacheLoader,
+        GeocacheInfo,
+        Filter,
+        Geotrip
+      },
+      activeComponent: 'tab-loader',
+      shadow: false
+    })
+  }
+
   createLayer (layer = null) {
     if (!layer) {
       layer = createLayer({
@@ -183,16 +191,16 @@ class Geocache extends Component {
       onShow: (f, pop) => {
         const fstatus = f[1].get('fstatus')
         // Workaround for removed style attribute in popup
-        $.css($.get('h3 i.fstatus', pop), { color: state.styleConfig.color[fstatus].fill.color })
+        this.$.css(this.$.get('h3 i.fstatus', pop), { color: state.styleConfig.color[fstatus].fill.color })
         const geotrip = getState('geocache/trip')
-        $.on('click', $.get('.toggle-found', pop), e => {
+        this.this.$.on('click', this.$.get('.toggle-found', pop), e => {
           const inTrip = geotrip && geotrip.getArray().indexOf(f[1]) > -1
           const found = fstatus === 'Found'
-          $.get('i', e.currentTarget).classList.remove(state.stat[f[1].get('fstatus')])
+          this.$.get('i', e.currentTarget).classList.remove(state.stat[f[1].get('fstatus')])
           f[1].set('fstatus', found ? 'Not Found' : 'Found')
           f[1].set('fstatus_timestamp', !found ? Date.now() : null)
-          $.html($.get('span', e.currentTarget), t(f[1].get('fstatus')))
-          $.get('i', e.currentTarget).classList.add(state.stat[f[1].get('fstatus')])
+          this.$.html(this.$.get('span', e.currentTarget), t(f[1].get('fstatus')))
+          this.$.get('i', e.currentTarget).classList.add(state.stat[f[1].get('fstatus')])
           if (!inTrip && !found) {
             geotrip.push(f[1])
           }
@@ -202,7 +210,7 @@ class Geocache extends Component {
             geotrip.insertAt(idx, f[1])
           }
           // FIXME
-          $(pop).popover('dispose')
+          // $(pop).popover('dispose')
         })
       }
     })

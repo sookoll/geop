@@ -1,25 +1,23 @@
 import { getState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
 import Component from 'Geop/Component'
-import $ from 'Utilities/dom'
 import './Info.styl'
 
 class Info extends Component {
-  constructor (target) {
-    super(target)
+  create () {
     this.id = 'info-tab'
     this.icon = 'fa fa-info-circle'
-    this.el = $.create(`
+    this.el = this.$.create(`
       <div
         class="tab-pane fade ${this.id === getState('app/settingsTabOpen') ? 'show active' : ''}"
         id="${this.id}"
         role="tabpanel">
       </div>
     `)
-    this.create()
   }
+
   render () {
-    $.html(this.el, `
+    this.$.html(this.el, `
       <h5>
         Geop
         <i class="text-muted small">${window.geop.version}</i>
