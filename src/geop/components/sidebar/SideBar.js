@@ -67,6 +67,7 @@ class Sidebar extends Component {
   }
 
   renderComponents () {
+    const tabs = []
     Object.keys(this.components).forEach((i) => {
       const li = this.$.create(`<li class="nav-item">
         <a class="nav-link ${this.state.active === this.components[i].id ? 'active' : ''}"
@@ -78,16 +79,13 @@ class Sidebar extends Component {
           <span class="${this.components[i].btnTextVisible ? '' : 'd-none d-sm-inline-block'}">${t(i)}</span>
         </a>
       </li>`)
-      const a = this.$.get('a', li)
-      // this.$.html(tab, ``)
-      this.components[i].set('tab', a)
       this.$.append(this.$.get(':scope > ul', this.el), li)
-      // (() => new Tab(a, { height: true }))()
-      const tab = new Tab(a)
-      if (this.state.active === this.components[i].id) {
-        tab.show()
-      }
-      console.log(tab)
+      const tab = this.$.get('a', li)
+      this.components[i].set('tab', tab)
+      tabs.push(tab)
+    })
+    tabs.forEach(tab => {
+      (() => new Tab(tab, { height: true }))()
     })
   }
 }

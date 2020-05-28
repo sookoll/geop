@@ -41,18 +41,38 @@ class StatusBar extends Component {
     const opts = {
       toggle: key => this.toggleMobileVisible(key)
     }
-    this.toggleComponents = {
-      scaleline: getState('app/scaleLine') && new ScaleLine(this.$.get('#scaleline', this.el), opts),
-      bookmark: getState('app/shareState') && new Bookmark(this.$.get('#bookmark', this.el), opts),
-      mouseposition: getState('app/mousePosition') && new MousePosition(this.$.get('#mouseposition', this.el), opts),
-      routinginfo: getState('app/routing') && new RoutingInfo(this.$.get('#routinginfo', this.el), opts),
-      measure: getState('app/measureTool') && new Measure(this.$.get('#measure', this.el), opts)
+    this.toggleComponents = {}
+    if (getState('app/scaleLine')) {
+      opts.target = this.$.get('#scaleline', this.el)
+      this.toggleComponents.scaleline = new ScaleLine(opts)
     }
-    this.components = Object.assign({}, this.toggleComponents, {
-      settings: getState('app/settings') && new SettingsBar(this.$.get('#settingsbar', this.el)),
-      screenlock: getState('app/screenLock') && new ScreenLock(this.$.get('#screen', this.el)),
-      fullscreen: getState('app/fullScreen') && new FullScreen(this.$.get('#screen', this.el))
-    })
+    if (getState('app/shareState')) {
+      opts.target = this.$.get('#bookmark', this.el)
+      this.toggleComponents.bookmark = new Bookmark(opts)
+    }
+    if (getState('app/mousePosition')) {
+      opts.target = this.$.get('#mouseposition', this.el)
+      this.toggleComponents.mouseposition = new MousePosition(opts)
+    }
+    if (getState('app/routing')) {
+      opts.target = this.$.get('#routinginfo', this.el)
+      this.toggleComponents.routinginfo = new RoutingInfo(opts)
+    }
+    if (getState('app/measureTool')) {
+      opts.target = this.$.get('#measure', this.el)
+      this.toggleComponents.measure = new Measure(opts)
+    }
+    this.components = Object.assign({}, this.toggleComponents)
+
+    if (getState('app/settings')) {
+      this.components.settings = new SettingsBar({ target: this.$.get('#settingsbar', this.el) })
+    }
+    if (getState('app/screenLock')) {
+      this.components.screenlock = new ScreenLock(this.$.get('#screen', this.el))
+    }
+    if (getState('app/fullScreen')) {
+      this.components.fullscreen = new FullScreen(this.$.get('#screen', this.el))
+    }
   }
 
   renderComponents () {
