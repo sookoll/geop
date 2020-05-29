@@ -64,7 +64,7 @@ class GeocacheInfo extends Component {
       // click on coords
       this.$.on('click', el, e => {
         e.preventDefault()
-        this.mapCoordinates(e.target.dataList.coordinates, e.target.textContent)
+        this.mapCoordinates(e.target.dataset.coordinates, e.target.textContent)
       })
     })
   }

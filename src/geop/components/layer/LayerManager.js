@@ -126,7 +126,7 @@ class LayerManager extends Component {
       this.$.on('click', el, e => {
         e.preventDefault()
         e.stopPropagation()
-        const id = e.currentTarget.closest('li').dataList.id
+        const id = e.currentTarget.closest('li').dataset.id
         if (this.state.activeBaseLayer && id === this.state.activeBaseLayer.get('id')) {
           this.toggleLayer('base', id)
         } else {
@@ -147,7 +147,7 @@ class LayerManager extends Component {
       this.$.on('click', el, e => {
         e.preventDefault()
         e.stopPropagation()
-        const data = e.currentTarget.closest('li').dataList
+        const data = e.currentTarget.closest('li').dataset
         this.toggleLayer(data.group, data.id)
       })
     })
@@ -161,7 +161,7 @@ class LayerManager extends Component {
       this.$.on('click', el, e => {
         e.preventDefault()
         e.stopPropagation()
-        const data = e.currentTarget.closest('li').dataList
+        const data = e.currentTarget.closest('li').dataset
         this.fitTo(data.group, data.id)
       })
     })
@@ -169,13 +169,13 @@ class LayerManager extends Component {
       this.$.on('click', el, e => {
         e.preventDefault()
         e.stopPropagation()
-        const data = e.currentTarget.closest('li').dataList
+        const data = e.currentTarget.closest('li').dataset
         this.removeLayer(data.group, data.id)
       })
     })
     this.$.get('input[type=color]', ul, true).forEach(el => {
       this.$.on('change', el, e => {
-        const data = e.currentTarget.closest('li').dataList
+        const data = e.currentTarget.closest('li').dataset
         this.setLayerColor(data.group, data.id)
         this.$.get('.dot', e.currentTarget.closest('.color')).css({ background: e.target.value })
       })
@@ -192,9 +192,9 @@ class LayerManager extends Component {
       this.$.on('click', el, e => {
         e.preventDefault()
         e.stopPropagation()
-        const data = e.currentTarget.closest('li').dataList
+        const data = e.currentTarget.closest('li').dataset
         const url = this.getWMSUrl(data.group, data.id)
-        const target = this.$.get(e.currentTarget.dataList.target)
+        const target = this.$.get(e.currentTarget.dataset.target)
         if (url) {
           // FIXME
           // $($(e.currentTarget).data('target')).modal()
@@ -333,8 +333,8 @@ class LayerManager extends Component {
 
   reorderLayers (e) {
     if (e.oldDraggableIndex !== e.newDraggableIndex) {
-      const layerId = e.item.dataList.id
-      const groupId = e.item.dataList.group
+      const layerId = e.item.dataset.id
+      const groupId = e.item.dataset.group
       this.state[groupId].forEach(layer => {
         if (layer.get('id') === layerId) {
           // store reordering state

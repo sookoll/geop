@@ -184,14 +184,14 @@ class Geotrip extends Component {
     this.$.get('li button.close', this.el, true).forEach(el => {
       this.$.on('click', el, e => {
         e.preventDefault()
-        this.remove(e.currentTarget.closest('li').dataList.id)
+        this.remove(e.currentTarget.closest('li').dataset.id)
       })
     })
     // zoom to
     this.$.get('li a', this.el, true).forEach(el => {
       this.$.on('click', el, e => {
         e.preventDefault()
-        this.zoomTo(e.currentTarget.closest('li').dataList.id)
+        this.zoomTo(e.currentTarget.closest('li').dataset.id)
       })
     })
     // clear trip
@@ -244,7 +244,7 @@ class Geotrip extends Component {
   reorderTrip () {
     const order = []
     this.$.get('li.sort-item', this.el).forEach(el => {
-      order.push(el.dataList.id)
+      order.push(el.dataset.id)
     })
     this.reorderCollection(this.state.collection, order)
   }

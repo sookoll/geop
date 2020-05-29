@@ -182,7 +182,7 @@ class Config extends Component {
     // language change
     this.$.get('button.set-locale-btn', this.el, true).forEach(el => {
       this.$.on('click', el, e => {
-        changeLocale(e.currentTarget.dataList.locale)
+        changeLocale(e.currentTarget.dataset.locale)
         this.$.get('button.set-locale-btn', this.el, true).forEach(elem => {
           elem.classList.remove('active')
         })
@@ -191,7 +191,7 @@ class Config extends Component {
           reloadApp()
         })
         if (getState('app/debug')) {
-          console.debug(`Config.render: Locale changed to ${e.currentTarget.dataList.locale}`)
+          console.debug(`Config.render: Locale changed to ${e.currentTarget.dataset.locale}`)
         }
       })
     })
@@ -230,7 +230,7 @@ class Config extends Component {
     // routing
     this.$.get('button.set-locale-btn', this.el, true).forEach(el => {
       this.$.on('click', el, e => {
-        setState('routing/infoFromRoute', e.currentTarget.dataList.share === 'on', true)
+        setState('routing/infoFromRoute', e.currentTarget.dataset.share === 'on', true)
         this.$.get('button.set-locale-btn', this.el, true).forEach(elem => {
           elem.classList.remove('active')
         })
@@ -240,7 +240,7 @@ class Config extends Component {
     // cache import
     this.$.get('button.set-cacheimport-btn', this.el, true).forEach(el => {
       this.$.on('click', el, e => {
-        setState('cache/import/appendLayer', e.currentTarget.dataList.import === 'append', true)
+        setState('cache/import/appendLayer', e.currentTarget.dataset.import === 'append', true)
         this.$.get('button.set-cacheimport-btn', this.el, true).forEach(elem => {
           elem.classList.remove('active')
         })
@@ -250,7 +250,7 @@ class Config extends Component {
     // share change
     this.$.get('button.set-share-btn', this.el, true).forEach(el => {
       this.$.on('click', el, e => {
-        setState('app/shareOnlyTripFeatures', e.currentTarget.dataList.share === 'on', true)
+        setState('app/shareOnlyTripFeatures', e.currentTarget.dataset.share === 'on', true)
         this.$.get('button.set-share-btn', this.el, true).forEach(elem => {
           elem.classList.remove('active')
         })
@@ -271,7 +271,7 @@ class Config extends Component {
     // debug change
     this.$.get('button.set-debug-btn', this.el, true).forEach(el => {
       this.$.on('click', el, e => {
-        setState('app/debug', e.currentTarget.dataList.debug === 'on', true)
+        setState('app/debug', e.currentTarget.dataset.debug === 'on', true)
         this.$.get('button.set-debug-btn', this.el, true).forEach(elem => {
           elem.classList.remove('active')
         })
@@ -280,7 +280,7 @@ class Config extends Component {
           reloadApp()
         })
         if (getState('app/debug')) {
-          console.debug(`Config.render: Debug changed to ${e.currentTarget.dataList.debug}`)
+          console.debug(`Config.render: Debug changed to ${e.currentTarget.dataset.debug}`)
         }
       })
     })

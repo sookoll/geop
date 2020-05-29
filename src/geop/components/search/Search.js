@@ -140,7 +140,7 @@ class Search extends Component {
           e.preventDefault()
           e.stopPropagation()
           const map = getState('map')
-          const id = e.currentTarget.dataList.id
+          const id = e.currentTarget.dataset.id
           const item = this.state.results.filter(item => {
             return String(id) === String(item.id)
           })[0]

@@ -86,7 +86,7 @@ class StatusBar extends Component {
     this.toggleMobileVisible(this.state.visibleMobile)
     this.$.get('#screen a[data-visible]', this.el, true).forEach(el => {
       this.$.on('click', el, e => {
-        this.toggleMobileVisible(e.currentTarget.dataList.visible)
+        this.toggleMobileVisible(e.currentTarget.dataset.visible)
       })
     })
   }

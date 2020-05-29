@@ -131,7 +131,7 @@ class MousePosition extends Component {
     })
     this.$.get('a[data-format]', this.el, true).forEach(el => {
       this.$.on('click', el, e => {
-        this.state.format = e.currentTarget.dataList.format
+        this.state.format = e.currentTarget.dataset.format
         setState('map/coordinateFormat', this.state.format, true)
         this.state.control.setProjection(coordFormats[this.state.format].projection)
         this.state.control.setCoordinateFormat(coordFormats[this.state.format].coordinateFormat)
