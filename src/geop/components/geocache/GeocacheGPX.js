@@ -10,10 +10,12 @@ export default {
       const wpt = feature.get('wpt')
       // format always
       if (feature.get('isCache')) {
+        // fstatus
+        let fstatus = feature.get('sym')
         if (opts.user && opts.user === feature.get('owner')) {
-          const fstatus = 'Geocache Owner'
-          feature.set('fstatus', opts.mapping.fstatusGPX[fstatus] || fstatus)
+          fstatus = 'Geocache Owner'
         }
+        feature.set('fstatus', opts.mapping.fstatusGPX[fstatus] || fstatus)
       }
       if (typeof feature.get('isCache') === 'undefined' && wpt['groundspeak:cache']) {
         const cacheData = {}
