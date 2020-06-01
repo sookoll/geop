@@ -35,7 +35,7 @@ class Geop extends Component {
     // components
     this.components = {
       map: new MapEngine({ target }),
-      contextmenu: new ContextMenu({ target }),
+      contextmenu: new ContextMenu(), // no target
       header: new Header({ target }),
       statusbar: new StatusBar({ target }),
       toolbar: new ToolBar({ target }),

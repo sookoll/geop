@@ -3,7 +3,6 @@ import { getState, setState } from 'Utilities/store'
 import { closestFeatureTo } from 'Components/map/MapEngine'
 import Overlay from 'ol/Overlay'
 import Point from 'ol/geom/Point'
-import Popper from 'popper.js'
 import Popover from 'bootstrap.native/src/components/popover-native'
 import './ContextMenu.styl'
 
@@ -26,7 +25,8 @@ class ContextMenu extends Component {
       items: items,
       timeout: null,
       disableClick: false,
-      popover: null
+      popover: null,
+      popContent: null
     }
     const map = getState('map')
     if (map) {
@@ -45,9 +45,7 @@ class ContextMenu extends Component {
       if (e.originalEvent.ctrlKey || this.state.disableClick) {
         return
       }
-      if (this.popover) {
-        this.popover.dispose()
-      }
+      this.close()
     })
     this.$.on('contextmenu', map.getViewport(), e => {
       e.preventDefault()
@@ -57,32 +55,38 @@ class ContextMenu extends Component {
       if (hit && hit[1].getGeometry() instanceof Point) {
         coords = hit[1].getGeometry().getCoordinates()
       }
-      this.open(coords, this.getContent(coords, hit))
+      this.state.popContent = this.getContent(coords, hit)
+      this.open(coords, this.state.popContent)
       this.state.disableClick = true
       this.state.timeout = setTimeout(() => { this.state.disableClick = false }, 1000)
+    })
+    // when popover's content is shown
+    this.$.on('shown.bs.popover', this.el, e => {
+      if (this.state.popContent) {
+        console.log(e.target.Popover)
+        this.state.popContent.onShow(e.target.Popover.element)
+      }
+    })
+    // when popover's content is hidden
+    this.$.on('hidden.bs.popover', this.el, e => {
+      if (this.state.popContent) {
+        this.state.popContent.onHide()
+      }
     })
   }
 
   open (coord, popContent) {
-    // FIXME
-    Popper.Defaults.modifiers.preventOverflow.enabled = false
-    Popper.Defaults.modifiers.hide.enabled = false
-    if (this.popover) {
-      this.popover.dispose()
-    }
+    this.close()
     this.state.overlay.setPosition(coord)
-    this.popover = new Popover(this.el, popContent.definition)
-    // when popover's content is shown
-    this.$.on('shown.bs.popover', this.el, e => {
-      popContent.onShow(e.target.Popover.element.childNodes[0])
-    })
-    // when popover's content is hidden
-    this.$.on('hidden.bs.popover', this.el, e => {
-      popContent.onHide()
-      Popper.Defaults.modifiers.preventOverflow.enabled = true
-      Popper.Defaults.modifiers.hide.enabled = true
-    })
-    this.popover.show()
+    this.state.popover = new Popover(this.el, popContent.definition).show()
+  }
+
+  close () {
+    if (this.state.popover) {
+      this.state.popover.hide()
+      this.state.popover.dispose()
+      this.state.popover = null
+    }
   }
 
   getContent (coord, feature) {
@@ -94,8 +98,8 @@ class ContextMenu extends Component {
       definition: {
         container: this.el,
         placement: 'right',
-        animation: false,
-        html: true,
+        animation: 'none',
+        trigger: 'click',
         content: content.join(''),
         offset: (this.state.items.length - 1) * 20 + 'px, 0',
         template: `
@@ -114,8 +118,7 @@ class ContextMenu extends Component {
               e.preventDefault()
               item.onClick(e, coord, feature)
               if (item.closeOnClick) {
-                // FIXME
-                this.el.popover('dispose')
+                this.close()
               }
             })
           }
@@ -125,8 +128,7 @@ class ContextMenu extends Component {
               e.stopPropagation()
               item.onBtnClick(e, coord, feature)
               if (item.closeOnClick) {
-                // FIXME
-                this.el.popover('dispose')
+                this.close()
               }
             })
           }
