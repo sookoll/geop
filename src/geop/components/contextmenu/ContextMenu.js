@@ -4,6 +4,7 @@ import { closestFeatureTo } from 'Components/map/MapEngine'
 import Overlay from 'ol/Overlay'
 import Point from 'ol/geom/Point'
 import Popper from 'popper.js'
+import Popover from 'bootstrap.native/src/components/popover-native'
 import './ContextMenu.styl'
 
 class ContextMenu extends Component {
@@ -24,7 +25,8 @@ class ContextMenu extends Component {
       }),
       items: items,
       timeout: null,
-      disableClick: false
+      disableClick: false,
+      popover: null
     }
     const map = getState('map')
     if (map) {
@@ -43,8 +45,9 @@ class ContextMenu extends Component {
       if (e.originalEvent.ctrlKey || this.state.disableClick) {
         return
       }
-      // FIXME
-      this.el.popover('dispose')
+      if (this.popover) {
+        this.popover.dispose()
+      }
     })
     this.$.on('contextmenu', map.getViewport(), e => {
       e.preventDefault()
@@ -64,20 +67,22 @@ class ContextMenu extends Component {
     // FIXME
     Popper.Defaults.modifiers.preventOverflow.enabled = false
     Popper.Defaults.modifiers.hide.enabled = false
-    this.el.popover('dispose')
+    if (this.popover) {
+      this.popover.dispose()
+    }
     this.state.overlay.setPosition(coord)
-    this.el.popover(popContent.definition)
+    this.popover = new Popover(this.el, popContent.definition)
     // when popover's content is shown
-    this.el.on('shown.bs.popover', e => {
-      popContent.onShow(e.target.data('bs.popover').tip)
+    this.$.on('shown.bs.popover', this.el, e => {
+      popContent.onShow(e.target.Popover.element.childNodes[0])
     })
     // when popover's content is hidden
-    this.el.on('hidden.bs.popover', () => {
+    this.$.on('hidden.bs.popover', this.el, e => {
       popContent.onHide()
       Popper.Defaults.modifiers.preventOverflow.enabled = true
       Popper.Defaults.modifiers.hide.enabled = true
     })
-    this.el.popover('show')
+    this.popover.show()
   }
 
   getContent (coord, feature) {

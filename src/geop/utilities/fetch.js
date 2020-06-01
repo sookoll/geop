@@ -35,7 +35,7 @@ class Fetch {
   }
 
   fetch (url, options = {}) {
-    url = this.formatURL(url, options)
+    url = this.formatUrl(url, options)
     this.abortController = new window.AbortController()
     options.signal = this.abortController.signal
     return new Promise((resolve, reject) => {

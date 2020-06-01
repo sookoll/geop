@@ -9,7 +9,8 @@ import log from 'Utilities/log'
 import { reloadApp } from 'Root'
 import JSONP from 'jsonpack'
 import QRious from 'qrious'
-import Modal from 'bootstrap.native'
+import Modal from 'bootstrap.native/src/components/modal-native'
+import Dropdown from 'bootstrap.native/src/components/dropdown-native'
 import './Bookmark.styl'
 
 const xhr = fetch()
@@ -22,6 +23,7 @@ class Bookmark extends Component {
         id="modal_bookmark">
       </div>`)
     this.modal = null
+    this.dropdown = null
     this.state = {
       bookmarks: getState('app/bookmarks') || [],
       bookmark: getPermalink('b')
@@ -79,6 +81,7 @@ class Bookmark extends Component {
         this.delete(e.currentTarget.closest('li').dataset.id)
       })
     })
+    this.dropdown = new Dropdown(this.$.get('.dropdown-toggle', this.el))
   }
 
   renderComponents () {
@@ -185,7 +188,6 @@ class Bookmark extends Component {
       size: 200
     })
     qr.value = this.bookmarkUrl(bookmark)
-    console.log(Modal)
     this.modal = new Modal(this.modalEl)
     this.modal.show()
   }
@@ -239,7 +241,6 @@ function formatState (type = 'down', data = {}, hash = null) {
 }
 
 function setBookmarkState (data) {
-  console.log(data)
   return new Promise((resolve, reject) => {
     const hash = uid()
     xhr.post(apiUrls.jsonstore + '/' + hash, {

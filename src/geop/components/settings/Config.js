@@ -228,10 +228,10 @@ class Config extends Component {
       }
     })
     // routing
-    this.$.get('button.set-locale-btn', this.el, true).forEach(el => {
+    this.$.get('button.set-route-btn', this.el, true).forEach(el => {
       this.$.on('click', el, e => {
         setState('routing/infoFromRoute', e.currentTarget.dataset.share === 'on', true)
-        this.$.get('button.set-locale-btn', this.el, true).forEach(elem => {
+        this.$.get('button.set-route-btn', this.el, true).forEach(elem => {
           elem.classList.remove('active')
         })
         e.currentTarget.classList.add('active')

@@ -14,6 +14,7 @@ import OSMEdit from 'Components/osmedit/OSMEdit'
 import LayerFromService from './LayerFromService'
 import UrlLayer from './UrlLayer'
 import Sortable from 'sortablejs'
+import Dropdown from 'bootstrap.native/src/components/dropdown-native'
 import './LayerManager.styl'
 
 class LayerManager extends Component {
@@ -56,6 +57,8 @@ class LayerManager extends Component {
       wms: LayerFromService,
       file: FileLayer
     }
+    this.modal = null
+    this.dropdown = null
     // register layer from url
     this.urlLayer = new UrlLayer()
     // listen permalink change
@@ -119,7 +122,7 @@ class LayerManager extends Component {
     this.renderComponents(ul)
     if (this.state.open) {
       // FIXME
-      this.el.find('button.toggle-btn').dropdown('toggle')
+      this.dropdown.toggle()
       this.state.open = false
     }
     this.$.get('.baselayer label', ul, true).forEach(el => {
@@ -187,7 +190,6 @@ class LayerManager extends Component {
         this.$.trigger('click', this.$.get('input[type=color]', e.currentTarget.closest('.color')))
       })
     })
-
     this.$.get('a.edit-layer', ul, true).forEach(el => {
       this.$.on('click', el, e => {
         e.preventDefault()
@@ -202,6 +204,7 @@ class LayerManager extends Component {
           this.$.get('textarea', target).value = url
           this.$.get('input[name=id]', target).value = data.id
           this.$.get(`input[type=radio][value=${data.group}]`, target).checked = true
+          this.components.wms.openModal()
         }
       })
     })
@@ -213,6 +216,7 @@ class LayerManager extends Component {
         this.reorderLayers(e)
       }
     })
+    this.dropdown = new Dropdown(this.$.get('.dropdown-toggle', this.el))
   }
 
   createComponents () {

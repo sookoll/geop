@@ -45,37 +45,7 @@ class GeoLocation extends Component {
       lastHeading: null,
       minAccuracy: 100,
       pressStart: null,
-      pressTimer: null,
-      eventHandlers: {
-        down: e => {
-          e.preventDefault()
-          this.state.pressStart = new Date().getTime()
-          this.state.pressTimer = setTimeout(() => {
-            this.disable()
-            e.currentTarget.classList.remove(...this.state.status)
-          }, longPress)
-        },
-        up: e => {
-          e.preventDefault()
-          if (new Date().getTime() < (this.state.pressStart + longPress)) {
-            clearTimeout(this.state.pressTimer)
-            this.state.active = (this.state.active + 1 >= this.state.status.length)
-              ? 0 : this.state.active + 1
-            if (this.state.active === 0) {
-              this.disable()
-              e.currentTarget.classList.remove(...this.state.status)
-            } else {
-              this.enable()
-              e.currentTarget.classList.add(this.state.status[this.state.active])
-            }
-          }
-        },
-        leave: e => {
-          e.preventDefault()
-          this.state.pressStart = 0
-          clearTimeout(this.state.pressTimer)
-        }
-      }
+      pressTimer: null
     }
     this.handlers = {
       updateView: e => {
@@ -83,6 +53,34 @@ class GeoLocation extends Component {
       },
       disableTracking: e => {
         this.disableTracking()
+      },
+      down: e => {
+        e.preventDefault()
+        this.state.pressStart = new Date().getTime()
+        this.state.pressTimer = setTimeout(() => {
+          this.disable()
+          e.currentTarget.classList.remove(...this.state.status)
+        }, longPress)
+      },
+      up: e => {
+        e.preventDefault()
+        if (new Date().getTime() < (this.state.pressStart + longPress)) {
+          clearTimeout(this.state.pressTimer)
+          this.state.active = (this.state.active + 1 >= this.state.status.length)
+            ? 0 : this.state.active + 1
+          if (this.state.active === 0) {
+            this.disable()
+            e.currentTarget.classList.remove(...this.state.status)
+          } else {
+            this.enable()
+            e.currentTarget.classList.add(this.state.status[this.state.active])
+          }
+        }
+      },
+      leave: e => {
+        e.preventDefault()
+        this.state.pressStart = 0
+        clearTimeout(this.state.pressTimer)
       }
     }
     if (this.test()) {
@@ -100,11 +98,11 @@ class GeoLocation extends Component {
     this.$.on('contextmenu', this.el, e => {
       e.preventDefault()
     })
-    this.$.on('mousedown', this.el, e => this.eventHandlers.down(e))
-    this.$.on('touchstart', this.el, e => this.eventHandlers.down(e))
-    this.$.on('mouseup', this.el, e => this.eventHandlers.up(e))
-    this.$.on('touchend', this.el, e => this.eventHandlers.up(e))
-    this.$.on('mouseleave', this.el, e => this.eventHandlers.leave(e))
+    this.$.on('mousedown', this.el, e => this.handlers.down(e))
+    this.$.on('touchstart', this.el, e => this.handlers.down(e))
+    this.$.on('mouseup', this.el, e => this.handlers.up(e))
+    this.$.on('touchend', this.el, e => this.handlers.up(e))
+    this.$.on('mouseleave', this.el, e => this.handlers.leave(e))
   }
 
   test () {

@@ -4,12 +4,14 @@ import { validURL, parseURL, constructURL, uid } from 'Utilities/util'
 import { getState } from 'Utilities/store'
 import log from 'Utilities/log'
 import Component from 'Geop/Component'
+import Modal from 'bootstrap.native/src/components/modal-native'
 import { createLayer } from './LayerCreator'
 
 class LayerFromService extends Component {
   create () {
     this.el = this.$.create('<li />')
-    this.modal = this.$.get('#modal_wmslayer')
+    this.modalEl = this.$.get('#modal_wmslayer')
+    this.modal = null
     this.isRow = true
     this.layer_conf = {
       TileWMS: {
@@ -42,19 +44,19 @@ class LayerFromService extends Component {
   }
 
   render () {
-    if (!this.modal || this.modal.length === 0) {
+    if (!this.modalEl) {
       const examples = Object.keys(apiUrls.wmsexamples).map(title => {
         return `<a href="${apiUrls.wmsexamples[title]}">
           ${title}
         </a>`
       })
-      this.modal = this.$.create(`<div class="modal fade"
+      this.modalEl = this.$.create(`<div class="modal fade"
         id="modal_wmslayer"
         tabindex="-1"
         role="dialog"
         aria-hidden="true">
       </div>`)
-      this.$.html(this.modal, `<div class="modal-dialog">
+      this.$.html(this.modalEl, `<div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">${t('Add WMS layer')}</h4>
@@ -91,17 +93,17 @@ class LayerFromService extends Component {
           </div>
         </div>
       </div>`)
-      this.$.on('click', this.$.get('button.confirm', this.modal), e => {
+      this.$.on('click', this.$.get('button.confirm', this.modalEl), e => {
         e.preventDefault()
-        if (this.$.get('textarea', this.modal).value.length < 10) {
+        if (this.$.get('textarea', this.modalEl).value.length < 10) {
           return
         }
-        const groupId = this.$.get('input[name=group]:checked', this.modal).value
+        const groupId = this.$.get('input[name=group]:checked', this.modalEl).value
         const group = getState('map/layer/' + groupId)
         let idx = group.getLength()
         // edit
-        const idField = this.$.get('input[name=id]', this.modal)
-        const textarea = this.$.get('textarea', this.modal)
+        const idField = this.$.get('input[name=id]', this.modalEl)
+        const textarea = this.$.get('textarea', this.modalEl)
         if (idField.value.length) {
           // get old index
           const oldLayer = group.getArray()
@@ -117,15 +119,15 @@ class LayerFromService extends Component {
           group.insertAt(idx, layer)
           textarea.value = ''
           idField.value = ''
-          // FIXME
-          this.modal.modal('hide')
+          this.modal.hide()
         }
       })
-      this.$.on('click', this.$.get('.examples a', this.modal), e => {
+      this.$.on('click', this.$.get('.examples a', this.modalEl), e => {
         e.preventDefault()
-        this.$.get('textarea', this.modal).value = decodeURIComponent(e.target.href)
+        this.$.get('textarea', this.modalEl).value = decodeURIComponent(e.target.href)
       })
-      this.$.append(this.$.get('body'), this.modal)
+      this.$.append(this.$.get('body'), this.modalEl)
+      this.modal = new Modal(this.modalEl)
     }
     this.$.html(this.el, `
       <a href="#"
@@ -137,6 +139,10 @@ class LayerFromService extends Component {
         ${t('Add WMS layer')}
       </a>
     `)
+    this.$.on('click', this.$.get('#add-wms-layer', this.el), e => {
+      e.preventDefault()
+      this.openModal()
+    })
   }
 
   createLayer (url, isBase) {
@@ -226,6 +232,10 @@ class LayerFromService extends Component {
       return 'TileWMS'
     }
     return false
+  }
+
+  openModal () {
+    this.modal.show()
   }
 }
 
