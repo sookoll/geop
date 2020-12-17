@@ -93,7 +93,7 @@ class Geocache extends Component {
     })
     // remove layer
     layers.on('remove', e => {
-      if (e.element.get('id') === state.layer.get('id')) {
+      if (e.element.get('id') === state.layer.get('id') && getState('ui/layermanager/sorting') === false) {
         state.layer.getSource().clear()
         // run for onchange events
         setState('geocache/loadend', state.layer)
