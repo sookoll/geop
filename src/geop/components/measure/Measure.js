@@ -181,24 +181,13 @@ class Measure extends Component {
       el.on('focus', 'input', e => {
         this.interaction.modify.setActive(false)
       })
-      $(document).on('keydown', e => {
-        if (e.keyCode === 9) { // tab pressed
-          e.preventDefault()
-          const a = el.find('input[name=angle]').val()
-          const r = el.find('input[name=radius]').val()
-          const coords = this.state.drawing.getGeometry().getCoordinates()
-          const coord2 = this.getCoordinateByAngleDistance(coords[0], Number(a), Number(r))
-          this.state.drawing.getGeometry().setCoordinates([coords[0], coord2])
-          this.interaction.modify.setActive(true)
-          if (e.target.name === 'radius') {
-            el.find('input[name=angle]').focus()
-          } else {
-            el.find('input[name=radius]').focus()
-          }
-        }
-      })
       el.on('blur', 'input', e => {
-
+        const a = el.find('input[name=angle]').val()
+        const r = el.find('input[name=radius]').val()
+        const coords = this.state.drawing.getGeometry().getCoordinates()
+        const coord2 = this.getCoordinateByAngleDistance(coords[0], Number(a), Number(r))
+        this.state.drawing.getGeometry().setCoordinates([coords[0], coord2])
+        this.interaction.modify.setActive(true)
       })
     }
   }
