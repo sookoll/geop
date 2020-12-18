@@ -57,16 +57,6 @@ class Filter extends Component {
       })
       this.filter()
     })
-    this.el.find('input[name=hidePoints]').on('change', e => {
-      e.stopPropagation()
-      const hide = $(e.target).is(':checked')
-      this.state.layer.getSource().forEachFeature(f => {
-        if (!f.get('isCache')) {
-          f.set('hidden', hide)
-        }
-      })
-      this.filter()
-    })
     if (Object.keys(this.state.filter).length && storedFilter && storedFilter['count']) {
       this.filter()
     }
@@ -76,9 +66,6 @@ class Filter extends Component {
       <li class="list-group-item">
         <label>
           <input type="checkbox" name="radiusStyle" value="160" ${storedFilter['radiusStyle'] && storedFilter['radiusStyle'].indexOf('160') > -1 ? 'checked="true"' : ''}> ${t('Show 160m radius')}
-        </label>
-        <label>
-          <input type="checkbox" name="hidePoints" value="off" ${storedFilter['hidePoints'] && storedFilter['hidePoints'].indexOf('off') > -1 ? 'checked="true"' : ''}> ${t('Hide additional points')}
         </label>
       </li>
       ${Object.keys(filter).map(group => {

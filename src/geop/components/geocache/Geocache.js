@@ -184,7 +184,9 @@ class Geocache extends Component {
       onShow: (f, pop) => {
         const fstatus = f[1].get('fstatus')
         // FIXME: Workaround for removed style attribute in popup
-        $(pop).find('h3 i.fstatus').css('color', state.styleConfig.color[fstatus].fill.color)
+        if (fstatus) {
+          $(pop).find('h3 i.fstatus').css('color', state.styleConfig.color[fstatus].fill.color)
+        }
         const geotrip = getState('geocache/trip')
         $(pop).on('click', '.toggle-found', e => {
           const inTrip = geotrip && geotrip.getArray().indexOf(f[1]) > -1

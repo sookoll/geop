@@ -55,6 +55,10 @@ export default {
         feature.set('time', wpt.time['_text'])
         // name
         feature.set('name', cacheData.name)
+        // code to bound additional points
+        // not work for GP if name do not contain GE code
+        feature.set('code', wpt.name['_text'])
+        feature.set('eid', wpt.name['_text'].slice(wpt.name['_text'].length - 5))
         // url
         feature.set('url', wpt.url['_text'])
         // owner
@@ -103,6 +107,9 @@ export default {
         // url
         feature.set('url', wpt.url['_text'])
         feature.set('isCachePoint', true)
+        // parent cache
+        feature.set('pid', wpt.name['_text'].slice(wpt.name['_text'].length - 5))
+        feature.set('hidden', true)
       }
       if (!feature.getId()) {
         feature.setId(opts.uid())

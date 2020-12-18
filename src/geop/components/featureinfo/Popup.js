@@ -25,7 +25,8 @@ class Popup extends Component {
         polygons: ['Polygon', 'MultiPolygon']
       },
       offset: 0,
-      open: false
+      open: false,
+      addPoints: []
     }
     this.handlers = {
       clicked: e => {
@@ -115,6 +116,23 @@ class Popup extends Component {
       }
       if (popContent) {
         this.show(e, coords, hit, popContent)
+      }
+      // try to find additional points
+      if (hit[1].get('isCache')) {
+        // hide addPoints and clear
+        this.state.addPoints.forEach(point => {
+          point.set('hidden', true)
+        })
+        this.state.addPoints = []
+        // try to find cache points
+        const eid = hit[1].get('eid')
+        this.state.addPoints = hit[0].getSource().getFeatures().filter(feature => {
+          if (feature.get('isCachePoint') && feature.get('pid') && feature.get('pid') === eid) {
+            feature.set('hidden', false)
+            return true
+          }
+          return false
+        })
       }
     } else {
       // not feature hit. Try WMS GetFeatureInfo
