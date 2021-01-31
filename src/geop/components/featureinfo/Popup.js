@@ -90,7 +90,7 @@ class Popup extends Component {
       popContent.onHide(evt)
     })
     this.el.popover('show')
-    setState('popup/show', { layerId: hit[0].get('id'), feature: hit[1] })
+    setState('popup/show', { layerId: hit ? hit[0].get('id') : null, feature: hit ? hit[1] : null })
   }
   open (e) {
     let coords = e.coordinate

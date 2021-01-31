@@ -46,7 +46,7 @@ export const apiUrls = {
     directions: 'https://router.project-osrm.org/route/v1/'
   },
   openrouteservice: {
-    key: '5b3ce3597851110001cf6248b99b83882966492086eee3c4a0522e9c',
+    key: '5b3ce3597851110001cf624801b177c2b8ea4b76a5f0b724b5fe6067',
     directions: 'https://api.openrouteservice.org/v2/directions/',
     optimize: 'https://api.openrouteservice.org/optimization/'
   },
