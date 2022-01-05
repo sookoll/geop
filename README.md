@@ -63,3 +63,7 @@ It will build:prod app and commit dist folder to gh-pages branch and push to git
   style: 'default'
 }
 ```
+
+## TODO
+
+* Get rid of python dep.
