@@ -380,6 +380,12 @@ a#osm-edit {
 #layermanager li .layer-tools a.sort-handle .dot {
   margin-bottom: 1px;
 }
+#layermanager li .layer-tools a.layer-labels {
+  color: #ccc;
+}
+#layermanager li .layer-tools a.layer-labels.active {
+  color: #212529;
+}
 
 #search .input-group {
   width: 146px;
