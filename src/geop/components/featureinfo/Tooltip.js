@@ -56,10 +56,13 @@ class Tooltip extends Component {
     }
     // get feature
     let coord = map.getEventCoordinate(e)
-    const feature = map.forEachFeatureAtPixel(
+    const [feature, layer] = map.forEachFeatureAtPixel(
       map.getEventPixel(e),
-      (feature, layer) => feature
+      (feature, layer) => [feature, layer]
     )
+    if (layer && layer.get('labelsOn')) {
+      return false
+    }
     // if not same feature
     if (feature !== this.state.currentFeature && (feature.get('name') || feature.get('title'))) {
       // if point, then geometry coords

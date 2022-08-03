@@ -1,6 +1,6 @@
 import $ from 'jquery'
 import FileLayer, { getFileLayerStyleConf } from './FileLayer'
-import { createStyle } from './StyleBuilder'
+import { createStyle, addStyleLabels, removeStyleLabels } from './StyleBuilder'
 import { getState, setState } from 'Utilities/store'
 import { t } from 'Utilities/translate'
 import log from 'Utilities/log'
@@ -100,8 +100,8 @@ class LayerManager extends Component {
       let btn = ''
       if (layer.get('conf').type === 'FeatureCollection') {
         btn = `<a href="#" class="fit-layer">
-            <i class="fa fa-search-plus"></i>
-          </a>`
+                <i class="fa fa-search-plus"></i>
+              </a>`
       } else if (layer.get('conf').editable) {
         btn = `<a href="#" class="edit-layer" data-toggle="modal" data-target="#modal_wmslayer">
             <i class="fa fa-edit"></i>
@@ -166,6 +166,12 @@ class LayerManager extends Component {
       e.stopPropagation()
       this.fitTo($(e.currentTarget).closest('li').data('group'), $(e.currentTarget).closest('li').data('id'))
     })
+    ul.on('click', 'a.layer-labels', e => {
+      e.preventDefault()
+      e.stopPropagation()
+      $(e.currentTarget).toggleClass('active')
+      this.toggleLayerLabels($(e.currentTarget).closest('li').data('group'), $(e.currentTarget).closest('li').data('id'))
+    })
     ul.on('click', 'a.remove-layer', e => {
       e.preventDefault()
       e.stopPropagation()
@@ -216,7 +222,10 @@ class LayerManager extends Component {
             </span>` : ''
         let btn = ''
         if (layer.get('conf').type === 'FeatureCollection') {
-          btn = `<a href="#" class="fit-layer">
+          btn = `<a href="#" class="layer-labels">
+                  <i class="fa fa-tag"></i>
+                </a>
+                <a href="#" class="fit-layer">
               <i class="fa fa-search-plus"></i>
             </a>`
         } else if (layer.get('conf').editable) {
@@ -288,6 +297,20 @@ class LayerManager extends Component {
     })
     this.state.open = true
     this.render()
+  }
+
+  toggleLayerLabels (groupId, id) {
+    this.state[groupId].forEach(layer => {
+      if (layer.get('id') === id) {
+        const currentState = layer.get('labelsOn')
+        if (!currentState) {
+          addStyleLabels(layer)
+        } else {
+          removeStyleLabels(layer)
+        }
+        setState('layerchange', [groupId, id])
+      }
+    })
   }
 
   removeLayer (groupId, id) {

@@ -1,6 +1,6 @@
 # geop
 
-Simple ol tool for Estonian geocache game
+Simple ol tool for Estonian geocache game (and more)
 
 https://gp.sookoll.ee
 

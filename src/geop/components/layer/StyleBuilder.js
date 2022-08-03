@@ -88,3 +88,37 @@ export function createStyle (conf) {
     return buildOLStyle(conf)
   }
 }
+
+const labelStyle = new Style({
+  text: new Text({
+    font: '12px Calibri,sans-serif',
+    overflow: true,
+    fill: new Fill({
+      color: '#000'
+    }),
+    stroke: new Stroke({
+      color: '#fff',
+      width: 2
+    }),
+    offsetY: -13
+  })
+})
+
+export function addStyleLabels (layer) {
+  const style = layer.getStyle()
+  if (style instanceof Style) {
+    layer.set('_style', style)
+    layer.setStyle((feature) => {
+      const label = feature.get('name')
+      labelStyle.getText().setText(label)
+      return [style, labelStyle]
+    })
+  }
+  layer.set('labelsOn', true)
+}
+
+export function removeStyleLabels (layer) {
+  const style = layer.get('_style')
+  layer.setStyle(style)
+  layer.set('labelsOn', false)
+}
