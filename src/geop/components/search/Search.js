@@ -75,7 +75,7 @@ class Search extends Component {
             this.search(val)
           }
         })
-      this.el.find('input').on('keyup', e => {
+      this.el.find('input').on('keyup input', e => {
         const val = $(e.target).val().trim()
         this.el.find('.dropdown-toggle').prop('disabled', (val.length < 1))
         // clear

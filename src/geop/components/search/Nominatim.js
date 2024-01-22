@@ -34,7 +34,7 @@ class Coordinate extends Provider {
     this.xhr = $.ajax({
       type: 'GET',
       crossDomain: true,
-      url: apiUrls.nominatim + '/search/',
+      url: apiUrls.nominatim + '/search',
       data: {
         q: query,
         countrycodes: getState('app/nominatimCountries') || '',
