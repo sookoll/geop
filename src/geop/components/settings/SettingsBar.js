@@ -1,6 +1,6 @@
 import { getState } from 'Utilities/store'
 import Component from 'Geop/Component'
-import Sidebar from 'Components/sidebar/Sidebar'
+import Sidebar from 'Components/sidebar/SideBar'
 import Info from './Info'
 import Config from './Config'
 import $ from 'jquery'
